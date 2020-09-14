@@ -1,0 +1,127 @@
+import discord
+import psycopg2
+from discord.ext import commands
+from typing import Optional
+
+from discord.utils import get
+
+import main
+from config import config
+
+
+def get_prefix(ctx):
+    db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER, password=config.BD_PASSWORD)
+    cur = db.cursor()
+    cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (ctx.guild.id,))
+    prefix = cur.fetchone()[0]
+    db.commit()
+    cur.close()
+    db.close()
+    return prefix
+
+
+def syntax(command):
+    cmd = str(command)
+    params = []
+    for key, value in command.params.items():
+        if key not in ('self', 'ctx'):
+            params.append(f'[{key}]' if 'NoneType' in str(value) else f'<{key}>')
+    params = ' '.join(params)
+    return f'`{cmd} {params}`'
+
+
+class Help(commands.Cog, name='Help'):
+
+    def __init__(self, client):
+        self.client = client
+        self.client.remove_command('help')
+
+    @commands.command(name='help', aliases=['h'], ignore_extra=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def cmd_help(self, ctx, cmd: Optional[str]):
+        """Displays the command list or information about a command."""
+        if cmd is None:
+            help_embed = discord.Embed(title='%s Commands' % self.client.user.name,
+                                       description=f'To view information about a specified command use: `help [cmd]`\n'
+                                                   f'Current server prefix: `{get_prefix(ctx)}`\n'
+                                                   f'\n'
+                                                   f'**General**\n'
+                                                   f'`help [cmd]:` Displays the command list or information about '
+                                                   f'a command.\n'
+                                                   f'`about:` Displays information about the bot.\n'
+                                                   f'`ping:` Checks the latency of the bot.\n'
+                                                   f'\n'
+                                                   f'**Search**\n'
+                                                   f'`anime <title>:` Searches for an anime and shows the '
+                                                   f'first result.\n '
+                                                   f'`manga <title>:` Searches for a manga and shows the '
+                                                   f'first result.\n '
+                                                   f'`character <name>:` Searches for a character and shows '
+                                                   f'the first result.\n '
+                                                   f'`staff <name>:` Searches for a staff and shows the first '
+                                                   f'result.\n'
+                                                   f'`studio <name>:` Searches for a studio and shows the first '
+                                                   f'result.\n '
+                                                   f'`random <Anime/Manga> <genre>:` Shows a random anime or manga of '
+                                                   f'the specified genre.\n'
+                                                   f'\n'
+                                                   f'**Profile**\n'
+                                                   f'`anilist [username | @user]:` Displays information about a '
+                                                   f'AniList Profile.\n'
+                                                   f'`myanimelist [username | @user]:` Displays information about a '
+                                                   f'MAL Profile.\n'
+                                                   f'`link [AniList/MyAnimeList] [username]:` Links an '
+                                                   f'AniList/MyAnimeList Profile.\n'
+                                                   f'`removelinks:` Removes the linked AniList and MyAnimeList '
+                                                   f'Profile.\n'
+                                                   f'\n'
+                                                   f'**Server Administrator Permissions Required**\n'
+                                                   f'`prefix <prefix>:` Changes the current server prefix.\n',
+                                       color=0x4169E1, timestamp=ctx.message.created_at)
+            help_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
+                                 inline=True)
+            help_embed.add_field(name='❯ Version', value='v%s' % main.__version__,
+                                 inline=True)
+            help_embed.add_field(name='❯ Invite', value='[Click me!](https://discord.com/oauth2/authorize?client_id'
+                                                        '=737236600878137363&permissions=83968&scope=bot)',
+                                 inline=True)
+            help_embed.add_field(name='❯ Vote', value='[Click me!](https://top.gg/bot/737236600878137363/vote)',
+                                 inline=True)
+            help_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=help_embed)
+            main.logger.info('Server: %s | Response: Help' % ctx.guild.name)
+        else:
+            if command := get(self.client.commands, name=cmd):
+                help_embed = discord.Embed(title='Command - %s' % command, colour=0x4169E1)
+                help_embed.add_field(name='Usage', value='`%s`' % syntax(command)
+                                     .replace('site', 'AniList | MyAnimeList')
+                                     .replace('profilename', 'username | @user')
+                                     .replace('<title>', '<title>')
+                                     .replace('<character>', '<name>')
+                                     .replace('<staff>', '<name>')
+                                     .replace('<studio>', '<name>')
+                                     .replace('<media>', '<Anime/Manga>'),
+                                     inline=False)
+                help_embed.add_field(name='Description', value='`%s`' % command.help, inline=False)
+                if command.aliases:
+                    aliases = ', '.join(command.aliases)
+                else:
+                    aliases = 'None'
+                help_embed.add_field(name='Aliases', value='`%s`' % aliases, inline=False)
+                help_embed.set_footer(text='<> - required | [] - optional')
+                await ctx.send(embed=help_embed)
+                main.logger.info('Server: %s | Response: Help - %s' % (ctx.guild.name, command))
+            else:
+                error_embed = discord.Embed(title='The command `%s` does not exist' % cmd,
+                                            color=0xff0000)
+                await ctx.channel.send(embed=error_embed)
+                main.logger.info('Server: %s | Response: Help command not found' % ctx.guild.name)
+
+
+def setup(client):
+    client.add_cog(Help(client))
+    main.logger.info('Loaded extension Help')
+
+
+def teardown():
+    main.logger.info('Unloaded extension Help')

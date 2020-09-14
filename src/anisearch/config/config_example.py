@@ -1,0 +1,5 @@
+TOKEN = ''
+DB_HOST = ''
+DB_NAME = ''
+DB_USER = ''
+BD_PASSWORD = ''
