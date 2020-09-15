@@ -12,7 +12,7 @@ class Studio(commands.Cog, name='Studio'):
         self.client = client
 
     @commands.command(name='studio', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_studio(self, ctx, *, studio):
         """Searches for a studio and shows the first result."""
         if studio.__contains__('--all'):

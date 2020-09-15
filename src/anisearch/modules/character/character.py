@@ -12,7 +12,7 @@ class Character(commands.Cog, name='Character'):
         self.client = client
 
     @commands.command(name='character', aliases=['c', 'char'], ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_character(self, ctx, *, character):
         """Searches for a character and shows the first result."""
         if character.__contains__('--all'):

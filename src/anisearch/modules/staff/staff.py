@@ -12,7 +12,7 @@ class Staff(commands.Cog, name='Staff'):
         self.client = client
 
     @commands.command(name='staff', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_staff(self, ctx, *, staff):
         """Searches for a staff and shows the first result."""
         if staff.__contains__('--all'):

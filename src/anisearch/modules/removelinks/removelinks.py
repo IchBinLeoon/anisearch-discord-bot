@@ -12,7 +12,7 @@ class RemoveLinks(commands.Cog, name='RemoveLinks'):
         self.client = client
 
     @commands.command(name='removelinks', aliases=['rml', 'rmlinks'], ignore_extra=False)
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def cmd_removeanilist(self, ctx):
         """Removes the linked AniList and MyAnimeList Profile."""
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,

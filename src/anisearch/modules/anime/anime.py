@@ -12,7 +12,7 @@ class Anime(commands.Cog, name='Anime'):
         self.client = client
 
     @commands.command(name='anime', aliases=['a'], ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_anime(self, ctx, *, title):
         """Searches for an anime and shows the first result."""
         if title.__contains__('--all'):

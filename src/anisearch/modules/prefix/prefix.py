@@ -12,6 +12,7 @@ class Prefix(commands.Cog, name='Prefix'):
         self.client = client
 
     @commands.command(name='prefix', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     async def cmd_prefix(self, ctx, prefix):
         """Changes the current server prefix."""

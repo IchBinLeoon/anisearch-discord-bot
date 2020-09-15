@@ -12,7 +12,7 @@ class Manga(commands.Cog, name='Manga'):
         self.client = client
 
     @commands.command(name='manga', aliases=['m'], ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_manga(self, ctx, *, title):
         """Searches for a manga and shows the first result."""
         if title.__contains__('--all'):

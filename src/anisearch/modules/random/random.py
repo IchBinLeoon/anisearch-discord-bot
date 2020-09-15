@@ -13,8 +13,8 @@ class Random(commands.Cog, name='Random'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='random', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(name='random', aliases=['rndm'], ignore_extra=False)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_random(self, ctx, media, genre):
         """Shows a random anime or manga of the specified genre."""
         if media == 'anime' or media == 'Anime':

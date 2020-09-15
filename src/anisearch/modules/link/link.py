@@ -14,12 +14,12 @@ class Link(commands.Cog, name='Link'):
         self.client = client
 
     @commands.command(name='link', aliases=['l'], ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_link(self, ctx, site: Optional[str], username: Optional[str]):
         """Links an AniList/MyAnimeList Profile."""
         if site:
             if username:
-                if site == 'AniList' or site == 'anilist':
+                if site == 'AniList' or site == 'anilist' or site == 'al':
                     db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                                           password=config.BD_PASSWORD)
                     cur = db.cursor()
@@ -45,7 +45,7 @@ class Link(commands.Cog, name='Link'):
                                                           color=0x4169E1)
                         await ctx.channel.send(embed=linkanilist_embed)
                         main.logger.info('Server: %s | Response: Link AniList - %s' % (ctx.guild.name, username))
-                elif site == 'MyAnimeList' or site == 'myanimelist':
+                elif site == 'MyAnimeList' or site == 'myanimelist' or site == 'mal':
                     db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                                           password=config.BD_PASSWORD)
                     cur = db.cursor()

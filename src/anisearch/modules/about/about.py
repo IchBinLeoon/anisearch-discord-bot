@@ -12,7 +12,7 @@ class About(commands.Cog, name='About'):
         self.client = client
 
     @commands.command(name='about', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_about(self, ctx):
         """Displays information about the bot."""
         about_embed = discord.Embed(title='About %s' % self.client.user.name,
@@ -42,7 +42,7 @@ class About(commands.Cog, name='About'):
         await ctx.channel.send(embed=about_embed)
 
     @commands.command(name='contact', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_contact(self, ctx, *, message):
         """Contacts the creator of the bot."""
         contact_embed = discord.Embed(title='Contact',

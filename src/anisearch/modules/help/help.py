@@ -37,19 +37,13 @@ class Help(commands.Cog, name='Help'):
         self.client.remove_command('help')
 
     @commands.command(name='help', aliases=['h'], ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_help(self, ctx, cmd: Optional[str]):
         """Displays the command list or information about a command."""
         if cmd is None:
             help_embed = discord.Embed(title='%s Commands' % self.client.user.name,
                                        description=f'To view information about a specified command use: `help [cmd]`\n'
                                                    f'Current server prefix: `{get_prefix(ctx)}`\n'
-                                                   f'\n'
-                                                   f'**General**\n'
-                                                   f'`help [cmd]:` Displays the command list or information about '
-                                                   f'a command.\n'
-                                                   f'`about:` Displays information about the bot.\n'
-                                                   f'`ping:` Checks the latency of the bot.\n'
                                                    f'\n'
                                                    f'**Search**\n'
                                                    f'`anime <title>:` Searches for an anime and shows the '
@@ -62,18 +56,24 @@ class Help(commands.Cog, name='Help'):
                                                    f'result.\n'
                                                    f'`studio <name>:` Searches for a studio and shows the first '
                                                    f'result.\n '
-                                                   f'`random <Anime/Manga> <genre>:` Shows a random anime or manga of '
+                                                   f'`random <anime | manga> <genre>:` Shows a random anime or manga of '
                                                    f'the specified genre.\n'
                                                    f'\n'
                                                    f'**Profile**\n'
                                                    f'`anilist [username | @user]:` Displays information about a '
                                                    f'AniList Profile.\n'
                                                    f'`myanimelist [username | @user]:` Displays information about a '
-                                                   f'MAL Profile.\n'
-                                                   f'`link [AniList/MyAnimeList] [username]:` Links an '
+                                                   f'MyAnimeList Profile.\n'
+                                                   f'`link [anilist/al | myanimelist/mal] [username]:` Links an '
                                                    f'AniList/MyAnimeList Profile.\n'
                                                    f'`removelinks:` Removes the linked AniList and MyAnimeList '
                                                    f'Profile.\n'
+                                                   f'\n'
+                                                   f'**Info**\n'
+                                                   f'`help [cmd]:` Displays the command list or information about '
+                                                   f'a command.\n'
+                                                   f'`about:` Displays information about the bot.\n'
+                                                   f'`ping:` Checks the latency of the bot.\n'
                                                    f'\n'
                                                    f'**Server Administrator Permissions Required**\n'
                                                    f'`prefix <prefix>:` Changes the current server prefix.\n',
@@ -94,13 +94,13 @@ class Help(commands.Cog, name='Help'):
             if command := get(self.client.commands, name=cmd):
                 help_embed = discord.Embed(title='Command - %s' % command, colour=0x4169E1)
                 help_embed.add_field(name='Usage', value='`%s`' % syntax(command)
-                                     .replace('site', 'AniList | MyAnimeList')
+                                     .replace('site', 'anilist/al | myanimelist/mal')
                                      .replace('profilename', 'username | @user')
                                      .replace('<title>', '<title>')
                                      .replace('<character>', '<name>')
                                      .replace('<staff>', '<name>')
                                      .replace('<studio>', '<name>')
-                                     .replace('<media>', '<Anime/Manga>'),
+                                     .replace('<media>', '<anime | manga>'),
                                      inline=False)
                 help_embed.add_field(name='Description', value='`%s`' % command.help, inline=False)
                 if command.aliases:
