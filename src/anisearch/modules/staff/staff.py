@@ -76,8 +76,14 @@ class Staff(commands.Cog, name='Staff'):
                         json = await r.json()
                         data = json['data']['Staff']
                         try:
-                            if data['name']['full'] is None or data['name']['full'] == data['name']['native']:
-                                staff_embed = discord.Embed(title=data['name']['native'], url=data['siteUrl'],
+                            if data['name']['native'] is None:
+                                staff_embed = discord.Embed(title='%s' % data['name']['full'],
+                                                            url=data['siteUrl'],
+                                                            color=0x4169E1,
+                                                            timestamp=ctx.message.created_at)
+                            elif data['name']['full'] is None or data['name']['full'] == data['name']['native']:
+                                staff_embed = discord.Embed(title=data['name']['native'],
+                                                            url=data['siteUrl'],
                                                             color=0x4169E1,
                                                             timestamp=ctx.message.created_at)
                             else:

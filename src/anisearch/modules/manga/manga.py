@@ -147,12 +147,12 @@ class Manga(commands.Cog, name='Manga'):
                         try:
                             if data['title']['english'] is None or data['title']['english'] == data['title']['romaji']:
                                 manga_embed = discord.Embed(title=data['title']['romaji'],
-                                                            color=0x4169E1,
+                                                            color=0x4169E1, url=data['siteUrl'],
                                                             timestamp=ctx.message.created_at)
                             else:
                                 manga_embed = discord.Embed(title='%s (%s)' % (data['title']['romaji'],
                                                                                data['title']['english']),
-                                                            color=0x4169E1,
+                                                            color=0x4169E1, url=data['siteUrl'],
                                                             timestamp=ctx.message.created_at)
                             manga_embed.set_thumbnail(url=data['coverImage']['large'])
                             if data['description']:
