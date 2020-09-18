@@ -1,6 +1,6 @@
 # AniSearch
 
-[![Version](https://img.shields.io/badge/Version-1.4-red?logo=github&style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot/tree/master/src/anisearch)
+[![Version](https://img.shields.io/badge/Version-1.4-red?logo=github&style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot)
 [![Library](https://img.shields.io/badge/Library-discord.py-3775A9?logo=pypi&style=flat-square)](https://github.com/Rapptz/discord.py)
 [![Python](https://img.shields.io/badge/Python-3.8.5-3776AB?logo=python&style=flat-square)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-3DA639?logo=open-source-initiative&style=flat-square)](https://opensource.org/licenses/MIT)
