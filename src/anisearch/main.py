@@ -41,7 +41,7 @@ extensions = ['modules.anime.anime', 'modules.manga.manga', 'modules.character.c
               'modules.random.random', 'modules.anilist.anilist', 'modules.studio.studio',
               'modules.myanimelist.myanimelist', 'modules.link.link', 'modules.removelinks.removelinks',
               'modules.prefix.prefix', 'modules.ping.ping', 'modules.help.help', 'modules.about.about',
-              'handlers.error_handler', 'events.guild_join', 'events.guild_leave']
+              'handlers.error_handler', 'events.guild_join', 'events.guild_leave', 'modules.contact.contact']
 
 
 def get_current_time():
@@ -203,7 +203,7 @@ def main():
                                      color=0x4169E1)
         proc = psutil.Process()
         with proc.oneshot():
-            uptime = timedelta(seconds=time() - proc.create_time())
+            uptime = timedelta(seconds=round(time() - proc.create_time()))
         try:
             status_embed.add_field(name='Uptime', value=str(uptime), inline=True)
         except AttributeError:

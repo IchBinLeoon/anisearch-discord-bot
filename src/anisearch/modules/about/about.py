@@ -1,6 +1,9 @@
 import platform
+from datetime import timedelta
+from time import time
 
 import discord
+import psutil
 from discord.ext import commands
 
 import main
@@ -28,6 +31,14 @@ class About(commands.Cog, name='About'):
                               inline=True)
         about_embed.add_field(name='❯ Command list', value='as!help',
                               inline=True)
+        proc = psutil.Process()
+        with proc.oneshot():
+            uptime = timedelta(seconds=round(time() - proc.create_time()))
+        try:
+            about_embed.add_field(name='❯ Uptime', value=str(uptime), inline=True)
+        except AttributeError:
+            about_embed.add_field(name='❯ Uptime', value='N/A',
+                                  inline=True)
         about_embed.add_field(name='❯ Library', value='Discord.py',
                               inline=True)
         about_embed.add_field(name='❯ Python version', value='v%s' % platform.python_version(),
@@ -37,24 +48,12 @@ class About(commands.Cog, name='About'):
                               inline=True)
         about_embed.add_field(name='❯ Vote', value='[Click me!](https://top.gg/bot/737236600878137363/vote)',
                               inline=True)
+        about_embed.add_field(name='❯ GitHub',
+                              value='[Click me!](https://github.com/IchBinLeoon/anisearch-discord-bot)',
+                              inline=True)
         about_embed.set_thumbnail(url=self.client.user.avatar_url)
         about_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
         await ctx.channel.send(embed=about_embed)
-
-    @commands.command(name='contact', ignore_extra=False)
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def cmd_contact(self, ctx, *, message):
-        """Contacts the creator of the bot."""
-        contact_embed = discord.Embed(title='Contact',
-                                      color=0x4169E1, timestamp=ctx.message.created_at)
-        contact_embed.add_field(name='Author', value=ctx.author,
-                                inline=False)
-        contact_embed.add_field(name='Message', value=message,
-                                inline=False)
-        contact_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
-        await self.client.get_user(main.__owner_id__).send(embed=contact_embed)
-        contact_return_embed = discord.Embed(title='Creator contacted', color=0x4169E1)
-        await ctx.channel.send(embed=contact_return_embed)
 
 
 def setup(client):
