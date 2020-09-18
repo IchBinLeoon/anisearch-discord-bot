@@ -173,7 +173,7 @@ class Manga(commands.Cog, name='Manga'):
                             if data['synonyms']:
                                 manga_embed.add_field(name='Synonyms', value=', '.join(data['synonyms']), inline=True)
                             else:
-                                manga_embed.add_field(name='Synonyms', value='-', inline=True)
+                                manga_embed.add_field(name='Synonyms', value='N/A', inline=True)
                             manga_embed.add_field(name='Type',
                                                   value=data['format'].replace('_', ' ').title().replace('Tv', 'TV'),
                                                   inline=True)

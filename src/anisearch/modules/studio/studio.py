@@ -16,15 +16,15 @@ class Studio(commands.Cog, name='Studio'):
     async def cmd_studio(self, ctx, *, studio):
         """Searches for a studio and shows the first result."""
         if studio.__contains__('--all'):
-            error_embed = discord.Embed(title='Bad argument',
+            error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            main.logger.info('Server: %s | Response: Bad argument' % ctx.guild.name)
+            main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
         elif studio.__contains__('--chars') or studio.__contains__('--characters'):
-            error_embed = discord.Embed(title='Bad argument',
+            error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            main.logger.info('Server: %s | Response: Bad argument' % ctx.guild.name)
+            main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
         else:
             api = 'https://graphql.anilist.co'
             query = studio_query.query
@@ -46,8 +46,8 @@ class Studio(commands.Cog, name='Studio'):
                                 x = 0
                                 productions_length = int(len(data['media']['edges']))
                                 for i in range(0, productions_length - 1):
-                                    productions.append(str('[' + data['media']['edges'][x]['node']['title']['romaji'] + ']('
-                                                           + data['media']['edges'][x]['node']['siteUrl'] + ') |'))
+                                    productions.append(str('[' + data['media']['edges'][x]['node']['title']['romaji'] +
+                                                           '](' + data['media']['edges'][x]['node']['siteUrl'] + ') |'))
                                     x = x + 1
                                 productions.append(str('[' + data['media']['edges'][x]['node']['title']['romaji'] + ']('
                                                        + data['media']['edges'][x]['node']['siteUrl'] + ')'))

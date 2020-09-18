@@ -173,9 +173,10 @@ class Anime(commands.Cog, name='Anime'):
                             if data['synonyms']:
                                 anime_embed.add_field(name='Synonyms', value=', '.join(data['synonyms']), inline=True)
                             else:
-                                anime_embed.add_field(name='Synonyms', value='-', inline=True)
+                                anime_embed.add_field(name='Synonyms', value='N/A', inline=True)
                             anime_embed.add_field(name='Type',
-                                                  value=data['format'].replace('_', ' ').title().replace('Tv', 'TV'),
+                                                  value=data['format'].replace('_', ' ').title().replace('Tv', 'TV').
+                                                  replace('Ova', 'OVA').replace('Ona', 'ONA'),
                                                   inline=True)
                             if data['episodes'] is None:
                                 anime_embed.add_field(name='Episodes', value='N/A',

@@ -23,6 +23,10 @@ class GuildLeave(commands.Cog):
         db.close()
         guild_remove_embed = discord.Embed(title="Left server %s" % guild.name,
                                            color=0x4169E1)
+        guild_remove_embed.add_field(name="Owner", value=guild.owner,
+                                     inline=True)
+        guild_remove_embed.add_field(name="Server ID", value=guild.id,
+                                     inline=True)
         await self.client.get_user(main.__owner_id__).send(embed=guild_remove_embed)
 
 

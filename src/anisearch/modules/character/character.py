@@ -60,10 +60,10 @@ class Character(commands.Cog, name='Character'):
                         await ctx.channel.send(embed=error_embed)
                         main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
         elif character.__contains__('--chars') or character.__contains__('--characters'):
-            error_embed = discord.Embed(title='Bad argument',
+            error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            main.logger.info('Server: %s | Response: Bad argument' % ctx.guild.name)
+            main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
         else:
             api = 'https://graphql.anilist.co'
             query = character_query.query

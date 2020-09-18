@@ -38,10 +38,10 @@ class ErrorHandler(commands.Cog):
             main.logger.info('Server: %s | Response: Missing required argument' % ctx.guild.name)
 
         if isinstance(error, commands.BadArgument):
-            error_embed = discord.Embed(title='Bad argument',
+            error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            main.logger.info('Server: %s | Response: Bad argument' % ctx.guild.name)
+            main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
 
         if isinstance(error, commands.MissingPermissions):
             error_embed = discord.Embed(title='Missing permissions',
