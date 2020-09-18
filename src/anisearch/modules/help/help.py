@@ -105,9 +105,10 @@ class Help(commands.Cog, name='Help'):
                 help_embed.add_field(name='Description', value='`%s`' % command.help, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
+                    help_embed.add_field(name='Aliases', value='`%s`' % aliases, inline=False)
                 else:
-                    aliases = 'None'
-                help_embed.add_field(name='Aliases', value='`%s`' % aliases, inline=False)
+                    aliases = '-'
+                    help_embed.add_field(name='Aliases', value=aliases, inline=False)
                 help_embed.set_footer(text='<> - required | [] - optional')
                 await ctx.send(embed=help_embed)
                 main.logger.info('Server: %s | Response: Help - %s' % (ctx.guild.name, command))
