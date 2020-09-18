@@ -73,9 +73,10 @@ class Help(commands.Cog, name='Help'):
                                                    f'`help [cmd]:` Displays the command list or information about '
                                                    f'a command.\n'
                                                    f'`about:` Displays information about the bot.\n'
+                                                   f'`contact <message>:` Contacts the creator of the bot.\n'
                                                    f'`ping:` Checks the latency of the bot.\n'
                                                    f'\n'
-                                                   f'**Server Administrator Permissions Required**\n'
+                                                   f'**Server Administrator**\n'
                                                    f'`prefix <prefix>:` Changes the current server prefix.\n',
                                        color=0x4169E1, timestamp=ctx.message.created_at)
             help_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
