@@ -17,16 +17,10 @@ class GuildJoin(commands.Cog):
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
-        try:
-            cur.execute('UPDATE guilds SET prefix = %s WHERE id = %s;', ('as!', guild.id))
-            db.commit()
-            cur.close()
-            db.close()
-        except TypeError:
-            cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (guild.id, 'as!'))
-            db.commit()
-            cur.close()
-            db.close()
+        cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (guild.id, 'as!'))
+        db.commit()
+        cur.close()
+        db.close()
         guild_join_embed = discord.Embed(title="Joined server %s" % guild.name,
                                          color=0x4169E1)
         guild_join_embed.add_field(name="Owner", value=guild.owner,
