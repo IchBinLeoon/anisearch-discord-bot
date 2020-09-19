@@ -12,7 +12,7 @@ I am still working on the bot and have already planned some enhancements for the
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
 
-If you would like to contact me, add me as friend via Discord: `IchBinLeoon#9999`
+If you would like to contact me, use the `contact <message>` command or add me as a friend via Discord: `IchBinLeoon#9999`
 
 ## Commands
 
