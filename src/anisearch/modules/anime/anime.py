@@ -59,7 +59,7 @@ class Anime(commands.Cog, name='Anime'):
                                 title='An error occurred while searching for the anime `%s`' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The anime `%s` does not exist in the AniList database' % title,
@@ -126,7 +126,7 @@ class Anime(commands.Cog, name='Anime'):
                                 title='An error occurred while searching for the anime `%s`' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The anime `%s` does not exist in the AniList database' % title,
@@ -239,7 +239,7 @@ class Anime(commands.Cog, name='Anime'):
                                 title='An error occurred while searching for the anime `%s`' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The anime `%s` does not exist in the AniList database' % title,

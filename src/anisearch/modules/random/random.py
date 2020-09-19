@@ -127,7 +127,7 @@ class Random(commands.Cog, name='Random'):
                                     title='An error occurred while searching for an anime with the genre `%s`' % genre,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.error(e)
+                                main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='An anime with the genre `%s` does not exist in the AniList database' % genre,
@@ -242,7 +242,7 @@ class Random(commands.Cog, name='Random'):
                                     title='An error occurred while searching for a manga with the genre `%s`' % genre,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.error(e)
+                                main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='An manga with the genre `%s` does not exist in the AniList database' % genre,

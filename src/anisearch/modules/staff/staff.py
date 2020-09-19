@@ -52,7 +52,7 @@ class Staff(commands.Cog, name='Staff'):
                                 title='An error occurred while searching for the staff `%s`' % staff,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The staff `%s` does not exist in the AniList database' % staff,
@@ -163,7 +163,7 @@ class Staff(commands.Cog, name='Staff'):
                                 title='An error occurred while searching for the staff `%s`' % staff,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The staff `%s` does not exist in the AniList database' % staff,

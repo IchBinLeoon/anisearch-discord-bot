@@ -1,5 +1,5 @@
 import dbl
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 import main
 from config import config
@@ -10,15 +10,10 @@ class TopGG(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.token = config.TOPGG
-        self.dblpy = dbl.DBLClient(self.client, self.token)
+        self.dblpy = dbl.DBLClient(self.client, self.token, autopost=True)
 
-    @tasks.loop(minutes=30.0)
-    async def update_stats(self):
-        try:
-            await self.dblpy.post_guild_count()
-            main.logger.info('Posted server count ({})'.format(self.dblpy.guild_count()))
-        except Exception as e:
-            main.logger.exception('Failed to post server count\n{}: {}'.format(type(e).__name__, e))
+    async def on_guild_post(self):
+        main.logger.info('TopGG server count posted (%s)' % self.dblpy.guild_count())
 
 
 def setup(client):

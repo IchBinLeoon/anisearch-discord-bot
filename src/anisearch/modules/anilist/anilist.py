@@ -194,7 +194,7 @@ class AniList(commands.Cog, name='AniList'):
                                 title='An error occurred while searching for AniList Profile `%s`' % profilename,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The user `%s` cannot be found on AniList' % profilename,

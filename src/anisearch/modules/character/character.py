@@ -52,7 +52,7 @@ class Character(commands.Cog, name='Character'):
                                 title='An error occurred while searching for the character `%s`' % character,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The character `%s` does not exist in the AniList database' % character,
@@ -132,7 +132,7 @@ class Character(commands.Cog, name='Character'):
                                 title='An error occurred while searching for the character `%s`' % character,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The character `%s` does not exist in the AniList database' % character,

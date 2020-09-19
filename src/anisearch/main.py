@@ -105,7 +105,7 @@ def main():
             try:
                 client.load_extension(i)
             except Exception as e:
-                logger.error(e)
+                logger.exception(e)
         logger.info('Extensions loaded %s/%s' % (len(client.cogs), len(extensions)))
 
     @client.event
@@ -146,7 +146,7 @@ def main():
             load_embed = discord.Embed(title='An error occurred while loading the extension `%s`' % extension,
                                        color=0xff0000)
             await ctx.channel.send(embed=load_embed)
-            logger.error(e)
+            logger.exception(e)
 
     @client.command(name='unload', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -163,7 +163,7 @@ def main():
             load_embed = discord.Embed(title='An error occurred while unloading the extension `%s`' % extension,
                                        color=0xff0000)
             await ctx.channel.send(embed=load_embed)
-            logger.error(e)
+            logger.exception(e)
 
     @client.command(name='reload', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -181,7 +181,7 @@ def main():
             load_embed = discord.Embed(title='An error occurred while reloading the extension `%s`' % extension,
                                        color=0xff0000)
             await ctx.channel.send(embed=load_embed)
-            logger.error(e)
+            logger.exception(e)
 
     @client.command(name='shutdown', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)

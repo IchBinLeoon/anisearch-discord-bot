@@ -59,7 +59,7 @@ class Manga(commands.Cog, name='Manga'):
                                 title='An error occurred while searching for the manga `%s`' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The manga `%s` does not exist in the AniList database' % title,
@@ -126,7 +126,7 @@ class Manga(commands.Cog, name='Manga'):
                                 title='An error occurred while searching for the manga `%s`' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The manga `%s` does not exist in the AniList database' % title,
@@ -233,7 +233,7 @@ class Manga(commands.Cog, name='Manga'):
                                 title='An error occurred while searching for the manga `%s`' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.error(e)
+                            main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
                             title='The manga `%s` does not exist in the AniList database' % title,
