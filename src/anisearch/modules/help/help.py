@@ -20,23 +20,13 @@ def get_prefix(ctx):
     return prefix
 
 
-def syntax(command):
-    cmd = str(command)
-    params = []
-    for key, value in command.params.items():
-        if key not in ('self', 'ctx'):
-            params.append(f'[{key}]' if 'NoneType' in str(value) else f'<{key}>')
-    params = ' '.join(params)
-    return f'`{cmd} {params}`'
-
-
 class Help(commands.Cog, name='Help'):
 
     def __init__(self, client):
         self.client = client
         self.client.remove_command('help')
 
-    @commands.command(name='help', aliases=['h'], ignore_extra=False)
+    @commands.command(name='help', aliases=['h'], usage='help [cmd]', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_help(self, ctx, cmd: Optional[str]):
         """Displays the command list or information about a command."""
@@ -72,7 +62,7 @@ class Help(commands.Cog, name='Help'):
                                                    f'**Info**\n'
                                                    f'`help [cmd]:` Displays the command list or information about '
                                                    f'a command.\n'
-                                                   f'`about:` Displays information about the bot.\n'
+                                                   f'`about:` Displays information and stats about the bot.\n'
                                                    f'`contact <message>:` Contacts the creator of the bot.\n'
                                                    f'`ping:` Checks the latency of the bot.\n'
                                                    f'\n'
@@ -81,12 +71,9 @@ class Help(commands.Cog, name='Help'):
                                        color=0x4169E1, timestamp=ctx.message.created_at)
             help_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
                                  inline=True)
-            help_embed.add_field(name='❯ Version', value='v%s' % main.__version__,
+            help_embed.add_field(name='❯ Invite', value='[Click me!](%s)' % main.__invite__,
                                  inline=True)
-            help_embed.add_field(name='❯ Invite', value='[Click me!](https://discord.com/oauth2/authorize?client_id'
-                                                        '=737236600878137363&permissions=83968&scope=bot)',
-                                 inline=True)
-            help_embed.add_field(name='❯ Vote', value='[Click me!](https://top.gg/bot/737236600878137363/vote)',
+            help_embed.add_field(name='❯ Vote', value='[Click me!](%s)' % main.__vote__,
                                  inline=True)
             help_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
             await ctx.send(embed=help_embed)
@@ -94,16 +81,10 @@ class Help(commands.Cog, name='Help'):
         else:
             if command := get(self.client.commands, name=cmd):
                 help_embed = discord.Embed(title='Command - %s' % command, colour=0x4169E1)
-                help_embed.add_field(name='Usage', value='`%s`' % syntax(command)
-                                     .replace('site', 'anilist/al | myanimelist/mal')
-                                     .replace('profilename', 'username | @user')
-                                     .replace('<title>', '<title>')
-                                     .replace('<character>', '<name>')
-                                     .replace('<staff>', '<name>')
-                                     .replace('<studio>', '<name>')
-                                     .replace('<media>', '<anime | manga>'),
+                help_embed.add_field(name='Usage', value='`%s`' % command.usage,
                                      inline=False)
                 help_embed.add_field(name='Description', value='`%s`' % command.help, inline=False)
+                help_embed.add_field(name='Cooldown', value='`%s`' % command.brief, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
                     help_embed.add_field(name='Aliases', value='`%s`' % aliases, inline=False)

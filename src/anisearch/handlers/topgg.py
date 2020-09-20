@@ -12,6 +12,7 @@ class TopGG(commands.Cog):
         self.token = config.TOPGG
         self.dblpy = dbl.DBLClient(self.client, self.token, autopost=True)
 
+    @commands.Cog.listener()
     async def on_guild_post(self):
         main.logger.info('TopGG server count posted (%s)' % self.dblpy.guild_count())
 

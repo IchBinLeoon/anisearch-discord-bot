@@ -14,14 +14,15 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='myanimelist', aliases=['mal'], ignore_extra=False)
+    @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username | @user]', brief='5s',
+                      ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cmd_myanimelist(self, ctx, profilename: Optional[str]):
+    async def cmd_myanimelist(self, ctx, username: Optional[str]):
         """Displays information about a MyAnimeList Profile."""
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
-        if profilename is None:
+        if username is None:
             user_id = ctx.author.id
             try:
                 cur.execute('SELECT myanimelist FROM users WHERE id = %s;', (user_id,))
@@ -29,37 +30,37 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                 db.commit()
                 cur.close()
                 db.close()
-                profilename = myanimelist
+                username = myanimelist
             except TypeError:
-                profilename = None
+                username = None
                 error_embed = discord.Embed(
                     title='You have no MyAnimeList Profile linked', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
-        elif profilename.startswith('<@!'):
-            user_id = int(profilename.replace('<@!', '').replace('>', ''))
+        elif username.startswith('<@!'):
+            user_id = int(username.replace('<@!', '').replace('>', ''))
             try:
                 cur.execute('SELECT myanimelist FROM users WHERE id = %s;', (user_id,))
                 myanimelist = cur.fetchone()[0]
                 db.commit()
                 cur.close()
                 db.close()
-                profilename = myanimelist
+                username = myanimelist
             except TypeError:
-                profilename = None
+                username = None
                 error_embed = discord.Embed(
                     title='%s has no MyAnimeList Profile linked' % self.client.get_user(user_id).name, color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
         else:
-            profilename = profilename
-        if profilename:
-            data = requests.get('https://api.jikan.moe/v3/user/%s/profile' % profilename).json()
+            username = username
+        if username:
+            data = requests.get('https://api.jikan.moe/v3/user/%s/profile' % username).json()
             try:
                 if data['status']:
                     error_embed = discord.Embed(
                         title='The user `%s` cannot be found on MyAnimeList'
-                              % profilename,
+                              % username,
                         color=0xff0000)
                     await ctx.channel.send(embed=error_embed)
                     main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
@@ -67,23 +68,23 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                 if data['last_online'] is not None:
                     last_online = data['last_online'].__str__().replace("-", "/").replace("T", " ").replace("+", " +")
                 else:
-                    last_online = 'N/A'
+                    last_online = '-'
                 if ['gender'] is not None:
-                    gender = data['gender'].__str__().replace('None', 'N/A')
+                    gender = data['gender'].__str__().replace('None', '-')
                 else:
-                    gender = 'N/A'
+                    gender = '-'
                 if data['birthday'] is not None:
                     birthday = data['birthday']
                 else:
-                    birthday = 'N/A'
+                    birthday = '-'
                 if data['location'] is not None:
                     location = data['location']
                 else:
-                    location = 'N/A'
+                    location = '-'
                 if data['joined'] is not None:
                     joined = data['joined'].__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
                 else:
-                    joined = 'N/A'
+                    joined = '-'
                 anime_days_watched = data['anime_stats']['days_watched']
                 anime_mean_score = data['anime_stats']['mean_score']
                 anime_watching = data['anime_stats']['watching']
@@ -123,7 +124,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                         myanimelist_embed.add_field(name='About',
                                                     value=data['about'][0:1021] + '...', inline=False)
                 except TypeError:
-                    myanimelist_embed.add_field(name='About', value='N/A', inline=False)
+                    myanimelist_embed.add_field(name='About', value='-', inline=False)
                 myanimelist_embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
                                                                       f'Mean Score: {anime_mean_score}\n'
                                                                       f'Watching: {anime_watching}\n'
@@ -165,7 +166,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                                          + data['favorites']['anime'][x]['url'] + ')'))
                     fav_anime = fav_anime.__str__()[1:-1].replace("'", "").replace(',', '')
                 else:
-                    fav_anime = 'N/A'
+                    fav_anime = '-'
                 if data['favorites']['manga']:
                     fav_manga = []
                     x = 0
@@ -178,7 +179,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                                          + data['favorites']['manga'][x]['url'] + ')'))
                     fav_manga = fav_manga.__str__()[1:-1].replace("'", "").replace(',', '')
                 else:
-                    fav_manga = 'N/A'
+                    fav_manga = '-'
                 if data['favorites']['characters']:
                     fav_characters = []
                     x = 0
@@ -191,7 +192,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                                               + data['favorites']['characters'][x]['url'] + ')'))
                     fav_characters = fav_characters.__str__()[1:-1].replace("'", "").replace(',', '')
                 else:
-                    fav_characters = 'N/A'
+                    fav_characters = '-'
                 if data['favorites']['people']:
                     fav_people = []
                     x = 0
@@ -204,7 +205,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                                           data['favorites']['people'][x]['url'] + ')'))
                     fav_people = fav_people.__str__()[1:-1].replace("'", "").replace(',', '')
                 else:
-                    fav_people = 'N/A'
+                    fav_people = '-'
                 myanimelist_embed.add_field(name='Favorite Anime', value=fav_anime, inline=False)
                 myanimelist_embed.add_field(name='Favorite Manga', value=fav_manga, inline=False)
                 myanimelist_embed.add_field(name='Favorite Characters', value=fav_characters, inline=False)

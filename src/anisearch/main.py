@@ -17,6 +17,8 @@ import logging
 __version__ = '1.4'
 __author__ = 'IchBinLeoon'
 __owner_id__ = 223871059068321793
+__invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
+__vote__ = 'https://top.gg/bot/737236600878137363/vote'
 
 from config import config
 
@@ -208,7 +210,7 @@ def main():
         try:
             status_embed.add_field(name='Uptime', value=str(uptime), inline=True)
         except AttributeError:
-            status_embed.add_field(name='Uptime', value='N/A',
+            status_embed.add_field(name='Uptime', value='-',
                                    inline=True)
         status_embed.add_field(name='Database', value=config.DB_NAME,
                                inline=True)
@@ -230,7 +232,7 @@ def main():
                 core_temp = temp['cpu_thermal']
                 temperature = core_temp[0][1]
         except AttributeError:
-            temperature = 'N/A'
+            temperature = '-'
         system_started = datetime.fromtimestamp(psutil.boot_time()).strftime('%d-%m-%Y %H:%M:%S')
         status_embed.add_field(name='System',
                                value=f'**OS:** {platform.system()}\n'

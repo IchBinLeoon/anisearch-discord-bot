@@ -8,7 +8,7 @@ class Ping(commands.Cog, name='Ping'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='ping', ignore_extra=False)
+    @commands.command(name='ping', usage='ping', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_ping(self, ctx):
         """Checks the latency of the bot."""

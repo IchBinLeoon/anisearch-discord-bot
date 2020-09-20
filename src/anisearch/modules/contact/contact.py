@@ -9,7 +9,7 @@ class Contact(commands.Cog, name='Contact'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='contact', ignore_extra=False)
+    @commands.command(name='contact', usage='contact <message>', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_contact(self, ctx, *, message):
         """Contacts the creator of the bot."""

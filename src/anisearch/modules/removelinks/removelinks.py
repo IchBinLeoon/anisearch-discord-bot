@@ -11,7 +11,8 @@ class RemoveLinks(commands.Cog, name='RemoveLinks'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='removelinks', aliases=['rml', 'rmlinks'], ignore_extra=False)
+    @commands.command(name='removelinks', aliases=['rml', 'rmlinks'], usage='removelinks', brief='10s',
+                      ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def cmd_removeanilist(self, ctx):
         """Removes the linked AniList and MyAnimeList Profile."""

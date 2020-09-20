@@ -11,16 +11,16 @@ class Studio(commands.Cog, name='Studio'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='studio', ignore_extra=False)
+    @commands.command(name='studio', usage='studio <name>', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def cmd_studio(self, ctx, *, studio):
+    async def cmd_studio(self, ctx, *, name):
         """Searches for a studio and shows the first result."""
-        if studio.__contains__('--all'):
+        if name.__contains__('--all'):
             error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
             main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
-        elif studio.__contains__('--chars') or studio.__contains__('--characters'):
+        elif name.__contains__('--chars') or name.__contains__('--characters'):
             error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
@@ -29,7 +29,7 @@ class Studio(commands.Cog, name='Studio'):
             api = 'https://graphql.anilist.co'
             query = studio_query.query
             variables = {
-                'studio': studio
+                'studio': name
             }
             async with aiohttp.ClientSession() as session:
                 async with session.post(api, json={'query': query, 'variables': variables}) as r:
@@ -52,7 +52,7 @@ class Studio(commands.Cog, name='Studio'):
                                 productions.append(str('[' + data['media']['edges'][x]['node']['title']['romaji'] + ']('
                                                        + data['media']['edges'][x]['node']['siteUrl'] + ')'))
                             else:
-                                productions = '[N/A]'
+                                productions = '[-]'
                             if len(str(productions)) > 1024:
                                 productions = productions[0:15]
                                 productions[14] = str(productions[14]).replace(' |', '...')
@@ -65,13 +65,13 @@ class Studio(commands.Cog, name='Studio'):
                             main.logger.info('Server: %s | Response: Studio - %s' % (ctx.guild.name, data['name']))
                         except Exception as e:
                             error_embed = discord.Embed(
-                                title='An error occurred while searching for the studio `%s`' % studio,
+                                title='An error occurred while searching for the studio `%s`' % name,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
                             main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
-                            title='The studio `%s` does not exist in the AniList database' % studio,
+                            title='The studio `%s` does not exist in the AniList database' % name,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
                         main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)

@@ -13,7 +13,8 @@ class Link(commands.Cog, name='Link'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='link', aliases=['l'], ignore_extra=False)
+    @commands.command(name='link', aliases=['l'], usage='link [anilist/al | myanimelist/mal] [username]',
+                      brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_link(self, ctx, site: Optional[str], username: Optional[str]):
         """Links an AniList/MyAnimeList Profile."""

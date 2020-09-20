@@ -11,14 +11,15 @@ query_anime = '''
                             media(genre: $genre, type: ANIME, sort:POPULARITY_DESC) {
                               id
                               idMal
-                              description
                               title {
                                 romaji
                                 english
+                                native
                               }
-                              coverImage {
-                                large
-                              }
+                              type
+                              format
+                              status
+                              description
                               startDate {
                                 year
                                 month
@@ -30,42 +31,113 @@ query_anime = '''
                                 day
                               }
                               season
-                              synonyms
-                              format
-                              status
+                              seasonYear
+                              seasonInt
                               episodes
                               duration
-                              nextAiringEpisode {
-                                episode
+                              chapters
+                              volumes
+                              countryOfOrigin
+                              isLicensed
+                              source
+                              hashtag
+                              trailer {
+                                id
+                                site
+                                thumbnail
                               }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                              bannerImage
+                              genres
+                              synonyms
                               averageScore
                               meanScore
                               popularity
+                              isLocked
+                              trending
                               favourites
-                              source
-                              genres
                               tags {
+                                id
                                 name
+                                description
+                                category
+                                rank
+                                isGeneralSpoiler
+                                isMediaSpoiler
+                                isAdult
                               }
-                              studios(isMain: true) {
-                                nodes {
-                                  name
+                              relations {
+                                edges {
+                                  id
+                                  node {
+                                    id
+                                    siteUrl
+                                    title {
+                                       romaji
+                                      english
+                                      native
+                                      userPreferred
+                                    }
+                                  }
                                 }
                               }
                               characters(sort:FAVOURITES_DESC) {
-                                  edges {
+                                edges {
+                                  id
+                                  node {
                                     id
-                                    node {
-                                      id
-                                      siteUrl
-                                      name {
-                                        first
-                                        last
-                                        full
-                                        native
-                                      }
+                                    siteUrl
+                                    name {
+                                      first
+                                      last
+                                      full
+                                      native
                                     }
                                   }
+                                }
+                              }
+                              staff {
+                                edges {
+                                  id
+                                  node {
+                                    id
+                                    siteUrl
+                                    name {
+                                      first
+                                      last
+                                      full
+                                      native
+                                    }
+                                  }
+                                }
+                              }
+                              studios(isMain: true) {
+                                nodes {
+                                name	
+                                }
+                              }
+                              isAdult
+                              nextAiringEpisode {
+                                id
+                                airingAt
+                                timeUntilAiring
+                                episode
+                              }
+                              externalLinks {
+                                id
+                                url
+                                site
+                              }
+                              streamingEpisodes {
+                                title
+                                thumbnail
+                                url
+                                site
                               }
                               siteUrl
                             }
@@ -84,56 +156,137 @@ query_manga = '''
                               hasNextPage
                             }
                             media(genre: $genre, type: MANGA, sort:POPULARITY_DESC) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                                native
+                              }
+                              type
+                              format
+                              status
+                              description
+                              startDate {
+                                year
+                                month
+                                day
+                              }
+                              endDate {
+                                year
+                                month
+                                day
+                              }
+                              season
+                              seasonYear
+                              seasonInt
+                              episodes
+                              duration
+                              chapters
+                              volumes
+                              countryOfOrigin
+                              isLicensed
+                              source
+                              hashtag
+                              trailer {
                                 id
-                                idMal
+                                site
+                                thumbnail
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                              bannerImage
+                              genres
+                              synonyms
+                              averageScore
+                              meanScore
+                              popularity
+                              isLocked
+                              trending
+                              favourites
+                              tags {
+                                id
+                                name
                                 description
-                                title {
-                                  romaji
-                                  english
-                                }
-                                coverImage {
-                                  large
-                                }
-                                startDate {
-                                  year
-                                  month
-                                  day
-                                }
-                                endDate {
-                                  year
-                                  month
-                                  day
-                                }              
-                                synonyms
-                                format
-                                status
-                                chapters
-                                volumes
-                                averageScore
-                                meanScore
-                                popularity
-                                favourites
-                                source
-                                genres
-                                tags {
-                                  name
-                                }
-                                characters(sort:FAVOURITES_DESC) {
-                                    edges {
-                                      id
-                                      node {
-                                        id
-                                        siteUrl
-                                        name {
-                                          first
-                                          last
-                                          full
-                                          native
-                                        }
-                                      }
+                                category
+                                rank
+                                isGeneralSpoiler
+                                isMediaSpoiler
+                                isAdult
+                              }
+                              relations {
+                                edges {
+                                  id
+                                  node {
+                                    id
+                                    siteUrl
+                                    title {
+                                       romaji
+                                      english
+                                      native
+                                      userPreferred
                                     }
+                                  }
                                 }
-                                siteUrl
+                              }
+                              characters(sort:FAVOURITES_DESC) {
+                                edges {
+                                  id
+                                  node {
+                                    id
+                                    siteUrl
+                                    name {
+                                      first
+                                      last
+                                      full
+                                      native
+                                    }
+                                  }
+                                }
+                              }
+                              staff {
+                                edges {
+                                  id
+                                  node {
+                                    id
+                                    siteUrl
+                                    name {
+                                      first
+                                      last
+                                      full
+                                      native
+                                    }
+                                  }
+                                }
+                              }
+                              studios(isMain: true) {
+                                nodes {
+                                name	
+                                }
+                              }
+                              isAdult
+                              nextAiringEpisode {
+                                id
+                                airingAt
+                                timeUntilAiring
+                                episode
+                              }
+                              externalLinks {
+                                id
+                                url
+                                site
+                              }
+                              streamingEpisodes {
+                                title
+                                thumbnail
+                                url
+                                site
+                              }
+                              siteUrl
                             }
                           }
                         }

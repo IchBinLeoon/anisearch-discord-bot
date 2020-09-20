@@ -15,14 +15,15 @@ class AniList(commands.Cog, name='AniList'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='anilist', aliases=['al'], ignore_extra=False)
+    @commands.command(name='anilist', aliases=['al'], usage='anilist [username | @user]', brief='5s',
+                      ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cmd_anilist(self, ctx, profilename: Optional[str]):
+    async def cmd_anilist(self, ctx, username: Optional[str]):
         """Displays information about an AniList Profile."""
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
-        if profilename is None:
+        if username is None:
             user_id = ctx.author.id
             try:
                 cur.execute('SELECT anilist FROM users WHERE id = %s;', (user_id,))
@@ -30,35 +31,35 @@ class AniList(commands.Cog, name='AniList'):
                 db.commit()
                 cur.close()
                 db.close()
-                profilename = anilist
+                username = anilist
             except TypeError:
-                profilename = None
+                username = None
                 error_embed = discord.Embed(
                     title='You have no AniList Profile linked', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
-        elif profilename.startswith('<@!'):
-            user_id = int(profilename.replace('<@!', '').replace('>', ''))
+        elif username.startswith('<@!'):
+            user_id = int(username.replace('<@!', '').replace('>', ''))
             try:
                 cur.execute('SELECT anilist FROM users WHERE id = %s;', (user_id,))
                 anilist = cur.fetchone()[0]
                 db.commit()
                 cur.close()
                 db.close()
-                profilename = anilist
+                username = anilist
             except TypeError:
-                profilename = None
+                username = None
                 error_embed = discord.Embed(
                     title='%s has no AniList Profile linked' % self.client.get_user(user_id).name, color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
         else:
-            profilename = profilename
-        if profilename:
+            username = username
+        if username:
             api = 'https://graphql.anilist.co'
             query = anilist_query.query
             variables = {
-                'username': profilename
+                'username': username
             }
             async with aiohttp.ClientSession() as session:
                 async with session.post(api, json={'query': query, 'variables': variables}) as r:
@@ -79,7 +80,7 @@ class AniList(commands.Cog, name='AniList'):
                                     anilist_embed.add_field(name='About',
                                                             value=data['about'][0:1021] + '...', inline=False)
                             except TypeError:
-                                anilist_embed.add_field(name='About', value='N/A', inline=False)
+                                anilist_embed.add_field(name='About', value='-', inline=False)
                             anime_count = data['statistics']['anime']['count']
                             anime_mean_score = data['statistics']['anime']['meanScore']
                             anime_days_watched = round(data['statistics']['anime']['minutesWatched'] / 60 / 24, 2)
@@ -118,7 +119,7 @@ class AniList(commands.Cog, name='AniList'):
                                         + data['favourites']['anime']['edges'][x]['node']['siteUrl'] + ')'))
                                 fav_anime = fav_anime.__str__()[1:-1].replace("'", "").replace(',', '')
                             else:
-                                fav_anime = 'N/A'
+                                fav_anime = '-'
                             if data['favourites']['manga']['edges']:
                                 fav_manga = []
                                 x = 0
@@ -133,7 +134,7 @@ class AniList(commands.Cog, name='AniList'):
                                         + data['favourites']['manga']['edges'][x]['node']['siteUrl'] + ')'))
                                 fav_manga = fav_manga.__str__()[1:-1].replace("'", "").replace(',', '')
                             else:
-                                fav_manga = 'N/A'
+                                fav_manga = '-'
                             if data['favourites']['characters']['edges']:
                                 fav_characters = []
                                 x = 0
@@ -149,7 +150,7 @@ class AniList(commands.Cog, name='AniList'):
                                         '](' + data['favourites']['characters']['edges'][x]['node']['siteUrl'] + ')'))
                                 fav_characters = fav_characters.__str__()[1:-1].replace("'", "").replace(',', '')
                             else:
-                                fav_characters = 'N/A'
+                                fav_characters = '-'
                             if data['favourites']['staff']['edges']:
                                 fav_staff = []
                                 x = 0
@@ -164,7 +165,7 @@ class AniList(commands.Cog, name='AniList'):
                                         + data['favourites']['staff']['edges'][x]['node']['siteUrl'] + ')'))
                                 fav_staff = fav_staff.__str__()[1:-1].replace("'", "").replace(',', '')
                             else:
-                                fav_staff = 'N/A'
+                                fav_staff = '-'
                             if data['favourites']['studios']['edges']:
                                 fav_studios = []
                                 x = 0
@@ -179,7 +180,7 @@ class AniList(commands.Cog, name='AniList'):
                                         + data['favourites']['studios']['edges'][x]['node']['siteUrl'] + ')'))
                                 fav_studios = fav_studios.__str__()[1:-1].replace("'", "").replace(',', '')
                             else:
-                                fav_studios = 'N/A'
+                                fav_studios = '-'
                             anilist_embed.add_field(name='Favorite Anime', value=fav_anime, inline=False)
                             anilist_embed.add_field(name='Favorite Manga', value=fav_manga, inline=False)
                             anilist_embed.add_field(name='Favorite Characters', value=fav_characters, inline=False)
@@ -191,13 +192,13 @@ class AniList(commands.Cog, name='AniList'):
                             main.logger.info('Server: %s | Response: AniList - %s' % (ctx.guild.name, data['name']))
                         except Exception as e:
                             error_embed = discord.Embed(
-                                title='An error occurred while searching for AniList Profile `%s`' % profilename,
+                                title='An error occurred while searching for AniList Profile `%s`' % username,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
                             main.logger.exception(e)
                     else:
                         error_embed = discord.Embed(
-                            title='The user `%s` cannot be found on AniList' % profilename,
+                            title='The user `%s` cannot be found on AniList' % username,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
                         main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
