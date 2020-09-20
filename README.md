@@ -69,7 +69,7 @@ If you would like to contact me, use the `contact <message>` command or add me a
   * Aliases: `h`
 * about
   * Usage: `about`
-  * Description: Displays information about the bot.
+  * Description: Displays information and stats about the bot.
   * Aliases: -
 * contact
   * Usage: `contact <message>`
