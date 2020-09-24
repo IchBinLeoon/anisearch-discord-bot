@@ -14,37 +14,6 @@ If you would like to contact me, use the `contact <message>` command or add me a
 
 ## Commands
 
-### Search
-`anime <title>:` Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more!  
-`manga <title>:` Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!  
-`character <name>:` Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances!  
-`staff <name>:` Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!  
-`studio <name>:` Searches for a studio with the given name and displays information about the first result such as the studio productions!  
-`random <anime/manga> <genre>:` Displays information about random anime or manga of the specified genre.
-
-### Profile
-`anilist [username/@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites.  
-`myanimelist [username/@member]:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.  
-`link <anilist/myanimelist> <username>:` Description: Links an AniList or MyAnimeList Profile.  
-`removelinks:` Removes the linked AniList and MyAnimeList Profile.  
-
-### Info
-`help [command]:` Shows help or displays information about a command.  
-`commands:` Displays all commands.  
-`about:` Displays information and stats about the bot.  
-`contact <message>:` Contacts the creator of the bot.  
-`ping:` Checks the latency of the bot.  
-  
-### Server Administrator
-`prefix <prefix>:` Changes the current server prefix.
-
-
-## Discord Bot List
-[![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
-
-
-## Full Commands Documentation
-
 **Parameters:**   
 `<> - required | [] - optional`  
 
@@ -151,6 +120,9 @@ If you would like to contact me, use the `contact <message>` command or add me a
   * Description: Changes the current server prefix.
   * Cooldown: `10s`
   * Aliases: -  
+  
+## Discord Bot List
+[![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
 ## Libraries and API's
 Thanks to the people who made this discord bot possible.
