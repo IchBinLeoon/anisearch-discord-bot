@@ -14,113 +14,113 @@ If you would like to contact me, use the `contact <message>` command or add me a
 
 ## Commands
 
+**Parameters:**   
+`<> - required | [] - optional`  
+
+**Command Flags:**  
+`--search:` Displays all search results.    
+`--characters:` Displays the characters in the media.   
+`--staff:` Displays the staff who produced the media.   
+`--image:` Displays the cover images of the media.   
+`--relations:` Displays other media in the same or connecting franchise.   
+`--links:` Displays external links to another sites related to the media.    
+`--streams:` Displays links to legal streaming episodes on external sites.    
+`--all:` Displays the first search results including all command flags. 
+
 ### Search
 * anime
   * Usage: `anime <title>`
-  * Description: `Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information.`
+  * Description: Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information.
   * Flags: `--search, --characters, --staff, --image, --relations, --links, --streams, --all`
   * Cooldown: `3s`
   * Aliases: `a`
 * manga
   * Usage: `manga <title>`
-  * Description: `Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information.`
+  * Description: Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information.
   * Flags: `--search, --characters, --staff, --image, --relations, --all`
   * Cooldown: `3s`
   * Aliases: `m`
 * character
   * Usage: `character <name>`
-  * Description: `Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances! You can also include one of the available flags for the command at the end for more or specific information.`
+  * Description: Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances! You can also include one of the available flags for the command at the end for more or specific information.
   * Flags: `--search, --image`
   * Cooldown: `3s`
   * Aliases: `c, char`
 * staff
   * Usage: `staff <name>`
-  * Description: `Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles! You can also include one of the available flags for the command at the end for more or specific information.`
+  * Description: Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles! You can also include one of the available flags for the command at the end for more or specific information.
   * Flags: `--search, --image`
   * Cooldown: `3s`
   * Aliases: -
 * studio
   * Usage: `studio <name>`
-  * Description: `Searches for a studio with the given name and displays information about the first result such as the studio productions! You can also include one of the available flags for the command at the end for more or specific information.`
+  * Description: Searches for a studio with the given name and displays information about the first result such as the studio productions! You can also include one of the available flags for the command at the end for more or specific information.
   * Flags: `--search`
   * Cooldown: `3s`
   * Aliases: -
 * random
-  * Usage: `random <anime|manga> <genre>`
-  * Description: `Displays information about random anime or manga of the specified genre.`
+  * Usage: `random <anime/manga> <genre>`
+  * Description: Displays information about random anime or manga of the specified genre.
   * Flags: `--search`
   * Cooldown: `7s`
   * Aliases: `r, rndm`
  
 ### Profile
 * anilist
-  * Usage: `anilist [username|@member]`
-  * Description: `Displays information about the given AniList Profile such as anime stats, manga stats and favorites.`
+  * Usage: `anilist [username/@member]`
+  * Description: Displays information about the given AniList Profile such as anime stats, manga stats and favorites.
   * Cooldown: `5s`
   * Aliases: `al`
 * myanimelist
-  * Usage: `myanimelist [username|@member]`
-  * Description: `Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.`
+  * Usage: `myanimelist [username/@member]`
+  * Description: Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.
   * Cooldown: `5s`
   * Aliases: `mal`
 * link
-  * Usage: `link <anilist/al|myanimelist/mal> <username>`
-  * Description: `Links an AniList or MyAnimeList Profile.`
+  * Usage: `link <anilist/myanimelist> <username>`
+  * Description: Links an AniList or MyAnimeList Profile.
   * Cooldown: `5s`
   * Aliases: `l`
 * removelinks
   * Usage: `removelinks`
-  * Description: `Removes the linked AniList and MyAnimeList Profile.`
+  * Description: Removes the linked AniList and MyAnimeList Profile.
   * Cooldown: `10s`
   * Aliases: `rml, rmlinks`
   
 ### Info
 * help
   * Usage: `help [command]`
-  * Description: `Shows help or displays information about a command.`
+  * Description: Shows help or displays information about a command.
   * Cooldown: `3s`
   * Aliases: `h`
 * commands
   * Usage: `commands`
-  * Description: `Displays all commands.`
+  * Description: Displays all commands.
   * Cooldown: `3s`
   * Aliases: `cmds`
 * about
   * Usage: `about`
-  * Description: `Displays information and stats about the bot.`
+  * Description: Displays information and stats about the bot.
   * Cooldown: `3s`
   * Aliases: -
 * contact
   * Usage: `contact <message>`
-  * Description: `Contacts the creator of the bot.`
+  * Description: Contacts the creator of the bot.
   * Cooldown: `3s`
   * Aliases: -
 * ping
   * Usage: `ping`
-  * Description: `Checks the latency of the bot.`
+  * Description: Checks the latency of the bot.
   * Cooldown: `3s`
   * Aliases: -
   
 ### Server Administrator
 * prefix
   * Usage: `prefix <prefix>`
-  * Description: `Changes the current server prefix.`
+  * Description: Changes the current server prefix.
   * Cooldown: `10s`
-  * Aliases: - 
+  * Aliases: -  
   
-**Parameters:**   
-`<> - required | [] - optional`  
-
-**Command Flags:**  
-`--search:` Displays all search results    
-`--characters:` Displays the characters in the media   
-`--staff:` Displays the staff who produced the media   
-`--image:` Displays the cover images of the media   
-`--relations:` Displays other media in the same or connecting franchise   
-`--links:` Displays external links to another sites related to the media    
-`--streams:` Displays links to legal streaming episodes on external sites    
-`--all:` Displays the first search results including all command flags  
-
 ## Discord Bot List
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
