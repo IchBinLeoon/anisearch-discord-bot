@@ -19,12 +19,13 @@ If you would like to contact me, use the `contact <message>` command or add me a
 `manga <title>:` Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!  
 `character <name>:` Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances!  
 `staff <name>:` Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!  
-`studio <name>:` Searches for a studio with the given name and displays information about the first result such as the studio productions!  
+`studio <name>:` Searches for a studio with the given name and displays information about the first result such as the studio productions! 
+`random <anime/manga> <genre>:` Description: Displays information about random anime or manga of the specified genre.
 
 ### Profile
-`anilist [username|@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites.  
-`myanimelist [username|@member]:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.  
-`link <anilist/al|myanimelist/mal> <username>:` Description: Links an AniList or MyAnimeList Profile.  
+`anilist [username/@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites.  
+`myanimelist [username/@member]:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.  
+`link <anilist/myanimelist> <username>:` Description: Links an AniList or MyAnimeList Profile.  
 `removelinks:` Removes the linked AniList and MyAnimeList Profile.  
 
 ### Info
@@ -89,7 +90,7 @@ If you would like to contact me, use the `contact <message>` command or add me a
   * Cooldown: `3s`
   * Aliases: -
 * random
-  * Usage: `random <anime|manga> <genre>`
+  * Usage: `random <anime/manga> <genre>`
   * Description: Displays information about random anime or manga of the specified genre.
   * Flags: `--search`
   * Cooldown: `7s`
@@ -97,17 +98,17 @@ If you would like to contact me, use the `contact <message>` command or add me a
  
 ### Profile
 * anilist
-  * Usage: `anilist [username|@member]`
+  * Usage: `anilist [username/@member]`
   * Description: Displays information about the given AniList Profile such as anime stats, manga stats and favorites.
   * Cooldown: `5s`
   * Aliases: `al`
 * myanimelist
-  * Usage: `myanimelist [username|@member]`
+  * Usage: `myanimelist [username/@member]`
   * Description: Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.
   * Cooldown: `5s`
   * Aliases: `mal`
 * link
-  * Usage: `link <anilist/al|myanimelist/mal> <username>`
+  * Usage: `link <anilist/myanimelist> <username>`
   * Description: Links an AniList or MyAnimeList Profile.
   * Cooldown: `5s`
   * Aliases: `l`
