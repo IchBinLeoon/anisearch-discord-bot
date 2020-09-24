@@ -59,6 +59,8 @@ class Help(commands.Cog, name='Help'):
                 flags = ', '.join(flags)
                 if flags:
                     help_embed.add_field(name='Flags', value='`%s`' % flags, inline=False)
+                else:
+                    help_embed.add_field(name='Flags', value='-', inline=False)
                 help_embed.add_field(name='Cooldown', value='`%s`' % cooldown, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
