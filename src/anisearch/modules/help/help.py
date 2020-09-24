@@ -52,7 +52,7 @@ class Help(commands.Cog, name='Help'):
                 help_embed = discord.Embed(title='Command - %s' % command, colour=0x4169E1)
                 help_embed.add_field(name='Usage', value='`%s`' % command.usage,
                                      inline=False)
-                help_embed.add_field(name='Description', value='`%s`' % command.help, inline=False)
+                help_embed.add_field(name='Description', value='%s' % command.help, inline=False)
                 flags = command.brief.split(' ')
                 cooldown = flags[0]
                 flags.pop(0)
