@@ -61,7 +61,6 @@ If you would like to contact me, use the `contact <message>` command or add me a
 * random
   * Usage: `random <anime/manga> <genre>`
   * Description: Displays information about random anime or manga of the specified genre.
-  * Flags: `--search`
   * Cooldown: `7s`
   * Aliases: `r, rndm`
  
