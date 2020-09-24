@@ -19,8 +19,8 @@ If you would like to contact me, use the `contact <message>` command or add me a
 `manga <title>:` Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!  
 `character <name>:` Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances!  
 `staff <name>:` Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!  
-`studio <name>:` Searches for a studio with the given name and displays information about the first result such as the studio productions! 
-`random <anime/manga> <genre>:` Description: Displays information about random anime or manga of the specified genre.
+`studio <name>:` Searches for a studio with the given name and displays information about the first result such as the studio productions!  
+`random <anime/manga> <genre>:` Displays information about random anime or manga of the specified genre.
 
 ### Profile
 `anilist [username/@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites.  
