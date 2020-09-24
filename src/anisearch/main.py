@@ -14,7 +14,7 @@ from discord.ext.commands import when_mentioned_or
 
 import logging
 
-__version__ = '1.4'
+__version__ = '1.5'
 __author__ = 'IchBinLeoon'
 __owner_id__ = 223871059068321793
 __invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
@@ -133,11 +133,11 @@ def main():
             logger.info('Server: %s | Author: %s | Command: %s | Args: %s' % (ctx.guild.name, ctx.author, ctx.command,
                                                                               args))
 
-    @client.command(name='load', ignore_extra=False)
+    @client.command(name='load', usage='load <extension>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def cmd_load(ctx, extension):
-        """Loads an extension."""
+        """Loads an extension. // Creator only"""
         try:
             client.load_extension(extension)
             load_embed = discord.Embed(title='Loaded extension `%s`' % extension,
@@ -150,11 +150,11 @@ def main():
             await ctx.channel.send(embed=load_embed)
             logger.exception(e)
 
-    @client.command(name='unload', ignore_extra=False)
+    @client.command(name='unload', usage='unload <extension>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def cmd_unload(ctx, extension):
-        """Unloads an extension."""
+        """Unloads an extension. // Creator only"""
         try:
             client.unload_extension(extension)
             load_embed = discord.Embed(title='Unloaded extension `%s`' % extension,
@@ -167,11 +167,11 @@ def main():
             await ctx.channel.send(embed=load_embed)
             logger.exception(e)
 
-    @client.command(name='reload', ignore_extra=False)
+    @client.command(name='reload', usage='reload <extension>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def cmd_reload(ctx, extension):
-        """Reloads an extension."""
+        """Reloads an extension. // Creator only"""
         client.unload_extension(extension)
         client.load_extension(extension)
         try:
@@ -185,11 +185,11 @@ def main():
             await ctx.channel.send(embed=load_embed)
             logger.exception(e)
 
-    @client.command(name='shutdown', ignore_extra=False)
+    @client.command(name='shutdown', usage='shutdown', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def cmd_shutdown(ctx):
-        """Shutdowns the client."""
+        """Shutdowns the client. // Creator only"""
         stop_embed = discord.Embed(title='Client is stopping...', color=0x4169E1)
         await ctx.channel.send(embed=stop_embed)
         logger.info('Server: %s | Response: Shutdown' % ctx.guild.name)
@@ -197,11 +197,11 @@ def main():
         logger.info('Client is logged out')
         sys.exit(0)
 
-    @client.command(name='status', ignore_extra=False)
+    @client.command(name='status', usage='status', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def cmd_status(ctx):
-        """Displays the current status of the client."""
+        """Displays the current status of the client. // Creator only"""
         status_embed = discord.Embed(title='%s - Status' % client.user.name,
                                      color=0x4169E1)
         proc = psutil.Process()

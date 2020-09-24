@@ -1,23 +1,34 @@
 query = '''
-                        query ($studio: String){
-                          Studio(search: $studio) {
-                            id
-                            name
-                            siteUrl
-                            media(sort:POPULARITY_DESC) {
-                              edges {
+                        query ($studio: String, $page: Int, $amount: Int) {
+                          Page(page: $page, perPage: $amount) {
+                            pageInfo {
+                              total
+                              perPage
+                              currentPage
+                              lastPage
+                              hasNextPage
+                            }
+                            studios(search: $studio) {
                                 id
-                                node {
-                                  id
-                                  siteUrl
-                                  title {
-                                    romaji
-                                    english
-                                    native
-                                    userPreferred
+                                name
+                                siteUrl
+                                isAnimationStudio
+                                favourites
+                                media(sort:POPULARITY_DESC) {
+                                  edges {
+                                    id
+                                    node {
+                                      id
+                                      siteUrl
+                                      title {
+                                        romaji
+                                        english
+                                        native
+                                        userPreferred
+                                      }
+                                    }
                                   }
                                 }
-                              }
                             }
                           }
                         }

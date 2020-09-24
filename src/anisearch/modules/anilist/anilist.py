@@ -15,11 +15,11 @@ class AniList(commands.Cog, name='AniList'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='anilist', aliases=['al'], usage='anilist [username | @user]', brief='5s',
+    @commands.command(name='anilist', aliases=['al'], usage='anilist [username/@member]', brief='5s',
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_anilist(self, ctx, username: Optional[str]):
-        """Displays information about an AniList Profile."""
+        """Displays information about the given AniList Profile such as anime stats, manga stats and favorites."""
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()

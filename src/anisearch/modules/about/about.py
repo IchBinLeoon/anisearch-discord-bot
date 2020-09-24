@@ -21,15 +21,14 @@ class About(commands.Cog, name='About'):
         about_embed = discord.Embed(title='About %s' % self.client.user.name,
                                     description='<@!%s> is an easy-to-use Discord bot that allows you to search for '
                                                 'Anime, Manga, Characters, Staff, Studios and Profiles right within '
-                                                'Discord and get results from AniList and MyAnimeList!\n\n If you have '
-                                                'any suggestions use `contact <message>` or add me as a friend via '
-                                                'Discord.' % self.client.user.id,
+                                                'Discord!\n\n If you have any suggestions use `contact <message>` or '
+                                                'add me as a friend.' % self.client.user.id,
                                     color=0x4169E1, timestamp=ctx.message.created_at)
         about_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
                               inline=True)
         about_embed.add_field(name='❯ Version', value='v%s' % main.__version__,
                               inline=True)
-        about_embed.add_field(name='❯ Command list', value='as!help',
+        about_embed.add_field(name='❯ Commands', value='as!help',
                               inline=True)
         proc = psutil.Process()
         with proc.oneshot():

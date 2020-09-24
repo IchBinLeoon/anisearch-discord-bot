@@ -13,11 +13,11 @@ class Random(commands.Cog, name='Random'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='random', aliases=['rndm'], usage='random <anime | manga> <genre>', brief='7s',
+    @commands.command(name='random', aliases=['r', 'rndm'], usage='random <anime/manga> <genre>', brief='7s',
                       ignore_extra=False)
     @commands.cooldown(1, 7, commands.BucketType.user)
     async def cmd_random(self, ctx, media, genre):
-        """Shows a random anime or manga of the specified genre."""
+        """Displays information about random anime or manga of the specified genre."""
         if media == 'anime' or media == 'Anime':
             page = random.randrange(1, 10)
             api = 'https://graphql.anilist.co'
@@ -156,7 +156,7 @@ class Random(commands.Cog, name='Random'):
                                     anime_embed.add_field(name='Favourites', value='-', inline=True)
                                 anime_embed.add_field(name='Genres', value=', '.join(data['genres']), inline=False)
                                 if data['synonyms']:
-                                    anime_embed.add_field(name='Synonyms', value=' | '.join(data['synonyms']),
+                                    anime_embed.add_field(name='Synonyms', value=', '.join(data['synonyms']),
                                                           inline=False)
                                 else:
                                     anime_embed.add_field(name='Synonyms', value='-', inline=True)
@@ -295,7 +295,7 @@ class Random(commands.Cog, name='Random'):
                                     manga_embed.add_field(name='Favourites', value='-', inline=True)
                                 manga_embed.add_field(name='Genres', value=', '.join(data['genres']), inline=False)
                                 if data['synonyms']:
-                                    manga_embed.add_field(name='Synonyms', value=' | '.join(data['synonyms']),
+                                    manga_embed.add_field(name='Synonyms', value=', '.join(data['synonyms']),
                                                           inline=False)
                                 else:
                                     manga_embed.add_field(name='Synonyms', value='-', inline=True)

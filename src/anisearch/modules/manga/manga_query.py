@@ -78,7 +78,7 @@ query = '''
                             id
                             siteUrl
                             title {
-                               romaji
+                              romaji
                               english
                               native
                               userPreferred
@@ -101,7 +101,7 @@ query = '''
                           }
                         }
                       }
-                      staff {
+                      staff(sort:FAVOURITES_DESC) {
                         edges {
                           id
                           node {

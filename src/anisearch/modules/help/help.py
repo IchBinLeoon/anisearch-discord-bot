@@ -26,56 +26,25 @@ class Help(commands.Cog, name='Help'):
         self.client = client
         self.client.remove_command('help')
 
-    @commands.command(name='help', aliases=['h'], usage='help [cmd]', brief='3s', ignore_extra=False)
+    @commands.command(name='help', aliases=['h'], usage='help [command]', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_help(self, ctx, cmd: Optional[str]):
-        """Displays the command list or information about a command."""
+        """Shows help or displays information about a command."""
         if cmd is None:
-            help_embed = discord.Embed(title='%s Commands' % self.client.user.name,
-                                       description=f'To view information about a specified command use: `help [cmd]`\n'
-                                                   f'Current server prefix: `{get_prefix(ctx)}`\n'
+            help_embed = discord.Embed(title=self.client.user.name,
+                                       description=f'**Current server prefix:** `{get_prefix(ctx)}`\n'
                                                    f'\n'
-                                                   f'**Search**\n'
-                                                   f'`anime <title>:` Searches for an anime and shows the '
-                                                   f'first result.\n '
-                                                   f'`manga <title>:` Searches for a manga and shows the '
-                                                   f'first result.\n '
-                                                   f'`character <name>:` Searches for a character and shows '
-                                                   f'the first result.\n '
-                                                   f'`staff <name>:` Searches for a staff and shows the first '
-                                                   f'result.\n'
-                                                   f'`studio <name>:` Searches for a studio and shows the first '
-                                                   f'result.\n '
-                                                   f'`random <anime | manga> <genre>:` Shows a random anime or manga '
-                                                   f'of the specified genre.\n'
+                                                   f'**Command help:**\n'
+                                                   f'`{get_prefix(ctx)}help [command]`\n'
                                                    f'\n'
-                                                   f'**Profile**\n'
-                                                   f'`anilist [username | @user]:` Displays information about a '
-                                                   f'AniList Profile.\n'
-                                                   f'`myanimelist [username | @user]:` Displays information about a '
-                                                   f'MyAnimeList Profile.\n'
-                                                   f'`link [anilist/al | myanimelist/mal] [username]:` Links an '
-                                                   f'AniList/MyAnimeList Profile.\n'
-                                                   f'`removelinks:` Removes the linked AniList and MyAnimeList '
-                                                   f'Profile.\n'
+                                                   f'**Command list:**\n'
+                                                   f'`{get_prefix(ctx)}commands`\n'
                                                    f'\n'
-                                                   f'**Info**\n'
-                                                   f'`help [cmd]:` Displays the command list or information about '
-                                                   f'a command.\n'
-                                                   f'`about:` Displays information and stats about the bot.\n'
-                                                   f'`contact <message>:` Contacts the creator of the bot.\n'
-                                                   f'`ping:` Checks the latency of the bot.\n'
-                                                   f'\n'
-                                                   f'**Server Administrator**\n'
-                                                   f'`prefix <prefix>:` Changes the current server prefix.\n',
-                                       color=0x4169E1, timestamp=ctx.message.created_at)
-            help_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
-                                 inline=True)
-            help_embed.add_field(name='❯ Invite', value='[Click me!](%s)' % main.__invite__,
-                                 inline=True)
-            help_embed.add_field(name='❯ Vote', value='[Click me!](%s)' % main.__vote__,
-                                 inline=True)
-            help_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
+                                                   f'**Links:**\n'
+                                                   f'[Invite {self.client.user.name}!]({main.__invite__}) | '
+                                                   f'[Vote for {self.client.user.name}!]({main.__vote__})',
+                                       color=0x4169E1)
+            help_embed.set_thumbnail(url=self.client.user.avatar_url)
             await ctx.send(embed=help_embed)
             main.logger.info('Server: %s | Response: Help' % ctx.guild.name)
         else:
@@ -84,7 +53,13 @@ class Help(commands.Cog, name='Help'):
                 help_embed.add_field(name='Usage', value='`%s`' % command.usage,
                                      inline=False)
                 help_embed.add_field(name='Description', value='`%s`' % command.help, inline=False)
-                help_embed.add_field(name='Cooldown', value='`%s`' % command.brief, inline=False)
+                flags = command.brief.split(' ')
+                cooldown = flags[0]
+                flags.pop(0)
+                flags = ', '.join(flags)
+                if flags:
+                    help_embed.add_field(name='Flags', value='`%s`' % flags, inline=False)
+                help_embed.add_field(name='Cooldown', value='`%s`' % cooldown, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
                     help_embed.add_field(name='Aliases', value='`%s`' % aliases, inline=False)
@@ -99,6 +74,52 @@ class Help(commands.Cog, name='Help'):
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: Help command not found' % ctx.guild.name)
+
+    @commands.command(name='commands', aliases=['cmds'], usage='commands', brief='3s', ignore_extra=False)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def cmd_commands(self, ctx):
+        """Displays all commands."""
+        cmds_embed = discord.Embed(description=f'To view information about a specified command use: `help [command]`\n'
+                                               f'Current server prefix: `{get_prefix(ctx)}`\n'
+                                               f'\n'
+                                               f'**Parameters:** `<> - required | [] - optional`\n'
+                                               f'\n'
+                                               f'**Search**\n'
+                                               f'```'
+                                               f'• {self.client.get_command("anime").usage}\n'
+                                               f'• {self.client.get_command("manga").usage}\n'
+                                               f'• {self.client.get_command("character").usage}\n'
+                                               f'• {self.client.get_command("staff").usage}\n'
+                                               f'• {self.client.get_command("studio").usage}\n'
+                                               f'• {self.client.get_command("random").usage}\n'
+                                               f'```'
+                                               f'\n'
+                                               f'**Profile**\n'
+                                               f'```'
+                                               f'• {self.client.get_command("anilist").usage}\n'
+                                               f'• {self.client.get_command("myanimelist").usage}\n'
+                                               f'• {self.client.get_command("link").usage}\n'
+                                               f'• {self.client.get_command("removelinks").usage}\n'
+                                               f'```'
+                                               f'\n'
+                                               f'**Info**\n'
+                                               f'```'
+                                               f'• {self.client.get_command("help").usage}\n'
+                                               f'• {self.client.get_command("commands").usage}\n'
+                                               f'• {self.client.get_command("about").usage}\n'
+                                               f'• {self.client.get_command("contact").usage}\n'
+                                               f'• {self.client.get_command("ping").usage}\n'
+                                               f'```'
+                                               f'\n'
+                                               f'**Server Administrator**\n'
+                                               f'```'
+                                               f'• {self.client.get_command("prefix").usage}\n'
+                                               f'```',
+                                   colour=0x4169E1, timestamp=ctx.message.created_at)
+        cmds_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
+        cmds_embed.set_author(name="%s's commands" % self.client.user.name, icon_url=self.client.user.avatar_url)
+        await ctx.send(embed=cmds_embed)
+        main.logger.info('Server: %s | Response: Commands' % ctx.guild.name)
 
 
 def setup(client):

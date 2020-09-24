@@ -14,11 +14,11 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username | @user]', brief='5s',
+    @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username/@member]', brief='5s',
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_myanimelist(self, ctx, username: Optional[str]):
-        """Displays information about a MyAnimeList Profile."""
+        """Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites."""
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
