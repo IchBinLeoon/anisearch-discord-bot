@@ -14,13 +14,13 @@ from discord.ext.commands import when_mentioned_or
 
 import logging
 
+from config import config
+
 __version__ = '1.5'
 __author__ = 'IchBinLeoon'
 __owner_id__ = 223871059068321793
 __invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
 __vote__ = 'https://top.gg/bot/737236600878137363/vote'
-
-from config import config
 
 logger = logging.getLogger('anisearch')
 logger.setLevel(logging.INFO)
