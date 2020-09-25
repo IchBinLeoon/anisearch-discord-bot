@@ -13,12 +13,11 @@ class Character(commands.Cog, name='Character'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='character', aliases=['c', 'char'], usage='character <name>',
-                      brief='3s --search --image',
+    @commands.command(name='character', aliases=['c', 'char'], usage='character <name>', brief='3s --search --image',
                       ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_character(self, ctx, *, name):
-        """Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances! You can also include one of the available flags for the command at the end for more or specific information."""
+        """Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances!"""
         args = name.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):

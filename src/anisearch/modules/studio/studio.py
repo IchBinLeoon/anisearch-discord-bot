@@ -16,7 +16,7 @@ class Studio(commands.Cog, name='Studio'):
     @commands.command(name='studio', usage='studio <name>', brief='3s --search', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_studio(self, ctx, *, name):
-        """Searches for a studio with the given name and displays information about the first result such as the studio productions! You can also include one of the available flags for the command at the end for more or specific information."""
+        """Searches for a studio with the given name and displays information about the first result such as the studio productions!"""
         args = name.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):

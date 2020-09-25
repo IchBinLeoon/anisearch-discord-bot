@@ -18,7 +18,7 @@ class Manga(commands.Cog, name='Manga'):
                       ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_manga(self, ctx, *, title):
-        """Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information."""
+        """Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!"""
         args = title.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):

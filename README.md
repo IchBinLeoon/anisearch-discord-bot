@@ -14,8 +14,9 @@ If you would like to contact me, use the `contact <message>` command or add me a
 
 ## Commands
 
-**Parameters:**   
-`<> - required | [] - optional`  
+**Parameters:** `<> - required | [] - optional`   
+
+Do ***not*** include `<>` or `[]` when executing the command.  
 
 **Command Flags:**  
 `--search:` Displays all search results.    
@@ -30,37 +31,37 @@ If you would like to contact me, use the `contact <message>` command or add me a
 ### Search
 * anime
   * Usage: `anime <title>`
-  * Description: Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information.
-  * Flags: `--search, --characters, --staff, --image, --relations, --links, --streams, --all`
+  * Description: Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more!
+  * Flags: You can include one of these command flags at the end for more or specific information. Available flags: `--search, --characters, --staff, --image, --relations, --links, --streams, --all`
   * Cooldown: `3s`
   * Aliases: `a`
 * manga
   * Usage: `manga <title>`
-  * Description: Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more! You can also include one of the available flags for the command at the end for more or specific information.
-  * Flags: `--search, --characters, --staff, --image, --relations, --all`
+  * Description: Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!
+  * Flags: You can include one of these command flags at the end for more or specific information. Available flags: `--search, --characters, --staff, --image, --relations, --all`
   * Cooldown: `3s`
   * Aliases: `m`
 * character
   * Usage: `character <name>`
-  * Description: Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances! You can also include one of the available flags for the command at the end for more or specific information.
-  * Flags: `--search, --image`
+  * Description: Searches for a character with the given name and displays information about the first result such as description, synonyms, and appearances!
+  * Flags: You can include one of these command flags at the end for more or specific information. Available flags: `--search, --image`
   * Cooldown: `3s`
   * Aliases: `c, char`
 * staff
   * Usage: `staff <name>`
-  * Description: Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles! You can also include one of the available flags for the command at the end for more or specific information.
-  * Flags: `--search, --image`
+  * Description: Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!
+  * Flags: You can include one of these command flags at the end for more or specific information. Available flags: `--search, --image`
   * Cooldown: `3s`
   * Aliases: -
 * studio
   * Usage: `studio <name>`
-  * Description: Searches for a studio with the given name and displays information about the first result such as the studio productions! You can also include one of the available flags for the command at the end for more or specific information.
-  * Flags: `--search`
+  * Description: Searches for a studio with the given name and displays information about the first result such as the studio productions!
+  * Flags: You can include one of these command flags at the end for more or specific information. Available flags: `--search`
   * Cooldown: `3s`
   * Aliases: -
 * random
   * Usage: `random <anime/manga> <genre>`
-  * Description: Displays information about random anime or manga of the specified genre.
+  * Description: Displays information about a random anime or manga of the specified genre.
   * Cooldown: `7s`
   * Aliases: `r, rndm`
  

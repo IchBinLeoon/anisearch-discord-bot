@@ -16,7 +16,7 @@ class Staff(commands.Cog, name='Staff'):
     @commands.command(name='staff', usage='staff <name>', brief='3s --search --image', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_staff(self, ctx, *, name):
-        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles! You can also include one of the available flags for the command at the end for more or specific information."""
+        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!"""
         args = name.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):
