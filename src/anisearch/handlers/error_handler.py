@@ -16,7 +16,7 @@ class ErrorHandler(commands.Cog):
             error_embed = discord.Embed(title='The command was not found',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            main.logger.info('Server: %s | Author: %s | Command: None' % (ctx.guild.name, ctx.author))
+            main.logger.info('Server: %s | Author: %s | Try: %s' % (ctx.guild.name, ctx.author, ctx.message.content))
             main.logger.info('Server: %s | Response: Command not found' % ctx.guild.name)
 
         if isinstance(error, commands.CommandOnCooldown):

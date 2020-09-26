@@ -3,7 +3,7 @@ from typing import Optional
 import discord
 import psycopg2
 from discord.ext import commands
-import requests
+from jikanpy import AioJikan
 
 import main
 from config import config
@@ -22,6 +22,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
+
         if username is None:
             user_id = ctx.author.id
             try:
@@ -37,6 +38,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                     title='You have no MyAnimeList Profile linked', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
+
         elif username.startswith('<@!'):
             user_id = int(username.replace('<@!', '').replace('>', ''))
             try:
@@ -52,168 +54,202 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                     title='%s has no MyAnimeList Profile linked' % self.client.get_user(user_id).name, color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
+
         else:
             username = username
+
         if username:
-            data = requests.get('https://api.jikan.moe/v3/user/%s/profile' % username).json()
+
+            aio_jikan = AioJikan()
+
             try:
-                if data['status']:
+
+                user = await aio_jikan.user(username=username)
+
+                try:
+                    if user.get('last_online') is not None:
+                        last_online = user.get('last_online').__str__().replace("-", "/").replace("T", " ").replace("+", " +")
+                    else:
+                        last_online = '-'
+                    if user.get('gender') is not None:
+                        gender = user.get('gender').__str__().replace('None', '-')
+                    else:
+                        gender = '-'
+                    if user.get('birthday') is not None:
+                        birthday = user.get('birthday')
+                    else:
+                        birthday = '-'
+                    if user.get('location') is not None:
+                        location = user.get('location')
+                    else:
+                        location = '-'
+                    if user.get('joined') is not None:
+                        joined = user.get('joined').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
+                    else:
+                        joined = '-'
+
+                    anime = user.get('anime_stats')
+                    manga = user.get('manga_stats')
+
+                    anime_days_watched = anime.get('days_watched')
+                    anime_mean_score = anime.get('mean_score')
+                    anime_watching = anime.get('watching')
+                    anime_completed = anime.get('completed')
+                    anime_on_hold = anime.get('on_hold')
+                    anime_dropped = anime.get('dropped')
+                    anime_plan_to_watch = anime.get('plan_to_watch')
+                    anime_total_entries = anime.get('total_entries')
+                    anime_rewatched = anime.get('rewatched')
+                    anime_episodes_watched = anime.get('episodes_watched')
+
+                    manga_days_read = manga.get('days_read')
+                    manga_mean_score = manga.get('mean_score')
+                    manga_reading = manga.get('reading')
+                    manga_completed = manga.get('completed')
+                    manga_on_hold = manga.get('on_hold')
+                    manga_dropped = manga.get('dropped')
+                    manga_plan_to_read = manga.get('plan_to_read')
+                    manga_reread = manga.get('reread')
+                    manga_total_entries = manga.get('total_entries')
+                    manga_chapters_read = manga.get('chapters_read')
+                    manga_volumes_read = manga.get('volumes_read')
+
+                    myanimelist_embed = discord.Embed(title=' %s - MyAnimeList' % user.get('username'),
+                                                      description=f'**Last Online:** {last_online}\n'
+                                                                  f'**Gender:** {gender}\n'
+                                                                  f'**Birthday:** {birthday}\n'
+                                                                  f'**Location:** {location}\n'
+                                                                  f'**Joined:** {joined}\n',
+                                                      url=user.get('url'),
+                                                      color=0x4169E1, timestamp=ctx.message.created_at)
+                    if user.get('image_url'):
+                        myanimelist_embed.set_thumbnail(url=user.get('image_url'))
+                    try:
+                        if len(user.get('about')) < 1024:
+                            myanimelist_embed.add_field(name='About',
+                                                        value=user.get('about'), inline=False)
+                        else:
+                            myanimelist_embed.add_field(name='About',
+                                                        value=user.get('about')[0:1021] + '...', inline=False)
+                    except TypeError:
+                        myanimelist_embed.add_field(name='About', value='-', inline=False)
+                    myanimelist_embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+                                                                          f'Mean Score: {anime_mean_score}\n'
+                                                                          f'Watching: {anime_watching}\n'
+                                                                          f'Completed: {anime_completed}\n'
+                                                                          f'On-Hold: {anime_on_hold}\n'
+                                                                          f'Dropped: {anime_dropped}\n'
+                                                                          f'Plan to Watch: {anime_plan_to_watch}\n'
+                                                                          f'Total Entries: {anime_total_entries}\n'
+                                                                          f'Rewatched: {anime_rewatched}\n'
+                                                                          f'Episodes: {anime_episodes_watched}\n',
+                                                inline=True)
+                    myanimelist_embed.add_field(name='Manga Stats', value=f'Days Read: {manga_days_read}\n'
+                                                                          f'Mean Score: {manga_mean_score}\n'
+                                                                          f'Reading: {manga_reading}\n'
+                                                                          f'Completed: {manga_completed}\n'
+                                                                          f'On-Hold: {manga_on_hold}\n'
+                                                                          f'Dropped: {manga_dropped}\n'
+                                                                          f'Plan to Read: {manga_plan_to_read}\n'
+                                                                          f'Reread: {manga_reread}\n'
+                                                                          f'Total Entries: {manga_total_entries}\n'
+                                                                          f'Chapters Read: {manga_chapters_read}\n'
+                                                                          f'Volumes Read: {manga_volumes_read}\n',
+                                                inline=True)
+                    myanimelist_embed.add_field(name='Anime List',
+                                                value='https://myanimelist.net/animelist/%s' % user.get('username'),
+                                                inline=False)
+                    myanimelist_embed.add_field(name='Manga List',
+                                                value='https://myanimelist.net/mangalist/%s' % user.get('username'),
+                                                inline=False)
+
+                    favorite_anime = user.get('favorites')['anime']
+                    favorite_manga = user.get('favorites')['manga']
+                    favorite_characters = user.get('favorites')['characters']
+                    favorite_people = user.get('favorites')['people']
+
+                    if favorite_anime:
+                        fav_anime = []
+                        x = 0
+                        fav_anime_length = int(len(favorite_anime))
+                        for i in range(0, fav_anime_length - 1):
+                            fav_anime.append(str('[' + favorite_anime[x].get('name') + ']('
+                                                 + favorite_anime[x].get('url') + ') | '))
+                            x = x + 1
+                        fav_anime.append(str('[' + favorite_anime[x].get('name') + ']('
+                                             + favorite_anime[x].get('url') + ')'))
+                        fav_anime = fav_anime.__str__()[1:-1].replace("'", "").replace(',', '')
+                    else:
+                        fav_anime = '-'
+
+                    if favorite_manga:
+                        fav_manga = []
+                        x = 0
+                        fav_manga_length = int(len(favorite_manga))
+                        for i in range(0, fav_manga_length - 1):
+                            fav_manga.append(str('[' + favorite_manga[x].get('name') + ']('
+                                                 + favorite_manga[x].get('url') + ') | '))
+                            x = x + 1
+                        fav_manga.append(str('[' + favorite_manga[x].get('name') + ']('
+                                             + favorite_manga[x].get('url') + ')'))
+                        fav_manga = fav_manga.__str__()[1:-1].replace("'", "").replace(',', '')
+                    else:
+                        fav_manga = '-'
+
+                    if favorite_characters:
+                        fav_characters = []
+                        x = 0
+                        fav_characters_length = int(len(favorite_characters))
+                        for i in range(0, fav_characters_length - 1):
+                            fav_characters.append(str('[' + favorite_characters[x].get('name') + ']('
+                                                      + favorite_characters[x].get('url') + ') | '))
+                            x = x + 1
+                        fav_characters.append(str('[' + favorite_characters[x].get('name') + ']('
+                                                  + favorite_characters[x].get('url') + ')'))
+                        fav_characters = fav_characters.__str__()[1:-1].replace("'", "").replace(',', '')
+                    else:
+                        fav_characters = '-'
+
+                    if favorite_people:
+                        fav_people = []
+                        x = 0
+                        fav_people_length = int(len(favorite_people))
+                        for i in range(0, fav_people_length - 1):
+                            fav_people.append(str('[' + favorite_people[x].get('name') + ']('
+                                                  + favorite_people[x].get('url') + ') | '))
+                            x = x + 1
+                        fav_people.append(str('[' + favorite_people[x].get('name') + '](' +
+                                              favorite_people[x].get('url') + ')'))
+                        fav_people = fav_people.__str__()[1:-1].replace("'", "").replace(',', '')
+                    else:
+                        fav_people = '-'
+
+                    myanimelist_embed.add_field(name='Favorite Anime', value=fav_anime, inline=False)
+                    myanimelist_embed.add_field(name='Favorite Manga', value=fav_manga, inline=False)
+                    myanimelist_embed.add_field(name='Favorite Characters', value=fav_characters, inline=False)
+                    myanimelist_embed.add_field(name='Favorite People', value=fav_people, inline=False)
+
+                    myanimelist_embed.set_footer(text='Requested by %s' % ctx.author,
+                                                 icon_url=ctx.author.avatar_url)
+                    await ctx.channel.send(embed=myanimelist_embed)
+                    main.logger.info('Server: %s | Response: MyAnimeList - %s' % (ctx.guild.name, user.get('username')))
+
+                except Exception as e:
                     error_embed = discord.Embed(
-                        title='The user `%s` cannot be found on MyAnimeList'
-                              % username,
+                        title='An error occurred while searching for MyAnimeList Profile `%s`' % username,
                         color=0xff0000)
                     await ctx.channel.send(embed=error_embed)
-                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
-            except KeyError:
-                if data['last_online'] is not None:
-                    last_online = data['last_online'].__str__().replace("-", "/").replace("T", " ").replace("+", " +")
-                else:
-                    last_online = '-'
-                if ['gender'] is not None:
-                    gender = data['gender'].__str__().replace('None', '-')
-                else:
-                    gender = '-'
-                if data['birthday'] is not None:
-                    birthday = data['birthday']
-                else:
-                    birthday = '-'
-                if data['location'] is not None:
-                    location = data['location']
-                else:
-                    location = '-'
-                if data['joined'] is not None:
-                    joined = data['joined'].__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
-                else:
-                    joined = '-'
-                anime_days_watched = data['anime_stats']['days_watched']
-                anime_mean_score = data['anime_stats']['mean_score']
-                anime_watching = data['anime_stats']['watching']
-                anime_completed = data['anime_stats']['completed']
-                anime_on_hold = data['anime_stats']['on_hold']
-                anime_dropped = data['anime_stats']['dropped']
-                anime_plan_to_watch = data['anime_stats']['plan_to_watch']
-                anime_total_entries = data['anime_stats']['total_entries']
-                anime_rewatched = data['anime_stats']['rewatched']
-                anime_episodes_watched = data['anime_stats']['episodes_watched']
-                manga_days_read = data['manga_stats']['days_read']
-                manga_mean_score = data['manga_stats']['mean_score']
-                manga_reading = data['manga_stats']['reading']
-                manga_completed = data['manga_stats']['completed']
-                manga_on_hold = data['manga_stats']['on_hold']
-                manga_dropped = data['manga_stats']['dropped']
-                manga_plan_to_read = data['manga_stats']['plan_to_read']
-                manga_reread = data['manga_stats']['reread']
-                manga_total_entries = data['manga_stats']['total_entries']
-                manga_chapters_read = data['manga_stats']['chapters_read']
-                manga_volumes_read = data['manga_stats']['volumes_read']
-                myanimelist_embed = discord.Embed(title=' %s - MyAnimeList' % data['username'],
-                                                  description=f'**Last Online:** {last_online}\n'
-                                                              f'**Gender:** {gender}\n'
-                                                              f'**Birthday:** {birthday}\n'
-                                                              f'**Location:** {location}\n'
-                                                              f'**Joined:** {joined}\n',
-                                                  url=data['url'],
-                                                  color=0x4169E1, timestamp=ctx.message.created_at)
-                if data['image_url']:
-                    myanimelist_embed.set_thumbnail(url=data['image_url'])
-                try:
-                    if len(data['about']) < 1024:
-                        myanimelist_embed.add_field(name='About',
-                                                    value=data['about'], inline=False)
-                    else:
-                        myanimelist_embed.add_field(name='About',
-                                                    value=data['about'][0:1021] + '...', inline=False)
-                except TypeError:
-                    myanimelist_embed.add_field(name='About', value='-', inline=False)
-                myanimelist_embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
-                                                                      f'Mean Score: {anime_mean_score}\n'
-                                                                      f'Watching: {anime_watching}\n'
-                                                                      f'Completed: {anime_completed}\n'
-                                                                      f'On-Hold: {anime_on_hold}\n'
-                                                                      f'Dropped: {anime_dropped}\n'
-                                                                      f'Plan to Watch: {anime_plan_to_watch}\n'
-                                                                      f'Total Entries: {anime_total_entries}\n'
-                                                                      f'Rewatched: {anime_rewatched}\n'
-                                                                      f'Episodes: {anime_episodes_watched}\n',
-                                            inline=True)
-                myanimelist_embed.add_field(name='Manga Stats', value=f'Days Read: {manga_days_read}\n'
-                                                                      f'Mean Score: {manga_mean_score}\n'
-                                                                      f'Reading: {manga_reading}\n'
-                                                                      f'Completed: {manga_completed}\n'
-                                                                      f'On-Hold: {manga_on_hold}\n'
-                                                                      f'Dropped: {manga_dropped}\n'
-                                                                      f'Plan to Read: {manga_plan_to_read}\n'
-                                                                      f'Reread: {manga_reread}\n'
-                                                                      f'Total Entries: {manga_total_entries}\n'
-                                                                      f'Chapters Read: {manga_chapters_read}\n'
-                                                                      f'Volumes Read: {manga_volumes_read}\n',
-                                            inline=True)
-                myanimelist_embed.add_field(name='Anime List',
-                                            value='https://myanimelist.net/animelist/%s' % data['username'],
-                                            inline=False)
-                myanimelist_embed.add_field(name='Manga List',
-                                            value='https://myanimelist.net/mangalist/%s' % data['username'],
-                                            inline=False)
-                if data['favorites']['anime']:
-                    fav_anime = []
-                    x = 0
-                    fav_anime_length = int(len(data['favorites']['anime']))
-                    for i in range(0, fav_anime_length - 1):
-                        fav_anime.append(str('[' + data['favorites']['anime'][x]['name'] + ']('
-                                             + data['favorites']['anime'][x]['url'] + ') | '))
-                        x = x + 1
-                    fav_anime.append(str('[' + data['favorites']['anime'][x]['name'] + ']('
-                                         + data['favorites']['anime'][x]['url'] + ')'))
-                    fav_anime = fav_anime.__str__()[1:-1].replace("'", "").replace(',', '')
-                else:
-                    fav_anime = '-'
-                if data['favorites']['manga']:
-                    fav_manga = []
-                    x = 0
-                    fav_manga_length = int(len(data['favorites']['manga']))
-                    for i in range(0, fav_manga_length - 1):
-                        fav_manga.append(str('[' + data['favorites']['manga'][x]['name'] + ']('
-                                             + data['favorites']['manga'][x]['url'] + ') | '))
-                        x = x + 1
-                    fav_manga.append(str('[' + data['favorites']['manga'][x]['name'] + ']('
-                                         + data['favorites']['manga'][x]['url'] + ')'))
-                    fav_manga = fav_manga.__str__()[1:-1].replace("'", "").replace(',', '')
-                else:
-                    fav_manga = '-'
-                if data['favorites']['characters']:
-                    fav_characters = []
-                    x = 0
-                    fav_characters_length = int(len(data['favorites']['characters']))
-                    for i in range(0, fav_characters_length - 1):
-                        fav_characters.append(str('[' + data['favorites']['characters'][x]['name'] + ']('
-                                                  + data['favorites']['characters'][x]['url'] + ') | '))
-                        x = x + 1
-                    fav_characters.append(str('[' + data['favorites']['characters'][x]['name'] + ']('
-                                              + data['favorites']['characters'][x]['url'] + ')'))
-                    fav_characters = fav_characters.__str__()[1:-1].replace("'", "").replace(',', '')
-                else:
-                    fav_characters = '-'
-                if data['favorites']['people']:
-                    fav_people = []
-                    x = 0
-                    fav_people_length = int(len(data['favorites']['people']))
-                    for i in range(0, fav_people_length - 1):
-                        fav_people.append(str('[' + data['favorites']['people'][x]['name'] + ']('
-                                              + data['favorites']['people'][x]['url'] + ') | '))
-                        x = x + 1
-                    fav_people.append(str('[' + data['favorites']['people'][x]['name'] + '](' +
-                                          data['favorites']['people'][x]['url'] + ')'))
-                    fav_people = fav_people.__str__()[1:-1].replace("'", "").replace(',', '')
-                else:
-                    fav_people = '-'
-                myanimelist_embed.add_field(name='Favorite Anime', value=fav_anime, inline=False)
-                myanimelist_embed.add_field(name='Favorite Manga', value=fav_manga, inline=False)
-                myanimelist_embed.add_field(name='Favorite Characters', value=fav_characters, inline=False)
-                myanimelist_embed.add_field(name='Favorite People', value=fav_people, inline=False)
-                myanimelist_embed.set_footer(text='Requested by %s' % ctx.author,
-                                             icon_url=ctx.author.avatar_url)
-                await ctx.channel.send(embed=myanimelist_embed)
-                main.logger.info('Server: %s | Response: MyAnimeList - %s' % (ctx.guild.name, data['username']))
+                    main.logger.exception(e)
+
+            except:
+                error_embed = discord.Embed(
+                    title='The user `%s` cannot be found on MyAnimeList'
+                          % username,
+                    color=0xff0000)
+                await ctx.channel.send(embed=error_embed)
+                main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+
+            await aio_jikan.close()
 
 
 def setup(client):
