@@ -42,13 +42,11 @@ class About(commands.Cog, name='About'):
                               inline=True)
         about_embed.add_field(name='❯ Users', value=str(len(self.client.users)),
                               inline=True)
-        about_embed.add_field(name='❯ Library', value='Discord.py',
-                              inline=True)
-        about_embed.add_field(name='❯ Python version', value='v%s' % platform.python_version(),
-                              inline=True)
         about_embed.add_field(name='❯ Invite', value='[Click me!](%s)' % main.__invite__,
                               inline=True)
         about_embed.add_field(name='❯ Vote', value='[Click me!](%s)' % main.__vote__,
+                              inline=True)
+        about_embed.add_field(name='❯ GitHub', value='[Click me!](%s)' % main.__github__,
                               inline=True)
         about_embed.set_thumbnail(url=self.client.user.avatar_url)
         about_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)

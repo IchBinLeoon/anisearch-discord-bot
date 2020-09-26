@@ -21,6 +21,7 @@ __author__ = 'IchBinLeoon'
 __owner_id__ = 223871059068321793
 __invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
 __vote__ = 'https://top.gg/bot/737236600878137363/vote'
+__github__ = 'https://github.com/IchBinLeoon/anisearch-discord-bot'
 
 logger = logging.getLogger('anisearch')
 logger.setLevel(logging.INFO)
