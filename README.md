@@ -1,5 +1,5 @@
 # AniSearch
-[![Version](https://img.shields.io/badge/Version-1.5-red?logo=github&style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot)
+[![Version](https://img.shields.io/badge/Version-1.5.1-red?logo=github&style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot)
 [![Stars](https://img.shields.io/github/stars/IcHBinLeoon/anisearch-discord-bot?color=yellow&style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot/stargazers)
 [![Issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot?style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
 [![Library](https://img.shields.io/badge/Library-discord.py-3775A9?logo=pypi&style=flat-square)](https://github.com/Rapptz/discord.py)
@@ -23,3 +23,4 @@ Thanks to the people who made this discord bot possible.
 #### [abhinavk99/jikanpy](https://github.com/abhinavk99/jikanpy)  
 #### [psf/requests](https://github.com/psf/requests)  
 #### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
+#### [SauceNAO](https://saucenao.com)  

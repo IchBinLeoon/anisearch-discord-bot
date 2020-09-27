@@ -2,10 +2,26 @@ import random
 
 import aiohttp
 import discord
+import psycopg2
 from discord.ext import commands
 
 import main
+from config import config
 from modules.random import random_query
+
+example_medias = ['anime', 'manga']
+example_genres = ['Action', 'Adventure', 'Comedy', 'Fantasy', 'Romance', 'Slice of Life']
+
+
+def get_prefix(ctx):
+    db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER, password=config.BD_PASSWORD)
+    cur = db.cursor()
+    cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (ctx.guild.id,))
+    prefix = cur.fetchone()[0]
+    db.commit()
+    cur.close()
+    db.close()
+    return prefix
 
 
 class Random(commands.Cog, name='Random'):
@@ -13,7 +29,7 @@ class Random(commands.Cog, name='Random'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='random', aliases=['r', 'rndm'], usage='random <anime/manga> <genre>', brief='7s',
+    @commands.command(name='random', aliases=['r', 'rndm'], usage='random <anime|manga> <genre>', brief='7s',
                       ignore_extra=False)
     @commands.cooldown(1, 7, commands.BucketType.user)
     async def cmd_random(self, ctx, media, *, genre):
@@ -672,9 +688,14 @@ class Random(commands.Cog, name='Random'):
                         await ctx.channel.send(embed=error_embed)
                         main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
         else:
-            error_embed = discord.Embed(title='Wrong arguments',
+            prefix = get_prefix(ctx)
+            example_media = random.choice(example_medias)
+            example_genre = random.choice(example_genres)
+            example = '`%srandom %s %s`' % (prefix, example_media, example_genre)
+            error_embed = discord.Embed(title='Wrong arguments. Example: %s' % example,
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
+            await ctx.command.reset_cooldown(ctx)
             main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
 
 

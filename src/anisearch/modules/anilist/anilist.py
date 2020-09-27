@@ -15,7 +15,7 @@ class AniList(commands.Cog, name='AniList'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='anilist', aliases=['al'], usage='anilist [username/@member]', brief='5s',
+    @commands.command(name='anilist', aliases=['al'], usage='anilist [username|@member]', brief='5s',
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_anilist(self, ctx, username: Optional[str]):

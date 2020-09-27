@@ -69,7 +69,7 @@ class Help(commands.Cog, name='Help'):
                 else:
                     aliases = '-'
                     help_embed.add_field(name='Aliases', value=aliases, inline=False)
-                help_embed.set_footer(text='<> - required | [] - optional')
+                help_embed.set_footer(text='<> - required, [] - optional, | - either/or')
                 await ctx.send(embed=help_embed)
                 main.logger.info('Server: %s | Response: Help - %s' % (ctx.guild.name, command))
             else:
@@ -86,7 +86,7 @@ class Help(commands.Cog, name='Help'):
         cmds_embed = discord.Embed(description=f'To view information about a specified command use: `help [command]`\n'
                                                f'Current server prefix: `{prefix}`\n'
                                                f'\n'
-                                               f'**Parameters:** `<> - required | [] - optional`\n'
+                                               f'**Parameters:** `<> - required, [] - optional, | - either/or`\n'
                                                f'\n'
                                                f'Do __not__ include `<>` or `[]` when executing the command.\n'
                                                f'\n'
@@ -98,6 +98,7 @@ class Help(commands.Cog, name='Help'):
                                                f'• {prefix}{self.client.get_command("staff").usage}\n'
                                                f'• {prefix}{self.client.get_command("studio").usage}\n'
                                                f'• {prefix}{self.client.get_command("random").usage}\n'
+                                               f'• {prefix}{self.client.get_command("source").usage}\n'
                                                f'```'
                                                f'\n'
                                                f'**Profile**\n'

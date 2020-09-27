@@ -16,7 +16,7 @@ import logging
 
 from config import config
 
-__version__ = '1.5'
+__version__ = '1.5.1'
 __author__ = 'IchBinLeoon'
 __owner_id__ = 223871059068321793
 __invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
@@ -45,7 +45,7 @@ extensions = ['modules.anime.anime', 'modules.manga.manga', 'modules.character.c
               'modules.myanimelist.myanimelist', 'modules.link.link', 'modules.removelinks.removelinks',
               'modules.prefix.prefix', 'modules.ping.ping', 'modules.help.help', 'modules.about.about',
               'handlers.error_handler', 'events.guild_join', 'events.guild_leave', 'modules.contact.contact',
-              'handlers.topgg']
+              'handlers.topgg', 'modules.source.source']
 
 
 def get_current_time():
