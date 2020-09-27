@@ -98,7 +98,6 @@ class Help(commands.Cog, name='Help'):
                                                f'• {prefix}{self.client.get_command("staff").usage}\n'
                                                f'• {prefix}{self.client.get_command("studio").usage}\n'
                                                f'• {prefix}{self.client.get_command("random").usage}\n'
-                                               f'• {prefix}{self.client.get_command("source").usage}\n'
                                                f'```'
                                                f'\n'
                                                f'**Profile**\n'
@@ -121,6 +120,11 @@ class Help(commands.Cog, name='Help'):
                                                f'**Server Administrator**\n'
                                                f'```'
                                                f'• {prefix}{self.client.get_command("prefix").usage}\n'
+                                               f'```'
+                                               f'\n'
+                                               f'**Other**\n'
+                                               f'```'
+                                               f'• {prefix}{self.client.get_command("source").usage}\n'
                                                f'```',
                                    colour=0x4169E1, timestamp=ctx.message.created_at)
         cmds_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
