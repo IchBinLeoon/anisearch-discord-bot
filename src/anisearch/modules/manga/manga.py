@@ -13,7 +13,7 @@ class Manga(commands.Cog, name='Manga'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='manga', aliases=['m'], usage='manga <title>',
+    @commands.command(name='manga', aliases=['m'], usage='manga <title> [flag]',
                       brief='3s --search --characters --staff --image --relations --links --all',
                       ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -763,7 +763,8 @@ class Manga(commands.Cog, name='Manga'):
                                 main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
             else:
-                error_embed = discord.Embed(title='Wrong command flag', color=0xff0000)
+                error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
+                                            color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
 

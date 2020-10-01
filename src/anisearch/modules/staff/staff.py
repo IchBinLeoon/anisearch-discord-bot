@@ -13,7 +13,7 @@ class Staff(commands.Cog, name='Staff'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='staff', usage='staff <name>', brief='3s --search --image', ignore_extra=False)
+    @commands.command(name='staff', usage='staff <name> [flag]', brief='3s --search --image', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_staff(self, ctx, *, name):
         """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!"""
@@ -173,7 +173,8 @@ class Staff(commands.Cog, name='Staff'):
                                 main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
             else:
-                error_embed = discord.Embed(title='Wrong command flag', color=0xff0000)
+                error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
+                                            color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 main.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
 

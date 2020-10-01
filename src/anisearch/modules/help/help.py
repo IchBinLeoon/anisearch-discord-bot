@@ -59,9 +59,7 @@ class Help(commands.Cog, name='Help'):
                 flags.pop(0)
                 flags = ', '.join(flags)
                 if flags:
-                    help_embed.add_field(name='Flags', value='You can include one of these command flags at the end '
-                                                             'for more or specific information. Available flags: '
-                                                             '`%s`' % flags, inline=False)
+                    help_embed.add_field(name='Flags', value='`%s`' % flags, inline=False)
                 help_embed.add_field(name='Cooldown', value='`%s`' % cooldown, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
@@ -83,7 +81,8 @@ class Help(commands.Cog, name='Help'):
     async def cmd_commands(self, ctx):
         """Displays all commands."""
         prefix = get_prefix(ctx)
-        cmds_embed = discord.Embed(description=f'To view information about a specified command use: `help [command]`\n'
+        cmds_embed = discord.Embed(description=f'To view information about a specified command use: '
+                                               f'`{prefix}help [command]`\n'
                                                f'Current server prefix: `{prefix}`\n'
                                                f'\n'
                                                f'**Parameters:** `<> - required, [] - optional, | - either/or`\n'
@@ -91,6 +90,9 @@ class Help(commands.Cog, name='Help'):
                                                f'Do __not__ include `<>` or `[]` when executing the command.\n'
                                                f'\n'
                                                f'**Search**\n'
+                                               f'One of the available command flags for the specified command can be '
+                                               f'added at the end for additional or specific information. You can view '
+                                               f'the available flags for the command with `{prefix}help [command]`.\n'
                                                f'```'
                                                f'• {prefix}{self.client.get_command("anime").usage}\n'
                                                f'• {prefix}{self.client.get_command("manga").usage}\n'
