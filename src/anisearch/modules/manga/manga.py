@@ -871,16 +871,25 @@ class Manga(commands.Cog, name='Manga'):
                                     manga_embed.add_field(name='Favourites', value=data['favourites'], inline=True)
                                 else:
                                     manga_embed.add_field(name='Favourites', value='-', inline=True)
-                                manga_embed.add_field(name='Genres', value=', '.join(data['genres']), inline=False)
+                                if data['genres']:
+                                    manga_embed.add_field(name='Genres', value=', '.join(data['genres']), inline=False)
+                                else:
+                                    manga_embed.add_field(name='Genres', value='-', inline=False)
                                 if data['synonyms']:
                                     manga_embed.add_field(name='Synonyms', value=', '.join(data['synonyms']),
                                                           inline=False)
                                 else:
                                     manga_embed.add_field(name='Synonyms', value='-', inline=True)
-                                manga_embed.add_field(name='AniList Link', value=data['siteUrl'], inline=False)
-                                manga_embed.add_field(name='MyAnimeList Link',
-                                                      value='https://myanimelist.net/manga/' + str(data['idMal']),
-                                                      inline=False)
+                                if data['siteUrl']:
+                                    manga_embed.add_field(name='AniList Link', value=data['siteUrl'], inline=False)
+                                else:
+                                    manga_embed.add_field(name='AniList Link', value='-', inline=False)
+                                if data['idMal']:
+                                    manga_embed.add_field(name='MyAnimeList Link',
+                                                          value='https://myanimelist.net/anime/' + str(data['idMal']),
+                                                          inline=False)
+                                else:
+                                    manga_embed.add_field(name='MyAnimeList Link', value='-', inline=False)
                                 manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                        icon_url=ctx.author.avatar_url)
                                 await ctx.channel.send(embed=manga_embed)
