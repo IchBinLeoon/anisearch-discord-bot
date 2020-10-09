@@ -6,7 +6,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8.5-3776AB?logo=python&style=flat-square)](https://www.python.org/)
 [![Invite](https://img.shields.io/badge/Invite-Link-7289DA?logo=discord&style=flat-square)](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)
 
-GitHub Repository for the [AniSearch Discord bot](https://top.gg/bot/737236600878137363). This easy-to-use bot allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from AniList and MyAnimeList!
+GitHub Repository for the [AniSearch Discord bot](https://top.gg/bot/737236600878137363). This easy-to-use bot allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
 
