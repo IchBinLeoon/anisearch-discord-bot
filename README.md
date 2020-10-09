@@ -18,7 +18,7 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
 ## Hosting the Bot
-Self-hosting is fully unsupported. Even so, I kindly ask you not to try. Not only will it not work properly, I also recommend everyone to use the [official instance of the AniSearch Bot](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot) instead.
+Self-hosting is fully unsupported. Even so, I kindly ask you not to try. Not only will it not work properly, I also recommend everyone to use the official instance of the bot instead, which you can find [here](https://top.gg/bot/737236600878137363)!
 
 ## Libraries and API's
 Thanks to the people who made this discord bot possible.  
