@@ -36,3 +36,6 @@ Thanks to the people who made this discord bot possible.
 #### [psf/requests](https://github.com/psf/requests)  
 #### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
 #### [SauceNAO](https://saucenao.com)  
+
+## License
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE) file for more details.
