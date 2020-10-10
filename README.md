@@ -1,7 +1,16 @@
 <img align="right" hight="150px" width="150px" src="src/anisearch/assets/anisearch-logo.png">
 
 ### AniSearch v1.5.1
-[![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
+Searches and displays information about Anime, Manga, Characters, Staff, Studios and Profiles from AniList   
+and MyAnimeList!
+
+[![Discord Bots](https://top.gg/api/widget/status/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions)
+[![CodeFactor](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge)](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot)
+[![GitHub issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/pulls)
+[![Python](https://img.shields.io/badge/python-3.8.5-blue)](https://www.python.org/)
+[![GitHub](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE)
 
 ---
 
@@ -12,7 +21,9 @@ If you are interested in my bot, you can add it to your Discord server by clicki
 
 If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#9999`
 
-## Documentation
+[![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
+
+## Commands
 A full documentation of AniSearch's commands can be found [here](https://top.gg/bot/737236600878137363) or with the command `as!help` if you have invited the bot to your server.
 
 ## Hosting the Bot
