@@ -1,14 +1,14 @@
-# AniSearch
-[![Version](https://img.shields.io/badge/Version-1.5.1-red?logo=github&style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot)
-[![Stars](https://img.shields.io/github/stars/IcHBinLeoon/anisearch-discord-bot?color=yellow&style=flat-square&label=Stars)](https://github.com/IchBinLeoon/anisearch-discord-bot/stargazers)
-[![Issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot?style=flat-square&label=Issues)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
-[![Pulls](https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot?style=flat-square&label=Pull&nbsp;requests)](https://github.com/IchBinLeoon/anisearch-discord-bot/pulls)
-[![Size](https://img.shields.io/github/repo-size/IchBinLeoon/anisearch-discord-bot?style=flat-square&label=Size)](https://github.com/IchBinLeoon/anisearch-discord-bot)
-[![Library](https://img.shields.io/badge/Library-discord.py-3775A9?logo=pypi&style=flat-square)](https://github.com/Rapptz/discord.py)
-[![Python](https://img.shields.io/badge/Python-3.8.5-3776AB?logo=python&style=flat-square)](https://www.python.org/)
-[![Invite](https://img.shields.io/badge/Invite-Link-7289DA?logo=discord&style=flat-square)](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)
+<img align="right" hight="150px" width="150px" src="src/anisearch/assets/anisearch-logo.png">
 
-GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). This easy-to-use bot allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
+### AniSearch v1.5.1
+Searches and displays information about Anime, Manga, Characters,  
+Staff, Studios and Profiles from AniList and MyAnimeList!
+
+[![Invite](https://img.shields.io/badge/Invite-Link-7289DA?logo=discord&style=for-the-badge)](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)
+
+---
+
+This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use bot allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
 
