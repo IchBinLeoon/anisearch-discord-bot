@@ -8,7 +8,6 @@ Studios and Profiles from AniList and MyAnimeList!
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions)
 [![CodeFactor](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge)](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot)
 [![Python](https://img.shields.io/badge/python-3.8.5-blue)](https://www.python.org/)
-[![License](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE)
 
 ---
 
