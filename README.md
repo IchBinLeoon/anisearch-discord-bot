@@ -1,16 +1,13 @@
 <img align="right" hight="150px" width="150px" src="src/anisearch/assets/anisearch-logo.png">
 
 ### AniSearch v1.5.1
-Searches and displays information about Anime, Manga, Characters, Staff, Studios and Profiles from AniList   
-and MyAnimeList!
+Searches and displays information about Anime, Manga, Characters, Staff, Studios and Profiles from AniList and MyAnimeList!
 
 [![Discord Bots](https://top.gg/api/widget/status/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions)
 [![CodeFactor](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge)](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot)
-[![GitHub issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/pulls)
 [![Python](https://img.shields.io/badge/python-3.8.5-blue)](https://www.python.org/)
-[![GitHub](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE)
 
 ---
 
