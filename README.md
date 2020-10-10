@@ -1,21 +1,19 @@
 <img align="right" hight="150px" width="150px" src="src/anisearch/assets/anisearch-logo.png">
 
 ### AniSearch v1.5.1
-Searches and displays information about Anime, Manga, Characters,  
-Staff, Studios and Profiles from AniList and MyAnimeList!
-
-[![Invite](https://img.shields.io/badge/Invite-Link-7289DA?logo=discord&style=for-the-badge)](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)
+[![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
 ---
 
-This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use bot allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
+## General
+This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
 
 If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#9999`
 
-## Discord Bot List
-[![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
+## Documentation
+A full documentation of AniSearch's commands can be found [here](https://top.gg/bot/737236600878137363) or with the command `as!help` if you have invited the bot to your server.
 
 ## Hosting the Bot
 Self-hosting is fully unsupported. Even so, I kindly ask you not to try. Not only will it not work properly, I also recommend everyone to use the official instance of the bot instead, which you can find [here](https://top.gg/bot/737236600878137363)!
