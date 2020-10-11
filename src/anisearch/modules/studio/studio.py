@@ -49,7 +49,7 @@ class Studio(commands.Cog, name='Studio'):
                                             color=0x4169E1,
                                             timestamp=ctx.message.created_at)
                                         x = 0
-                                        for i in data[x]:
+                                        for i in data:
                                             if data[x]['media']['edges']:
                                                 productions = []
                                                 if len(data[x]['media']['edges']) < 2:
@@ -58,12 +58,10 @@ class Studio(commands.Cog, name='Studio'):
                                                     length = 2
                                                 y = 0
                                                 for j in range(0, length):
-                                                    productions.append(str('[' +
-                                                                           data[x]['media']['edges'][y]['node']['title']
-                                                                           ['romaji'] +
-                                                                           '](' + data[x]['media']['edges'][y]['node']
-                                                                           ['siteUrl'] +
-                                                                           ')'))
+                                                    productions.append(str('[' + data[x]['media']['edges'][y]
+                                                                           ['node']['title']['romaji'] + '](' + data[x]
+                                                                           ['media']['edges'][y]['node']
+                                                                           ['siteUrl'] + ')'))
                                                     y = y + 1
                                                 if len(data[x]['media']['edges']) < 2:
                                                     value = ' | '.join(productions)
@@ -140,8 +138,8 @@ class Studio(commands.Cog, name='Studio'):
                                 else:
                                     productions = '[-]'
                                 if len(str(productions)) > 1024:
-                                    productions = productions[0:15]
-                                    productions[14] = str(productions[14]).replace(' |', '...')
+                                    productions = productions[0:11]
+                                    productions[10] = str(productions[10]).replace(' |', '...')
                                     studio_embed.add_field(name='Productions', value=productions.__str__()[1:-1]
                                                            .replace("'", "").replace(',', ''), inline=True)
                                 else:

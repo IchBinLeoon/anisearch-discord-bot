@@ -61,24 +61,24 @@ class Character(commands.Cog, name='Character'):
                                                 else:
                                                     char_name = str(x + 1) + '. ' + data[x]['name']['full']
                                             if data[x]['media']['edges']:
-                                                productions = []
+                                                relations = []
                                                 if len(data[x]['media']['edges']) < 2:
                                                     length = len(data[x]['media']['edges'])
                                                 else:
                                                     length = 2
                                                 y = 0
                                                 for j in range(0, length):
-                                                    productions.append(str('[' +
-                                                                           data[x]['media']['edges'][y]['node']['title']
-                                                                           ['romaji'] +
-                                                                           '](' + data[x]['media']['edges'][y]['node']
-                                                                           ['siteUrl'] +
-                                                                           ')'))
+                                                    relations.append(str('[' +
+                                                                         data[x]['media']['edges'][y]['node']['title']
+                                                                         ['romaji'] +
+                                                                         '](' + data[x]['media']['edges'][y]['node']
+                                                                         ['siteUrl'] +
+                                                                         ')'))
                                                     y = y + 1
                                                 if len(data[x]['media']['edges']) < 2:
-                                                    value = ' | '.join(productions)
+                                                    value = ' | '.join(relations)
                                                 else:
-                                                    value = ' | '.join(productions) + '...'
+                                                    value = ' | '.join(relations) + '...'
                                             else:
                                                 value = '-'
                                             character_embed.add_field(name=char_name, value=value, inline=False)
@@ -128,7 +128,8 @@ class Character(commands.Cog, name='Character'):
                                 if json['data']['Page']['characters']:
                                     data = json['data']['Page']['characters'][0]
                                     try:
-                                        if data['name']['full'] is None or data['name']['full'] == data['name']['native']:
+                                        if data['name']['full'] is None or data['name']['full'] == \
+                                                data['name']['native']:
                                             character_embed = discord.Embed(title=data['name']['native'],
                                                                             url=data['siteUrl'],
                                                                             color=0x4169E1,
