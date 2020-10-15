@@ -19,10 +19,11 @@ class About(commands.Cog, name='About'):
     async def cmd_about(self, ctx):
         """Displays information and stats about the bot."""
         about_embed = discord.Embed(title='About %s' % self.client.user.name,
-                                    description='<@!%s> is an easy-to-use Discord bot that allows you to search for '
-                                                'Anime, Manga, Characters, Staff, Studios and Profiles right within '
-                                                'Discord!\n\n If you have any suggestions use `contact <message>` or '
-                                                'add me as a friend.' % self.client.user.id,
+                                    description='<@!%s> is an easy-to-use Discord bot written in Python that allows '
+                                                'you to search for Anime, Manga, Characters, Staff, Studios and '
+                                                'Profiles right within Discord and displays the results from '
+                                                '[AniList](https://anilist.co) and '
+                                                '[MyAnimeList](https://myanimelist.net/)!' % self.client.user.id,
                                     color=0x4169E1, timestamp=ctx.message.created_at)
         about_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
                               inline=True)
