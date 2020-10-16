@@ -128,7 +128,12 @@ class AniList(commands.Cog, name='AniList'):
                                 fav_anime.append(
                                     str('[' + data['favourites']['anime']['edges'][x]['node']['title']['romaji'] + ']('
                                         + data['favourites']['anime']['edges'][x]['node']['siteUrl'] + ')'))
-                                fav_anime = fav_anime.__str__()[1:-1].replace("'", "").replace(',', '')
+                                if len(str(fav_anime)) > 1024:
+                                    fav_anime = fav_anime[0:5]
+                                    fav_anime[4] = str(fav_anime[4]).replace(' |', '...')
+                                    fav_anime = ' '.join(fav_anime)
+                                else:
+                                    fav_anime = ' '.join(fav_anime)
                             else:
                                 fav_anime = '-'
 
@@ -144,7 +149,12 @@ class AniList(commands.Cog, name='AniList'):
                                 fav_manga.append(
                                     str('[' + data['favourites']['manga']['edges'][x]['node']['title']['romaji'] + ']('
                                         + data['favourites']['manga']['edges'][x]['node']['siteUrl'] + ')'))
-                                fav_manga = fav_manga.__str__()[1:-1].replace("'", "").replace(',', '')
+                                if len(str(fav_manga)) > 1024:
+                                    fav_manga = fav_manga[0:5]
+                                    fav_manga[4] = str(fav_manga[4]).replace(' |', '...')
+                                    fav_manga = ' '.join(fav_manga)
+                                else:
+                                    fav_manga = ' '.join(fav_manga)
                             else:
                                 fav_manga = '-'
 
@@ -161,7 +171,12 @@ class AniList(commands.Cog, name='AniList'):
                                 fav_characters.append(
                                     str('[' + data['favourites']['characters']['edges'][x]['node']['name']['full'] +
                                         '](' + data['favourites']['characters']['edges'][x]['node']['siteUrl'] + ')'))
-                                fav_characters = fav_characters.__str__()[1:-1].replace("'", "").replace(',', '')
+                                if len(str(fav_characters)) > 1024:
+                                    fav_characters = fav_characters[0:5]
+                                    fav_characters[4] = str(fav_characters[4]).replace(' |', '...')
+                                    fav_characters = ' '.join(fav_characters)
+                                else:
+                                    fav_characters = ' '.join(fav_characters)
                             else:
                                 fav_characters = '-'
 
@@ -177,7 +192,12 @@ class AniList(commands.Cog, name='AniList'):
                                 fav_staff.append(
                                     str('[' + data['favourites']['staff']['edges'][x]['node']['name']['full'] + ']('
                                         + data['favourites']['staff']['edges'][x]['node']['siteUrl'] + ')'))
-                                fav_staff = fav_staff.__str__()[1:-1].replace("'", "").replace(',', '')
+                                if len(str(fav_staff)) > 1024:
+                                    fav_staff = fav_staff[0:5]
+                                    fav_staff[4] = str(fav_staff[4]).replace(' |', '...')
+                                    fav_staff = ' '.join(fav_staff)
+                                else:
+                                    fav_staff = ' '.join(fav_staff)
                             else:
                                 fav_staff = '-'
 
@@ -193,7 +213,12 @@ class AniList(commands.Cog, name='AniList'):
                                 fav_studios.append(
                                     str('[' + data['favourites']['studios']['edges'][x]['node']['name'] + ']('
                                         + data['favourites']['studios']['edges'][x]['node']['siteUrl'] + ')'))
-                                fav_studios = fav_studios.__str__()[1:-1].replace("'", "").replace(',', '')
+                                if len(str(fav_studios)) > 1024:
+                                    fav_studios = fav_studios[0:5]
+                                    fav_studios[4] = str(fav_studios[4]).replace(' |', '...')
+                                    fav_studios = ' '.join(fav_studios)
+                                else:
+                                    fav_studios = ' '.join(fav_studios)
                             else:
                                 fav_studios = '-'
 
