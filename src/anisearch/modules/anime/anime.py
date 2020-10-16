@@ -13,12 +13,11 @@ class Anime(commands.Cog, name='Anime'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='anime', aliases=['a'], usage='anime <title> [flag]',
-                      brief='3s --search --characters --staff --image --relations --links --streams --all',
-                      ignore_extra=False)
+    @commands.command(name='anime', aliases=['a'], usage='anime <title> [flag]', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_anime(self, ctx, *, title):
-        """Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more!"""
+        """Searches for an anime with the given title and displays information about the first result such as type, status, episodes, dates, description, and more!
+        |--search --characters --staff --image --relations --links --streams --all"""
         args = title.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):

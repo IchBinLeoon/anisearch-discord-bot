@@ -13,12 +13,11 @@ class Manga(commands.Cog, name='Manga'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='manga', aliases=['m'], usage='manga <title> [flag]',
-                      brief='3s --search --characters --staff --image --relations --links --all',
-                      ignore_extra=False)
+    @commands.command(name='manga', aliases=['m'], usage='manga <title> [flag]', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_manga(self, ctx, *, title):
-        """Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!"""
+        """Searches for a manga with the given title and displays information about the first result such as type, status, chapters, dates, description, and more!
+        |--search --characters --staff --image --relations --links --all"""
         args = title.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):

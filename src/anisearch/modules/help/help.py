@@ -53,14 +53,15 @@ class Help(commands.Cog, name='Help'):
                 help_embed = discord.Embed(title='Command - %s' % command, colour=0x4169E1)
                 help_embed.add_field(name='Usage', value='`%s%s`' % (prefix, command.usage),
                                      inline=False)
-                help_embed.add_field(name='Description', value='%s' % command.help, inline=False)
-                flags = command.brief.split(' ')
-                cooldown = flags[0]
-                flags.pop(0)
-                flags = ', '.join(flags)
-                if flags:
+                if command.help.__contains__('|'):
+                    help_split = command.help.split('|')
+                    description = help_split[0]
+                    flags = help_split[1]
+                    help_embed.add_field(name='Description', value='%s' % description, inline=False)
                     help_embed.add_field(name='Flags', value='`%s`' % flags, inline=False)
-                help_embed.add_field(name='Cooldown', value='`%s`' % cooldown, inline=False)
+                else:
+                    help_embed.add_field(name='Description', value='%s' % command.help, inline=False)
+                help_embed.add_field(name='Cooldown', value='`%s`' % command.brief, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
                     help_embed.add_field(name='Aliases', value='`%s`' % aliases, inline=False)

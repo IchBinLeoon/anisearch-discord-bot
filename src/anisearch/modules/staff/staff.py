@@ -13,10 +13,11 @@ class Staff(commands.Cog, name='Staff'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='staff', usage='staff <name> [flag]', brief='3s --search --image', ignore_extra=False)
+    @commands.command(name='staff', usage='staff <name> [flag]', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_staff(self, ctx, *, name):
-        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!"""
+        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!
+        |--search --image"""
         args = name.split(' ')
         if args[len(args) - 1].startswith('--'):
             if args[len(args) - 2].startswith('--'):
