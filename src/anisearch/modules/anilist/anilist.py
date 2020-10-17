@@ -95,8 +95,8 @@ class AniList(commands.Cog, name='AniList'):
 
                             manga_count = data['statistics']['manga']['count']
                             manga_mean_score = data['statistics']['manga']['meanScore']
-                            manga_volumes_read = data['statistics']['manga']['volumesRead']
                             manga_chapters_read = data['statistics']['manga']['chaptersRead']
+                            manga_volumes_read = data['statistics']['manga']['volumesRead']
 
                             anilist_embed.add_field(name='Anime Stats', value=f'Anime Count: {anime_count}\n'
                                                                               f'Mean Score: {anime_mean_score}\n'
@@ -104,9 +104,9 @@ class AniList(commands.Cog, name='AniList'):
                                                                               f'Episodes: {anime_episodes_watched}\n',
                                                     inline=True)
                             anilist_embed.add_field(name='Manga Stats', value=f'Manga Count: {manga_count}\n'
-                                                                              f'Mean Score: {manga_volumes_read}\n'
+                                                                              f'Mean Score: {manga_mean_score}\n'
                                                                               f'Chapters Read: {manga_chapters_read}\n'
-                                                                              f'Volumes Read: {manga_mean_score}\n',
+                                                                              f'Volumes Read: {manga_volumes_read}\n',
                                                     inline=True)
 
                             anilist_embed.add_field(name='Anime List',
