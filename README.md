@@ -14,7 +14,7 @@ Profiles from AniList and MyAnimeList!
 ---
 
 ## General
-This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
+This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within [Discord](https://discord.com/) and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
 
