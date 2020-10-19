@@ -18,12 +18,12 @@ This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
 
-If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#9999`
+A full documentation of AniSearch's commands can be found [here](https://top.gg/bot/737236600878137363) or with the command `as!help` if you have invited the bot to your server.
 
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
-## Commands
-A full documentation of AniSearch's commands can be found [here](https://top.gg/bot/737236600878137363) or with the command `as!help` if you have invited the bot to your server.
+## Contribute
+You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
 
 ## Hosting the Bot
 Self-hosting is fully unsupported. Even so, I kindly ask you not to try. Not only will it not work properly, I also recommend everyone to use the official instance of the bot instead, which you can find [here](https://top.gg/bot/737236600878137363)!
