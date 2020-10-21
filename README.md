@@ -22,6 +22,8 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
+If the bot is offline, it will most likely be updated. If the bot is offline for an extended period of time, my home network has likely broken down or something else bad has happened. In this case it would be very useful if someone notifies me.
+
 ## Bot Commands
 A full documentation of AniSearch's commands can be found [here](https://top.gg/bot/737236600878137363) or with the command `as!help` if you have invited the bot to your server.
 
