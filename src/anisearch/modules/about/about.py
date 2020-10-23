@@ -25,7 +25,7 @@ class About(commands.Cog, name='About'):
                                                 '[AniList](https://anilist.co) and '
                                                 '[MyAnimeList](https://myanimelist.net/)!' % self.client.user.id,
                                     color=0x4169E1, timestamp=ctx.message.created_at)
-        about_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
+        about_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__ownerid__,
                               inline=True)
         about_embed.add_field(name='❯ Version', value='v%s' % main.__version__,
                               inline=True)

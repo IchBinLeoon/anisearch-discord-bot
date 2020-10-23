@@ -1,6 +1,6 @@
 <img align="right" hight="150px" width="150px" src="src/anisearch/assets/anisearch-logo.png">
 
-### AniSearch v1.5.1
+### AniSearch v1.6
 Searches and displays information about Anime, Manga, Characters, Staff, Studios and  
 Profiles from AniList and MyAnimeList!
 

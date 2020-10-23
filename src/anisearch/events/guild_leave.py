@@ -27,7 +27,8 @@ class GuildLeave(commands.Cog):
                                      inline=True)
         guild_remove_embed.add_field(name="Server ID", value=guild.id,
                                      inline=True)
-        await self.client.get_user(main.__owner_id__).send(embed=guild_remove_embed)
+        user = await self.client.fetch_user(main.__ownerid__)
+        await user.send(embed=guild_remove_embed)
 
 
 def setup(client):

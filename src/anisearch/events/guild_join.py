@@ -36,7 +36,8 @@ class GuildJoin(commands.Cog):
         guild_join_embed.add_field(name="Tier", value=guild.premium_tier,
                                    inline=True)
         guild_join_embed.set_thumbnail(url=guild.icon_url)
-        await self.client.get_user(main.__owner_id__).send(embed=guild_join_embed)
+        user = await self.client.fetch_user(main.__ownerid__)
+        await user.send(embed=guild_join_embed)
 
 
 def setup(client):

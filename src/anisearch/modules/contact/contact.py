@@ -21,7 +21,8 @@ class Contact(commands.Cog, name='Contact'):
                                 inline=True)
         contact_embed.add_field(name='Message', value=message,
                                 inline=False)
-        await self.client.get_user(main.__owner_id__).send(embed=contact_embed)
+        user = await self.client.fetch_user(main.__ownerid__)
+        await user.send(embed=contact_embed)
         contact_return_embed = discord.Embed(title='Creator contacted', color=0x4169E1)
         await ctx.channel.send(embed=contact_return_embed)
 
