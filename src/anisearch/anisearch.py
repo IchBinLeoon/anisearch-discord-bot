@@ -16,7 +16,7 @@ import logging
 
 from config import config
 
-__version__ = '1.6'
+__version__ = '1.5.2'
 __author__ = 'IchBinLeoon'
 __ownerid__ = 223871059068321793
 __invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
