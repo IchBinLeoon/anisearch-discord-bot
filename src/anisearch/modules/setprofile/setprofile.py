@@ -5,7 +5,7 @@ import discord
 import psycopg2
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 
 example_sites = ['anilist', 'myanimelist']
@@ -22,16 +22,16 @@ def get_prefix(ctx):
     return prefix
 
 
-class Link(commands.Cog, name='Link'):
+class SetProfile(commands.Cog, name='SetProfile'):
 
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='link', aliases=['l'], usage='link <anilist|myanimelist> <username>',
+    @commands.command(name='setprofile', aliases=['set'], usage='setprofile <anilist|myanimelist> <username>',
                       brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cmd_link(self, ctx, site: Optional[str], username: Optional[str]):
-        """Links an AniList or MyAnimeList Profile."""
+    async def cmd_setprofile(self, ctx, site: Optional[str], username: Optional[str]):
+        """Sets an AniList or MyAnimeList Profile."""
         if site:
             if username:
                 if site == 'AniList' or site == 'anilist' or site == 'al':
@@ -45,10 +45,10 @@ class Link(commands.Cog, name='Link'):
                         db.commit()
                         cur.close()
                         db.close()
-                        linkanilist_embed = discord.Embed(title='Linked AniList Profile `%s`' % username,
-                                                          color=0x4169E1)
-                        await ctx.channel.send(embed=linkanilist_embed)
-                        main.logger.info('Server: %s | Response: Link AniList - %s' % (ctx.guild.name, username))
+                        setanilist_embed = discord.Embed(title='Set AniList Profile `%s`' % username,
+                                                         color=0x4169E1)
+                        await ctx.channel.send(embed=setanilist_embed)
+                        anisearch.logger.info('Server: %s | Response: Set AniList - %s' % (ctx.guild.name, username))
                     except TypeError:
                         cur.execute('INSERT INTO users (id, anilist) VALUES (%s, %s)', (ctx.author.id, username))
                         cur.execute('SELECT anilist FROM users WHERE id = %s;', (ctx.author.id,))
@@ -56,10 +56,10 @@ class Link(commands.Cog, name='Link'):
                         db.commit()
                         cur.close()
                         db.close()
-                        linkanilist_embed = discord.Embed(title='Linked AniList Profile `%s`' % username,
-                                                          color=0x4169E1)
-                        await ctx.channel.send(embed=linkanilist_embed)
-                        main.logger.info('Server: %s | Response: Link AniList - %s' % (ctx.guild.name, username))
+                        setanilist_embed = discord.Embed(title='Set AniList Profile `%s`' % username,
+                                                         color=0x4169E1)
+                        await ctx.channel.send(embed=setanilist_embed)
+                        anisearch.logger.info('Server: %s | Response: Set AniList - %s' % (ctx.guild.name, username))
                 elif site == 'MyAnimeList' or site == 'myanimelist' or site == 'mal':
                     db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                                           password=config.BD_PASSWORD)
@@ -71,10 +71,11 @@ class Link(commands.Cog, name='Link'):
                         db.commit()
                         cur.close()
                         db.close()
-                        linkmyanimelist_embed = discord.Embed(title='Linked MyAnimeList Profile `%s`' % username,
-                                                              color=0x4169E1)
-                        await ctx.channel.send(embed=linkmyanimelist_embed)
-                        main.logger.info('Server: %s | Response: Link MyAnimeList - %s' % (ctx.guild.name, username))
+                        setmyanimelist_embed = discord.Embed(title='Set MyAnimeList Profile `%s`' % username,
+                                                             color=0x4169E1)
+                        await ctx.channel.send(embed=setmyanimelist_embed)
+                        anisearch.logger.info(
+                            'Server: %s | Response: Set MyAnimeList - %s' % (ctx.guild.name, username))
                     except TypeError:
                         cur.execute('INSERT INTO users (id, myanimelist) VALUES (%s, %s)', (ctx.author.id, username))
                         cur.execute('SELECT myanimelist FROM users WHERE id = %s;', (ctx.author.id,))
@@ -82,20 +83,21 @@ class Link(commands.Cog, name='Link'):
                         db.commit()
                         cur.close()
                         db.close()
-                        linkmyanimelist_embed = discord.Embed(title='Linked MyAnimeList Profile `%s`' % username,
-                                                              color=0x4169E1)
-                        await ctx.channel.send(embed=linkmyanimelist_embed)
-                        main.logger.info('Server: %s | Response: Link MyAnimeList - %s' % (ctx.guild.name, username))
+                        setmyanimelist_embed = discord.Embed(title='Set MyAnimeList Profile `%s`' % username,
+                                                             color=0x4169E1)
+                        await ctx.channel.send(embed=setmyanimelist_embed)
+                        anisearch.logger.info(
+                            'Server: %s | Response: Set MyAnimeList - %s' % (ctx.guild.name, username))
                 else:
                     prefix = get_prefix(ctx)
                     example_site = random.choice(example_sites)
                     example_username = ctx.author.name
-                    example = '`%slink %s %s`' % (prefix, example_site, example_username)
+                    example = '`%ssetprofile %s %s`' % (prefix, example_site, example_username)
                     error_embed = discord.Embed(title='Wrong arguments. Example: %s' % example,
                                                 color=0xff0000)
                     await ctx.channel.send(embed=error_embed)
                     await ctx.command.reset_cooldown(ctx)
-                    main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
+                    anisearch.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
 
             elif site.startswith('<@!'):
                 user_id = int(site.replace('<@!', '').replace('>', ''))
@@ -107,13 +109,17 @@ class Link(commands.Cog, name='Link'):
                     anilist_profile = cur.fetchone()[0]
                     db.commit()
                 except TypeError:
-                    anilist_profile = 'Not linked'
+                    anilist_profile = 'Not set'
+                if anilist_profile is None:
+                    anilist_profile = 'Not set'
                 try:
                     cur.execute('SELECT myanimelist FROM users WHERE id = %s;', (user_id,))
                     myanimelist_profile = cur.fetchone()[0]
                     db.commit()
                 except TypeError:
-                    myanimelist_profile = 'Not linked'
+                    myanimelist_profile = 'Not set'
+                if myanimelist_profile is None:
+                    myanimelist_profile = 'Not set'
                 cur.close()
                 db.close()
                 user_name = self.client.get_user(user_id).name
@@ -123,13 +129,13 @@ class Link(commands.Cog, name='Link'):
                 embed.add_field(name="MyAnimeList", value=myanimelist_profile,
                                 inline=True)
                 await ctx.channel.send(embed=embed)
-                main.logger.info('Server: %s | Response: Links - %s' % (ctx.guild.name, user_name))
+                anisearch.logger.info('Server: %s | Response: Profiles - %s' % (ctx.guild.name, user_name))
             else:
                 error_embed = discord.Embed(title='Missing required argument',
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
                 await ctx.command.reset_cooldown(ctx)
-                main.logger.info('Server: %s | Response: Missing required argument' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Missing required argument' % ctx.guild.name)
         else:
             db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                                   password=config.BD_PASSWORD)
@@ -139,13 +145,17 @@ class Link(commands.Cog, name='Link'):
                 anilist_profile = cur.fetchone()[0]
                 db.commit()
             except TypeError:
-                anilist_profile = 'Not linked'
+                anilist_profile = 'Not set'
+            if anilist_profile is None:
+                anilist_profile = 'Not set'
             try:
                 cur.execute('SELECT myanimelist FROM users WHERE id = %s;', (ctx.author.id,))
                 myanimelist_profile = cur.fetchone()[0]
                 db.commit()
             except TypeError:
-                myanimelist_profile = 'Not linked'
+                myanimelist_profile = 'Not set'
+            if myanimelist_profile is None:
+                myanimelist_profile = 'Not set'
             cur.close()
             db.close()
             embed = discord.Embed(title=ctx.author.name, color=0x4169E1)
@@ -154,13 +164,13 @@ class Link(commands.Cog, name='Link'):
             embed.add_field(name="MyAnimeList", value=myanimelist_profile,
                             inline=True)
             await ctx.channel.send(embed=embed)
-            main.logger.info('Server: %s | Response: Links - %s' % (ctx.guild.name, ctx.author.name))
+            anisearch.logger.info('Server: %s | Response: Profiles - %s' % (ctx.guild.name, ctx.author.name))
 
 
 def setup(client):
-    client.add_cog(Link(client))
-    main.logger.info('Loaded extension Link')
+    client.add_cog(SetProfile(client))
+    anisearch.logger.info('Loaded extension SetProfile')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Link')
+    anisearch.logger.info('Unloaded extension SetProfile')

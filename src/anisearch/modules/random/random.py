@@ -5,7 +5,7 @@ import discord
 import psycopg2
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 from modules.random import random_query
 
@@ -192,14 +192,15 @@ class Random(commands.Cog, name='Random'):
                                 anime_embed.set_footer(text='Requested by %s' % ctx.author,
                                                        icon_url=ctx.author.avatar_url)
                                 await ctx.channel.send(embed=anime_embed)
-                                main.logger.info('Server: %s | Response: Random Anime - %s' % (ctx.guild.name,
-                                                                                               data['title']['romaji']))
+                                anisearch.logger.info('Server: %s | Response: Random Anime - %s' % (ctx.guild.name,
+                                                                                                    data['title'][
+                                                                                                        'romaji']))
                             except Exception as e:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for an anime with the genre `%s`' % genre,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.exception(e)
+                                anisearch.logger.exception(e)
                         else:
                             page = random.randrange(1, 10)
                             api = 'https://graphql.anilist.co'
@@ -381,7 +382,7 @@ class Random(commands.Cog, name='Random'):
                                                 anime_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                        icon_url=ctx.author.avatar_url)
                                                 await ctx.channel.send(embed=anime_embed)
-                                                main.logger.info(
+                                                anisearch.logger.info(
                                                     'Server: %s | Response: Random Anime - %s' % (ctx.guild.name,
                                                                                                   data['title'][
                                                                                                       'romaji']))
@@ -391,27 +392,27 @@ class Random(commands.Cog, name='Random'):
                                                           'the genre `%s`' % genre,
                                                     color=0xff0000)
                                                 await ctx.channel.send(embed=error_embed)
-                                                main.logger.exception(e)
+                                                anisearch.logger.exception(e)
                                         else:
                                             error_embed = discord.Embed(
                                                 title='An anime with the genre `%s` does not exist in the AniList '
                                                       'database' % genre,
                                                 color=0xff0000)
                                             await ctx.channel.send(embed=error_embed)
-                                            main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                            anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                                     else:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for an anime with the genre `%s`'
                                                   % genre,
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
                     else:
                         error_embed = discord.Embed(
                             title='An error occurred while searching for an anime with the genre `%s`' % genre,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
         elif media == 'manga' or media == 'Manga':
             page = random.randrange(1, 10)
@@ -540,14 +541,15 @@ class Random(commands.Cog, name='Random'):
                                 manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                        icon_url=ctx.author.avatar_url)
                                 await ctx.channel.send(embed=manga_embed)
-                                main.logger.info('Server: %s | Response: Random Manga - %s' % (ctx.guild.name,
-                                                                                               data['title']['romaji']))
+                                anisearch.logger.info('Server: %s | Response: Random Manga - %s' % (ctx.guild.name,
+                                                                                                    data['title'][
+                                                                                                        'romaji']))
                             except Exception as e:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for a manga with the genre `%s`' % genre,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.exception(e)
+                                anisearch.logger.exception(e)
                         else:
                             page = random.randrange(1, 10)
                             api = 'https://graphql.anilist.co'
@@ -613,8 +615,8 @@ class Random(commands.Cog, name='Random'):
                                                     if data['volumes']:
                                                         manga_embed.add_field(name='Chapters',
                                                                               value='%s (%s Volumes)' % (
-                                                                              data['chapters'],
-                                                                              data['volumes']),
+                                                                                  data['chapters'],
+                                                                                  data['volumes']),
                                                                               inline=True)
                                                     else:
                                                         manga_embed.add_field(name='Chapters',
@@ -694,7 +696,7 @@ class Random(commands.Cog, name='Random'):
                                                 manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                        icon_url=ctx.author.avatar_url)
                                                 await ctx.channel.send(embed=manga_embed)
-                                                main.logger.info(
+                                                anisearch.logger.info(
                                                     'Server: %s | Response: Random Manga - %s' % (ctx.guild.name,
                                                                                                   data['title'][
                                                                                                       'romaji']))
@@ -704,27 +706,27 @@ class Random(commands.Cog, name='Random'):
                                                           'genre `%s`' % genre,
                                                     color=0xff0000)
                                                 await ctx.channel.send(embed=error_embed)
-                                                main.logger.exception(e)
+                                                anisearch.logger.exception(e)
                                         else:
                                             error_embed = discord.Embed(
                                                 title='An manga with the genre `%s` does not exist in the AniList '
                                                       'database' % genre,
                                                 color=0xff0000)
                                             await ctx.channel.send(embed=error_embed)
-                                            main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                            anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                                     else:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for a manga with the genre `%s`'
                                                   % genre,
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
                     else:
                         error_embed = discord.Embed(
                             title='An error occurred while searching for a manga with the genre `%s`' % genre,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
         else:
             prefix = get_prefix(ctx)
             example_media = random.choice(example_medias)
@@ -734,13 +736,13 @@ class Random(commands.Cog, name='Random'):
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
             await ctx.command.reset_cooldown(ctx)
-            main.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
+            anisearch.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Random(client))
-    main.logger.info('Loaded extension Random')
+    anisearch.logger.info('Loaded extension Random')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Random')
+    anisearch.logger.info('Unloaded extension Random')

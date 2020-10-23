@@ -2,7 +2,7 @@ import discord
 import psycopg2
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 
 
@@ -13,7 +13,7 @@ class GuildJoin(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        main.logger.info('Joined server %s' % guild.name)
+        anisearch.logger.info('Joined server %s' % guild.name)
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
@@ -36,14 +36,14 @@ class GuildJoin(commands.Cog):
         guild_join_embed.add_field(name="Tier", value=guild.premium_tier,
                                    inline=True)
         guild_join_embed.set_thumbnail(url=guild.icon_url)
-        user = await self.client.fetch_user(main.__ownerid__)
+        user = await self.client.fetch_user(anisearch.__ownerid__)
         await user.send(embed=guild_join_embed)
 
 
 def setup(client):
     client.add_cog(GuildJoin(client))
-    main.logger.info('Loaded extension GuildJoin')
+    anisearch.logger.info('Loaded extension GuildJoin')
 
 
 def teardown():
-    main.logger.info('Unloaded extension GuildJoin')
+    anisearch.logger.info('Unloaded extension GuildJoin')

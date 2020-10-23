@@ -4,7 +4,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-import main
+import anisearch
 
 
 class Source(commands.Cog, name='Source'):
@@ -24,14 +24,14 @@ class Source(commands.Cog, name='Source'):
             else:
                 error_embed = discord.Embed(title='No image to look for the source', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: No image' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: No image' % ctx.guild.name)
         else:
             url = source
         if url:
             if not url.endswith(('.jpg', '.png', '.bmp', '.gif', '.jpeg')):
                 error_embed = discord.Embed(title='No correct url specified', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: No correct url' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: No correct url' % ctx.guild.name)
             else:
                 saucenao = 'http://saucenao.com/search.php?db=999&url=%s' % url
                 async with aiohttp.ClientSession() as cs:
@@ -80,17 +80,17 @@ class Source(commands.Cog, name='Source'):
                         if material or artist or characters or pixiv or danbooru or gelbooru or yandere or konachan or \
                                 sankaku:
                             await ctx.channel.send(embed=source_embed)
-                            main.logger.info('Server: %s | Response: Source' % ctx.guild.name)
+                            anisearch.logger.info('Server: %s | Response: Source' % ctx.guild.name)
                         else:
                             error_embed = discord.Embed(title='No source found', color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.info('Server: %s | Response: No source found' % ctx.guild.name)
+                            anisearch.logger.info('Server: %s | Response: No source found' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Source(client))
-    main.logger.info('Loaded extension Source')
+    anisearch.logger.info('Loaded extension Source')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Source')
+    anisearch.logger.info('Unloaded extension Source')

@@ -5,7 +5,7 @@ import discord
 import psycopg2
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 from modules.anilist import anilist_query
 
@@ -38,7 +38,7 @@ class AniList(commands.Cog, name='AniList'):
                 error_embed = discord.Embed(
                     title='You have no AniList Profile linked', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
 
         elif username.startswith('<@!'):
             user_id = int(username.replace('<@!', '').replace('>', ''))
@@ -54,7 +54,7 @@ class AniList(commands.Cog, name='AniList'):
                 error_embed = discord.Embed(
                     title='%s has no AniList Profile linked' % self.client.get_user(user_id).name, color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
 
         else:
             username = username
@@ -231,27 +231,27 @@ class AniList(commands.Cog, name='AniList'):
                             anilist_embed.set_footer(text='Requested by %s' % ctx.author,
                                                      icon_url=ctx.author.avatar_url)
                             await ctx.channel.send(embed=anilist_embed)
-                            main.logger.info('Server: %s | Response: AniList - %s' % (ctx.guild.name, data['name']))
+                            anisearch.logger.info('Server: %s | Response: AniList - %s' % (ctx.guild.name, data['name']))
 
                         except Exception as e:
                             error_embed = discord.Embed(
                                 title='An error occurred while searching for AniList Profile `%s`' % username,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.exception(e)
+                            anisearch.logger.exception(e)
 
                     else:
                         error_embed = discord.Embed(
                             title='The user `%s` cannot be found on AniList' % username,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(AniList(client))
-    main.logger.info('Loaded extension AniList')
+    anisearch.logger.info('Loaded extension AniList')
 
 
 def teardown():
-    main.logger.info('Unloaded extension AniList')
+    anisearch.logger.info('Unloaded extension AniList')

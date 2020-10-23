@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import main
+import anisearch
 
 
 class Ping(commands.Cog, name='Ping'):
@@ -16,13 +16,13 @@ class Ping(commands.Cog, name='Ping'):
         ping_embed = discord.Embed(title='Latency: `%sms`' % ping,
                                    color=0x4169E1)
         await ctx.channel.send(embed=ping_embed)
-        main.logger.info('Server: %s | Response: Ping' % ctx.guild.name)
+        anisearch.logger.info('Server: %s | Response: Ping' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Ping(client))
-    main.logger.info('Loaded extension Ping')
+    anisearch.logger.info('Loaded extension Ping')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Ping')
+    anisearch.logger.info('Unloaded extension Ping')

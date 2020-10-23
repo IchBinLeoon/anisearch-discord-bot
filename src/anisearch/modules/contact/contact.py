@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-import main
+import anisearch
 
 
 class Contact(commands.Cog, name='Contact'):
@@ -21,7 +21,7 @@ class Contact(commands.Cog, name='Contact'):
                                 inline=True)
         contact_embed.add_field(name='Message', value=message,
                                 inline=False)
-        user = await self.client.fetch_user(main.__ownerid__)
+        user = await self.client.fetch_user(anisearch.__ownerid__)
         await user.send(embed=contact_embed)
         contact_return_embed = discord.Embed(title='Creator contacted', color=0x4169E1)
         await ctx.channel.send(embed=contact_return_embed)
@@ -29,8 +29,8 @@ class Contact(commands.Cog, name='Contact'):
 
 def setup(client):
     client.add_cog(Contact(client))
-    main.logger.info('Loaded extension Contact')
+    anisearch.logger.info('Loaded extension Contact')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Contact')
+    anisearch.logger.info('Unloaded extension Contact')

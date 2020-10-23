@@ -2,7 +2,7 @@ import discord
 import psycopg2
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 
 
@@ -13,7 +13,7 @@ class GuildLeave(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        main.logger.info('Left server %s' % guild.name)
+        anisearch.logger.info('Left server %s' % guild.name)
         db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                               password=config.BD_PASSWORD)
         cur = db.cursor()
@@ -27,14 +27,14 @@ class GuildLeave(commands.Cog):
                                      inline=True)
         guild_remove_embed.add_field(name="Server ID", value=guild.id,
                                      inline=True)
-        user = await self.client.fetch_user(main.__ownerid__)
+        user = await self.client.fetch_user(anisearch.__ownerid__)
         await user.send(embed=guild_remove_embed)
 
 
 def setup(client):
     client.add_cog(GuildLeave(client))
-    main.logger.info('Loaded extension GuildLeave')
+    anisearch.logger.info('Loaded extension GuildLeave')
 
 
 def teardown():
-    main.logger.info('Unloaded extension GuildLeave')
+    anisearch.logger.info('Unloaded extension GuildLeave')

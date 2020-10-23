@@ -42,10 +42,10 @@ logger.addHandler(stream_handler)
 
 extensions = ['modules.anime.anime', 'modules.manga.manga', 'modules.character.character', 'modules.staff.staff',
               'modules.random.random', 'modules.anilist.anilist', 'modules.studio.studio',
-              'modules.myanimelist.myanimelist', 'modules.link.link', 'modules.removelinks.removelinks',
+              'modules.myanimelist.myanimelist', 'modules.setprofile.setprofile', 'modules.remove.remove',
               'modules.prefix.prefix', 'modules.ping.ping', 'modules.help.help', 'modules.about.about',
-              'handlers.error_handler', 'events.guild_join', 'events.guild_leave', 'modules.contact.contact',
-              'handlers.topgg', 'modules.source.source']
+              'handlers.error_handler.error_handler', 'events.guild_join.guild_join', 'events.guild_leave.guild_leave',
+              'modules.contact.contact', 'handlers.topgg.topgg', 'modules.source.source']
 
 
 def get_current_time():
@@ -293,7 +293,3 @@ def main():
         logger.info('Server: %s | Response: Status' % ctx.guild.name)
 
     client.run(config.TOKEN)
-
-
-if __name__ == '__main__':
-    main()

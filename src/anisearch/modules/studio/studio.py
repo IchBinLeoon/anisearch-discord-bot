@@ -2,7 +2,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-import main
+import anisearch
 from modules.studio import studio_query
 
 flags = ['--search']
@@ -23,7 +23,7 @@ class Studio(commands.Cog, name='Studio'):
             if args[len(args) - 2].startswith('--'):
                 error_embed = discord.Embed(title='Too many command flags', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
             elif flags.__contains__(args[len(args) - 1]):
                 flag = args[len(args) - 1]
 
@@ -76,7 +76,7 @@ class Studio(commands.Cog, name='Studio'):
                                         character_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                    icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=character_embed)
-                                        main.logger.info('Server: %s | Response: Studio Search - %s'
+                                        anisearch.logger.info('Server: %s | Response: Studio Search - %s'
                                                          % (ctx.guild.name, name))
                                     except Exception as e:
                                         error_embed = discord.Embed(
@@ -84,26 +84,26 @@ class Studio(commands.Cog, name='Studio'):
                                                   'command flag `%s`' % (name, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The studio `%s` does not exist in the AniList database' % name,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the studio `%s` with the '
                                           'command flag `%s`' % (name, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
             else:
                 error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
 
         else:
             api = 'https://graphql.anilist.co'
@@ -147,31 +147,31 @@ class Studio(commands.Cog, name='Studio'):
                                     studio_embed.add_field(name='Productions', value=productions.__str__()[1:-1]
                                                            .replace("'", "").replace(',', ''), inline=True)
                                 await ctx.channel.send(embed=studio_embed)
-                                main.logger.info('Server: %s | Response: Studio - %s' % (ctx.guild.name, data['name']))
+                                anisearch.logger.info('Server: %s | Response: Studio - %s' % (ctx.guild.name, data['name']))
                             except Exception as e:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the studio `%s`' % name,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.exception(e)
+                                anisearch.logger.exception(e)
                         else:
                             error_embed = discord.Embed(
                                 title='The studio `%s` does not exist in the AniList database' % name,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                            anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                     else:
                         error_embed = discord.Embed(
                             title='An error occurred while searching for the studio `%s`' % name,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Studio(client))
-    main.logger.info('Loaded extension Studio')
+    anisearch.logger.info('Loaded extension Studio')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Studio')
+    anisearch.logger.info('Unloaded extension Studio')

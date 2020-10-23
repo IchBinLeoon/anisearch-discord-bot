@@ -5,7 +5,7 @@ from typing import Optional
 
 from discord.utils import get
 
-import main
+import anisearch
 from config import config
 
 
@@ -42,12 +42,12 @@ class Help(commands.Cog, name='Help'):
                                                    f'`{prefix}commands`\n'
                                                    f'\n'
                                                    f'**Links:**\n'
-                                                   f'[Invite {self.client.user.name}!]({main.__invite__}) | '
-                                                   f'[Vote for {self.client.user.name}!]({main.__vote__})',
+                                                   f'[Invite {self.client.user.name}!]({anisearch.__invite__}) | '
+                                                   f'[Vote for {self.client.user.name}!]({anisearch.__vote__})',
                                        color=0x4169E1)
             help_embed.set_thumbnail(url=self.client.user.avatar_url)
             await ctx.send(embed=help_embed)
-            main.logger.info('Server: %s | Response: Help' % ctx.guild.name)
+            anisearch.logger.info('Server: %s | Response: Help' % ctx.guild.name)
         else:
             if command := get(self.client.commands, name=cmd):
                 help_embed = discord.Embed(title='Command - %s' % command, colour=0x4169E1)
@@ -70,12 +70,12 @@ class Help(commands.Cog, name='Help'):
                     help_embed.add_field(name='Aliases', value=aliases, inline=False)
                 help_embed.set_footer(text='<> - required, [] - optional, | - either/or')
                 await ctx.send(embed=help_embed)
-                main.logger.info('Server: %s | Response: Help - %s' % (ctx.guild.name, command))
+                anisearch.logger.info('Server: %s | Response: Help - %s' % (ctx.guild.name, command))
             else:
                 error_embed = discord.Embed(title='The command `%s` does not exist' % cmd,
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Help command not found' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Help command not found' % ctx.guild.name)
 
     @commands.command(name='commands', aliases=['cmds'], usage='commands', brief='3s', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -107,8 +107,8 @@ class Help(commands.Cog, name='Help'):
                                                f'```'
                                                f'• {prefix}{self.client.get_command("anilist").usage}\n'
                                                f'• {prefix}{self.client.get_command("myanimelist").usage}\n'
-                                               f'• {prefix}{self.client.get_command("link").usage}\n'
-                                               f'• {prefix}{self.client.get_command("removelinks").usage}\n'
+                                               f'• {prefix}{self.client.get_command("setprofile").usage}\n'
+                                               f'• {prefix}{self.client.get_command("remove").usage}\n'
                                                f'```'
                                                f'\n'
                                                f'**Info**\n'
@@ -133,13 +133,13 @@ class Help(commands.Cog, name='Help'):
         cmds_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
         cmds_embed.set_author(name="%s's commands" % self.client.user.name, icon_url=self.client.user.avatar_url)
         await ctx.send(embed=cmds_embed)
-        main.logger.info('Server: %s | Response: Commands' % ctx.guild.name)
+        anisearch.logger.info('Server: %s | Response: Commands' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Help(client))
-    main.logger.info('Loaded extension Help')
+    anisearch.logger.info('Loaded extension Help')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Help')
+    anisearch.logger.info('Unloaded extension Help')

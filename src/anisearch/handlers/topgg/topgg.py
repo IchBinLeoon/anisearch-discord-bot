@@ -1,7 +1,7 @@
 import dbl
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 
 
@@ -14,13 +14,13 @@ class TopGG(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_post(self):
-        main.logger.info('TopGG server count posted (%s)' % self.dblpy.guild_count())
+        anisearch.logger.info('TopGG server count posted (%s)' % self.dblpy.guild_count())
 
 
 def setup(client):
     client.add_cog(TopGG(client))
-    main.logger.info('Loaded extension TopGG')
+    anisearch.logger.info('Loaded extension TopGG')
 
 
 def teardown():
-    main.logger.info('Unloaded extension TopGG')
+    anisearch.logger.info('Unloaded extension TopGG')

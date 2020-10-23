@@ -2,7 +2,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-import main
+import anisearch
 from modules.character import character_query
 
 flags = ['--search', '--image']
@@ -24,7 +24,7 @@ class Character(commands.Cog, name='Character'):
             if args[len(args) - 2].startswith('--'):
                 error_embed = discord.Embed(title='Too many command flags', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
             elif flags.__contains__(args[len(args) - 1]):
                 flag = args[len(args) - 1]
 
@@ -88,28 +88,28 @@ class Character(commands.Cog, name='Character'):
                                         character_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                    icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=character_embed)
-                                        main.logger.info('Server: %s | Response: Character Search - %s'
-                                                         % (ctx.guild.name, name))
+                                        anisearch.logger.info('Server: %s | Response: Character Search - %s'
+                                                              % (ctx.guild.name, name))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the character `%s` with the '
                                                   'command flag `%s`' % (name, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The character `%s` does not exist in the AniList database' % name,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the character `%s` with the '
                                           'command flag `%s`' % (name, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--image':
                     args.remove('--image')
@@ -150,34 +150,34 @@ class Character(commands.Cog, name='Character'):
                                         character_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                    icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=character_embed)
-                                        main.logger.info('Server: %s | Response: Character Image - %s'
-                                                         % (ctx.guild.name, name))
+                                        anisearch.logger.info('Server: %s | Response: Character Image - %s'
+                                                              % (ctx.guild.name, name))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the character `%s` with the '
                                                   'command flag `%s`' % (name, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The character `%s` does not exist in the AniList database' % name,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the character `%s` with the '
                                           'command flag `%s`' % (name, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
             else:
                 error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
 
         else:
             api = 'https://graphql.anilist.co'
@@ -254,32 +254,32 @@ class Character(commands.Cog, name='Character'):
                                 character_embed.set_footer(text='Requested by %s' % ctx.author,
                                                            icon_url=ctx.author.avatar_url)
                                 await ctx.channel.send(embed=character_embed)
-                                main.logger.info('Server: %s | Response: Character - %s' % (ctx.guild.name,
-                                                                                            data['name']['full']))
+                                anisearch.logger.info('Server: %s | Response: Character - %s' % (ctx.guild.name,
+                                                                                                 data['name']['full']))
                             except Exception as e:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the character `%s`' % name,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.exception(e)
+                                anisearch.logger.exception(e)
                         else:
                             error_embed = discord.Embed(
                                 title='The character `%s` does not exist in the AniList database' % name,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                            anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                     else:
                         error_embed = discord.Embed(
                             title='An error occurred while searching for the character `%s`' % name,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Character(client))
-    main.logger.info('Loaded extension Character')
+    anisearch.logger.info('Loaded extension Character')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Character')
+    anisearch.logger.info('Unloaded extension Character')

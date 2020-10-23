@@ -2,7 +2,7 @@ import discord
 import psycopg2
 from discord.ext import commands
 
-import main
+import anisearch
 from config import config
 
 
@@ -20,7 +20,7 @@ class Prefix(commands.Cog, name='Prefix'):
             error_embed = discord.Embed(title='The prefix cannot be longer than 5 characters',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            main.logger.info('Server: %s | Response: Prefix wrong length' % ctx.guild.name)
+            anisearch.logger.info('Server: %s | Response: Prefix wrong length' % ctx.guild.name)
         else:
             db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
                                   password=config.BD_PASSWORD)
@@ -36,20 +36,20 @@ class Prefix(commands.Cog, name='Prefix'):
             if prefix == 'as!':
                 prefix_embed = discord.Embed(title='Prefix resetted', color=0x4169E1)
                 await ctx.channel.send(embed=prefix_embed)
-                main.logger.info('Server: %s | Response: Prefix resetted' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Prefix resetted' % ctx.guild.name)
             else:
                 prefix_embed = discord.Embed(title='%s changed the prefix from `%s` to `%s`' %
                                                    (ctx.author, prefix_old, prefix),
                                              color=0x4169E1)
                 await ctx.channel.send(embed=prefix_embed)
-                main.logger.info('Server: %s | Response: Prefix changed from %s to %s' % (ctx.guild.name, prefix_old,
-                                                                                          prefix))
+                anisearch.logger.info('Server: %s | Response: Prefix changed from %s to %s' % (ctx.guild.name,
+                                                                                               prefix_old, prefix))
 
 
 def setup(client):
     client.add_cog(Prefix(client))
-    main.logger.info('Loaded extension Prefix')
+    anisearch.logger.info('Loaded extension Prefix')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Prefix')
+    anisearch.logger.info('Unloaded extension Prefix')
