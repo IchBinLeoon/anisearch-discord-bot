@@ -29,21 +29,21 @@ class ErrorHandler(commands.Cog):
             error_embed = discord.Embed(title='Too many arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            await ctx.command.reset_cooldown(ctx)
+            ctx.command.reset_cooldown(ctx)
             anisearch.logger.info('Server: %s | Response: Too many arguments' % ctx.guild.name)
 
         if isinstance(error, commands.MissingRequiredArgument):
             error_embed = discord.Embed(title='Missing required argument',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            await ctx.command.reset_cooldown(ctx)
+            ctx.command.reset_cooldown(ctx)
             anisearch.logger.info('Server: %s | Response: Missing required argument' % ctx.guild.name)
 
         if isinstance(error, commands.BadArgument):
             error_embed = discord.Embed(title='Wrong arguments',
                                         color=0xff0000)
             await ctx.channel.send(embed=error_embed)
-            await ctx.command.reset_cooldown(ctx)
+            ctx.command.reset_cooldown(ctx)
             anisearch.logger.info('Server: %s | Response: Wrong arguments' % ctx.guild.name)
 
         if isinstance(error, commands.MissingPermissions):
