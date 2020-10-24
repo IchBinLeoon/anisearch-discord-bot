@@ -2,7 +2,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-import main
+import anisearch
 from modules.staff import staff_query
 
 flags = ['--search', '--image']
@@ -23,7 +23,7 @@ class Staff(commands.Cog, name='Staff'):
             if args[len(args) - 2].startswith('--'):
                 error_embed = discord.Embed(title='Too many command flags', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
             elif flags.__contains__(args[len(args) - 1]):
                 flag = args[len(args) - 1]
 
@@ -85,7 +85,7 @@ class Staff(commands.Cog, name='Staff'):
                                         character_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                    icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=character_embed)
-                                        main.logger.info('Server: %s | Response: Staff Search - %s'
+                                        anisearch.logger.info('Server: %s | Response: Staff Search - %s'
                                                          % (ctx.guild.name, name))
                                     except Exception as e:
                                         error_embed = discord.Embed(
@@ -93,20 +93,20 @@ class Staff(commands.Cog, name='Staff'):
                                                   'command flag `%s`' % (name, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The staff `%s` does not exist in the AniList database' % name,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the staff `%s` with the '
                                           'command flag `%s`' % (name, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--image':
                     args.remove('--image')
@@ -150,7 +150,7 @@ class Staff(commands.Cog, name='Staff'):
                                         staff_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=staff_embed)
-                                        main.logger.info('Server: %s | Response: Staff Image - %s'
+                                        anisearch.logger.info('Server: %s | Response: Staff Image - %s'
                                                          % (ctx.guild.name, name))
                                     except Exception as e:
                                         error_embed = discord.Embed(
@@ -158,26 +158,26 @@ class Staff(commands.Cog, name='Staff'):
                                                   'command flag `%s`' % (name, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The staff `%s` does not exist in the AniList database' % name,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the staff `%s` with the '
                                           'command flag `%s`' % (name, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
             else:
                 error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
 
         else:
             api = 'https://graphql.anilist.co'
@@ -275,32 +275,32 @@ class Staff(commands.Cog, name='Staff'):
                                 staff_embed.set_footer(text='Requested by %s' % ctx.author,
                                                        icon_url=ctx.author.avatar_url)
                                 await ctx.channel.send(embed=staff_embed)
-                                main.logger.info('Server: %s | Response: Staff - %s' % (ctx.guild.name,
+                                anisearch.logger.info('Server: %s | Response: Staff - %s' % (ctx.guild.name,
                                                                                         data['name']['full']))
                             except Exception as e:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the staff `%s`' % name,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.exception(e)
+                                anisearch.logger.exception(e)
                         else:
                             error_embed = discord.Embed(
                                 title='The staff `%s` does not exist in the AniList database' % name,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                            anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                     else:
                         error_embed = discord.Embed(
                             title='An error occurred while searching for the staff `%s`' % name,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Staff(client))
-    main.logger.info('Loaded extension Staff')
+    anisearch.logger.info('Loaded extension Staff')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Staff')
+    anisearch.logger.info('Unloaded extension Staff')

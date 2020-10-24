@@ -2,7 +2,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-import main
+import anisearch
 from modules.manga import manga_query
 
 flags = ['--search', '--characters', '--staff', '--image', '--relations', '--links', '--all']
@@ -23,7 +23,7 @@ class Manga(commands.Cog, name='Manga'):
             if args[len(args) - 2].startswith('--'):
                 error_embed = discord.Embed(title='Too many command flags', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
             elif flags.__contains__(args[len(args) - 1]):
                 flag = args[len(args) - 1]
 
@@ -63,28 +63,28 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga Search - %s'
-                                                         % (ctx.guild.name, title))
+                                        anisearch.logger.info('Server: %s | Response: Manga Search - %s'
+                                                              % (ctx.guild.name, title))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--characters':
                     args.remove('--characters')
@@ -148,28 +148,28 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga Characters - %s'
-                                                         % (ctx.guild.name, data['title']['romaji']))
+                                        anisearch.logger.info('Server: %s | Response: Manga Characters - %s'
+                                                              % (ctx.guild.name, data['title']['romaji']))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--staff':
                     args.remove('--staff')
@@ -233,28 +233,28 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga Staff - %s'
-                                                         % (ctx.guild.name, data['title']['romaji']))
+                                        anisearch.logger.info('Server: %s | Response: Manga Staff - %s'
+                                                              % (ctx.guild.name, data['title']['romaji']))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--image':
                     args.remove('--image')
@@ -297,28 +297,28 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga Image - %s'
-                                                         % (ctx.guild.name, data['title']['romaji']))
+                                        anisearch.logger.info('Server: %s | Response: Manga Image - %s'
+                                                              % (ctx.guild.name, data['title']['romaji']))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--relations':
                     args.remove('--relations')
@@ -387,28 +387,28 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga Relations - %s'
-                                                         % (ctx.guild.name, data['title']['romaji']))
+                                        anisearch.logger.info('Server: %s | Response: Manga Relations - %s'
+                                                              % (ctx.guild.name, data['title']['romaji']))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--links':
                     args.remove('--links')
@@ -454,8 +454,8 @@ class Manga(commands.Cog, name='Manga'):
                                                         ') |'))
                                                 x = x + 1
                                             links.append(str('[' + data['externalLinks'][x]['site']
-                                                         + '](' + data['externalLinks'][x]['url'] +
-                                                         ')'))
+                                                             + '](' + data['externalLinks'][x]['url'] +
+                                                             ')'))
                                         else:
                                             links = '[-]'
                                         if len(str(links)) > 1024:
@@ -471,28 +471,28 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga Links - %s'
-                                                         % (ctx.guild.name, data['title']['romaji']))
+                                        anisearch.logger.info('Server: %s | Response: Manga Links - %s'
+                                                              % (ctx.guild.name, data['title']['romaji']))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
                 elif flag == '--all':
                     args.remove('--all')
@@ -714,8 +714,8 @@ class Manga(commands.Cog, name='Manga'):
                                                         ') |'))
                                                 x = x + 1
                                             links.append(str('[' + data['externalLinks'][x]['site']
-                                                         + '](' + data['externalLinks'][x]['url'] +
-                                                         ')'))
+                                                             + '](' + data['externalLinks'][x]['url'] +
+                                                             ')'))
                                         else:
                                             links = '[-]'
                                         if len(str(links)) > 1024:
@@ -737,35 +737,35 @@ class Manga(commands.Cog, name='Manga'):
                                         manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                                icon_url=ctx.author.avatar_url)
                                         await ctx.channel.send(embed=manga_embed)
-                                        main.logger.info('Server: %s | Response: Manga All - %s' % (ctx.guild.name,
-                                                                                                    data['title'][
-                                                                                                        'romaji']))
+                                        anisearch.logger.info('Server: %s | Response: Manga All - %s' % (ctx.guild.name,
+                                                                                                         data['title'][
+                                                                                                             'romaji']))
                                     except Exception as e:
                                         error_embed = discord.Embed(
                                             title='An error occurred while searching for the manga `%s` with the '
                                                   'command flag `%s`' % (title, flag),
                                             color=0xff0000)
                                         await ctx.channel.send(embed=error_embed)
-                                        main.logger.exception(e)
+                                        anisearch.logger.exception(e)
                                 else:
                                     error_embed = discord.Embed(
                                         title='The manga `%s` does not exist in the AniList database' % title,
                                         color=0xff0000)
                                     await ctx.channel.send(embed=error_embed)
-                                    main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                                    anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                             else:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s` with the '
                                           'command flag `%s`' % (title, flag),
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                                anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
             else:
                 error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
                                             color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
 
         else:
             api = 'https://graphql.anilist.co'
@@ -892,32 +892,32 @@ class Manga(commands.Cog, name='Manga'):
                                 manga_embed.set_footer(text='Requested by %s' % ctx.author,
                                                        icon_url=ctx.author.avatar_url)
                                 await ctx.channel.send(embed=manga_embed)
-                                main.logger.info('Server: %s | Response: Manga - %s' % (ctx.guild.name,
-                                                                                        data['title']['romaji']))
+                                anisearch.logger.info('Server: %s | Response: Manga - %s' % (ctx.guild.name,
+                                                                                             data['title']['romaji']))
                             except Exception as e:
                                 error_embed = discord.Embed(
                                     title='An error occurred while searching for the manga `%s`' % title,
                                     color=0xff0000)
                                 await ctx.channel.send(embed=error_embed)
-                                main.logger.exception(e)
+                                anisearch.logger.exception(e)
                         else:
                             error_embed = discord.Embed(
                                 title='The manga `%s` does not exist in the AniList database' % title,
                                 color=0xff0000)
                             await ctx.channel.send(embed=error_embed)
-                            main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                            anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
                     else:
                         error_embed = discord.Embed(
                             title='An error occurred while searching for the manga `%s`' % title,
                             color=0xff0000)
                         await ctx.channel.send(embed=error_embed)
-                        main.logger.info('Server: %s | Response: Error' % ctx.guild.name)
+                        anisearch.logger.info('Server: %s | Response: Error' % ctx.guild.name)
 
 
 def setup(client):
     client.add_cog(Manga(client))
-    main.logger.info('Loaded extension Manga')
+    anisearch.logger.info('Loaded extension Manga')
 
 
 def teardown():
-    main.logger.info('Unloaded extension Manga')
+    anisearch.logger.info('Unloaded extension Manga')

@@ -6,7 +6,7 @@ import discord
 import psutil
 from discord.ext import commands
 
-import main
+import anisearch
 
 
 class About(commands.Cog, name='About'):
@@ -25,9 +25,9 @@ class About(commands.Cog, name='About'):
                                                 '[AniList](https://anilist.co) and '
                                                 '[MyAnimeList](https://myanimelist.net/)!' % self.client.user.id,
                                     color=0x4169E1, timestamp=ctx.message.created_at)
-        about_embed.add_field(name='❯ Creator', value='<@!%s>' % main.__owner_id__,
+        about_embed.add_field(name='❯ Creator', value='<@!%s>' % anisearch.__ownerid__,
                               inline=True)
-        about_embed.add_field(name='❯ Version', value='v%s' % main.__version__,
+        about_embed.add_field(name='❯ Version', value='v%s' % anisearch.__version__,
                               inline=True)
         about_embed.add_field(name='❯ Commands', value='as!help',
                               inline=True)
@@ -43,11 +43,11 @@ class About(commands.Cog, name='About'):
                               inline=True)
         about_embed.add_field(name='❯ Users', value=str(len(self.client.users)),
                               inline=True)
-        about_embed.add_field(name='❯ Invite', value='[Click me!](%s)' % main.__invite__,
+        about_embed.add_field(name='❯ Invite', value='[Click me!](%s)' % anisearch.__invite__,
                               inline=True)
-        about_embed.add_field(name='❯ Vote', value='[Click me!](%s)' % main.__vote__,
+        about_embed.add_field(name='❯ Vote', value='[Click me!](%s)' % anisearch.__vote__,
                               inline=True)
-        about_embed.add_field(name='❯ GitHub', value='[Click me!](%s)' % main.__github__,
+        about_embed.add_field(name='❯ GitHub', value='[Click me!](%s)' % anisearch.__github__,
                               inline=True)
         about_embed.set_thumbnail(url=self.client.user.avatar_url)
         about_embed.set_footer(text='Requested by %s' % ctx.author, icon_url=ctx.author.avatar_url)
@@ -56,8 +56,8 @@ class About(commands.Cog, name='About'):
 
 def setup(client):
     client.add_cog(About(client))
-    main.logger.info('Loaded extension About')
+    anisearch.logger.info('Loaded extension About')
 
 
 def teardown():
-    main.logger.info('Unloaded extension About')
+    anisearch.logger.info('Unloaded extension About')

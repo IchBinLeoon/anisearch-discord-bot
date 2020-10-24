@@ -16,9 +16,9 @@ import logging
 
 from config import config
 
-__version__ = '1.5.1'
+__version__ = '1.5.2'
 __author__ = 'IchBinLeoon'
-__owner_id__ = 223871059068321793
+__ownerid__ = 223871059068321793
 __invite__ = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot'
 __vote__ = 'https://top.gg/bot/737236600878137363/vote'
 __github__ = 'https://github.com/IchBinLeoon/anisearch-discord-bot'
@@ -42,10 +42,10 @@ logger.addHandler(stream_handler)
 
 extensions = ['modules.anime.anime', 'modules.manga.manga', 'modules.character.character', 'modules.staff.staff',
               'modules.random.random', 'modules.anilist.anilist', 'modules.studio.studio',
-              'modules.myanimelist.myanimelist', 'modules.link.link', 'modules.removelinks.removelinks',
+              'modules.myanimelist.myanimelist', 'modules.setprofile.setprofile', 'modules.remove.remove',
               'modules.prefix.prefix', 'modules.ping.ping', 'modules.help.help', 'modules.about.about',
-              'handlers.error_handler', 'events.guild_join', 'events.guild_leave', 'modules.contact.contact',
-              'handlers.topgg', 'modules.source.source']
+              'handlers.error_handler.error_handler', 'events.guild_join.guild_join', 'events.guild_leave.guild_leave',
+              'modules.contact.contact', 'handlers.topgg.topgg', 'modules.source.source']
 
 
 def get_current_time():
@@ -84,7 +84,8 @@ def get_prefix(ctx):
 
 
 def main():
-    client = commands.Bot(command_prefix=get_command_prefix, owner_id=__owner_id__)
+    intents = discord.Intents(messages=True, guilds=True)
+    client = commands.Bot(command_prefix=get_command_prefix, owner_id=__ownerid__, intents=intents)
 
     @client.event
     async def on_ready():
@@ -101,12 +102,15 @@ def main():
         online_embed = discord.Embed(title='Client is online - Extensions loaded %s/%s' % (len(client.cogs),
                                                                                            len(extensions)),
                                      color=0x4169E1)
-        await client.get_user(__owner_id__).send(embed=online_embed)
+        user = await client.fetch_user(__ownerid__)
+        await user.send(embed=online_embed)
 
     def load_extensions():
         for i in extensions:
             try:
                 client.load_extension(i)
+            except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+                logger.info('Extension %s is already loaded.' % i)
             except Exception as e:
                 logger.exception(e)
         logger.info('Extensions loaded %s/%s' % (len(client.cogs), len(extensions)))
@@ -145,6 +149,16 @@ def main():
                                        color=0x4169E1)
             await ctx.channel.send(embed=load_embed)
             logger.info('Server: %s | Response: Loaded extension %s' % (ctx.guild.name, extension))
+        except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+            load_embed = discord.Embed(title='Extension `%s` is already loaded.' % extension,
+                                       color=0xff0000)
+            await ctx.channel.send(embed=load_embed)
+            logger.info('Server: %s | Response: Extension %s is already loaded' % (ctx.guild.name, extension))
+        except discord.ext.commands.errors.ExtensionNotFound:
+            load_embed = discord.Embed(title='Extension %s could not be found.' % extension,
+                                       color=0xff0000)
+            await ctx.channel.send(embed=load_embed)
+            logger.info('Server: %s | Response: Extension %s could not be found' % (ctx.guild.name, extension))
         except Exception as e:
             load_embed = discord.Embed(title='An error occurred while loading the extension `%s`' % extension,
                                        color=0xff0000)
@@ -162,6 +176,16 @@ def main():
                                        color=0x4169E1)
             await ctx.channel.send(embed=load_embed)
             logger.info('Server: %s | Response: Unloaded extension %s' % (ctx.guild.name, extension))
+        except discord.ext.commands.errors.ExtensionNotLoaded:
+            load_embed = discord.Embed(title='Extension `%s` has not been loaded.' % extension,
+                                       color=0xff0000)
+            await ctx.channel.send(embed=load_embed)
+            logger.info('Server: %s | Response: Extension %s has not been loaded' % (ctx.guild.name, extension))
+        except discord.ext.commands.errors.ExtensionNotFound:
+            load_embed = discord.Embed(title='Extension %s could not be found.' % extension,
+                                       color=0xff0000)
+            await ctx.channel.send(embed=load_embed)
+            logger.info('Server: %s | Response: Extension %s could not be found' % (ctx.guild.name, extension))
         except Exception as e:
             load_embed = discord.Embed(title='An error occurred while unloading the extension `%s`' % extension,
                                        color=0xff0000)
@@ -173,13 +197,23 @@ def main():
     @commands.is_owner()
     async def cmd_reload(ctx, extension):
         """Reloads an extension. // Creator only"""
-        client.unload_extension(extension)
-        client.load_extension(extension)
         try:
+            client.unload_extension(extension)
+            client.load_extension(extension)
             load_embed = discord.Embed(title='Reloaded extension `%s`' % extension,
                                        color=0x4169E1)
             await ctx.channel.send(embed=load_embed)
             logger.info('Server: %s | Response: Reloaded extension %s' % (ctx.guild.name, extension))
+        except discord.ext.commands.errors.ExtensionNotLoaded:
+            load_embed = discord.Embed(title='Extension `%s` has not been loaded.' % extension,
+                                       color=0xff0000)
+            await ctx.channel.send(embed=load_embed)
+            logger.info('Server: %s | Response: Extension %s has not been loaded' % (ctx.guild.name, extension))
+        except discord.ext.commands.errors.ExtensionNotFound:
+            load_embed = discord.Embed(title='Extension %s could not be found.' % extension,
+                                       color=0xff0000)
+            await ctx.channel.send(embed=load_embed)
+            logger.info('Server: %s | Response: Extension %s could not be found' % (ctx.guild.name, extension))
         except Exception as e:
             load_embed = discord.Embed(title='An error occurred while reloading the extension `%s`' % extension,
                                        color=0xff0000)
@@ -259,7 +293,3 @@ def main():
         logger.info('Server: %s | Response: Status' % ctx.guild.name)
 
     client.run(config.TOKEN)
-
-
-if __name__ == '__main__':
-    main()

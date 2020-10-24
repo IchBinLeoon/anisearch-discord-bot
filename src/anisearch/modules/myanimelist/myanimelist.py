@@ -5,7 +5,7 @@ import psycopg2
 from discord.ext import commands
 from jikanpy import AioJikan
 
-import main
+import anisearch
 from config import config
 
 
@@ -37,7 +37,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                 error_embed = discord.Embed(
                     title='You have no MyAnimeList Profile linked', color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
 
         elif username.startswith('<@!'):
             user_id = int(username.replace('<@!', '').replace('>', ''))
@@ -53,7 +53,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                 error_embed = discord.Embed(
                     title='%s has no MyAnimeList Profile linked' % self.client.get_user(user_id).name, color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: No Profile linked' % ctx.guild.name)
 
         else:
             username = username
@@ -68,7 +68,8 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
 
                 try:
                     if user.get('last_online') is not None:
-                        last_online = user.get('last_online').__str__().replace("-", "/").replace("T", " ").replace("+", " +")
+                        last_online = user.get('last_online').__str__().replace("-", "/").replace("T", " ").replace("+",
+                                                                                                                    " +")
                     else:
                         last_online = '-'
                     if user.get('gender') is not None:
@@ -232,14 +233,15 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                     myanimelist_embed.set_footer(text='Requested by %s' % ctx.author,
                                                  icon_url=ctx.author.avatar_url)
                     await ctx.channel.send(embed=myanimelist_embed)
-                    main.logger.info('Server: %s | Response: MyAnimeList - %s' % (ctx.guild.name, user.get('username')))
+                    anisearch.logger.info(
+                        'Server: %s | Response: MyAnimeList - %s' % (ctx.guild.name, user.get('username')))
 
                 except Exception as e:
                     error_embed = discord.Embed(
                         title='An error occurred while searching for MyAnimeList Profile `%s`' % username,
                         color=0xff0000)
                     await ctx.channel.send(embed=error_embed)
-                    main.logger.exception(e)
+                    anisearch.logger.exception(e)
 
             except:
                 error_embed = discord.Embed(
@@ -247,15 +249,15 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                           % username,
                     color=0xff0000)
                 await ctx.channel.send(embed=error_embed)
-                main.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
+                anisearch.logger.info('Server: %s | Response: Not found' % ctx.guild.name)
 
             await aio_jikan.close()
 
 
 def setup(client):
     client.add_cog(MyAnimeList(client))
-    main.logger.info('Loaded extension MyAnimeList')
+    anisearch.logger.info('Loaded extension MyAnimeList')
 
 
 def teardown():
-    main.logger.info('Unloaded extension MyAnimeList')
+    anisearch.logger.info('Unloaded extension MyAnimeList')
