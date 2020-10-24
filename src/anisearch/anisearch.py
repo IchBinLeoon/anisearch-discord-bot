@@ -252,7 +252,9 @@ def main():
         guilds = str(len(client.guilds))
         status_embed.add_field(name='Guilds', value=guilds,
                                inline=True)
-        users = str(len(client.users))
+        users = 0
+        for guild in client.guilds:
+            users = users + guild.member_count
         status_embed.add_field(name='Users', value=users,
                                inline=True)
         cog_name = ''

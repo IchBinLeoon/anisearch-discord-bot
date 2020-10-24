@@ -41,7 +41,10 @@ class About(commands.Cog, name='About'):
                                   inline=True)
         about_embed.add_field(name='❯ Guilds', value=str(len(self.client.guilds)),
                               inline=True)
-        about_embed.add_field(name='❯ Users', value=str(len(self.client.users)),
+        users = 0
+        for guild in self.client.guilds:
+            users = users + guild.member_count
+        about_embed.add_field(name='❯ Users', value=users,
                               inline=True)
         about_embed.add_field(name='❯ Invite', value='[Click me!](%s)' % anisearch.__invite__,
                               inline=True)

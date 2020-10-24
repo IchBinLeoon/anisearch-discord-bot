@@ -150,6 +150,7 @@ class Help(commands.Cog, name='Help'):
                                                f'`{prefix}help [command]`.\n'
                                                f'\n'
                                                f'**All command flags:**\n'
+                                               f'`None:` Displays information about the first search result.\n'
                                                f'`--search`: Displays all search results.\n'
                                                f'`--characters`: Displays the characters in the media.\n'
                                                f'`--staff`: Displays the staff who produced the media.\n'
