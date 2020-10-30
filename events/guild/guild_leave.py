@@ -1,4 +1,3 @@
-import discord
 import psycopg2
 from discord.ext import commands
 
@@ -21,14 +20,6 @@ class GuildLeave(commands.Cog):
         db.commit()
         cur.close()
         db.close()
-        guild_remove_embed = discord.Embed(title="Left server %s" % guild.name,
-                                           color=0x4169E1)
-        guild_remove_embed.add_field(name="Owner", value=guild.owner,
-                                     inline=True)
-        guild_remove_embed.add_field(name="Server ID", value=guild.id,
-                                     inline=True)
-        user = await self.client.fetch_user(anisearch.__ownerid__)
-        await user.send(embed=guild_remove_embed)
 
 
 def setup(client):
