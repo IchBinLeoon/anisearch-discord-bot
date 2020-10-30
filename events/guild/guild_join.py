@@ -1,4 +1,3 @@
-import discord
 import psycopg2
 from discord.ext import commands
 
@@ -21,23 +20,6 @@ class GuildJoin(commands.Cog):
         db.commit()
         cur.close()
         db.close()
-        guild_join_embed = discord.Embed(title="Joined server %s" % guild.name,
-                                         color=0x4169E1)
-        guild_join_embed.add_field(name="Owner", value=guild.owner,
-                                   inline=True)
-        guild_join_embed.add_field(name="Server ID", value=guild.id,
-                                   inline=True)
-        guild_join_embed.add_field(name="Created", value=guild.created_at.strftime('%d/%m/%Y, %H:%M:%S'),
-                                   inline=True)
-        guild_join_embed.add_field(name="Region", value=guild.region,
-                                   inline=True)
-        guild_join_embed.add_field(name="Members", value=guild.member_count,
-                                   inline=True)
-        guild_join_embed.add_field(name="Tier", value=guild.premium_tier,
-                                   inline=True)
-        guild_join_embed.set_thumbnail(url=guild.icon_url)
-        user = await self.client.fetch_user(anisearch.__ownerid__)
-        await user.send(embed=guild_join_embed)
 
 
 def setup(client):
