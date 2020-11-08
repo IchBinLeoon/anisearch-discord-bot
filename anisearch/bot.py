@@ -40,10 +40,12 @@ if logger.hasHandlers():
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-extensions = ['cogs.anime', 'cogs.manga', 'cogs.character', 'cogs.staff', 'cogs.random', 'cogs.anilist', 'cogs.studio',
-              'cogs.myanimelist', 'cogs.setprofile', 'cogs.remove', 'cogs.prefix', 'cogs.ping', 'cogs.help',
-              'cogs.about', 'cogs.contact', 'cogs.source', 'handlers.error_handler', 'events.guild_join',
-              'events.guild_leave', 'handlers.topgg']
+extensions = ['anisearch.cogs.anime', 'anisearch.cogs.manga', 'anisearch.cogs.character', 'anisearch.cogs.staff',
+              'anisearch.cogs.random', 'anisearch.cogs.anilist', 'anisearch.cogs.studio', 'anisearch.cogs.myanimelist',
+              'anisearch.cogs.setprofile', 'anisearch.cogs.remove', 'anisearch.cogs.prefix', 'anisearch.cogs.ping',
+              'anisearch.cogs.help', 'anisearch.cogs.about', 'anisearch.cogs.contact', 'anisearch.cogs.source',
+              'anisearch.handlers.error_handler', 'anisearch.events.guild_join', 'anisearch.events.guild_leave',
+              'anisearch.handlers.topgg']
 
 
 def get_current_time():
