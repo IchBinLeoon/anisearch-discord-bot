@@ -1,0 +1,5 @@
+discord.py[voice]
+psutil
+psycopg2
+jikanpy
+dblpy
