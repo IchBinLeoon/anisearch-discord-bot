@@ -9,7 +9,7 @@ Profiles from AniList and MyAnimeList!
 [![CodeFactor](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge)](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot)
 [![Issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
 [![Pulls](https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
-[![Python](https://img.shields.io/badge/python-3.8.5-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.8.6-blue)](https://www.python.org/)
 
 ---
 
