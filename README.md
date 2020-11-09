@@ -1,4 +1,4 @@
-<img align="right" hight="150px" width="150px" src="anisearch/assets/anisearch-logo.png">
+<img align="right" hight="150px" width="150px" src="assets/anisearch-logo.png">
 
 ### AniSearch v1.5.2
 Searches and displays information about Anime, Manga, Characters, Staff, Studios and  
