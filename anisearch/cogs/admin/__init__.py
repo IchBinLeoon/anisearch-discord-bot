@@ -1,11 +1,11 @@
 from anisearch.cogs.admin.admin import Admin
-from anisearch.bot import logger
+from anisearch.utils.logger import logger
 
 
 def setup(bot):
     bot.add_cog(Admin(bot))
-    logger.info('Loaded extension Admin')
+    logger.info('Loaded cog Admin')
 
 
 def teardown():
-    logger.info('Unloaded extension Admin')
+    logger.info('Unloaded cog Admin')

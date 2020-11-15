@@ -1,11 +1,11 @@
-from anisearch.bot import logger
 from anisearch.cogs.manga.manga import Manga
+from anisearch.utils.logger import logger
 
 
 def setup(bot):
     bot.add_cog(Manga(bot))
-    logger.info('Loaded extension Manga')
+    logger.info('Loaded cog Manga')
 
 
 def teardown():
-    logger.info('Unloaded extension Manga')
+    logger.info('Unloaded cog Manga')

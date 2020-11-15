@@ -1,11 +1,11 @@
 from anisearch.cogs.anime.anime import Anime
-from anisearch.bot import logger
+from anisearch.utils.logger import logger
 
 
 def setup(bot):
     bot.add_cog(Anime(bot))
-    logger.info('Loaded extension Anime')
+    logger.info('Loaded cog Anime')
 
 
 def teardown():
-    logger.info('Unloaded extension Anime')
+    logger.info('Unloaded cog Anime')

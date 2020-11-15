@@ -1,297 +1,94 @@
-import aiohttp
 import discord
+from discord.ext import menus
 from discord.ext import commands
+from anisearch.utils.embeds import anilist_not_found_error_embed
+from anisearch.utils.embeds import anilist_load_embed_error_embed
+from anisearch.utils.embeds import anilist_request_error_embed
+from anisearch.utils.formats import longer_description_parser
+from anisearch.utils.logger import logger
+from anisearch.utils.queries.staff_query import SEARCH_STAFF_QUERY
+from anisearch.utils.requests import anilist_request
 
-from anisearch.bot import logger
-from anisearch.queries import staff_query
 
-flags = ['--search', '--image']
+async def _search_staff_anilist(ctx, name):
+    embeds = []
+    try:
+        variables = {'search': name, 'page': 1, 'amount': 15}
+        data = (await anilist_request(SEARCH_STAFF_QUERY, variables))['data']['Page']['staff']
+    except Exception as exception:
+        logger.exception(exception)
+        embed = anilist_request_error_embed(ctx, 'staff', name, exception)
+        embeds.append(embed)
+        return embeds
+    if data is not None and len(data) > 0:
+        pages = len(data)
+        current_page = 0
+        for staff in data:
+            current_page += 1
+            try:
+                embed = discord.Embed(timestamp=ctx.message.created_at, color=0x4169E1)
+                if staff['image']['large']:
+                    embed.set_thumbnail(url=staff['image']['large'])
+                if staff['name']['native'] is None:
+                    embed.title = staff['name']['full']
+                elif staff['name']['full'] is None or staff['name']['full'] == staff['name']['native']:
+                    embed.title = staff['name']['native']
+                else:
+                    embed.title = '{} ({})'.format(staff['name']['full'], staff['name']['native'])
+                if staff['siteUrl']:
+                    embed.url = staff['siteUrl']
+                if staff['description']:
+                    embed.description = longer_description_parser(staff['description'])
+                if staff['staffMedia']['edges']:
+                    staff_roles = []
+                    for x in staff['staffMedia']['edges']:
+                        media_name = '[{}]({})'.format([x][0]['node']['title']['romaji'], [x][0]['node']['siteUrl'])
+                        staff_roles.append(media_name)
+                    if len(staff_roles) > 5:
+                        staff_roles = staff_roles[0:5]
+                        staff_roles[4] = staff_roles[4] + '...'
+                    embed.add_field(name='Staff Roles', value=' | '.join(staff_roles), inline=False)
+                if staff['characters']['edges']:
+                    characters = []
+                    for x in staff['characters']['edges']:
+                        character_name = '[{}]({})'.format([x][0]['node']['name']['full'], [x][0]['node']['siteUrl'])
+                        characters.append(character_name)
+                    if len(characters) > 5:
+                        characters = characters[0:5]
+                        characters[4] = characters[4] + '...'
+                    embed.add_field(name='Character Roles', value=' | '.join(characters), inline=False)
+                embed.set_footer(text='Requested by {} • Page {}/{}'.format(ctx.author, current_page, pages),
+                                 icon_url=ctx.author.avatar_url)
+                embeds.append(embed)
+            except Exception as exception:
+                logger.exception(exception)
+                embed = anilist_load_embed_error_embed(ctx, 'staff', exception, current_page, pages)
+                embeds.append(embed)
+        return embeds
 
 
 class Staff(commands.Cog, name='Staff'):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
-    @commands.command(name='staff', usage='staff <name> [flag]', brief='3s', ignore_extra=False)
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def cmd_staff(self, ctx, *, name):
-        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!
-        |--search --image"""
-        args = name.split(' ')
-        if args[len(args) - 1].startswith('--'):
-            if args[len(args) - 2].startswith('--'):
-                error_embed = discord.Embed(title='Too many command flags', color=0xff0000)
-                await ctx.channel.send(embed=error_embed)
-                logger.info('Server: %s | Response: Too many command flags' % ctx.guild.name)
-            elif flags.__contains__(args[len(args) - 1]):
-                flag = args[len(args) - 1]
-
-                if flag == '--search':
-                    args.remove('--search')
-                    separator = ' '
-                    name = separator.join(args)
-                    api = 'https://graphql.anilist.co'
-                    query = staff_query.query
-                    variables = {
-                        'staff': name,
-                        'page': 1,
-                        'amount': 15
-                    }
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(api, json={'query': query, 'variables': variables}) as r:
-                            if r.status == 200:
-                                json = await r.json()
-                                if json['data']['Page']['staff']:
-                                    data = json['data']['Page']['staff']
-                                    try:
-                                        character_embed = discord.Embed(
-                                            title='Search results for staff "%s"' % name,
-                                            color=0x4169E1,
-                                            timestamp=ctx.message.created_at)
-                                        x = 0
-                                        for i in data:
-                                            if data[x]['name']['full'] is None or data[x]['name']['full'] == \
-                                                    data[x]['name']['native']:
-                                                staff_name = str(x + 1) + '. ' + data[x]['name']['native']
-                                            else:
-                                                if data[x]['name']['native']:
-                                                    staff_name = str(x + 1) + '. ' + data[x]['name']['full'] + ' (' + \
-                                                                 data[x]['name']['native'] + ')'
-                                                else:
-                                                    staff_name = str(x + 1) + '. ' + data[x]['name']['full']
-                                            if data[x]['staffMedia']['edges']:
-                                                productions = []
-                                                if len(data[x]['staffMedia']['edges']) < 2:
-                                                    length = len(data[x]['staffMedia']['edges'])
-                                                else:
-                                                    length = 2
-                                                y = 0
-                                                for j in range(0, length):
-                                                    productions.append(str('[' + data[x]['staffMedia']['edges'][y]
-                                                    ['node']['title']['romaji'] + '](' + data[x]
-                                                                           ['staffMedia']['edges'][y]['node']
-                                                                           ['siteUrl'] + ')'))
-                                                    y = y + 1
-                                                if len(data[x]['staffMedia']['edges']) < 2:
-                                                    value = ' | '.join(productions)
-                                                else:
-                                                    value = ' | '.join(productions) + '...'
-                                            else:
-                                                value = '-'
-                                            character_embed.add_field(name=staff_name, value=value, inline=False)
-                                            x = x + 1
-                                        character_embed.set_thumbnail(url=data[0]['image']['large'])
-                                        character_embed.set_footer(text='Requested by %s' % ctx.author,
-                                                                   icon_url=ctx.author.avatar_url)
-                                        await ctx.channel.send(embed=character_embed)
-                                        logger.info('Server: %s | Response: Staff Search - %s'
-                                                        % (ctx.guild.name, name))
-                                    except Exception as e:
-                                        error_embed = discord.Embed(
-                                            title='An error occurred while searching for the staff `%s` with the '
-                                                  'command flag `%s`' % (name, flag),
-                                            color=0xff0000)
-                                        await ctx.channel.send(embed=error_embed)
-                                        logger.exception(e)
-                                else:
-                                    error_embed = discord.Embed(
-                                        title='The staff `%s` does not exist in the AniList database' % name,
-                                        color=0xff0000)
-                                    await ctx.channel.send(embed=error_embed)
-                                    logger.info('Server: %s | Response: Not found' % ctx.guild.name)
-                            else:
-                                error_embed = discord.Embed(
-                                    title='An error occurred while searching for the staff `%s` with the '
-                                          'command flag `%s`' % (name, flag),
-                                    color=0xff0000)
-                                await ctx.channel.send(embed=error_embed)
-                                logger.info('Server: %s | Response: Error' % ctx.guild.name)
-
-                elif flag == '--image':
-                    args.remove('--image')
-                    separator = ' '
-                    name = separator.join(args)
-                    api = 'https://graphql.anilist.co'
-                    query = staff_query.query
-                    variables = {
-                        'staff': name,
-                        'page': 1,
-                        'amount': 1
-                    }
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(api, json={'query': query, 'variables': variables}) as r:
-                            if r.status == 200:
-                                json = await r.json()
-                                if json['data']['Page']['staff']:
-                                    data = json['data']['Page']['staff'][0]
-                                    try:
-                                        if data['name']['native'] is None:
-                                            staff_embed = discord.Embed(title='%s' % data['name']['full'],
-                                                                        url=data['siteUrl'],
-                                                                        color=0x4169E1,
-                                                                        timestamp=ctx.message.created_at)
-                                        elif data['name']['full'] is None or data['name']['full'] == \
-                                                data['name']['native']:
-                                            staff_embed = discord.Embed(title=data['name']['native'],
-                                                                        url=data['siteUrl'],
-                                                                        color=0x4169E1,
-                                                                        timestamp=ctx.message.created_at)
-                                        else:
-                                            staff_embed = discord.Embed(title='%s (%s)' % (data['name']['full'],
-                                                                                           data['name']['native']),
-                                                                        url=data['siteUrl'],
-                                                                        color=0x4169E1,
-                                                                        timestamp=ctx.message.created_at)
-                                        if data['image']['large']:
-                                            staff_embed.set_image(url=data['image']['large'])
-                                        else:
-                                            staff_embed.set_image(url=data['image']['medium'])
-                                        staff_embed.set_footer(text='Requested by %s' % ctx.author,
-                                                               icon_url=ctx.author.avatar_url)
-                                        await ctx.channel.send(embed=staff_embed)
-                                        logger.info('Server: %s | Response: Staff Image - %s'
-                                                        % (ctx.guild.name, name))
-                                    except Exception as e:
-                                        error_embed = discord.Embed(
-                                            title='An error occurred while searching for the staff `%s` with the '
-                                                  'command flag `%s`' % (name, flag),
-                                            color=0xff0000)
-                                        await ctx.channel.send(embed=error_embed)
-                                        logger.exception(e)
-                                else:
-                                    error_embed = discord.Embed(
-                                        title='The staff `%s` does not exist in the AniList database' % name,
-                                        color=0xff0000)
-                                    await ctx.channel.send(embed=error_embed)
-                                    logger.info('Server: %s | Response: Not found' % ctx.guild.name)
-                            else:
-                                error_embed = discord.Embed(
-                                    title='An error occurred while searching for the staff `%s` with the '
-                                          'command flag `%s`' % (name, flag),
-                                    color=0xff0000)
-                                await ctx.channel.send(embed=error_embed)
-                                logger.info('Server: %s | Response: Error' % ctx.guild.name)
-
+    @commands.command(name='staff', usage='staff [name]', brief='5s', ignore_extra=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def staff(self, ctx, *, name):
+        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!"""
+        async with ctx.channel.typing():
+            embeds = await _search_staff_anilist(ctx, name)
+            if embeds:
+                menu = menus.MenuPages(source=StaffMenu(embeds), clear_reactions_after=True, timeout=30)
+                await menu.start(ctx)
             else:
-                error_embed = discord.Embed(title='The command flag is invalid or cannot be used with this command',
-                                            color=0xff0000)
-                await ctx.channel.send(embed=error_embed)
-                logger.info('Server: %s | Response: Wrong command flags' % ctx.guild.name)
+                embed = anilist_not_found_error_embed(ctx, 'staff', name)
+                await ctx.channel.send(embed=embed)
 
-        else:
-            api = 'https://graphql.anilist.co'
-            query = staff_query.query
-            variables = {
-                'staff': name,
-                'page': 1,
-                'amount': 1
-            }
-            async with aiohttp.ClientSession() as session:
-                async with session.post(api, json={'query': query, 'variables': variables}) as r:
-                    if r.status == 200:
-                        json = await r.json()
-                        if json['data']['Page']['staff']:
-                            data = json['data']['Page']['staff'][0]
-                            try:
-                                if data['name']['native'] is None:
-                                    staff_embed = discord.Embed(title='%s' % data['name']['full'],
-                                                                url=data['siteUrl'],
-                                                                color=0x4169E1,
-                                                                timestamp=ctx.message.created_at)
-                                elif data['name']['full'] is None or data['name']['full'] == data['name']['native']:
-                                    staff_embed = discord.Embed(title=data['name']['native'],
-                                                                url=data['siteUrl'],
-                                                                color=0x4169E1,
-                                                                timestamp=ctx.message.created_at)
-                                else:
-                                    staff_embed = discord.Embed(title='%s (%s)' % (data['name']['full'],
-                                                                                   data['name']['native']),
-                                                                url=data['siteUrl'],
-                                                                color=0x4169E1,
-                                                                timestamp=ctx.message.created_at)
-                                staff_embed.set_thumbnail(url=data['image']['large'])
-                                try:
-                                    if len(data['description']) < 1024:
-                                        staff_embed.add_field(name='Description',
-                                                              value=data['description'].replace('<br>', ' ')
-                                                              .replace('</br>', ' ')
-                                                              .replace('<i>', ' ').replace('</i>', ' '), inline=False)
-                                    else:
-                                        staff_embed.add_field(name='Description',
-                                                              value=data['description'].replace('<br>', ' ')
-                                                              .replace('</br>', ' ')
-                                                              .replace('<i>', ' ').replace('</i>', ' ')[0:1021] + '...',
-                                                              inline=False)
-                                except TypeError:
-                                    staff_embed.add_field(name='Description',
-                                                          value='-', inline=False)
-                                if data['staffMedia']['edges']:
-                                    staff_roles = []
-                                    x = 0
-                                    staff_roles_length = int(len(data['staffMedia']['edges']))
-                                    for i in range(0, staff_roles_length - 1):
-                                        staff_roles.append(
-                                            str('[' + data['staffMedia']['edges'][x]['node']['title']['romaji'] + ']('
-                                                + data['staffMedia']['edges'][x]['node']['siteUrl'] + ') |'))
-                                        x = x + 1
-                                    staff_roles.append(
-                                        str('[' + data['staffMedia']['edges'][x]['node']['title']['romaji'] + ']('
-                                            + data['staffMedia']['edges'][x]['node']['siteUrl'] + ')'))
-                                else:
-                                    staff_roles = '[-]'
-                                if len(str(staff_roles)) > 1024:
-                                    staff_roles = staff_roles[0:10]
-                                    staff_roles[9] = str(staff_roles[9]).replace(' |', '...')
-                                    staff_embed.add_field(name='Staff Roles', value=staff_roles.__str__()[1:-1]
-                                                          .replace("'", "")
-                                                          .replace(',', ''), inline=True)
-                                else:
-                                    staff_embed.add_field(name='Staff Roles', value=staff_roles.__str__()[1:-1]
-                                                          .replace("'", "")
-                                                          .replace(',', ''), inline=True)
-                                if data['characters']['edges']:
-                                    characters = []
-                                    x = 0
-                                    characters_length = int(len(data['characters']['edges']))
-                                    for i in range(0, characters_length - 1):
-                                        characters.append(
-                                            str('[' + data['characters']['edges'][x]['node']['name']['full'] + ']('
-                                                + data['characters']['edges'][x]['node']['siteUrl'] + ') |'))
-                                        x = x + 1
-                                    characters.append(str('[' + data['characters']['edges'][x]['node']['name']['full']
-                                                          + '](' + data['characters']['edges'][x]['node']['siteUrl'] +
-                                                          ')'))
-                                else:
-                                    characters = '[-]'
-                                if len(str(characters)) > 1024:
-                                    characters = characters[0:15]
-                                    characters[14] = str(characters[14]).replace(' |', '...')
-                                    staff_embed.add_field(name='Character Roles', value=characters.__str__()[1:-1]
-                                                          .replace("'", "").replace(',', ''), inline=False)
-                                else:
-                                    staff_embed.add_field(name='Character Roles', value=characters.__str__()[1:-1]
-                                                          .replace("'", "").replace(',', ''), inline=False)
-                                staff_embed.set_footer(text='Requested by %s' % ctx.author,
-                                                       icon_url=ctx.author.avatar_url)
-                                await ctx.channel.send(embed=staff_embed)
-                                logger.info('Server: %s | Response: Staff - %s' % (ctx.guild.name,
-                                                                                       data['name']['full']))
-                            except Exception as e:
-                                error_embed = discord.Embed(
-                                    title='An error occurred while searching for the staff `%s`' % name,
-                                    color=0xff0000)
-                                await ctx.channel.send(embed=error_embed)
-                                logger.exception(e)
-                        else:
-                            error_embed = discord.Embed(
-                                title='The staff `%s` does not exist in the AniList database' % name,
-                                color=0xff0000)
-                            await ctx.channel.send(embed=error_embed)
-                            logger.info('Server: %s | Response: Not found' % ctx.guild.name)
-                    else:
-                        error_embed = discord.Embed(
-                            title='An error occurred while searching for the staff `%s`' % name,
-                            color=0xff0000)
-                        await ctx.channel.send(embed=error_embed)
-                        logger.info('Server: %s | Response: Error' % ctx.guild.name)
+
+class StaffMenu(menus.ListPageSource):
+    def __init__(self, data):
+        super().__init__(data, per_page=1)
+
+    async def format_page(self, menu, embeds):
+        return embeds
