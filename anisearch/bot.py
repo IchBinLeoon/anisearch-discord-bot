@@ -1,75 +1,46 @@
 import platform
-
+import dbl
 import discord
-import psycopg2
 from discord.ext import commands
-from discord.ext.commands import Bot as BotBase, when_mentioned_or
-
+from discord.ext.commands import Bot as BotBase
 from anisearch import config
 from anisearch.utils.logger import logger
 
+version = '1.6'
+
 initial_extensions = [
-    'anisearch.cogs.events',
     'anisearch.cogs.help',
     'anisearch.cogs.admin',
     'anisearch.cogs.anime',
     'anisearch.cogs.manga',
     'anisearch.cogs.character',
     'anisearch.cogs.staff',
-    'anisearch.cogs.studio'
+    'anisearch.cogs.studio',
+    'anisearch.cogs.anilist',
+    'anisearch.cogs.myanimelist',
+    'anisearch.cogs.kitsu'
 ]
-
-version = '1.6'
-
-
-def _get_command_prefix(self, message):
-    db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER, password=config.BD_PASSWORD)
-    cur = db.cursor()
-    try:
-        cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
-        prefix = cur.fetchone()[0]
-        db.commit()
-        cur.close()
-        db.close()
-        return when_mentioned_or(prefix, 'as!')(self, message)
-    except TypeError:
-        cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, 'as!'))
-        cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
-        prefix = cur.fetchone()[0]
-        db.commit()
-        cur.close()
-        db.close()
-        logger.info('Set Prefix for Guild {} to {}'.format(message.guild.id, prefix))
-        return when_mentioned_or(prefix, 'as!')(self, message)
-
-
-def get_prefix(ctx):
-    db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER, password=config.BD_PASSWORD)
-    cur = db.cursor()
-    cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (ctx.guild.id,))
-    prefix = cur.fetchone()[0]
-    db.commit()
-    cur.close()
-    db.close()
-    return prefix
 
 
 class AniSearchBot(BotBase):
 
     def __init__(self):
         intents = discord.Intents(messages=True, guilds=True, reactions=True)
-        super().__init__(command_prefix=_get_command_prefix, intents=intents, owner_id=config.OWNERID)
+        super().__init__(command_prefix='as!', intents=intents, owner_id=config.OWNERID)
+        self.topgg_token = config.TOPGG
+        self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
 
-    async def load_extensions(self):
+    def load_cogs(self):
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
             except discord.ext.commands.errors.ExtensionAlreadyLoaded:
-                logger.info('Cog {} is already loaded.'.format(extension))
+                pass
             except Exception as exception:
                 logger.exception(exception)
         logger.info('Cogs loaded {}/{}'.format(len(self.cogs), len(initial_extensions)))
 
+    @commands.Cog.listener()
     async def on_ready(self):
         logger.info('Logged in as {}'.format(self.user))
         logger.info('Bot-Name: {}'.format(self.user.name))
@@ -80,13 +51,55 @@ class AniSearchBot(BotBase):
         logger.info('Python-Version: {}'.format(platform.python_version()))
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
                                    status=discord.Status.online)
-        await self.load_extensions()
+        self.load_cogs()
 
+    @commands.Cog.listener()
     async def on_connect(self):
         logger.info('Connected to Discord')
 
+    @commands.Cog.listener()
     async def on_disconnect(self):
         logger.info('Disconnected from Discord')
 
+    @commands.Cog.listener()
     async def on_command(self, ctx):
         logger.info('Server: {} | Author: {} | Content: {}'.format(ctx.guild.name, ctx.author, ctx.message.content))
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        logger.info('Joined server {}'.format(guild.name))
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        logger.info('Left server {}'.format(guild.name))
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        title = 'An error occurred.'
+        if isinstance(error, commands.CommandNotFound):
+            title = 'Command not found.'
+        elif isinstance(error, commands.CommandOnCooldown):
+            title = 'Command on cooldown for `{:.2f}s`.'.format(error.retry_after)
+        elif isinstance(error, commands.TooManyArguments):
+            title = 'Too many arguments.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            title = 'Missing required argument.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.BadArgument):
+            title = 'Wrong arguments.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.MissingPermissions):
+            title = 'Missing permissions.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.BotMissingPermissions):
+            title = 'Bot missing permissions.'
+            ctx.command.reset_cooldown(ctx)
+        else:
+            logger.exception(error)
+        embed = discord.Embed(title=title, color=0xff0000)
+        await ctx.channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_post(self):
+        logger.info('TopGG server count posted ({})'.format(self.dblpy.guild_count()))

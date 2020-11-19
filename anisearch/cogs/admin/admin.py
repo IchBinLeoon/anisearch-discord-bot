@@ -19,7 +19,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.command(name='load', usage='load <cog>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
-    async def load(self, ctx, extension):
+    async def cmd_load(self, ctx, extension):
         """Loads a cog. // Owner only"""
         try:
             self.bot.load_extension(extension)
@@ -46,7 +46,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.command(name='unload', usage='unload <cog>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
-    async def unload(self, ctx, extension):
+    async def cmd_unload(self, ctx, extension):
         """Unloads a cog. // Owner only"""
         try:
             self.bot.unload_extension(extension)
@@ -73,11 +73,10 @@ class Admin(commands.Cog, name='Admin'):
     @commands.command(name='reload', usage='reload <cog>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
-    async def reload(self, ctx, extension):
+    async def cmd_reload(self, ctx, extension):
         """Reloads a cog. // Owner only"""
         try:
-            self.bot.unload_extension(extension)
-            self.bot.load_extension(extension)
+            self.bot.reload_extension(extension)
             embed = discord.Embed(title='Reloaded cog `{}`.'.format(extension),
                                   color=0x4169E1)
             await ctx.channel.send(embed=embed)
@@ -101,7 +100,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.command(name='shutdown', usage='shutdown', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
-    async def shutdown(self, ctx):
+    async def cmd_shutdown(self, ctx):
         """Shutdowns the bot. // Owner only"""
         embed = discord.Embed(title='Bot is stopping...', color=0x4169E1)
         await ctx.channel.send(embed=embed)
@@ -112,7 +111,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.command(name='status', usage='status', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
-    async def status(self, ctx):
+    async def cmd_status(self, ctx):
         """Displays the current status of the client. // Owner only"""
         embed = discord.Embed(title='{} - Status'.format(self.bot.user.name),
                               color=0x4169E1)

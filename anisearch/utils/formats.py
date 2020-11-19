@@ -14,12 +14,12 @@ def clean_spoilers(raw_text):
     return clean_text
 
 
-def description_parser(description):
+def description_parser(description, length):
     description = clean_spoilers(description)
     description = clean_html(description)
-    description = '_' + description + '_'
-    if len(description) > 400:
-        return description[0:400] + '..._'
+    description = description
+    if len(description) > length:
+        return description[0:length] + '...'
     else:
         return description
 
@@ -65,12 +65,3 @@ def anilist_manga_status_parsers(media_status):
         'CANCELLED': 'Cancelled'
     }
     return MangaStatusToString[media_status]
-
-
-def longer_description_parser(description):
-    description = clean_spoilers(description)
-    description = clean_html(description)
-    if len(description) > 1000:
-        return description[0:1000] + '...'
-    else:
-        return description

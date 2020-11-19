@@ -26,6 +26,9 @@ query ($search: String, $page: Int, $amount: Int) {
                 native
                 userPreferred
               }
+              format
+              episodes
+              chapters
             }
           }
         }
