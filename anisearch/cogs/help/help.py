@@ -88,6 +88,7 @@ class Help(commands.Cog, name='Help'):
                                           f'```'
                                           f'• {prefix}{self.bot.get_command("help").usage}\n'
                                           f'• {prefix}{self.bot.get_command("commands").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("about").usage}\n'
                                           f'```',
                               colour=0x4169E1, timestamp=ctx.message.created_at)
         embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)

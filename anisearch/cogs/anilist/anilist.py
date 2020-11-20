@@ -3,7 +3,7 @@ from discord.ext import commands, menus
 from anisearch.utils.formats import description_parser
 from anisearch.utils.logger import logger
 from anisearch.utils.menus import EmbedListMenu
-from anisearch.utils.queries.anilist_profile_query import SEARCH_ANILIST_PROFILE_QUERY
+from anisearch.utils.queries.user_query import SEARCH_USER_QUERY
 from anisearch.utils.requests import anilist_request
 
 
@@ -16,7 +16,7 @@ class AniList(commands.Cog, name='AniList'):
         embeds = []
         try:
             variables = {'search': username, 'page': 1, 'amount': 15}
-            data = (await anilist_request(SEARCH_ANILIST_PROFILE_QUERY, variables))
+            data = (await anilist_request(SEARCH_USER_QUERY, variables))
         except Exception as exception:
             logger.exception(exception)
             embed = discord.Embed(title='Error', description='An error occurred while searching the AniList Profile '

@@ -14,19 +14,22 @@ async def anilist_request(query, variables):
                 return None
 
 
-async def myanimelist_request_user(username):
-    aio_jikan = AioJikan()
-    try:
-        user = await aio_jikan.user(username=username)
-    except:
-        user = None
-    await aio_jikan.close()
-    return user
+async def myanimelist_request(request, search):
+    if request == 'user':
+        aio_jikan = AioJikan()
+        try:
+            data = await aio_jikan.user(username=search)
+        except:
+            data = None
+        await aio_jikan.close()
+        return data
 
 
-async def kitsu_request_user(username):
-    response = requests.get('https://kitsu.io/api/edge/users?filter[name]={}'.format(username))
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
+async def kitsu_request(request, search):
+    if request == 'user':
+        response = requests.get('https://kitsu.io/api/edge/users?filter[name]={}&include=stats,favorites'
+                                .format(search))
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None

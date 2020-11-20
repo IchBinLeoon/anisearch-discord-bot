@@ -1,4 +1,4 @@
-SEARCH_ANILIST_PROFILE_QUERY = '''
+SEARCH_USER_QUERY = '''
 query ($search: String){
   User(search: $search) {
     id

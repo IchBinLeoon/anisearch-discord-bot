@@ -3,7 +3,7 @@ from discord.ext import commands, menus
 from anisearch.utils.formats import description_parser
 from anisearch.utils.logger import logger
 from anisearch.utils.menus import EmbedListMenu
-from anisearch.utils.requests import myanimelist_request_user
+from anisearch.utils.requests import myanimelist_request
 
 
 class MyAnimeList(commands.Cog, name='MyAnimeList'):
@@ -14,7 +14,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
     async def _search_profile_myanimelist(self, ctx, username):
         embeds = []
         try:
-            user = await myanimelist_request_user(username)
+            user = await myanimelist_request('user', username)
         except Exception as exception:
             logger.exception(exception)
             embed = discord.Embed(title='Error', description='An error occurred while searching the MyAnimeList Profile'
