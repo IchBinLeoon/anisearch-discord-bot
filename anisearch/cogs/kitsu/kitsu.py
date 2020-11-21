@@ -62,31 +62,34 @@ class Kitsu(commands.Cog, name='Kitsu'):
                                       timestamp=ctx.message.created_at, color=0x4169E1)
                 if user['id']:
                     embed.url = 'https://kitsu.io/users/{}'.format(user['id'])
-                if user['attributes']['avatar']['original']:
+                if user['attributes']['avatar']:
                     embed.set_thumbnail(url=user['attributes']['avatar']['original'])
-                if user['attributes']['coverImage']['original']:
+                if user['attributes']['coverImage']:
                     embed.set_image(url=user['attributes']['coverImage']['original'])
                 if user['attributes']['about']:
-                    about = description_parser(user['attributes']['about'], 1000)
+                    about = user['attributes']['about'][0:1000] + '...'
                     embed.add_field(name='About', value=about, inline=False)
-                anime_days_watched = str(datetime.timedelta(seconds=anime_stats['attributes']['statsData']['time']))\
-                    .split(',')
-                anime_days_watched = anime_days_watched[0]
-                anime_completed = anime_stats['attributes']['statsData']['completed']
-                anime_episodes_watched = anime_stats['attributes']['statsData']['units']
-                anime_total_entries = anime_stats['attributes']['statsData']['media']
-                manga_total_entries = manga_stats['attributes']['statsData']['media']
-                manga_chapters = manga_stats['attributes']['statsData']['units']
-                manga_completed = manga_stats['attributes']['statsData']['completed']
-                embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
-                                                          f'Completed: {anime_completed}\n'
-                                                          f'Episodes: {anime_episodes_watched}\n'
-                                                          f'Total Entries: {anime_total_entries}\n',
-                                inline=True)
-                embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
-                                                          f'Chapters Read: {manga_chapters}\n'
-                                                          f'Total Entries: {manga_total_entries}\n',
-                                inline=True)
+                try:
+                    anime_days_watched = str(datetime.timedelta(seconds=anime_stats['attributes']['statsData']
+                                                                ['time'])).split(',')
+                    anime_days_watched = anime_days_watched[0]
+                    anime_completed = anime_stats['attributes']['statsData']['completed']
+                    anime_episodes_watched = anime_stats['attributes']['statsData']['units']
+                    anime_total_entries = anime_stats['attributes']['statsData']['media']
+                    manga_total_entries = manga_stats['attributes']['statsData']['media']
+                    manga_chapters = manga_stats['attributes']['statsData']['units']
+                    manga_completed = manga_stats['attributes']['statsData']['completed']
+                    embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+                                                              f'Completed: {anime_completed}\n'
+                                                              f'Episodes: {anime_episodes_watched}\n'
+                                                              f'Total Entries: {anime_total_entries}\n',
+                                    inline=True)
+                    embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
+                                                              f'Chapters Read: {manga_chapters}\n'
+                                                              f'Total Entries: {manga_total_entries}\n',
+                                    inline=True)
+                except KeyError:
+                    pass
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)
             except Exception as exception:

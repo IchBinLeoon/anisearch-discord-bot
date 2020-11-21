@@ -39,7 +39,7 @@ class AniList(commands.Cog, name='AniList'):
                 if data['bannerImage']:
                     embed.set_image(url=data['bannerImage'])
                 if data['about']:
-                    about = description_parser(data['about'], 1000)
+                    about = data['about'][0:1000] + '...'
                     embed.add_field(name='About', value=about, inline=False)
                 anime_count = data['statistics']['anime']['count']
                 anime_mean_score = data['statistics']['anime']['meanScore']

@@ -81,7 +81,7 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                 if user.get('image_url'):
                     embed.set_thumbnail(url=user.get('image_url'))
                 if user.get('about'):
-                    about = description_parser(user.get('about'), 1000)
+                    about = user.get('about')[0:1000] + '...'
                     embed.add_field(name='About', value=about, inline=False)
                 embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
                                                           f'Mean Score: {anime_mean_score}\n'

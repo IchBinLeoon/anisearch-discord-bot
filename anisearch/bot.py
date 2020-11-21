@@ -1,5 +1,4 @@
 import platform
-import dbl
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot as BotBase
@@ -16,9 +15,11 @@ initial_extensions = [
     'anisearch.cogs.character',
     'anisearch.cogs.staff',
     'anisearch.cogs.studio',
+    'anisearch.cogs.random',
     'anisearch.cogs.anilist',
     'anisearch.cogs.myanimelist',
-    'anisearch.cogs.kitsu'
+    'anisearch.cogs.kitsu',
+    'anisearch.cogs.TopGG'
 ]
 
 
@@ -27,8 +28,6 @@ class AniSearchBot(BotBase):
     def __init__(self):
         intents = discord.Intents(messages=True, guilds=True, reactions=True)
         super().__init__(command_prefix='as!', intents=intents, owner_id=config.OWNERID)
-        self.topgg_token = config.TOPGG
-        self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
 
     def load_cogs(self):
         for extension in initial_extensions:
@@ -99,7 +98,3 @@ class AniSearchBot(BotBase):
             logger.exception(error)
         embed = discord.Embed(title=title, color=0xff0000)
         await ctx.channel.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_guild_post(self):
-        logger.info('TopGG server count posted ({})'.format(self.dblpy.guild_count()))
