@@ -23,8 +23,8 @@ class Manga(commands.Cog, name='Manga'):
             data = (await anilist_request(SEARCH_MANGA_QUERY, variables))['data']['Page']['media']
         except Exception as exception:
             logger.exception(exception)
-            embed = discord.Embed(title='Error', description='An error occurred while searching the manga `{}`.\n\n'
-                                                             '**Exception:** `{}`'.format(title, exception),
+            embed = discord.Embed(title='Error', description='An error occurred while searching the manga `{}`.'
+                                  .format(title),
                                   color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             embeds.append(embed)
@@ -105,8 +105,7 @@ class Manga(commands.Cog, name='Manga'):
                 except Exception as exception:
                     logger.exception(exception)
                     embed = discord.Embed(title='Error', description='An error occurred while loading the embed for '
-                                                                     'the manga.\n\n**Exception:** `{}`'.format(
-                        exception),
+                                                                     'the manga.',
                                           color=0xff0000, timestamp=ctx.message.created_at)
                     embed.set_footer(text='Requested by {} • Page {}/{}'.format(ctx.author, current_page, pages),
                                      icon_url=ctx.author.avatar_url)

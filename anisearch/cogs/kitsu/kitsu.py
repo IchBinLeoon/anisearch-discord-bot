@@ -21,8 +21,7 @@ class Kitsu(commands.Cog, name='Kitsu'):
         except Exception as exception:
             logger.exception(exception)
             embed = discord.Embed(title='Error', description='An error occurred while searching the Kitsu Profile'
-                                                             ' `{}`.\n\n **Exception:** `{}`'.format(username,
-                                                                                                     exception),
+                                                             ' `{}`.'.format(username),
                                   color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             embeds.append(embed)
@@ -95,8 +94,7 @@ class Kitsu(commands.Cog, name='Kitsu'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while loading the embed for '
-                                                                 'the Kitsu Profile.\n\n**Exception:** `{}`'
-                                      .format(exception),
+                                                                 'the Kitsu Profile.',
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)

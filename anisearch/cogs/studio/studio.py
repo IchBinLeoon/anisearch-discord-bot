@@ -21,8 +21,8 @@ class Studio(commands.Cog, name='Studio'):
             data = (await anilist_request(SEARCH_STUDIO_QUERY, variables))['data']['Page']['studios']
         except Exception as exception:
             logger.exception(exception)
-            embed = discord.Embed(title='Error', description='An error occurred while searching the studio `{}`.\n\n'
-                                                             '**Exception:** `{}`'.format(name, exception),
+            embed = discord.Embed(title='Error', description='An error occurred while searching the studio `{}`.'
+                                  .format(name),
                                   color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             embeds.append(embed)
@@ -62,8 +62,7 @@ class Studio(commands.Cog, name='Studio'):
                 except Exception as exception:
                     logger.exception(exception)
                     embed = discord.Embed(title='Error', description='An error occurred while loading the embed for '
-                                                                     'the studio.\n\n**Exception:** `{}`'
-                                          .format(exception),
+                                                                     'the studio.',
                                           color=0xff0000, timestamp=ctx.message.created_at)
                     embed.set_footer(text='Requested by {} • Page {}/{}'.format(ctx.author, current_page, pages),
                                      icon_url=ctx.author.avatar_url)

@@ -7,9 +7,10 @@ from anisearch.utils.formats import description_parser
 from anisearch.utils.formats import anilist_anime_status_parsers
 from anisearch.utils.formats import anilist_type_parsers
 from anisearch.utils.logger import logger
-from anisearch.utils.queries.random_query import SEARCH_RANDOM_ANIME_GENRE_QUERY, SEARCH_RANDOM_MANGA_GENRE_QUERY, \
-    SEARCH_RANDOM_MANGA_TAG_QUERY
+from anisearch.utils.queries.random_query import SEARCH_RANDOM_ANIME_GENRE_QUERY
 from anisearch.utils.queries.random_query import SEARCH_RANDOM_ANIME_TAG_QUERY
+from anisearch.utils.queries.random_query import SEARCH_RANDOM_MANGA_GENRE_QUERY
+from anisearch.utils.queries.random_query import SEARCH_RANDOM_MANGA_TAG_QUERY
 from anisearch.utils.requests import anilist_request
 
 
@@ -25,8 +26,7 @@ class Random(commands.Cog, name='Random'):
         except Exception as exception:
             logger.exception(exception)
             embed = discord.Embed(title='Error', description='An error occurred while searching for an anime with '
-                                                             'the genre `{}`.\n\n'
-                                                             '**Exception:** `{}`'.format(genre, exception),
+                                                             'the genre `{}`.'.format(genre),
                                   color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             return embed
@@ -39,8 +39,7 @@ class Random(commands.Cog, name='Random'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while searching for an anime with '
-                                                                 'the genre `{}`.\n\n'
-                                                                 '**Exception:** `{}`'.format(genre, exception),
+                                                                 'the genre `{}`.'.format(genre),
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 return embed
@@ -141,8 +140,7 @@ class Random(commands.Cog, name='Random'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while searching for an anime '
-                                                                 'with the genre `{}`.\n\n'
-                                                                 '**Exception:** `{}`'.format(genre, exception),
+                                                                 'with the genre `{}`.'.format(genre),
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 return embed
@@ -154,8 +152,7 @@ class Random(commands.Cog, name='Random'):
         except Exception as exception:
             logger.exception(exception)
             embed = discord.Embed(title='Error', description='An error occurred while searching for a manga with '
-                                                             'the genre `{}`.\n\n'
-                                                             '**Exception:** `{}`'.format(genre, exception),
+                                                             'the genre `{}`.`'.format(genre),
                                   color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             return embed
@@ -168,8 +165,7 @@ class Random(commands.Cog, name='Random'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while searching for a manga with '
-                                                                 'the genre `{}`.\n\n'
-                                                                 '**Exception:** `{}`'.format(genre, exception),
+                                                                 'the genre `{}`.'.format(genre),
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 return embed
@@ -246,8 +242,7 @@ class Random(commands.Cog, name='Random'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while searching for a manga '
-                                                                 'with the genre `{}`.\n\n'
-                                                                 '**Exception:** `{}`'.format(genre, exception),
+                                                                 'with the genre `{}`.'.format(genre),
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 return embed

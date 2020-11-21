@@ -20,8 +20,7 @@ class AniList(commands.Cog, name='AniList'):
         except Exception as exception:
             logger.exception(exception)
             embed = discord.Embed(title='Error', description='An error occurred while searching the AniList Profile '
-                                                             '`{}`.\n\n **Exception:** `{}`'.format(username,
-                                                                                                    exception),
+                                                             '`{}`.'.format(username),
                                   color=0xff0000, timestamp=ctx.message.created_at)
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             embeds.append(embed)
@@ -68,8 +67,7 @@ class AniList(commands.Cog, name='AniList'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while loading the embed for '
-                                                                 'the AniList Profile.\n\n**Exception:** `{}`'
-                                      .format(exception),
+                                                                 'the AniList Profile.',
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)
@@ -136,8 +134,7 @@ class AniList(commands.Cog, name='AniList'):
             except Exception as exception:
                 logger.exception(exception)
                 embed = discord.Embed(title='Error', description='An error occurred while loading the embed for '
-                                                                 'the AniList Profile.\n\n**Exception:** `{}`'
-                                      .format(exception),
+                                                                 'the AniList Profile.',
                                       color=0xff0000, timestamp=ctx.message.created_at)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)

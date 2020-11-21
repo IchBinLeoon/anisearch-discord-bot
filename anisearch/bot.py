@@ -19,6 +19,7 @@ initial_extensions = [
     'anisearch.cogs.anilist',
     'anisearch.cogs.myanimelist',
     'anisearch.cogs.kitsu',
+    'anisearch.cogs.trace',
     'anisearch.cogs.TopGG'
 ]
 
