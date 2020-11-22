@@ -5,7 +5,7 @@ TOKEN = 'my cool bot token'
 OWNER_ID = 'my discord id'
 
 # The Postgres database credentials.
-DB_HOST = 'database hostname'
-DB_NAME = 'database name'
-DB_USER = 'database username'
-BD_PASSWORD = 'database password'
+DB_HOST = 'hostname'
+DB_NAME = 'database'
+DB_USER = 'username'
+BD_PASSWORD = 'password'
