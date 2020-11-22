@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 import discord
 import psycopg2
@@ -35,7 +36,33 @@ class Profile(commands.Cog, name='Profile'):
                 data = data['data']['User']
                 set_username = update_anilist_profile(ctx, data['name'])
                 if set_username:
-                    embed = discord.Embed(title='Set AniList Profile {}.'.format(set_username), color=0x4169E1)
+                    embed = discord.Embed(title='Set AniList Profile {}.'.format(set_username), color=0x4169E1,
+                                          timestamp=ctx.message.created_at)
+                    try:
+                        if data['avatar']['large']:
+                            embed.set_thumbnail(url=data['avatar']['large'])
+                        anime_count = data['statistics']['anime']['count']
+                        anime_mean_score = data['statistics']['anime']['meanScore']
+                        anime_days_watched = round(data['statistics']['anime']['minutesWatched'] / 60 / 24, 2)
+                        anime_episodes_watched = data['statistics']['anime']['episodesWatched']
+                        manga_count = data['statistics']['manga']['count']
+                        manga_mean_score = data['statistics']['manga']['meanScore']
+                        manga_chapters_read = data['statistics']['manga']['chaptersRead']
+                        manga_volumes_read = data['statistics']['manga']['volumesRead']
+                        embed.add_field(name='Anime Stats', value=f'Anime Count: {anime_count}\n'
+                                                                  f'Mean Score: {anime_mean_score}\n'
+                                                                  f'Days Watched: {anime_days_watched}\n'
+                                                                  f'Episodes: {anime_episodes_watched}\n',
+                                        inline=True)
+                        embed.add_field(name='Manga Stats', value=f'Manga Count: {manga_count}\n'
+                                                                  f'Mean Score: {manga_mean_score}\n'
+                                                                  f'Chapters Read: {manga_chapters_read}\n'
+                                                                  f'Volumes Read: {manga_volumes_read}\n',
+                                        inline=True)
+                        embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
+                    except Exception as exception:
+                        logger.exception(exception)
+                        pass
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title='Error',
@@ -70,7 +97,61 @@ class Profile(commands.Cog, name='Profile'):
             if user is not None:
                 set_username = update_myanimelist_profile(ctx, user.get('username'))
                 if set_username:
-                    embed = discord.Embed(title='Set MyAnimeList Profile {}.'.format(set_username), color=0x4169E1)
+                    embed = discord.Embed(title='Set MyAnimeList Profile {}.'.format(set_username), color=0x4169E1,
+                                          timestamp=ctx.message.created_at)
+                    try:
+                        anime = user.get('anime_stats')
+                        manga = user.get('manga_stats')
+                        anime_days_watched = anime.get('days_watched')
+                        anime_mean_score = anime.get('mean_score')
+                        anime_watching = anime.get('watching')
+                        anime_completed = anime.get('completed')
+                        anime_on_hold = anime.get('on_hold')
+                        anime_dropped = anime.get('dropped')
+                        anime_plan_to_watch = anime.get('plan_to_watch')
+                        anime_total_entries = anime.get('total_entries')
+                        anime_rewatched = anime.get('rewatched')
+                        anime_episodes_watched = anime.get('episodes_watched')
+                        manga_days_read = manga.get('days_read')
+                        manga_mean_score = manga.get('mean_score')
+                        manga_reading = manga.get('reading')
+                        manga_completed = manga.get('completed')
+                        manga_on_hold = manga.get('on_hold')
+                        manga_dropped = manga.get('dropped')
+                        manga_plan_to_read = manga.get('plan_to_read')
+                        manga_reread = manga.get('reread')
+                        manga_total_entries = manga.get('total_entries')
+                        manga_chapters_read = manga.get('chapters_read')
+                        manga_volumes_read = manga.get('volumes_read')
+                        if user.get('image_url'):
+                            embed.set_thumbnail(url=user.get('image_url'))
+                        embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+                                                                  f'Mean Score: {anime_mean_score}\n'
+                                                                  f'Watching: {anime_watching}\n'
+                                                                  f'Completed: {anime_completed}\n'
+                                                                  f'On-Hold: {anime_on_hold}\n'
+                                                                  f'Dropped: {anime_dropped}\n'
+                                                                  f'Plan to Watch: {anime_plan_to_watch}\n'
+                                                                  f'Total Entries: {anime_total_entries}\n'
+                                                                  f'Rewatched: {anime_rewatched}\n'
+                                                                  f'Episodes: {anime_episodes_watched}\n',
+                                        inline=True)
+                        embed.add_field(name='Manga Stats', value=f'Days Read: {manga_days_read}\n'
+                                                                  f'Mean Score: {manga_mean_score}\n'
+                                                                  f'Reading: {manga_reading}\n'
+                                                                  f'Completed: {manga_completed}\n'
+                                                                  f'On-Hold: {manga_on_hold}\n'
+                                                                  f'Dropped: {manga_dropped}\n'
+                                                                  f'Plan to Read: {manga_plan_to_read}\n'
+                                                                  f'Reread: {manga_reread}\n'
+                                                                  f'Total Entries: {manga_total_entries}\n'
+                                                                  f'Chapters Read: {manga_chapters_read}\n'
+                                                                  f'Volumes Read: {manga_volumes_read}\n',
+                                        inline=True)
+                        embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
+                    except Exception as exception:
+                        logger.exception(exception)
+                        pass
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title='Error', description='An error occurred while setting the MyAnimeList '
@@ -105,7 +186,35 @@ class Profile(commands.Cog, name='Profile'):
                 user = data['data'][0]
                 set_username = update_kitsu_profile(ctx, user['attributes']['name'])
                 if set_username:
-                    embed = discord.Embed(title='Set Kitsu Profile {}.'.format(set_username), color=0x4169E1)
+                    embed = discord.Embed(title='Set Kitsu Profile {}.'.format(set_username), color=0x4169E1,
+                                          timestamp=ctx.message.created_at)
+                    try:
+                        if user['attributes']['avatar']:
+                            embed.set_thumbnail(url=user['attributes']['avatar']['original'])
+                        anime_stats = data['included'][22]
+                        manga_stats = data['included'][20]
+                        anime_days_watched = str(datetime.timedelta(seconds=anime_stats['attributes']['statsData']
+                        ['time'])).split(',')
+                        anime_days_watched = anime_days_watched[0]
+                        anime_completed = anime_stats['attributes']['statsData']['completed']
+                        anime_episodes_watched = anime_stats['attributes']['statsData']['units']
+                        anime_total_entries = anime_stats['attributes']['statsData']['media']
+                        manga_total_entries = manga_stats['attributes']['statsData']['media']
+                        manga_chapters = manga_stats['attributes']['statsData']['units']
+                        manga_completed = manga_stats['attributes']['statsData']['completed']
+                        embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+                                                                  f'Completed: {anime_completed}\n'
+                                                                  f'Episodes: {anime_episodes_watched}\n'
+                                                                  f'Total Entries: {anime_total_entries}\n',
+                                        inline=True)
+                        embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
+                                                                  f'Chapters Read: {manga_chapters}\n'
+                                                                  f'Total Entries: {manga_total_entries}\n',
+                                        inline=True)
+                        embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
+                    except Exception as exception:
+                        logger.exception(exception)
+                        pass
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title='Error', description='An error occurred while setting the Kitsu Profile'

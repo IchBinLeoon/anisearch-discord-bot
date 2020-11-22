@@ -12,6 +12,7 @@ class Settings(commands.Cog, name='Settings'):
     @commands.command(name='prefix', usage='prefix <prefix>', brief='10s', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
+    @commands.guild_only()
     async def cmd_prefix(self, ctx, prefix):
         """Changes the current server prefix."""
         if len(prefix) > 5:

@@ -3,7 +3,8 @@ import discord
 from discord.ext import commands, menus
 from anisearch.utils.logger import logger
 from anisearch.utils.menus import EmbedListMenu
-from anisearch.utils.trace import trace, source
+from anisearch.utils.image import trace
+from anisearch.utils.image import source
 
 
 class Image(commands.Cog, name='Image'):

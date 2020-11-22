@@ -1,3 +1,4 @@
+import discord
 import psycopg2
 from discord.ext.commands import when_mentioned_or
 from anisearch import config
@@ -5,44 +6,50 @@ from anisearch.utils.logger import logger
 
 
 def get_command_prefix(self, message):
-    try:
-        db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
-                              password=config.BD_PASSWORD)
-        cur = db.cursor()
-        try:
-            cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
-            prefix = cur.fetchone()[0]
-            db.commit()
-            cur.close()
-            db.close()
-            return when_mentioned_or(prefix, 'as!')(self, message)
-        except TypeError:
-            cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, 'as!'))
-            cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
-            prefix = cur.fetchone()[0]
-            db.commit()
-            cur.close()
-            db.close()
-            logger.info('Changed Prefix for Guild {} to {}'.format(message.guild.id, prefix))
-            return when_mentioned_or(prefix, 'as!')(self, message)
-    except Exception as exception:
-        logger.exception(exception)
+    if isinstance(message.channel, discord.channel.DMChannel):
         return when_mentioned_or('as!')(self, message)
+    else:
+        try:
+            db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
+                                  password=config.BD_PASSWORD)
+            cur = db.cursor()
+            try:
+                cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
+                prefix = cur.fetchone()[0]
+                db.commit()
+                cur.close()
+                db.close()
+                return when_mentioned_or(prefix, 'as!')(self, message)
+            except TypeError:
+                cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, 'as!'))
+                cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
+                prefix = cur.fetchone()[0]
+                db.commit()
+                cur.close()
+                db.close()
+                logger.info('Changed Prefix for Guild {} to {}'.format(message.guild.id, prefix))
+                return when_mentioned_or(prefix, 'as!')(self, message)
+        except Exception as exception:
+            logger.exception(exception)
+            return when_mentioned_or('as!')(self, message)
 
 
 def select_prefix(ctx):
-    try:
-        db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
-                              password=config.BD_PASSWORD)
-        cur = db.cursor()
-        cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (ctx.guild.id,))
-        prefix = cur.fetchone()[0]
-        db.commit()
-        cur.close()
-        db.close()
-        return prefix
-    except Exception as exception:
-        logger.exception(exception)
+    if isinstance(ctx.channel, discord.channel.DMChannel):
+        return 'as!'
+    else:
+        try:
+            db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
+                                  password=config.BD_PASSWORD)
+            cur = db.cursor()
+            cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (ctx.guild.id,))
+            prefix = cur.fetchone()[0]
+            db.commit()
+            cur.close()
+            db.close()
+            return prefix
+        except Exception as exception:
+            logger.exception(exception)
 
 
 def insert_prefix(guild):

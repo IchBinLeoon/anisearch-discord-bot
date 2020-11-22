@@ -56,6 +56,7 @@ class AniSearchBot(BotBase):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
                                    status=discord.Status.online)
         self.load_cogs()
+        logger.info('Bot is online')
 
     @commands.Cog.listener()
     async def on_connect(self):
@@ -67,19 +68,22 @@ class AniSearchBot(BotBase):
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        logger.info('Server: {} | Author: {} | Content: {}'.format(ctx.guild.name, ctx.author, ctx.message.content))
-        perms = 0
-        if ctx.me.guild_permissions.manage_messages:
-            perms += 1
-        if ctx.me.guild_permissions.add_reactions:
-            perms += 1
-        if perms < 2:
-            embed = discord.Embed(title='Warning',
-                                  description=f'**Hi there! Since the new update I need the `Add Reactions` '
-                                              f'and `Manage Messages` permissions to function properly.**',
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Missing Permissions Warning')
+        if isinstance(ctx.channel, discord.channel.DMChannel):
+            logger.info('Private Message | Author: {} | Content: {}'.format(ctx.author, ctx.message.content))
+        else:
+            logger.info('Server: {} | Author: {} | Content: {}'.format(ctx.guild.name, ctx.author, ctx.message.content))
+            perms = 0
+            if ctx.me.guild_permissions.manage_messages:
+                perms += 1
+            if ctx.me.guild_permissions.add_reactions:
+                perms += 1
+            if perms < 2:
+                embed = discord.Embed(title='Warning',
+                                      description=f'**Hi there! Since the new update I need the `Add Reactions` '
+                                                  f'and `Manage Messages` permissions to function properly.**',
+                                      color=0xff0000)
+                await ctx.channel.send(embed=embed)
+                logger.info('Missing Permissions Warning')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -112,6 +116,9 @@ class AniSearchBot(BotBase):
             ctx.command.reset_cooldown(ctx)
         elif isinstance(error, commands.BotMissingPermissions):
             title = 'Bot missing permissions.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.NoPrivateMessage):
+            title = 'Command cannot be used in private messages.'
             ctx.command.reset_cooldown(ctx)
         else:
             logger.exception(error)

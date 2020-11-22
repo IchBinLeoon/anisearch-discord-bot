@@ -20,9 +20,13 @@ class Help(commands.Cog, name='Help'):
     async def cmd_help(self, ctx, cmd: Optional[str]):
         """Shows help or displays information about a command."""
         prefix = select_prefix(ctx)
+        if isinstance(ctx.channel, discord.channel.DMChannel):
+            server_prefix = ''
+        else:
+            server_prefix = f'Current server prefix: `{prefix}`\n'
         if cmd is None:
             embed = discord.Embed(title='AniSearch',
-                                  description=f'**Current server prefix:** `{prefix}`\n'
+                                  description=f'{server_prefix}'
                                               f'\n'
                                               f'**Command help:**\n'
                                               f'`{prefix}help [command]`\n'
@@ -61,9 +65,13 @@ class Help(commands.Cog, name='Help'):
     async def cmd_commands(self, ctx):
         """Displays all commands."""
         prefix = select_prefix(ctx)
+        if isinstance(ctx.channel, discord.channel.DMChannel):
+            server_prefix = ''
+        else:
+            server_prefix = f'Current server prefix: `{prefix}`\n'
         embed = discord.Embed(description=f'To view information about a specified command use: '
                                           f'`{prefix}help [command]`\n'
-                                          f'Current server prefix: `{prefix}`\n'
+                                          f'{server_prefix}'
                                           f'\n'
                                           f'**Parameters:** `<> - required, [] - optional, | - either/or`\n'
                                           f'\n'
