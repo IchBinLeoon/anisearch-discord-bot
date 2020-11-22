@@ -1,8 +1,10 @@
 import datetime
+from typing import Optional
 
 import discord
 from discord.ext import commands, menus
 
+from anisearch.utils.database.profile import select_kitsu_profile
 from anisearch.utils.formats import description_parser
 from anisearch.utils.logger import logger
 from anisearch.utils.menus import EmbedListMenu
@@ -103,14 +105,34 @@ class Kitsu(commands.Cog, name='Kitsu'):
     @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu <username>', brief='5s',
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cmd_kitsu(self, ctx, *, username):
-        """Displays information about the given Kitsu Profile."""
+    async def cmd_kitsu(self, ctx, username: Optional[str]):
+        """Displays information about the given Kitsu Profile such as anime stats and manga stats!"""
         async with ctx.channel.typing():
-            embeds = await self._search_profile_kitsu(ctx, username)
-            if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
-                await menu.start(ctx)
+            if username is None:
+                user_id = ctx.author.id
+                try:
+                    username = select_kitsu_profile(user_id)
+                except Exception as exception:
+                    logger.exception(exception)
+                    username = None
+            elif username.startswith('<@!'):
+                user_id = int(username.replace('<@!', '').replace('>', ''))
+                try:
+                    username = select_kitsu_profile(user_id)
+                except Exception as exception:
+                    logger.exception(exception)
+                    username = None
             else:
-                embed = discord.Embed(title='The Kitsu Profile `{}` could not be found.'.format(username),
-                                      color=0xff0000)
-                await ctx.channel.send(embed=embed)
+                username = username
+            if username:
+                embeds = await self._search_profile_kitsu(ctx, username)
+                if embeds:
+                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    await menu.start(ctx)
+                else:
+                    embed = discord.Embed(title='The Kitsu Profile `{}` could not be found.'.format(username),
+                                          color=0xff0000)
+                    await ctx.channel.send(embed=embed)
+            else:
+                error_embed = discord.Embed(title='No Kitsu Profile set.', color=0xff0000)
+                await ctx.channel.send(embed=error_embed)

@@ -1,5 +1,4 @@
 import re
-
 import discord
 from discord.ext import commands, menus
 from anisearch.utils.logger import logger
@@ -7,7 +6,7 @@ from anisearch.utils.menus import EmbedListMenu
 from anisearch.utils.trace import trace, source
 
 
-class Trace(commands.Cog, name='Trace'):
+class Image(commands.Cog, name='Image'):
 
     def __init__(self, bot):
         self.bot = bot

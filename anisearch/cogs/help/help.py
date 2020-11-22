@@ -6,6 +6,7 @@ from discord.utils import get
 import discord
 from discord.ext import commands
 from anisearch import bot, config
+from anisearch.utils.database.prefix import select_prefix
 
 
 class Help(commands.Cog, name='Help'):
@@ -18,7 +19,7 @@ class Help(commands.Cog, name='Help'):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_help(self, ctx, cmd: Optional[str]):
         """Shows help or displays information about a command."""
-        prefix = 'as!'
+        prefix = select_prefix(ctx)
         if cmd is None:
             embed = discord.Embed(title='AniSearch',
                                   description=f'**Current server prefix:** `{prefix}`\n'
@@ -59,7 +60,7 @@ class Help(commands.Cog, name='Help'):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def cmd_commands(self, ctx):
         """Displays all commands."""
-        prefix = 'as!'
+        prefix = select_prefix(ctx)
         embed = discord.Embed(description=f'To view information about a specified command use: '
                                           f'`{prefix}help [command]`\n'
                                           f'Current server prefix: `{prefix}`\n'
@@ -83,9 +84,11 @@ class Help(commands.Cog, name='Help'):
                                           f'• {prefix}{self.bot.get_command("anilist").usage}\n'
                                           f'• {prefix}{self.bot.get_command("myanimelist").usage}\n'
                                           f'• {prefix}{self.bot.get_command("kitsu").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("setprofile").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("remove").usage}\n'
                                           f'```'
                                           f'\n'
-                                          f'**Trace**\n'
+                                          f'**Image**\n'
                                           f'```'
                                           f'• {prefix}{self.bot.get_command("trace").usage}\n'
                                           f'• {prefix}{self.bot.get_command("source").usage}\n'
@@ -97,6 +100,13 @@ class Help(commands.Cog, name='Help'):
                                           f'• {prefix}{self.bot.get_command("commands").usage}\n'
                                           f'• {prefix}{self.bot.get_command("about").usage}\n'
                                           f'• {prefix}{self.bot.get_command("stats").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("contact").usage}\n'
+                                          f'```'
+                                          f'\n'
+                                          f'**Settings**\n'
+                                          f'Server Administrator Permissions Required'
+                                          f'```'
+                                          f'• {prefix}{self.bot.get_command("prefix").usage}\n'
                                           f'```',
                               colour=0x4169E1, timestamp=ctx.message.created_at)
         embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
@@ -118,7 +128,8 @@ class Help(commands.Cog, name='Help'):
                         inline=True)
         embed.add_field(name='❯ Commands', value='as!help',
                         inline=True)
-        embed.add_field(name='❯ Invite', value='[Click me!](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)',
+        embed.add_field(name='❯ Invite',
+                        value='[Click me!](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)',
                         inline=True)
         embed.add_field(name='❯ Vote', value='[Click me!](https://top.gg/bot/737236600878137363/vote)',
                         inline=True)
@@ -133,7 +144,7 @@ class Help(commands.Cog, name='Help'):
     async def cmd_stats(self, ctx):
         """Displays statistics about the bot."""
         embed = discord.Embed(description='The current instance of the Bot is owned '
-                                          'by <@!{}>'.format(config.OWNERID),
+                                          'by <@!{}>'.format(config.OWNER_ID),
                               color=0x4169E1, timestamp=ctx.message.created_at)
         embed.set_author(name="AniSearch's statistics".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
         embed.add_field(name='Guilds', value=str(len(self.bot.guilds)), inline=True)
@@ -155,3 +166,24 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name="AniSearch's Uptime", value=uptime, inline=True)
         embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
         await ctx.channel.send(embed=embed)
+
+    @commands.command(name='contact', usage='contact <message>', brief='3s', ignore_extra=False)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def cmd_contact(self, ctx, *, message):
+        """Contacts the creator of the bot."""
+        if len(message) > 1042:
+            embed = discord.Embed(title='Too many characters.', color=0xff0000)
+            await ctx.channel.send(embed=embed)
+        else:
+            embed = discord.Embed(title='Contact',
+                                  color=0x4169E1)
+            embed.add_field(name='Author', value=ctx.author,
+                            inline=True)
+            embed.add_field(name='ID', value=ctx.author.id,
+                            inline=True)
+            embed.add_field(name='Message', value=message,
+                            inline=False)
+            user = await self.bot.fetch_user(223871059068321793)
+            await user.send(embed=embed)
+            embed = discord.Embed(title='Creator contacted', color=0x4169E1)
+            await ctx.channel.send(embed=embed)

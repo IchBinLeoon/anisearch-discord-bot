@@ -1,5 +1,9 @@
+from typing import Optional
+
 import discord
 from discord.ext import commands, menus
+
+from anisearch.utils.database.profile import select_myanimelist_profile
 from anisearch.utils.formats import description_parser
 from anisearch.utils.logger import logger
 from anisearch.utils.menus import EmbedListMenu
@@ -176,14 +180,34 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
     @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist <username>', brief='5s',
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cmd_myanimelist(self, ctx, *, username):
+    async def cmd_myanimelist(self, ctx, username: Optional[str]):
         """Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites."""
         async with ctx.channel.typing():
-            embeds = await self._search_profile_myanimelist(ctx, username)
-            if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
-                await menu.start(ctx)
+            if username is None:
+                user_id = ctx.author.id
+                try:
+                    username = select_myanimelist_profile(user_id)
+                except Exception as exception:
+                    logger.exception(exception)
+                    username = None
+            elif username.startswith('<@!'):
+                user_id = int(username.replace('<@!', '').replace('>', ''))
+                try:
+                    username = select_myanimelist_profile(user_id)
+                except Exception as exception:
+                    logger.exception(exception)
+                    username = None
             else:
-                embed = discord.Embed(title='The MyAnimeList Profile `{}` could not be found.'.format(username),
-                                      color=0xff0000)
-                await ctx.channel.send(embed=embed)
+                username = username
+            if username:
+                embeds = await self._search_profile_myanimelist(ctx, username)
+                if embeds:
+                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    await menu.start(ctx)
+                else:
+                    embed = discord.Embed(title='The MyAnimeList Profile `{}` could not be found.'.format(username),
+                                          color=0xff0000)
+                    await ctx.channel.send(embed=embed)
+            else:
+                error_embed = discord.Embed(title='No MyAnimeList Profile set.', color=0xff0000)
+                await ctx.channel.send(embed=error_embed)

@@ -1,5 +1,8 @@
 import platform
 import discord
+from anisearch.utils.database.prefix import get_command_prefix
+from anisearch.utils.database.prefix import insert_prefix
+from anisearch.utils.database.prefix import delete_prefix
 from discord.ext import commands
 from discord.ext.commands import Bot as BotBase
 from anisearch import config
@@ -10,6 +13,7 @@ version = '1.6'
 initial_extensions = [
     'anisearch.cogs.help',
     'anisearch.cogs.admin',
+    'anisearch.cogs.settings',
     'anisearch.cogs.anime',
     'anisearch.cogs.manga',
     'anisearch.cogs.character',
@@ -19,8 +23,8 @@ initial_extensions = [
     'anisearch.cogs.anilist',
     'anisearch.cogs.myanimelist',
     'anisearch.cogs.kitsu',
-    'anisearch.cogs.trace',
-    'anisearch.cogs.TopGG'
+    'anisearch.cogs.profile',
+    'anisearch.cogs.image'
 ]
 
 
@@ -28,7 +32,7 @@ class AniSearchBot(BotBase):
 
     def __init__(self):
         intents = discord.Intents(messages=True, guilds=True, reactions=True)
-        super().__init__(command_prefix='as!', intents=intents, owner_id=config.OWNERID)
+        super().__init__(command_prefix=get_command_prefix, intents=intents, owner_id=int(config.OWNER_ID))
 
     def load_cogs(self):
         for extension in initial_extensions:
@@ -64,14 +68,28 @@ class AniSearchBot(BotBase):
     @commands.Cog.listener()
     async def on_command(self, ctx):
         logger.info('Server: {} | Author: {} | Content: {}'.format(ctx.guild.name, ctx.author, ctx.message.content))
+        perms = 0
+        if ctx.me.guild_permissions.manage_messages:
+            perms += 1
+        if ctx.me.guild_permissions.add_reactions:
+            perms += 1
+        if perms < 2:
+            embed = discord.Embed(title='Warning',
+                                  description=f'**Hi there! Since the new update I need the `Add Reactions` '
+                                              f'and `Manage Messages` permissions to function properly.**',
+                                  color=0xff0000)
+            await ctx.channel.send(embed=embed)
+            logger.info('Missing Permissions Warning')
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         logger.info('Joined server {}'.format(guild.name))
+        insert_prefix(guild)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         logger.info('Left server {}'.format(guild.name))
+        delete_prefix(guild)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

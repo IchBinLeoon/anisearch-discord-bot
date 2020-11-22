@@ -1,6 +1,7 @@
+from typing import Optional
 import discord
 from discord.ext import commands, menus
-from anisearch.utils.formats import description_parser
+from anisearch.utils.database.profile import select_anilist_profile
 from anisearch.utils.logger import logger
 from anisearch.utils.menus import EmbedListMenu
 from anisearch.utils.queries.user_query import SEARCH_USER_QUERY
@@ -142,14 +143,34 @@ class AniList(commands.Cog, name='AniList'):
 
     @commands.command(name='anilist', aliases=['al'], usage='anilist <username>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cmd_anilist(self, ctx, *, username):
+    async def cmd_anilist(self, ctx, username: Optional[str]):
         """Displays information about the given AniList Profile such as anime stats, manga stats and favorites."""
         async with ctx.channel.typing():
-            embeds = await self._search_profile_anilist(ctx, username)
-            if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
-                await menu.start(ctx)
+            if username is None:
+                user_id = ctx.author.id
+                try:
+                    username = select_anilist_profile(user_id)
+                except Exception as exception:
+                    logger.exception(exception)
+                    username = None
+            elif username.startswith('<@!'):
+                user_id = int(username.replace('<@!', '').replace('>', ''))
+                try:
+                    username = select_anilist_profile(user_id)
+                except Exception as exception:
+                    logger.exception(exception)
+                    username = None
             else:
-                embed = discord.Embed(title='The AniList Profile `{}` could not be found.'.format(username),
-                                      color=0xff0000)
-                await ctx.channel.send(embed=embed)
+                username = username
+            if username:
+                embeds = await self._search_profile_anilist(ctx, username)
+                if embeds:
+                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    await menu.start(ctx)
+                else:
+                    embed = discord.Embed(title='The AniList Profile `{}` could not be found.'.format(username),
+                                          color=0xff0000)
+                    await ctx.channel.send(embed=embed)
+            else:
+                error_embed = discord.Embed(title='No AniList Profile set.', color=0xff0000)
+                await ctx.channel.send(embed=error_embed)
