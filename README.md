@@ -33,7 +33,7 @@ Self-hosting isn't fully supported. I would prefer if you don't run an instance 
 Nevertheless, the installation steps are as follows:  
 
 ## 1. Setup Database
-To be able to use the bot you need to set up a `PostgreSQL Database`. 
+To be able to use the bot you need to set up a `PostgreSQL Database`.
 
 Make sure the tables are set up correctly as shown below to successfully connect to your PostgreSQL Database.
 
@@ -55,14 +55,14 @@ users
 
 ```sql
 CREATE TABLE guilds (
-    id bigint, 
+    id bigint,
     prefix VARCHAR (255)
 )
 
 CREATE TABLE users (
-    id bigint, 
-    anilist VARCHAR (255), 
-    myanimelist VARCHAR (255), 
+    id bigint,
+    anilist VARCHAR (255),
+    myanimelist VARCHAR (255),
     kitsu VARCHAR (255)
 )
 ```
@@ -73,7 +73,7 @@ CREATE TABLE users (
     ```
     git clone https://github.com/IchBinLeoon/anisearch-discord-bot
     ```
-   
+
 2. Create a [Discord Application](https://discord.com/developers/applications).
 
 3. Edit `config.example.py`.   
@@ -81,17 +81,17 @@ CREATE TABLE users (
     ```py
     # The token the bot will use for auth with Discord.
     TOKEN = 'my cool bot token'
-    
+
     # The Discord ID of the user hosting the bot.
     OWNER_ID = 'my discord id'
-    
+
     # The Postgres database credentials.
     DB_HOST = 'hostname'
     DB_NAME = 'database'
     DB_USER = 'username'
     BD_PASSWORD = 'password'
     ```
-    
+
 4. Rename `config.example.py` to `config.py`.
 
 ## 3. Run
@@ -99,7 +99,7 @@ CREATE TABLE users (
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
 2. Build the image and run the bot.
-    
+
     ```
     docker-compose up
     ```
@@ -108,11 +108,11 @@ CREATE TABLE users (
 1. Make sure you have `Python 3.8.6` or higher.
 
 2. Install the requirements.
-        
+
     ```
     pip3 install -r requirements.txt
     ```
-    
+
 3. Run AniSearch.
 
     ```
