@@ -10,6 +10,9 @@
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
   </a>
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/python-3.8.6-blue" alt="Python">
+  </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
     <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL" alt="GitHub Workflow Status">
   </a>
@@ -22,15 +25,15 @@
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
     <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
   </a>
-  <a href="https://www.python.org/">
-    <img src="https://img.shields.io/badge/python-3.8.6-blue" alt="Python">
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="Python">
   </a>
 </p>
 
 <p align="center">
-  <a href="#AniSearch">AniSearch</a>
+  <a href="#AniSearch-v1.6">AniSearch</a>
   •
-  <a href="#Commands">Commands</a>
+  <a href="#Features">Features</a>
   •
   <a href="#Contribute">Contribute</a>
   •
@@ -42,8 +45,8 @@
 </p>
 
 
-# AniSearch
-This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays the results from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) and [Kitsu](https://kitsu.io/)!
+# AniSearch v1.6
+This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays results from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) and [Kitsu](https://kitsu.io/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
@@ -52,7 +55,8 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
 
-# Commands
+# Features
+## Commands
 **AniSearch's Command Prefix:** `as! | @AniSearch | Customizable`
 
 **Parameters:** `<> - required, [] - optional, | - either/or`
@@ -102,6 +106,19 @@ Server Administrator Permissions Required
 
 `prefix <prefix>:` Changes the current server prefix.  
 
+## Examples
+
+<details close>
+<summary>Anime</summary>
+<br>
+Anime Example
+</details>
+
+<details close>
+<summary>Manga</summary>
+<br>
+Manga Example
+</details>
 
 # Contribute
 You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
