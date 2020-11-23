@@ -59,10 +59,10 @@ class Profile(commands.Cog, name='Profile'):
                                                                   f'Chapters Read: {manga_chapters_read}\n'
                                                                   f'Volumes Read: {manga_volumes_read}\n',
                                         inline=True)
-                        embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     except Exception as exception:
                         logger.exception(exception)
                         pass
+                    embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title='Error',
@@ -148,10 +148,10 @@ class Profile(commands.Cog, name='Profile'):
                                                                   f'Chapters Read: {manga_chapters_read}\n'
                                                                   f'Volumes Read: {manga_volumes_read}\n',
                                         inline=True)
-                        embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     except Exception as exception:
                         logger.exception(exception)
                         pass
+                    embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title='Error', description='An error occurred while setting the MyAnimeList '
@@ -211,10 +211,10 @@ class Profile(commands.Cog, name='Profile'):
                                                                   f'Chapters Read: {manga_chapters}\n'
                                                                   f'Total Entries: {manga_total_entries}\n',
                                         inline=True)
-                        embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     except Exception as exception:
                         logger.exception(exception)
                         pass
+                    embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title='Error', description='An error occurred while setting the Kitsu Profile'

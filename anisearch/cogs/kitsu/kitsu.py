@@ -30,8 +30,6 @@ class Kitsu(commands.Cog, name='Kitsu'):
             return embeds
         if data['data'] is not None and len(data['data']) > 0:
             user = data['data'][0]
-            anime_stats = data['included'][22]
-            manga_stats = data['included'][20]
             try:
                 if user['attributes']['createdAt']:
                     createdAt = user['attributes']['createdAt'].split('T')
@@ -71,6 +69,8 @@ class Kitsu(commands.Cog, name='Kitsu'):
                     about = user['attributes']['about'][0:1000] + '...'
                     embed.add_field(name='About', value=about, inline=False)
                 try:
+                    anime_stats = data['included'][22]
+                    manga_stats = data['included'][20]
                     anime_days_watched = str(datetime.timedelta(seconds=anime_stats['attributes']['statsData']
                                                                 ['time'])).split(',')
                     anime_days_watched = anime_days_watched[0]
@@ -89,7 +89,8 @@ class Kitsu(commands.Cog, name='Kitsu'):
                                                               f'Chapters Read: {manga_chapters}\n'
                                                               f'Total Entries: {manga_total_entries}\n',
                                     inline=True)
-                except KeyError:
+                except Exception as exception:
+                    logger.exception(exception)
                     pass
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)
