@@ -115,7 +115,7 @@ class Manga(commands.Cog, name='Manga'):
     @commands.command(name='manga', aliases=['m'], usage='manga <title>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_manga(self, ctx, *, title):
-        """Searches for a manga with the given title and displays information about the first result such as type, status, chapters, description, and more!"""
+        """Searches for a manga with the given title and displays information about the search results such as type, status, chapters, description, and more!"""
         async with ctx.channel.typing():
             embeds = await self._search_manga_anilist(ctx, title)
             if embeds:

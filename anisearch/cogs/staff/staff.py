@@ -80,7 +80,7 @@ class Staff(commands.Cog, name='Staff'):
     @commands.command(name='staff', usage='staff <name>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_staff(self, ctx, *, name):
-        """Searches for a staff with the given name and displays information about the first result such as description, staff roles, and character roles!"""
+        """Searches for a staff with the given name and displays information about the search results such as description, staff roles, and character roles!"""
         async with ctx.channel.typing():
             embeds = await self._search_staff_anilist(ctx, name)
             if embeds:

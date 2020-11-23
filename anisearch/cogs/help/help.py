@@ -108,7 +108,6 @@ class Help(commands.Cog, name='Help'):
                                           f'• {prefix}{self.bot.get_command("commands").usage}\n'
                                           f'• {prefix}{self.bot.get_command("about").usage}\n'
                                           f'• {prefix}{self.bot.get_command("stats").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("contact").usage}\n'
                                           f'```'
                                           f'\n'
                                           f'**Settings**\n'
@@ -174,24 +173,3 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name="AniSearch's Uptime", value=uptime, inline=True)
         embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
         await ctx.channel.send(embed=embed)
-
-    @commands.command(name='contact', usage='contact <message>', brief='3s', ignore_extra=False)
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def cmd_contact(self, ctx, *, message):
-        """Contacts the creator of the bot."""
-        if len(message) > 1042:
-            embed = discord.Embed(title='Too many characters.', color=0xff0000)
-            await ctx.channel.send(embed=embed)
-        else:
-            embed = discord.Embed(title='Contact',
-                                  color=0x4169E1)
-            embed.add_field(name='Author', value=ctx.author,
-                            inline=True)
-            embed.add_field(name='ID', value=ctx.author.id,
-                            inline=True)
-            embed.add_field(name='Message', value=message,
-                            inline=False)
-            user = await self.bot.fetch_user(223871059068321793)
-            await user.send(embed=embed)
-            embed = discord.Embed(title='Creator contacted', color=0x4169E1)
-            await ctx.channel.send(embed=embed)

@@ -139,6 +139,8 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                         anime_list_object = '[{}]({})'.format(anime_name, anime_url)
                         fav_anime.append(anime_list_object)
                     embed.add_field(name='Favorite Anime', value=' | '.join(fav_anime), inline=False)
+                else:
+                    embed.add_field(name='Favorite Anime', value='-', inline=False)
                 if user.get('favorites')['manga']:
                     favorite_manga = user.get('favorites')['manga']
                     fav_manga = []
@@ -148,6 +150,8 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                         manga_list_object = '[{}]({})'.format(manga_name, manga_url)
                         fav_manga.append(manga_list_object)
                     embed.add_field(name='Favorite Manga', value=' | '.join(fav_manga), inline=False)
+                else:
+                    embed.add_field(name='Favorite Manga', value='-', inline=False)
                 if user.get('favorites')['characters']:
                     favorite_characters = user.get('favorites')['characters']
                     fav_characters = []
@@ -157,6 +161,8 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                         character_list_object = '[{}]({})'.format(character_name, character_url)
                         fav_characters.append(character_list_object)
                     embed.add_field(name='Favorite Characters', value=' | '.join(fav_characters), inline=False)
+                else:
+                    embed.add_field(name='Favorite Characters', value='-', inline=False)
                 if user.get('favorites')['people']:
                     favorite_people = user.get('favorites')['people']
                     fav_people = []
@@ -166,6 +172,8 @@ class MyAnimeList(commands.Cog, name='MyAnimeList'):
                         people_list_object = '[{}]({})'.format(people_name, people_url)
                         fav_people.append(people_list_object)
                     embed.add_field(name='Favorite People', value=' | '.join(fav_people), inline=False)
+                else:
+                    embed.add_field(name='Favorite People', value='-', inline=False)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)
             except Exception as exception:

@@ -72,7 +72,7 @@ class Studio(commands.Cog, name='Studio'):
     @commands.command(name='studio', usage='studio <name>', brief='5s', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_studio(self, ctx, *, name):
-        """Searches for a studio with the given name and displays information about the first result such as the studio productions!"""
+        """Searches for a studio with the given name and displays information about the search results such as the studio productions!"""
         async with ctx.channel.typing():
             embeds = await self._search_studio_anilist(ctx, name)
             if embeds:
