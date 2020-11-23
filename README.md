@@ -31,7 +31,7 @@
 </p>
 
 <p align="center">
-  <a href="#AniSearch-v1.6">AniSearch</a>
+  <a href="#AniSearch">AniSearch</a>
   •
   <a href="#Features">Features</a>
   •
@@ -45,7 +45,7 @@
 </p>
 
 
-# AniSearch v1.6
+# AniSearch
 This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays results from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) and [Kitsu](https://kitsu.io/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
