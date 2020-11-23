@@ -1,17 +1,40 @@
-<img align="right" hight="150px" width="150px" src="assets/anisearch-logo.png">
-
-## AniSearch v1.5.2
-Searches and displays information about Anime, Manga, Characters, Staff, Studios and  
-Profiles from AniList and MyAnimeList!
-
-[![Discord Bots](https://top.gg/api/widget/status/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions)
-[![CodeFactor](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge)](https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot)
-[![Issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
-[![Pulls](https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
-[![Python](https://img.shields.io/badge/python-3.8.6-blue)](https://www.python.org/)
-
----
+<p align="center">
+  <br>
+    <img src="assets/anisearch-banner.png" alt="AniSearch Banner Image">
+  <br>
+    <h1>AniSearch v1.6</h1>
+  <br>
+  <h5>Searches and displays information about Anime, Manga, Characters, Staff, Studios and Profiles from AniList, MyAnimeList and Kitsu!</h5>
+  <a href="https://top.gg/bot/737236600878137363">
+    <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
+  </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
+    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL" alt="GitHub Workflow Status">
+  </a>
+  <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
+    <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge" alt="CodeFactor">
+  </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
+    <img src="https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot" alt="Issues">
+  </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
+    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
+  </a>
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/python-3.8.6-blue" alt="Python">
+  </a>
+  <a href="#General">General</a>
+  •
+  <a href="#Commands">Commands</a>
+  •
+  <a href="#Running-AniSearch">Running AniSearch</a>
+  •
+  <a href="#Contribute">Contribute</a>
+  •
+  <a href="#Libraries-and-API's">Libraries and API's</a>
+  •
+  <a href="#License">License</a>
+</p>
 
 # General
 This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within [Discord](https://discord.com/) and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
