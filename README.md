@@ -57,7 +57,7 @@ To be able to use the bot you need to set up a `PostgreSQL Database`.
 
 Make sure the tables are set up correctly as shown below to successfully connect to your PostgreSQL Database.
 
-**Database Table Structure**
+### Database Table Structure
 
 guilds
 
@@ -71,7 +71,7 @@ users
 |--------------|--------------|--------------|--------------|
 | bigint | character varying (255) | character varying (255) | character varying (255) |
 
-**Query Tool**
+### Query Tool
 
 ```sql
 CREATE TABLE guilds (
