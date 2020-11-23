@@ -111,13 +111,13 @@ Server Administrator Permissions Required
 <details close>
 <summary>Anime</summary>
 <br>
-<img src="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/assets/anime-example.gif" width="70%">
+<img src="assets/anime-example.gif" width="70%">
 </details>
 
 <details close>
 <summary>Manga</summary>
 <br>
-<img src="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/assets/manga-example.gif" width="70%">
+<img src="assets/manga-example.gif" width="70%">
 </details>
 
 # Contribute
