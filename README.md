@@ -106,6 +106,19 @@ Server Administrator Permissions Required
 
 `prefix <prefix>:` Changes the current server prefix.  
 
+### Owner
+Bot owner only
+
+`status:` Displays the current status of the bot.  
+
+`load <cog>:` Loads a cog.  
+
+`unload <cog>:` Unloads a cog.  
+
+`reload <cog>:` Reloads a cog.  
+
+`shutdown:` Shutdowns the bot.  
+
 ## Examples
 
 <details close>
