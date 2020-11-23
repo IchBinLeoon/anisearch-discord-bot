@@ -36,7 +36,7 @@
   •
   <a href="#Running-AniSearch">Running AniSearch</a>
   •
-  <a href="#Libraries-and-API's">Libraries and API's</a>
+  <a href="#Libraries-and-APIs">Libraries and API's</a>
   •
   <a href="#License">License</a>
 </p>
