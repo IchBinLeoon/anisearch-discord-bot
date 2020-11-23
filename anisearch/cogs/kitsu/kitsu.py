@@ -103,11 +103,11 @@ class Kitsu(commands.Cog, name='Kitsu'):
                 embeds.append(embed)
         return embeds
 
-    @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu <username|@member>', brief='5s',
+    @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', brief='5s',
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_kitsu(self, ctx, username: Optional[str]):
-        """Displays information about the given Kitsu Profile such as anime stats and manga stats!"""
+        """Displays information about the given Kitsu Profile such as anime stats, manga stats and favorites!"""
         async with ctx.channel.typing():
             if username is None:
                 user_id = ctx.author.id
