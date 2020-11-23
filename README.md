@@ -34,7 +34,7 @@
   •
   <a href="#Commands">Commands</a>
   •
-  <a href="#Running%20AniSearch">Running AniSearch</a>
+  <a href="#Running&nbsp;AniSearch">Running AniSearch</a>
   •
   <a href="#Contribute">Contribute</a>
   •
