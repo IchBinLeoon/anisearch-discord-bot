@@ -141,7 +141,8 @@ class AniList(commands.Cog, name='AniList'):
                 embeds.append(embed)
         return embeds
 
-    @commands.command(name='anilist', aliases=['al'], usage='anilist <username>', brief='5s', ignore_extra=False)
+    @commands.command(name='anilist', aliases=['al'], usage='anilist <username|@member>', brief='5s',
+                      ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cmd_anilist(self, ctx, username: Optional[str]):
         """Displays information about the given AniList Profile such as anime stats, manga stats and favorites."""

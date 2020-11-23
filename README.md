@@ -77,11 +77,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
 
 ### Profile
-`anilist <username>:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites.  
+`anilist <username|@member>:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites.  
 
-`myanimelist <username>:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.  
+`myanimelist <username|@member>:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites.  
 
-`kitsu <username>:` Displays information about the given Kitsu Profile such as anime stats and manga stats!  
+`kitsu <username|@member>:` Displays information about the given Kitsu Profile such as anime stats and manga stats!  
 
 `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu Profile.  
 
