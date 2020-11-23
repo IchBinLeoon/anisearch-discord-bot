@@ -111,13 +111,13 @@ Server Administrator Permissions Required
 <details close>
 <summary>Anime</summary>
 <br>
-Anime Example
+<img src="assets/anime-example.gif" width="70%">
 </details>
 
 <details close>
 <summary>Manga</summary>
 <br>
-Manga Example
+<img src="assets/manga-example.gif" width="70%">
 </details>
 
 # Contribute
