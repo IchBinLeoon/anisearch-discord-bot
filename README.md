@@ -71,7 +71,7 @@ CREATE TABLE users (
 1. Clone the Repository.    
 
     ```
-    git clone https://github.com/IchBinLeoon/anisearch-discord-bot
+    git clone https://github.com/IchBinLeoon/anisearch-discord-bot.git
     ```
 
 2. Create a [Discord Application](https://discord.com/developers/applications).
