@@ -2,8 +2,6 @@
   <br>
     <img src="assets/anisearch-banner.png" alt="AniSearch Banner Image">
   <br>
-    <h1>AniSearch v1.6</h1>
-  <br>
   <h5>Searches and displays information about Anime, Manga, Characters, Staff, Studios and Profiles from AniList, MyAnimeList and Kitsu!</h5>
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
@@ -36,7 +34,8 @@
   <a href="#License">License</a>
 </p>
 
-# General
+
+# AniSearch
 This is the GitHub Repository for the [AniSearch Discord Bot](https://top.gg/bot/737236600878137363). AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within [Discord](https://discord.com/) and displays the results from [AniList](https://anilist.co) and [MyAnimeList](https://myanimelist.net/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=83968&scope=bot)!
@@ -47,8 +46,11 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 
 If the bot is offline, it will most likely be updated. If the bot is offline for an extended period of time, my home network has likely broken down or something else bad has happened. In this case it would be very useful if someone notifies me.
 
-# Bot Commands
+# Commands
 A full documentation of AniSearch's commands can be found [here](https://top.gg/bot/737236600878137363) or with the command `as!help` if you have invited the bot to your server.
+
+# Contribute
+You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
 
 # Running AniSearch
 Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead.  
@@ -141,9 +143,6 @@ CREATE TABLE users (
     ```
     python3 -m anisearch
     ```
-
-# Contribute
-You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
 
 # Libraries and API's
 Thanks to the people who made this discord bot possible.  
