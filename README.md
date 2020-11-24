@@ -64,60 +64,60 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 ### Search
-`anime <title>:` Searches for an anime with the given title and displays information about the search results such as type, status, episodes, description, and more!  
+- `anime <title>:` Searches for an anime with the given title and displays information about the search results such as type, status, episodes, description, and more!  
 
-`manga <title>:` Searches for a manga with the given title and displays information about the search results such as type, status, chapters, description, and more!  
+- `manga <title>:` Searches for a manga with the given title and displays information about the search results such as type, status, chapters, description, and more!  
 
-`character <name>:` Searches for a character with the given name and displays information about the search results such as description, synonyms, and appearances!  
+- `character <name>:` Searches for a character with the given name and displays information about the search results such as description, synonyms, and appearances!  
 
-`staff <name>:` Searches for a staff with the given name and displays information about the search results such as description, staff roles, and character roles!  
+- `staff <name>:` Searches for a staff with the given name and displays information about the search results such as description, staff roles, and character roles!  
 
-`studio <name>:` Searches for a studio with the given name and displays information about the search results such as the studio productions!
+- `studio <name>:` Searches for a studio with the given name and displays information about the search results such as the studio productions!
 
-`random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
+- `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
 
 ### Profile
-`anilist [username|@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites!  
+- `anilist [username|@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites!  
 
-`myanimelist [username|@member]:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites!  
+- `myanimelist [username|@member]:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites!  
 
-`kitsu [username|@member]:` Displays information about the given Kitsu Profile such as anime stats, manga stats and favorites!  
+- `kitsu [username|@member]:` Displays information about the given Kitsu Profile such as anime stats, manga stats and favorites!  
+ 
+- `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu Profile.  
 
-`setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu Profile.  
-
-`remove:` Removes the set AniList, MyAnimeList and Kitsu Profile.  
+- `remove:` Removes the set AniList, MyAnimeList and Kitsu Profile.  
 
 ### Image
-`trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
+- `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
 
-`source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
+- `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
 
 ### Info
-`help [command]:` Shows help or displays information about a command.  
+- `help [command]:` Shows help or displays information about a command.  
 
-`commands:` Displays all commands.  
+- `commands:` Displays all commands.  
 
-`about:` Displays information about the bot.  
+- `about:` Displays information about the bot.  
 
-`stats:` Displays statistics about the bot.  
+- `stats:` Displays statistics about the bot.  
 
 ### Settings
 Server Administrator Permissions Required
 
-`prefix <prefix>:` Changes the current server prefix.  
+- `prefix <prefix>:` Changes the current server prefix.  
 
 ### Owner
 Bot owner only
 
-`status:` Displays the current status of the bot.  
+- `status:` Displays the current status of the bot.  
 
-`load <cog>:` Loads a cog.  
+- `load <cog>:` Loads a cog.  
 
-`unload <cog>:` Unloads a cog.  
+- `unload <cog>:` Unloads a cog.  
 
-`reload <cog>:` Reloads a cog.  
+- `reload <cog>:` Reloads a cog.  
 
-`shutdown:` Shutdowns the bot.  
+- `shutdown:` Shutdowns the bot.  
 
 ## Examples
 
