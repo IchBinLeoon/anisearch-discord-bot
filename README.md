@@ -124,31 +124,31 @@ These commands can only be used by the bot owner.
 <details close>
 <summary>Anime</summary>
 <br>
-<img src="assets/anime-example.gif" width="70%">
+<img src="assets/examples/anime-example.gif" width="70%">
 </details>
 
 <details close>
 <summary>Manga</summary>
 <br>
-<img src="assets/manga-example.gif" width="70%">
+<img src="assets/examples/manga-example.gif" width="70%">
 </details>
 
 <details close>
 <summary>Character</summary>
 <br>
-<img src="assets/character-example.gif" width="70%">
+<img src="assets/examples/character-example.gif" width="70%">
 </details>
 
 <details close>
 <summary>Staff</summary>
 <br>
-<img src="assets/staff-example.gif" width="70%">
+<img src="assets/examples/staff-example.gif" width="70%">
 </details>
 
 <details close>
 <summary>Studio</summary>
 <br>
-<img src="assets/studio-example.gif" width="70%">
+<img src="assets/examples/studio-example.gif" width="70%">
 </details>
 
 # Contribute

@@ -115,30 +115,28 @@ class Admin(commands.Cog, name='Admin'):
         """Displays the current status of the client. // Owner only"""
         embed = discord.Embed(title='{} - Status'.format(self.bot.user.name),
                               color=0x4169E1)
+        embed.add_field(name='Guilds', value=str(len(self.bot.guilds)), inline=True)
+        users = 0
+        for guild in self.bot.guilds:
+            users = users + guild.member_count
+        embed.add_field(name='Users', value=users, inline=True)
+        channels = 0
+        for guild in self.bot.guilds:
+            channels = channels + len(guild.channels)
+        embed.add_field(name='Channels', value=channels, inline=True)
         proc = psutil.Process()
         with proc.oneshot():
             uptime = timedelta(seconds=round(time() - proc.create_time()))
         try:
-            embed.add_field(name='Uptime', value=str(uptime), inline=True)
+            uptime = str(uptime)
         except AttributeError:
-            embed.add_field(name='Uptime', value='-',
-                            inline=True)
-        embed.add_field(name='Database', value=config.DB_NAME,
-                        inline=True)
-        guilds = str(len(self.bot.guilds))
-        embed.add_field(name='Guilds', value=guilds,
-                        inline=True)
-        users = 0
-        for guild in self.bot.guilds:
-            users = users + guild.member_count
-        embed.add_field(name='Users', value=users,
-                        inline=True)
-        cog_name = ''
+            uptime = '-'
+        embed.add_field(name="AniSearch's Uptime", value=uptime, inline=True)
+        cogs = []
         for i in self.bot.cogs:
-            cog_name += f'{i}, '
-        embed.add_field(name='Loaded Cogs - {}/{}'.format(len(self.bot.cogs), len(initial_extensions)),
-                        value=cog_name,
-                        inline=False)
+            cogs.append(i)
+        embed.add_field(name='{}/{} Cogs Loaded'.format(len(self.bot.cogs), len(initial_extensions)),
+                        value=', '.join(cogs), inline=False)
         temperature = ''
         try:
             temp = psutil.sensors_temperatures(False)
