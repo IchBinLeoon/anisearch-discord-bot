@@ -31,7 +31,7 @@
 </p>
 
 <p align="center">
-  <a href="#-AniSearch-v1.6">AniSearch</a>
+  <a href="#AniSearch-v16">AniSearch</a>
   •
   <a href="#Features">Features</a>
   •
