@@ -156,7 +156,7 @@ You have an idea or found a bug? Create [a new issue](https://github.com/IchBinL
 
 
 # Running AniSearch
-Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead.  
+Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead, which you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!  
 
 Nevertheless, the installation steps are as follows:  
 
