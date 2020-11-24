@@ -102,12 +102,12 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `stats:` Displays statistics about the bot.  
 
 ### Settings
-Server Administrator Permissions Required
+These commands can only be used by a server administrator.
 
 - `prefix <prefix>:` Changes the current server prefix.  
 
 ### Owner
-Bot owner only
+These commands can only be used by the bot owner. 
 
 - `status:` Displays the current status of the bot.  
 
@@ -131,6 +131,24 @@ Bot owner only
 <summary>Manga</summary>
 <br>
 <img src="assets/manga-example.gif" width="70%">
+</details>
+
+<details close>
+<summary>Character</summary>
+<br>
+<img src="assets/character-example.gif" width="70%">
+</details>
+
+<details close>
+<summary>Staff</summary>
+<br>
+<img src="assets/staff-example.gif" width="70%">
+</details>
+
+<details close>
+<summary>Studio</summary>
+<br>
+<img src="assets/studio-example.gif" width="70%">
 </details>
 
 # Contribute
