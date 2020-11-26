@@ -22,7 +22,7 @@
   <a href="https://github.com/IchBinLeoon/AnimeSearch/issues">
     <img src="https://img.shields.io/github/issues/IchBinLeoon/AnimeSearch" alt="Issues">
   </a>
-  <a href="https://github.com/IchBinLeoon/AnimeSearch/issues">
+  <a href="https://github.com/IchBinLeoon/AnimeSearch/pulls">
     <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/AnimeSearch" alt="Pulls">
   </a>
   <a href="https://github.com/IchBinLeoon/AnimeSearch/blob/master/LICENSE">
