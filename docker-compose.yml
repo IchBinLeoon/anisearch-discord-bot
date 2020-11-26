@@ -1,6 +1,6 @@
 version: '3'
 
 services:
-  anisearch:
+  animesearch:
     build: .
-    container_name: anisearch-container
+    container_name: animesearch-container

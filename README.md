@@ -1,6 +1,6 @@
 <p align="center">
   <br>
-    <img src="assets/anisearch-banner.png" alt="AniSearch Banner Image">
+    <img src="assets/animesearch-banner.png" alt="AnimeSearch Banner Image">
   <br>
 </p>
   
@@ -13,31 +13,31 @@
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/python-3.8.6-blue" alt="Python">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
-    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL" alt="GitHub Workflow Status">
+  <a href="https://github.com/IchBinLeoon/AnimeSearch/actions">
+    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/AnimeSearch/CodeQL" alt="GitHub Workflow Status">
   </a>
-  <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
-    <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge" alt="CodeFactor">
+  <a href="https://www.codefactor.io/repository/github/ichbinleoon/AnimeSearch">
+    <img src="https://www.codefactor.io/repository/github/ichbinleoon/AnimeSearch/badge" alt="CodeFactor">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
-    <img src="https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot" alt="Issues">
+  <a href="https://github.com/IchBinLeoon/AnimeSearch/issues">
+    <img src="https://img.shields.io/github/issues/IchBinLeoon/AnimeSearch" alt="Issues">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
-    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
+  <a href="https://github.com/IchBinLeoon/AnimeSearch/issues">
+    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/AnimeSearch" alt="Pulls">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="Python">
+  <a href="https://github.com/IchBinLeoon/AnimeSearch/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/IchBinLeoon/AnimeSearch" alt="Python">
   </a>
 </p>
 
 <p align="center">
-  <a href="#AniSearch-v16">AniSearch</a>
+  <a href="#AnimeSearch-v16">AnimeSearch</a>
   •
   <a href="#Features">Features</a>
   •
   <a href="#Contribute">Contribute</a>
   •
-  <a href="#Running-AniSearch">Running AniSearch</a>
+  <a href="#Running-AnimeSearch">Running AnimeSearch</a>
   •
   <a href="#Libraries-and-APIs">Libraries and API's</a>
   •
@@ -45,8 +45,8 @@
 </p>
 
 
-# AniSearch v1.6
-AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays results from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) and [Kitsu](https://kitsu.io/)!
+# AnimeSearch v1.6
+AnimeSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays results from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) and [Kitsu](https://kitsu.io/)!
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
@@ -57,7 +57,7 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 
 # Features
 ## Commands
-**AniSearch's Command Prefix:** `as! | @AniSearch | Customizable`
+**AnimeSearch's Command Prefix:** `as! | @AnimeSearch | Customizable`
 
 **Parameters:** `<> - required, [] - optional, | - either/or`
 
@@ -72,9 +72,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `staff <name>:` Searches for a staff with the given name and displays information about the search results such as description, staff roles, and character roles!  
 
-- `studio <name>:` Searches for a studio with the given name and displays information about the search results such as the studio productions!
+- `studio <name>:` Searches for a studio with the given name and displays information about the search results such as the studio productions!  
 
 - `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
+
+- `theme <anime>:` Searches for themes from the given anime and displays the openings and endings.  
 
 ### Profile
 - `anilist [username|@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites!  
@@ -152,10 +154,10 @@ These commands can only be used by the bot owner.
 </details>
 
 # Contribute
-You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
+You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/AnimeSearch/issues) with detailed explanation.
 
 
-# Running AniSearch
+# Running AnimeSearch
 Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead, which you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!  
 
 Nevertheless, the installation steps are as follows:  
@@ -199,7 +201,7 @@ CREATE TABLE users (
 1. Clone the Repository.    
 
     ```
-    git clone https://github.com/IchBinLeoon/anisearch-discord-bot
+    git clone https://github.com/IchBinLeoon/AnimeSearch
     ```
 
 2. Create a [Discord Application](https://discord.com/developers/applications).
@@ -241,19 +243,22 @@ CREATE TABLE users (
     pip3 install -r requirements.txt
     ```
 
-3. Run AniSearch.
+3. Run AnimeSearch.
 
     ```
-    python3 -m anisearch
+    python3 -m animesearch
     ```
 
 
 # Libraries and API's
 Thanks to the people who made this discord bot possible.  
 #### [Rapptz/discord.py](https://github.com/Rapptz/discord.py)  
+#### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)  
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)  
 #### [abhinavk99/jikanpy](https://github.com/abhinavk99/jikanpy)  
-#### [Kitsu API](https://kitsu.docs.apiary.io/#)  
+#### [KitsuAPI](https://kitsu.docs.apiary.io/#)  
+#### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)  
+#### [LetrixZ/animethemes-api](https://github.com/LetrixZ/animethemes-api)  
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
 #### [SauceNAO](https://saucenao.com)  
 #### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)  
@@ -262,4 +267,4 @@ Thanks to the people who made this discord bot possible.
 
 
 # License
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE) file for more details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/AnimeSearch/blob/master/LICENSE) file for more details.
