@@ -3,7 +3,7 @@ import discord
 from anisearch.utils.database.prefix import get_command_prefix
 from anisearch.utils.database.prefix import insert_prefix
 from anisearch.utils.database.prefix import delete_prefix
-from discord.ext import commands
+from discord.ext import commands, menus
 from discord.ext.commands import Bot as BotBase
 from anisearch import config
 from anisearch.utils.logger import logger
@@ -74,15 +74,23 @@ class AniSearchBot(BotBase):
             logger.info('Private Message | Author: {} | Content: {}'.format(ctx.author, ctx.message.content))
         else:
             logger.info('Server: {} | Author: {} | Content: {}'.format(ctx.guild.name, ctx.author, ctx.message.content))
-            perms = 0
-            if ctx.me.guild_permissions.manage_messages:
-                perms += 1
-            if ctx.me.guild_permissions.add_reactions:
-                perms += 1
-            if perms < 2:
+            missing_perms = []
+            if not ctx.me.guild_permissions.send_messages:
+                missing_perms.append('Send Messages')
+            if not ctx.me.guild_permissions.manage_messages:
+                missing_perms.append('Manage Messages')
+            if not ctx.me.guild_permissions.embed_links:
+                missing_perms.append('Embed Links')
+            if not ctx.me.guild_permissions.attach_files:
+                missing_perms.append('Attach Files')
+            if not ctx.me.guild_permissions.read_message_history:
+                missing_perms.append('Read Message History')
+            if not ctx.me.guild_permissions.add_reactions:
+                missing_perms.append('Add Reactions')
+            if len(missing_perms) > 0:
                 embed = discord.Embed(title='Warning',
-                                      description=f'**Hi there! Since the new update I need the `Add Reactions` '
-                                                  f'and `Manage Messages` permissions to function properly.**',
+                                      description='**Missing bot permissions to function properly:** `{}`'
+                                      .format(', '.join(missing_perms)),
                                       color=0xff0000)
                 await ctx.channel.send(embed=embed)
                 logger.info('Missing Permissions Warning')
@@ -121,6 +129,18 @@ class AniSearchBot(BotBase):
             ctx.command.reset_cooldown(ctx)
         elif isinstance(error, commands.NoPrivateMessage):
             title = 'Command cannot be used in private messages.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, menus.CannotAddReactions):
+            title = 'Cannot add reactions.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, menus.CannotEmbedLinks):
+            title = 'Cannot embed links.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, menus.CannotReadMessageHistory):
+            title = 'Cannot read message history.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.NotOwner):
+            title = 'You are not the owner of the bot.'
             ctx.command.reset_cooldown(ctx)
         else:
             logger.exception(error)
