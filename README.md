@@ -240,13 +240,13 @@ CREATE TABLE users (
 2. Install the requirements.
 
     ```
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
     ```
 
 3. Run AniSearch.
 
     ```
-    python3 -m anisearch
+    python -m anisearch
     ```
 
 
