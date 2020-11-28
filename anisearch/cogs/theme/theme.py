@@ -23,15 +23,15 @@ class Theme(commands.Cog, name='Theme'):
             embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
             embeds.append(embed)
             return embeds
-        if data is not None and len(data['anime_list']) > 0:
-            pages = len(data['anime_list'])
+        if data is not None and len(data['anime']) > 0:
+            pages = len(data['anime'])
             current_page = 0
-            for anime in data['anime_list']:
+            for anime in data['anime']:
                 current_page += 1
                 try:
                     embed = discord.Embed(color=0x4169E1)
-                    if anime['title']:
-                        embed.title = anime['title']
+                    if anime['title'] is not None and len(anime['title']) > 0:
+                        embed.title = anime['title'][0]
                     if anime['cover']:
                         embed.set_thumbnail(url=anime['cover'])
                     x = 0
