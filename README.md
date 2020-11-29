@@ -231,7 +231,7 @@ CREATE TABLE users (
 2. Build the image and run the bot.
 
     ```
-    docker-compose up
+    docker-compose up --build
     ```
 
 ### Manual
@@ -256,14 +256,13 @@ Thanks to the people who made this discord bot possible.
 #### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)  
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)  
 #### [abhinavk99/jikanpy](https://github.com/abhinavk99/jikanpy)  
-#### [KitsuAPI](https://kitsu.docs.apiary.io/#)  
+#### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)  
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)  
 #### [LetrixZ/animethemes-api](https://github.com/LetrixZ/animethemes-api)  
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
-#### [SauceNAO](https://saucenao.com)  
 #### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)  
-#### [psf/requests](https://github.com/psf/requests)  
 #### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
+#### [SauceNAO](https://saucenao.com)  
 
 
 # License

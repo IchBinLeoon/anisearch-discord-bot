@@ -1,6 +1,5 @@
 import aiohttp
 from jikanpy import AioJikan
-import requests
 
 
 async def anilist_request(query, variables):
@@ -27,17 +26,19 @@ async def myanimelist_request(request, search):
 
 async def kitsu_request(request, search):
     if request == 'user':
-        response = requests.get('https://kitsu.io/api/edge/users?filter[name]={}&include=stats,favorites'
-                                .format(search))
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return None
+        api = f'https://kitsu.io/api/edge/users?filter[name]={search}&include=stats,favorites'
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    return None
 
 
 async def tracemoe_request(url):
+    api = f'https://trace.moe/api/search?url={url}'
     async with aiohttp.ClientSession() as session:
-        async with session.post(f'https://trace.moe/api/search?url={url}') as response:
+        async with session.post(api) as response:
             if response.status == 200:
                 return await response.json()
             else:
@@ -45,8 +46,9 @@ async def tracemoe_request(url):
 
 
 async def saucenao_request(url):
+    api = f'http://saucenao.com/search.php?db=999&url={url}'
     async with aiohttp.ClientSession() as session:
-        async with session.post(f'http://saucenao.com/search.php?db=999&url={url}') as response:
+        async with session.post(api) as response:
             if response.status == 200:
                 return await response.text()
             else:
@@ -54,8 +56,10 @@ async def saucenao_request(url):
 
 
 async def animethemes_request(anime):
-    response = requests.get(f'https://animethemes-api.herokuapp.com/api/v1/s/{anime}')
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
+    api = f'https://animethemes-api.herokuapp.com/api/v1/s/{anime}'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(api) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                return None
