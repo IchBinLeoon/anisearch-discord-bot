@@ -65,30 +65,55 @@ class Kitsu(commands.Cog, name='Kitsu'):
                 if user['attributes']['about']:
                     about = user['attributes']['about'][0:1000] + '...'
                     embed.add_field(name='About', value=about, inline=False)
-                try:
-                    anime_stats = data['included'][22]
-                    manga_stats = data['included'][20]
-                    anime_days_watched = str(datetime.timedelta(seconds=anime_stats['attributes']['statsData']
-                                                                ['time'])).split(',')
-                    anime_days_watched = anime_days_watched[0]
-                    anime_completed = anime_stats['attributes']['statsData']['completed']
-                    anime_episodes_watched = anime_stats['attributes']['statsData']['units']
-                    anime_total_entries = anime_stats['attributes']['statsData']['media']
-                    manga_total_entries = manga_stats['attributes']['statsData']['media']
-                    manga_chapters = manga_stats['attributes']['statsData']['units']
-                    manga_completed = manga_stats['attributes']['statsData']['completed']
-                    embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
-                                                              f'Completed: {anime_completed}\n'
-                                                              f'Episodes: {anime_episodes_watched}\n'
-                                                              f'Total Entries: {anime_total_entries}\n',
-                                    inline=True)
-                    embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
-                                                              f'Chapters Read: {manga_chapters}\n'
-                                                              f'Total Entries: {manga_total_entries}\n',
-                                    inline=True)
-                except Exception as exception:
-                    logger.exception(exception)
-                    pass
+                anime_days_watched = '-'
+                anime_completed = '-'
+                anime_episodes_watched = '-'
+                anime_total_entries = '-'
+                manga_total_entries = '-'
+                manga_chapters = '-'
+                manga_completed = '-'
+                stats = 0
+                for x in data['included']:
+                    if stats == 2:
+                        break
+                    try:
+                        if x['attributes']:
+                            if x['attributes']['kind'] == 'anime-amount-consumed':
+                                if x['attributes']['statsData']:
+                                    try:
+                                        anime_stats = x['attributes']['statsData']
+                                        anime_days_watched = str(datetime.timedelta(seconds=anime_stats
+                                                                                    ['time'])).split(',')
+                                        anime_days_watched = anime_days_watched[0]
+                                        anime_completed = anime_stats['completed']
+                                        anime_episodes_watched = anime_stats['units']
+                                        anime_total_entries = anime_stats['media']
+                                        stats += 1
+                                    except Exception as exception:
+                                        logger.exception(exception)
+                            if x['attributes']['kind'] == 'manga-amount-consumed':
+                                if x['attributes']['statsData']:
+                                    try:
+                                        manga_stats = x['attributes']['statsData']
+                                        manga_total_entries = manga_stats['media']
+                                        manga_chapters = manga_stats['units']
+                                        manga_completed = manga_stats['completed']
+                                        stats += 1
+                                    except Exception as exception:
+                                        logger.exception(exception)
+                    except KeyError:
+                        pass
+                    except Exception as exception:
+                        logger.exception(exception)
+                embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+                                                          f'Completed: {anime_completed}\n'
+                                                          f'Episodes: {anime_episodes_watched}\n'
+                                                          f'Total Entries: {anime_total_entries}\n',
+                                inline=True)
+                embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
+                                                          f'Chapters Read: {manga_chapters}\n'
+                                                          f'Total Entries: {manga_total_entries}\n',
+                                inline=True)
                 embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                 embeds.append(embed)
             except Exception as exception:
