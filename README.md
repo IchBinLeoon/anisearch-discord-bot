@@ -235,7 +235,7 @@ CREATE TABLE users (
     ```
 
 ### Manual
-1. Make sure you have `Python 3.8.6` or higher.
+1. Make sure you have `Python 3.8` or higher.
 
 2. Install the requirements.
 
