@@ -4,17 +4,17 @@
   <br>
 </p>
   
-<h5 align="center">Searches and displays information about Anime, Manga, Characters, Staff, Studios and Profiles from AniList, MyAnimeList and Kitsu!</h5>
+<h5 align="center">Searches and displays information about anime, manga, characters, staff, studios and much more from AniList, MyAnimeList and Kitsu!</h5>
   
 <p align="center">
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
   </a>
   <a href="https://www.python.org/">
-    <img src="https://img.shields.io/badge/python-3.8.6-blue" alt="Python">
+    <img src="https://img.shields.io/badge/python-3.8-blue" alt="Python">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
-    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL" alt="GitHub Workflow Status">
+    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL" alt="CodeQL Workflow Status">
   </a>
   <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
     <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge" alt="CodeFactor">
@@ -46,7 +46,7 @@
 
 
 # AniSearch v1.6
-AniSearch is an easy-to-use Discord bot written in Python that allows you to search for Anime, Manga, Characters, Staff, Studios and Profiles right within Discord and displays results from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) and [Kitsu](https://kitsu.io/)!
+AniSearch is an easy-to-use Discord bot written in Python that allows you to search for anime, manga, characters, staff and studios right within Discord and displays the results as interactive, reaction-based embeds! There are also features to search for a random anime or manga of a specific genre, view the opening and ending themes of an anime and to view another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) or [Kitsu](https://kitsu.io/).
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
