@@ -1,5 +1,6 @@
 import aiohttp
 from jikanpy import AioJikan
+from jikanpy import JikanException
 
 
 async def anilist_request(query, variables):
@@ -9,8 +10,7 @@ async def anilist_request(query, variables):
         async with session.post(api, json=request_json) as response:
             if response.status == 200:
                 return await response.json()
-            else:
-                return None
+            return None
 
 
 async def myanimelist_request(request, search):
@@ -18,7 +18,7 @@ async def myanimelist_request(request, search):
         aio_jikan = AioJikan()
         try:
             data = await aio_jikan.user(username=search)
-        except:
+        except JikanException:
             data = None
         await aio_jikan.close()
         return data
@@ -31,8 +31,7 @@ async def kitsu_request(request, search):
             async with session.get(api) as response:
                 if response.status == 200:
                     return await response.json()
-                else:
-                    return None
+                return None
 
 
 async def tracemoe_request(url):
@@ -41,8 +40,7 @@ async def tracemoe_request(url):
         async with session.post(api) as response:
             if response.status == 200:
                 return await response.json()
-            else:
-                return None
+            return None
 
 
 async def saucenao_request(url):
@@ -51,8 +49,7 @@ async def saucenao_request(url):
         async with session.post(api) as response:
             if response.status == 200:
                 return await response.text()
-            else:
-                return None
+            return None
 
 
 async def animethemes_request(anime):
@@ -61,5 +58,4 @@ async def animethemes_request(anime):
         async with session.get(api) as response:
             if response.status == 200:
                 return await response.json()
-            else:
-                return None
+            return None

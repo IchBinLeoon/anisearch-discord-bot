@@ -51,7 +51,6 @@ class Studio(commands.Cog, name='Studio'):
                                 medias.append(list_object)
                             except Exception as exception:
                                 logger.exception(exception)
-                                pass
                         if len(medias) > 10:
                             medias = medias[0:10]
                             medias[9] = medias[9] + '...'

@@ -3,7 +3,7 @@ import discord
 from anisearch.utils.database.prefix import get_command_prefix
 from anisearch.utils.database.prefix import insert_prefix
 from anisearch.utils.database.prefix import delete_prefix
-from discord.ext import commands, menus
+from discord.ext import commands
 from discord.ext.commands import Bot as BotBase
 from anisearch import config
 from anisearch.utils.logger import logger
@@ -129,15 +129,6 @@ class AniSearchBot(BotBase):
             ctx.command.reset_cooldown(ctx)
         elif isinstance(error, commands.NoPrivateMessage):
             title = 'Command cannot be used in private messages.'
-            ctx.command.reset_cooldown(ctx)
-        elif isinstance(error, menus.CannotAddReactions):
-            title = 'Cannot add reactions.'
-            ctx.command.reset_cooldown(ctx)
-        elif isinstance(error, menus.CannotEmbedLinks):
-            title = 'Cannot embed links.'
-            ctx.command.reset_cooldown(ctx)
-        elif isinstance(error, menus.CannotReadMessageHistory):
-            title = 'Cannot read message history.'
             ctx.command.reset_cooldown(ctx)
         elif isinstance(error, commands.NotOwner):
             title = 'You are not the owner of the bot.'

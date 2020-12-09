@@ -43,7 +43,6 @@ class Image(commands.Cog, name='Image'):
                         embed.set_image(url=image_url)
                     except Exception as exception:
                         logger.exception(exception)
-                        pass
                     if anime['episode']:
                         embed.add_field(name='Episode', value=anime['episode'], inline=False)
                     if anime['synonyms']:

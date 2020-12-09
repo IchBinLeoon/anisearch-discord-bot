@@ -20,8 +20,7 @@ def description_parser(description, length):
     description = description
     if len(description) > length:
         return description[0:length] + '...'
-    else:
-        return description
+    return description
 
 
 def anilist_date_parser(day, month, year):
@@ -32,7 +31,7 @@ def anilist_date_parser(day, month, year):
 
 
 def anilist_type_parsers(media_type):
-    MediaTypeToString = {
+    MediaType = {
         'TV': 'TV',
         'MOVIE': 'Movie',
         'OVA': 'OVA',
@@ -44,24 +43,24 @@ def anilist_type_parsers(media_type):
         'NOVEL': 'Novel',
         'MANGA': 'Manga'
     }
-    return MediaTypeToString[media_type]
+    return MediaType[media_type]
 
 
 def anilist_anime_status_parsers(media_status):
-    AnimeStatusToString = {
+    AnimeStatus = {
         'FINISHED': 'Finished',
         'RELEASING': 'Currently Airing',
         'NOT_YET_RELEASED': 'Not Yet Aired',
         'CANCELLED': 'Cancelled'
     }
-    return AnimeStatusToString[media_status]
+    return AnimeStatus[media_status]
 
 
 def anilist_manga_status_parsers(media_status):
-    MangaStatusToString = {
+    MangaStatus = {
         'FINISHED': 'Finished',
         'RELEASING': 'Publishing',
         'NOT_YET_RELEASED': 'Not Yet Published',
         'CANCELLED': 'Cancelled'
     }
-    return MangaStatusToString[media_status]
+    return MangaStatus[media_status]

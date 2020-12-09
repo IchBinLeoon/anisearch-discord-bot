@@ -68,4 +68,3 @@ class Theme(commands.Cog, name='Theme'):
                 else:
                     embed = discord.Embed(title='No theme for the anime `{}` found.'.format(anime), color=0xff0000)
                     await ctx.channel.send(embed=embed)
-

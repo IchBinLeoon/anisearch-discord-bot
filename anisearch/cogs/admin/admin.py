@@ -1,7 +1,8 @@
 import math
 import platform
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from time import time
 import discord
 import psutil

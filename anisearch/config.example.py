@@ -10,5 +10,6 @@ DB_NAME = 'database'
 DB_USER = 'username'
 BD_PASSWORD = 'password'
 
-# Ignore this.
+# Everything below can be ignored and does not need to be edited to run the bot.
+# The token for top.gg.
 TopGG = ''

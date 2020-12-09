@@ -84,7 +84,7 @@ class Random(commands.Cog, name='Random'):
                                 embed.add_field(name='Next Episode', value=time_left, inline=True)
                     elif anime['episodes']:
                         embed.add_field(name='Episodes', value=anime['episodes'], inline=True)
-                except Exception:
+                except KeyError:
                     pass
                 if anime['startDate']['day']:
                     start_date = anilist_date_parser(anime['startDate']['day'], anime['startDate']['month'],
@@ -107,7 +107,7 @@ class Random(commands.Cog, name='Random'):
                 try:
                     if anime['studios']['nodes'][0]['name']:
                         embed.add_field(name='Studio', value=anime['studios']['nodes'][0]['name'], inline=True)
-                except Exception:
+                except IndexError:
                     pass
                 if anime['synonyms']:
                     embed.add_field(name='Synonyms', value=', '.join(anime['synonyms']), inline=False)

@@ -137,4 +137,3 @@ def select_kitsu_profile(user_id):
     except Exception as exception:
         logger.exception(exception)
         return None
-

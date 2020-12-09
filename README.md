@@ -2,11 +2,6 @@
   <br>
     <img src="assets/anisearch-banner.png" alt="AniSearch Banner Image">
   <br>
-</p>
-  
-<h5 align="center">Searches and displays information about anime, manga, characters, staff, studios and much more from AniList, MyAnimeList and Kitsu!</h5>
-  
-<p align="center">
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
   </a>
@@ -26,7 +21,7 @@
     <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="Python">
+    <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="License">
   </a>
 </p>
 
@@ -198,7 +193,7 @@ CREATE TABLE users (
 ```
 
 ## 2. Setup Bot
-1. Clone the Repository.    
+1. Clone the repository.    
 
     ```
     git clone https://github.com/IchBinLeoon/anisearch-discord-bot
