@@ -63,7 +63,6 @@ class Profile(commands.Cog, name='Profile'):
                                         inline=True)
                     except Exception as exception:
                         logger.exception(exception)
-                        pass
                     embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)
                     await ctx.channel.send(embed=embed)
                 else:
