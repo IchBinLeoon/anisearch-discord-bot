@@ -2,6 +2,11 @@
   <br>
     <img src="assets/anisearch-banner.png" alt="AniSearch Banner Image">
   <br>
+</p>
+  
+<h5 align="center">Searches and displays information about anime, manga, characters, staff, studios and much more!</h5>
+  
+<p align="center">
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
   </a>
