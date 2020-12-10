@@ -65,13 +65,16 @@ class Anime(commands.Cog, name='Anime'):
                         embed.description = description
                     try:
                         if anime['status'] == 'RELEASING':
-                            if anime['nextAiringEpisode']['episode']:
-                                anime_episodes = str(anime['nextAiringEpisode']['episode'] - 1)
-                                embed.add_field(name='Aired Episodes', value=anime_episodes, inline=True)
-                                if anime["nextAiringEpisode"]["timeUntilAiring"]:
-                                    seconds = anime["nextAiringEpisode"]["timeUntilAiring"]
-                                    time_left = str(datetime.timedelta(seconds=seconds))
-                                    embed.add_field(name='Next Episode', value=time_left, inline=True)
+                            try:
+                                if anime['nextAiringEpisode']['episode']:
+                                    anime_episodes = str(anime['nextAiringEpisode']['episode'] - 1)
+                                    embed.add_field(name='Aired Episodes', value=anime_episodes, inline=True)
+                                    if anime["nextAiringEpisode"]["timeUntilAiring"]:
+                                        seconds = anime["nextAiringEpisode"]["timeUntilAiring"]
+                                        time_left = str(datetime.timedelta(seconds=seconds))
+                                        embed.add_field(name='Next Episode', value=time_left, inline=True)
+                            except TypeError:
+                                pass
                         elif anime['episodes']:
                             embed.add_field(name='Episodes', value=anime['episodes'], inline=True)
                     except KeyError:
