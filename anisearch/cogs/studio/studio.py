@@ -44,7 +44,10 @@ class Studio(commands.Cog, name='Studio'):
                             try:
                                 media_name = [x][0]['node']['title']['romaji']
                                 media_link = [x][0]['node']['siteUrl']
-                                media_type = anilist_type_parsers([x][0]['node']['format'])
+                                try:
+                                    media_type = anilist_type_parsers([x][0]['node']['format'])
+                                except KeyError:
+                                    media_type = 'N/A'
                                 media_count = [x][0]['node']['episodes']
                                 list_object = '[{}]({}) - Type: {} - Episodes: {}'.format(media_name, media_link,
                                                                                           media_type, media_count)
