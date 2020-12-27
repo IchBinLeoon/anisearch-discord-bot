@@ -17,9 +17,13 @@ def clean_spoilers(raw_text):
 def description_parser(description, length):
     description = clean_spoilers(description)
     description = clean_html(description)
-    description = description
+    description = description.replace('~!', '||').replace('!~', '||')
     if len(description) > length:
-        return description[0:length] + '...'
+        description = description[0:length]
+        spoiler_tag_count = description.count('||')
+        if spoiler_tag_count % 2 != 0:
+            return description + '...||'
+        return description + '...'
     return description
 
 
