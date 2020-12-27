@@ -31,21 +31,21 @@
 </p>
 
 <p align="center">
-  <a href="#AniSearch-v16">AniSearch</a>
+  <a href="#-AniSearch-v16">AniSearch</a>
   •
-  <a href="#Features">Features</a>
+  <a href="#-Features">Features</a>
   •
-  <a href="#Contribute">Contribute</a>
+  <a href="#-Contribute">Contribute</a>
   •
-  <a href="#Running-AniSearch">Running AniSearch</a>
+  <a href="#-Running-AniSearch">Running AniSearch</a>
   •
-  <a href="#Libraries-and-APIs">Libraries and API's</a>
+  <a href="#-Libraries-and-APIs">Libraries and API's</a>
   •
-  <a href="#License">License</a>
+  <a href="#-License">License</a>
 </p>
 
 
-# AniSearch v1.6
+# 🔍 AniSearch v1.6
 **AniSearch** is an easy-to-use Discord bot written in Python that allows you to search for anime, manga, characters, staff and studios right within Discord and displays the results as interactive, reaction-based embeds! There are also features to search for a random anime or manga of a specific genre, view the opening and ending themes of an anime and to view another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) or [Kitsu](https://kitsu.io/).
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
@@ -55,7 +55,7 @@ If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#99
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
 
-# Features
+# ✨ Features
 ## Commands
 **AniSearch's Command Prefix:** `as! | @AniSearch | Customizable`
 
@@ -153,11 +153,11 @@ These commands can only be used by the bot owner.
 <img src="assets/examples/studio-example.png">
 </details>
 
-# Contribute
+# 🤝 Contribute
 You have an idea or found a bug? Create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
 
 
-# Running AniSearch
+# 🚀 Running AniSearch
 Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead, which you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!  
 
 Nevertheless, the installation steps are as follows:  
@@ -225,7 +225,7 @@ CREATE TABLE users (
 4. Rename `config.example.py` to `config.py`.
 
 ## 3. Run
-### Docker
+### 🐳 Docker
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
 2. Build the image and run the bot.
@@ -234,7 +234,7 @@ CREATE TABLE users (
     docker-compose up --build
     ```
 
-### Manual
+### 🔧 Manual
 1. Make sure you have `Python 3.8` or higher.
 
 2. Install the requirements.
@@ -250,7 +250,7 @@ CREATE TABLE users (
     ```
 
 
-# Libraries and API's
+# 📚 Libraries and API's
 Thanks to the people who made this discord bot possible.  
 #### [Rapptz/discord.py](https://github.com/Rapptz/discord.py)  
 #### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)  
@@ -265,5 +265,5 @@ Thanks to the people who made this discord bot possible.
 #### [SauceNAO](https://saucenao.com)  
 
 
-# License
+# 📝 License
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE) file for more details.
