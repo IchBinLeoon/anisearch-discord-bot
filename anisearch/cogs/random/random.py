@@ -253,7 +253,7 @@ class Random(commands.Cog, name='Random'):
     @commands.command(name='random', aliases=['r'], usage='random <anime|manga> <genre>', brief='10s',
                       ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def cmd_random(self, ctx, media, genre):
+    async def cmd_random(self, ctx, media, *, genre):
         """Displays a random anime or manga of the specified genre."""
         async with ctx.channel.typing():
             if media == 'anime' or media == 'Anime':
