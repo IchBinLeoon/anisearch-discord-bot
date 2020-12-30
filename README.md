@@ -50,8 +50,6 @@
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
-If you would like to contact me, add me as a friend via Discord: `IchBinLeoon#9999`
-
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
 
@@ -158,7 +156,7 @@ You have an idea or found a bug? Create [a new issue](https://github.com/IchBinL
 
 
 # 🚀 Running AniSearch
-Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead, which you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!  
+Self-hosting isn't fully supported. I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead, which you can add it to your Discord server [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!  
 
 Nevertheless, the installation steps are as follows:  
 
@@ -206,7 +204,9 @@ CREATE TABLE users (
 
 2. Create a [Discord Application](https://discord.com/developers/applications).
 
-3. Edit `config.example.py`.   
+3. Rename `config.example.py` to `config.py`.  
+
+3. Edit `config.py`.   
 
     ```py
     # The token the bot will use for auth with Discord.
@@ -221,8 +221,6 @@ CREATE TABLE users (
     DB_USER = 'username'
     BD_PASSWORD = 'password'
     ```
-
-4. Rename `config.example.py` to `config.py`.
 
 ## 3. Run
 ### 🐳 Docker
