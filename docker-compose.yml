@@ -3,4 +3,5 @@ version: '3'
 services:
   anisearch:
     build: .
+    restart: unless-stopped
     container_name: anisearch-container
