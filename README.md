@@ -25,7 +25,7 @@
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/pulls">
     <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE">
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="License">
   </a>
 </p>
@@ -236,13 +236,13 @@ CREATE TABLE users (
 2. Install the requirements.
 
     ```
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
     ```
 
 3. Run AniSearch.
 
     ```
-    python -m anisearch
+    python3 -m anisearch
     ```
 
 
@@ -262,4 +262,4 @@ Thanks to the people who made this discord bot possible.
 
 
 # 📝 License
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/master/LICENSE) file for more details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE) file for more details.
