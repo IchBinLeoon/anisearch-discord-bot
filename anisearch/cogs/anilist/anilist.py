@@ -87,6 +87,9 @@ class AniList(commands.Cog, name='AniList'):
                         anime_url = anime['node']['siteUrl']
                         anime_list_object = '[{}]({})'.format(anime_name, anime_url)
                         fav_anime.append(anime_list_object)
+                    if len(fav_anime) > 10:
+                        fav_anime = fav_anime[0:10]
+                        fav_anime[9] = fav_anime[9] + '...'
                     embed.add_field(name='Favorite Anime', value=' | '.join(fav_anime), inline=False)
                 else:
                     embed.add_field(name='Favorite Anime', value='-', inline=False)
@@ -97,6 +100,9 @@ class AniList(commands.Cog, name='AniList'):
                         manga_url = manga['node']['siteUrl']
                         manga_list_object = '[{}]({})'.format(manga_name, manga_url)
                         fav_manga.append(manga_list_object)
+                    if len(fav_manga) > 10:
+                        fav_manga = fav_manga[0:10]
+                        fav_manga[9] = fav_manga[9] + '...'
                     embed.add_field(name='Favorite Manga', value=' | '.join(fav_manga), inline=False)
                 else:
                     embed.add_field(name='Favorite Characters', value='-', inline=False)
@@ -107,6 +113,9 @@ class AniList(commands.Cog, name='AniList'):
                         character_url = character['node']['siteUrl']
                         character_list_object = '[{}]({})'.format(character_name, character_url)
                         fav_characters.append(character_list_object)
+                    if len(fav_characters) > 10:
+                        fav_characters = fav_characters[0:10]
+                        fav_characters[9] = fav_characters[9] + '...'
                     embed.add_field(name='Favorite Characters', value=' | '.join(fav_characters), inline=False)
                 else:
                     embed.add_field(name='Favorite Characters', value='-', inline=False)
@@ -117,6 +126,9 @@ class AniList(commands.Cog, name='AniList'):
                         staff_url = staff['node']['siteUrl']
                         staff_list_object = '[{}]({})'.format(staff_name, staff_url)
                         fav_staff.append(staff_list_object)
+                    if len(fav_staff) > 10:
+                        fav_staff = fav_staff[0:10]
+                        fav_staff[9] = fav_staff[9] + '...'
                     embed.add_field(name='Favorite Staff', value=' | '.join(fav_staff), inline=False)
                 else:
                     embed.add_field(name='Favorite Staff', value='-', inline=False)
@@ -127,6 +139,9 @@ class AniList(commands.Cog, name='AniList'):
                         studio_url = studio['node']['siteUrl']
                         studio_list_object = '[{}]({})'.format(studio_name, studio_url)
                         fav_studio.append(studio_list_object)
+                    if len(fav_studio) > 10:
+                        fav_studio = fav_studio[0:10]
+                        fav_studio[9] = fav_studio[9] + '...'
                     embed.add_field(name='Favorite Studio', value=' | '.join(fav_studio), inline=False)
                 else:
                     embed.add_field(name='Favorite Studio', value='-', inline=False)

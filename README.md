@@ -11,7 +11,7 @@
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
   </a>
   <a href="https://www.python.org/">
-    <img src="https://img.shields.io/badge/python-3.8-blue" alt="Python">
+    <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue" alt="Python">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
     <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL" alt="CodeQL Workflow Status">
@@ -197,7 +197,7 @@ CREATE TABLE users (
 1. Clone the repository.    
 
     ```
-    git clone https://github.com/IchBinLeoon/anisearch-discord-bot
+    $ git clone https://github.com/IchBinLeoon/anisearch-discord-bot
     ```
 
 2. Create a [Discord Application](https://discord.com/developers/applications).
@@ -227,7 +227,7 @@ CREATE TABLE users (
 2. Build the image and run the bot.
 
     ```
-    docker-compose up --build
+    $ docker-compose up --build
     ```
 
 ### 🔧 Manual
@@ -236,13 +236,13 @@ CREATE TABLE users (
 2. Install the requirements.
 
     ```
-    pip3 install -r requirements.txt
+    $ python3 -m pip install -r requirements.txt
     ```
 
 3. Run AniSearch.
 
     ```
-    python3 -m anisearch
+    $ python3 -m anisearch
     ```
 
 
