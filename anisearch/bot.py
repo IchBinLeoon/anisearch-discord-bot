@@ -1,4 +1,22 @@
-import platform
+"""
+This file is part of the AniSearch Discord Bot.
+
+Copyright (C) 2021 IchBinLeoon
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+
 import discord
 from anisearch.utils.database.prefix import get_command_prefix
 from anisearch.utils.database.prefix import insert_prefix
@@ -7,8 +25,6 @@ from discord.ext import commands
 from discord.ext.commands import Bot as BotBase
 from anisearch import config
 from anisearch.utils.logger import logger
-
-version = '1.6'
 
 initial_extensions = [
     'anisearch.cogs.help',
@@ -35,6 +51,7 @@ class AniSearchBot(BotBase):
     def __init__(self):
         intents = discord.Intents(messages=True, guilds=True, reactions=True)
         super().__init__(command_prefix=get_command_prefix, intents=intents, owner_id=int(config.OWNER_ID))
+        self.load_cogs()
 
     def load_cogs(self):
         for extension in initial_extensions:
@@ -52,12 +69,8 @@ class AniSearchBot(BotBase):
         logger.info('Bot-Name: {}'.format(self.user.name))
         logger.info('Bot-Discriminator: {}'.format(self.user.discriminator))
         logger.info('Bot-ID: {}'.format(self.user.id))
-        logger.info('Bot-Version: {}'.format(version))
-        logger.info('Discord.py-Version: {}'.format(discord.__version__))
-        logger.info('Python-Version: {}'.format(platform.python_version()))
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
                                    status=discord.Status.online)
-        self.load_cogs()
         logger.info('Bot is online')
 
     @commands.Cog.listener()

@@ -1,3 +1,22 @@
+"""
+This file is part of the AniSearch Discord Bot.
+
+Copyright (C) 2021 IchBinLeoon
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+
 from datetime import timedelta
 from time import time
 from typing import Optional
@@ -5,7 +24,9 @@ import psutil
 from discord.utils import get
 import discord
 from discord.ext import commands
-from anisearch import bot, config
+
+import anisearch
+from anisearch import config
 from anisearch.utils.database.prefix import select_prefix
 
 
@@ -132,7 +153,7 @@ class Help(commands.Cog, name='Help'):
                               color=0x4169E1, timestamp=ctx.message.created_at)
         embed.add_field(name='❯ Creator', value='<@!{}>'.format(223871059068321793),
                         inline=True)
-        embed.add_field(name='❯ Version', value='v{}'.format(bot.version),
+        embed.add_field(name='❯ Version', value='v{}'.format(anisearch.__version__),
                         inline=True)
         embed.add_field(name='❯ Commands', value='as!help',
                         inline=True)
@@ -141,7 +162,7 @@ class Help(commands.Cog, name='Help'):
                         inline=True)
         embed.add_field(name='❯ Vote', value='[Click me!](https://top.gg/bot/737236600878137363/vote)',
                         inline=True)
-        embed.add_field(name='❯ GitHub', value='[Click me!](https://github.com/IchBinLeoon/anisearch-discord-bot)',
+        embed.add_field(name='❯ GitHub', value='[Click me!]({})'.format(anisearch.__url__),
                         inline=True)
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         embed.set_footer(text='Requested by {}'.format(ctx.author), icon_url=ctx.author.avatar_url)

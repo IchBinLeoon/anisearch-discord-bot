@@ -8,44 +8,49 @@
   
 <p align="center">
   <a href="https://top.gg/bot/737236600878137363">
-    <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Discord Bots">
+    <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Status">
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue" alt="Python">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
-    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL" alt="CodeQL Workflow Status">
-  </a>
-  <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
-    <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge" alt="CodeFactor">
-  </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
-    <img src="https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot" alt="Issues">
-  </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/pulls">
-    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/releases">
+    <img src="https://img.shields.io/github/v/release/ichbinleoon/anisearch-discord-bot" alt="Release">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="License">
   </a>
+  <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
+    <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge" alt="CodeFactor">
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
+    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL" alt="CodeQL">
+  </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/pulls">
+    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
+  </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
+    <img src="https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot" alt="Issues">
+  </a>
 </p>
 
 <p align="center">
-  <a href="#-AniSearch-v16">AniSearch</a>
+  <a href="#-AniSearch-v16">AniSearch 🔍</a>
   •
-  <a href="#-Features">Features</a>
+  <a href="#-Features">Features ✨</a>
   •
-  <a href="#-Contribute">Contribute</a>
+  <a href="#-Contribute">Contribute 🤝</a>
   •
-  <a href="#-Running-AniSearch">Running AniSearch</a>
+  <a href="#-Running-AniSearch">Running AniSearch 🚀</a>
   •
-  <a href="#-Libraries-and-APIs">Libraries and API's</a>
+  <a href="#-Libraries-and-APIs">Libraries and API's 📚</a>
   •
-  <a href="#-License">License</a>
+  <a href="#-License">License 📝</a>
 </p>
 
 
-# 🔍 AniSearch v1.6
+# 🔍 AniSearch
 **AniSearch** is an easy-to-use Discord bot written in Python that allows you to search for anime, manga, characters, staff and studios right within Discord and displays the results as interactive, reaction-based embeds! There are also features to search for a random anime or manga of a specific genre, view the opening and ending themes of an anime and to view another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) or [Kitsu](https://kitsu.io/). If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
@@ -200,11 +205,17 @@ CREATE TABLE users (
     $ git clone https://github.com/IchBinLeoon/anisearch-discord-bot
     ```
 
-2. Create a [Discord Application](https://discord.com/developers/applications).
+2. Change the working directory.
 
-3. Rename `config.example.py` to `config.py`.  
+    ```
+    $ cd anisearch-discord-bot/anisearch
+    ```
 
-3. Edit `config.py`.   
+3. Create a [Discord Application](https://discord.com/developers/applications).
+
+4. Rename `config.example.py` to `config.py`.  
+
+5. Edit `config.py`.   
 
     ```py
     # The token the bot will use for auth with Discord.
@@ -221,6 +232,15 @@ CREATE TABLE users (
     ```
 
 ## 3. Run
+
+1. Change the working directory.
+
+    ```
+    $ cd ..
+    ```
+   
+2. Run the bot either as a Docker container or manually.
+
 ### 🐳 Docker
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
@@ -262,4 +282,4 @@ Thanks to the people who made this discord bot possible.
 
 
 # 📝 License
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE) file for more details.
+This project is licensed under the GNU General Public License v3.0 (GPL-v3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE) file for more details.

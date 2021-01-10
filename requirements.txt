@@ -1,4 +1,4 @@
-discord.py[voice]==1.5.1
+discord.py==1.5.1
 psutil==5.7.3
 psycopg2==2.8.6
 jikanpy==4.2.2
