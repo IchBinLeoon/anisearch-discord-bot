@@ -233,7 +233,7 @@ CREATE TABLE users (
 
 ## 3. Run
 
-1. Change the working directory.
+1. Change back to the parent directory.
 
     ```
     $ cd ..
@@ -250,7 +250,7 @@ CREATE TABLE users (
     $ docker-compose up --build
     ```
 
-### 🔧 Manual
+### 🔧 Manually
 1. Make sure you have `Python 3.8` or higher.
 
 2. Install the requirements.
