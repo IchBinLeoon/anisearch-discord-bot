@@ -270,13 +270,14 @@ CREATE TABLE users (
 Thanks to the people who made this discord bot possible.  
 #### [Rapptz/discord.py](https://github.com/Rapptz/discord.py)  
 #### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)  
+#### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)  
+#### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)  
-#### [abhinavk99/jikanpy](https://github.com/abhinavk99/jikanpy)  
+#### [jikan-me/jikan](https://github.com/jikan-me/jikan)  
 #### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)  
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)  
-#### [LetrixZ/animethemes-api](https://github.com/LetrixZ/animethemes-api)  
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
-#### [SauceNAO](https://saucenao.com)  
+#### [SauceNAO](https://saucenao.com)
 
 
 # 📝 License

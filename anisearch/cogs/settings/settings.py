@@ -17,35 +17,43 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+
 import discord
 from discord.ext import commands
-from anisearch.utils.database.prefix import change_prefix
-from anisearch.utils.database.prefix import select_prefix
+from discord.ext.commands import Context
+
+from anisearch.bot import AniSearchBot
+
+log = logging.getLogger(__name__)
 
 
 class Settings(commands.Cog, name='Settings'):
+    """Settings cog."""
 
-    def __init__(self, bot):
+    def __init__(self, bot: AniSearchBot):
+        """Initializes the `Settings` cog."""
         self.bot = bot
 
-    @commands.command(name='prefix', usage='prefix <prefix>', brief='10s', ignore_extra=False)
+    @commands.command(name='prefix', usage='prefix <prefix>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
-    async def cmd_prefix(self, ctx, prefix):
-        """Changes the current server prefix."""
+    async def prefix(self, ctx: Context, prefix: str):
+        """Changes the current server prefix. Can only be used by a server administrator."""
         if len(prefix) > 5:
-            error_embed = discord.Embed(title='The prefix cannot be longer than 5 characters.',
-                                        color=0xff0000)
-            await ctx.channel.send(embed=error_embed)
+            embed = discord.Embed(
+                title='The prefix cannot be longer than 5 characters.', color=0xff0000)
+            await ctx.channel.send(embed=embed)
         else:
-            prefix_old = select_prefix(ctx)
-            prefix_new = change_prefix(ctx, prefix)
+            prefix_old = self.bot.db.get_prefix(ctx.message)
+            self.bot.db.update_prefix(ctx.message, prefix)
+            prefix_new = self.bot.db.get_prefix(ctx.message)
             if prefix_new == 'as!':
-                embed = discord.Embed(title='Prefix resetted.', color=0x4169E1)
+                embed = discord.Embed(
+                    title=f'{ctx.author} resetted the prefix.', color=0x4169E1)
                 await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(title='{} changed the prefix from `{}` to `{}`.'.format(ctx.author,
-                                                                                              prefix_old, prefix_new),
+                embed = discord.Embed(title=f'{ctx.author} changed the prefix from `{prefix_old}` to `{prefix_new}`.',
                                       color=0x4169E1)
                 await ctx.channel.send(embed=embed)

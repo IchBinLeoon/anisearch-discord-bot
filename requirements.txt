@@ -2,6 +2,4 @@ discord.py==1.6.0
 git+git://github.com/Rapptz/discord-ext-menus
 aiohttp==3.7.3
 psycopg2==2.8.6
-jikanpy==4.2.2
 dblpy==0.4.0
-psutil==5.8.0

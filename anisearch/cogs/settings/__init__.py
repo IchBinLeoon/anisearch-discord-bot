@@ -17,10 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+
+from anisearch.bot import AniSearchBot
 from anisearch.cogs.settings.settings import Settings
-from anisearch.utils.logger import logger
+
+log = logging.getLogger(__name__)
 
 
-def setup(bot):
+def setup(bot: AniSearchBot):
+    """Sets up the `Settings` cog."""
     bot.add_cog(Settings(bot))
-    logger.info('Loaded cog Settings')
+    log.info('Settings cog loaded.')
