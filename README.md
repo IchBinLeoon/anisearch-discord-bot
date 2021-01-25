@@ -4,34 +4,34 @@
   <br>
 </p>
   
-<h5 align="center">Searches and displays information about anime, manga, characters, staff, studios and much more!</h5>
+<h5 align="center">Retrieves and displays information about anime, manga, characters, staff, studios and much more!</h5>
   
 <p align="center">
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Status">
   </a>
   <a href="https://www.python.org/">
-    <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue" alt="Python">
+    <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue?style=flat-square" alt="Python">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/releases">
-    <img src="https://img.shields.io/github/v/release/ichbinleoon/anisearch-discord-bot" alt="Release">
+    <img src="https://img.shields.io/github/v/release/ichbinleoon/anisearch-discord-bot?style=flat-square" alt="Release">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot" alt="License">
+    <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="License">
   </a>
   <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
-    <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge" alt="CodeFactor">
+    <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge?style=flat-square" alt="CodeFactor">
   </a>
 </p>
 <p align="center">
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
-    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL" alt="CodeQL">
+    <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL&style=flat-square" alt="CodeQL">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/pulls">
-    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot" alt="Pulls">
+    <img src="https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Pulls">
   </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/issues">
-    <img src="https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot" alt="Issues">
+    <img src="https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Issues">
   </a>
 </p>
 
@@ -233,7 +233,7 @@ CREATE TABLE users (
 
 ## 3. Run
 
-1. Change the working directory.
+1. Change back to the parent directory.
 
     ```
     $ cd ..
@@ -250,7 +250,7 @@ CREATE TABLE users (
     $ docker-compose up --build
     ```
 
-### 🔧 Manual
+### 🔧 Manually
 1. Make sure you have `Python 3.8` or higher.
 
 2. Install the requirements.
@@ -276,8 +276,6 @@ Thanks to the people who made this discord bot possible.
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)  
 #### [LetrixZ/animethemes-api](https://github.com/LetrixZ/animethemes-api)  
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
-#### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)  
-#### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
 #### [SauceNAO](https://saucenao.com)  
 
 
