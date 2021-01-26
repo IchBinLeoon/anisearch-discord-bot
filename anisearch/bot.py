@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import time
 
 import discord
 from aiohttp import ClientSession
@@ -26,11 +25,13 @@ from discord.ext import commands
 from discord.ext.commands import AutoShardedBot, CommandError, Context, when_mentioned_or
 
 from anisearch.config import OWNER_ID
+from anisearch.utils.anilist import AniListClient
 from anisearch.utils.database import DataBase
 
 log = logging.getLogger(__name__)
 
 initial_extensions = [
+    'anisearch.cogs.search',
     'anisearch.cogs.settings'
 ]
 
@@ -44,6 +45,7 @@ class AniSearchBot(AutoShardedBot):
         super().__init__(command_prefix=get_prefix, intents=intents, owner_id=int(OWNER_ID))
         self.db = DataBase()
         self.session = ClientSession(loop=self.loop)
+        self.anilist = AniListClient(ClientSession(loop=self.loop))
         self.load_cogs()
 
     def load_cogs(self) -> None:
@@ -64,10 +66,10 @@ class AniSearchBot(AutoShardedBot):
         await super().close()
 
     async def on_ready(self) -> None:
-        log.info(f'Logged in as {self.user}.')
-        log.info(f'Bot-Name: {self.user.name}.')
-        log.info(f'Bot-Discriminator: {self.user.discriminator}.')
-        log.info(f'Bot-ID: {self.user.id}.')
+        log.info(f'Logged in as {self.user}')
+        log.info(f'Bot-Name: {self.user.name}')
+        log.info(f'Bot-Discriminator: {self.user.discriminator}')
+        log.info(f'Bot-ID: {self.user.id}')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
                                    status=discord.Status.online)
         log.info('Bot is ready.')

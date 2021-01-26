@@ -24,6 +24,7 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
+from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class Settings(commands.Cog, name='Settings'):
         """Changes the current server prefix. Can only be used by a server administrator."""
         if len(prefix) > 5:
             embed = discord.Embed(
-                title='The prefix cannot be longer than 5 characters.', color=0xff0000)
+                title='The prefix cannot be longer than 5 characters.', color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
         else:
             prefix_old = self.bot.db.get_prefix(ctx.message)
@@ -51,9 +52,9 @@ class Settings(commands.Cog, name='Settings'):
             prefix_new = self.bot.db.get_prefix(ctx.message)
             if prefix_new == 'as!':
                 embed = discord.Embed(
-                    title=f'{ctx.author} resetted the prefix.', color=0x4169E1)
+                    title=f'{ctx.author} resetted the prefix.', color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
                 embed = discord.Embed(title=f'{ctx.author} changed the prefix from `{prefix_old}` to `{prefix_new}`.',
-                                      color=0x4169E1)
+                                      color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
