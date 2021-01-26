@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+import time
 
 import discord
 from aiohttp import ClientSession
@@ -32,6 +33,7 @@ log = logging.getLogger(__name__)
 
 initial_extensions = [
     'anisearch.cogs.search',
+    'anisearch.cogs.help',
     'anisearch.cogs.settings'
 ]
 
@@ -43,6 +45,7 @@ class AniSearchBot(AutoShardedBot):
         """Initializes the AniSearchBot."""
         intents = discord.Intents(messages=True, guilds=True, reactions=True)
         super().__init__(command_prefix=get_prefix, intents=intents, owner_id=int(OWNER_ID))
+        self.start_time = time.time()
         self.db = DataBase()
         self.session = ClientSession(loop=self.loop)
         self.anilist = AniListClient(ClientSession(loop=self.loop))
@@ -61,6 +64,7 @@ class AniSearchBot(AutoShardedBot):
 
     async def close(self):
         self.db.close()
+        await self.anilist.close()
         if self.session is not None:
             await self.session.close()
         await super().close()

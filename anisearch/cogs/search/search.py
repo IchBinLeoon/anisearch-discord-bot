@@ -353,7 +353,7 @@ class Search(commands.Cog, name='Search'):
         return embed
 
     @staticmethod
-    def get_staff_embed(data: Dict[str, Any], page: Optional[int], pages: Optional[int]) -> Embed:
+    def get_staff_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
         """
         Returns the `staff` embed.
 
@@ -410,7 +410,7 @@ class Search(commands.Cog, name='Search'):
         return embed
 
     @staticmethod
-    def get_studio_embed(data: Dict[str, Any], page: Optional[int], pages: Optional[int]) -> Embed:
+    def get_studio_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
         """
         Returns the `studio` embed.
 

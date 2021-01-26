@@ -75,27 +75,9 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `studio <name>:` Searches for a studio with the given name and displays information about the search results such as the studio productions!  
 
-- `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
+- `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.
 
-- `theme <anime>:` Searches for themes from the given anime and displays the openings and endings.  
-
-### Profile
-- `anilist [username|@member]:` Displays information about the given AniList Profile such as anime stats, manga stats and favorites!  
-
-- `myanimelist [username|@member]:` Displays information about the given MyAnimeList Profile such as anime stats, manga stats and favorites!  
-
-- `kitsu [username|@member]:` Displays information about the given Kitsu Profile such as anime stats, manga stats and favorites!  
- 
-- `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu Profile.  
-
-- `remove:` Removes the set AniList, MyAnimeList and Kitsu Profile.  
-
-### Image
-- `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
-
-- `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
-
-### Info
+### Help
 - `help [command]:` Shows help or displays information about a command.  
 
 - `commands:` Displays all commands.  
@@ -105,22 +87,9 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `stats:` Displays statistics about the bot.  
 
 ### Settings
-These commands can only be used by a server administrator.
+Can only be used by a server administrator.
 
-- `prefix <prefix>:` Changes the current server prefix.  
-
-### Owner
-These commands can only be used by the bot owner. 
-
-- `status:` Displays the current status of the bot.  
-
-- `load <cog>:` Loads a cog.  
-
-- `unload <cog>:` Unloads a cog.  
-
-- `reload <cog>:` Reloads a cog.  
-
-- `shutdown:` Shutdowns the bot.  
+- `prefix <prefix>:` Changes the current server prefix.
 
 ## Examples
 
