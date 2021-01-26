@@ -31,13 +31,13 @@ from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.constants import ERROR_EMBED_COLOR
 from anisearch.utils.database import DataBase
+from anisearch.utils.tracemoe import TraceMoeClient
 
 log = logging.getLogger(__name__)
 
 initial_extensions = [
     'anisearch.cogs.search',
     'anisearch.cogs.help',
-    'anisearch.cogs.theme',
     'anisearch.cogs.settings'
 ]
 
@@ -60,8 +60,9 @@ class AniSearchBot(AutoShardedBot):
         self.db = DataBase()
         self.anilist = AniListClient(ClientSession(loop=self.loop))
         self.animethemes = AnimeThemesClient(ClientSession(loop=self.loop))
+        self.tracemoe = TraceMoeClient(ClientSession(loop=self.loop))
 
-        # Posts guild count to top.gg every 30 minutes.
+        # Posts the guild count to top.gg every 30 minutes.
         self.topgg_token = TOPGG_TOKEN
         self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
 
@@ -79,12 +80,15 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded.')
 
     def run(self, token):
+        """Runs the bot."""
         super().run(token)
 
     async def close(self):
+        """Closes the bot and all other sessions."""
         self.db.close()
         await self.anilist.close()
         await self.animethemes.close()
+        await self.tracemoe.close()
         if self.session is not None:
             await self.session.close()
         await super().close()

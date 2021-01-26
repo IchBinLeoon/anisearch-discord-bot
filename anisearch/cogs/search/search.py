@@ -557,3 +557,201 @@ class Search(commands.Cog, name='Search'):
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise discord.ext.commands.BadArgument
+
+    @commands.command(name='themes', usage='themes <anime>', ignore_extra=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def themes(self, ctx: Context, *, anime: str):
+        """Searches for the openings and endings of the given anime and displays them."""
+        async with ctx.channel.typing():
+            data = await self.bot.animethemes.search(anime, 5, ['anime'])
+            if data.get('anime'):
+                embeds = []
+                for page, entry in enumerate(data.get('anime')):
+                    try:
+
+                        embed = discord.Embed(color=DEFAULT_EMBED_COLOR, title=entry.get('name'))
+
+                        if entry.get('images'):
+                            embed.set_thumbnail(url=entry.get('images')[0]['link'])
+
+                        count = 1
+                        sites = []
+                        for site in entry.get('resources'):
+                            site_string = f'[{site.get("site")}]({site.get("link")})'
+                            sites.append(site_string)
+                        embed.description = ' | '.join(sites)
+
+                        for theme in entry.get('themes'):
+                            if count >= 15:
+                                break
+                            theme_string = '**Title:** {}{}\n[Link](http://animethemes.moe/video/{})' \
+                                .format(theme.get('song')['title'],
+                                        ('\n**Artist:** ' + theme.get('song')['artists'][0]['name']) if
+                                        theme.get('song')['artists'] else
+                                        None, theme.get('entries')[0]['videos'][0]['basename'] if
+                                        theme.get('entries')[0]['videos'][0]['basename'] else 'N/A')
+                            embed.add_field(
+                                name=theme.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '),
+                                value=theme_string, inline=False)
+                            count += 1
+
+                        embed.set_footer(
+                            text=f'Provided by https://animethemes.moe/ • Page {page + 1}/{len(data.get("anime"))}')
+
+                    except Exception as e:
+                        log.exception(e)
+                        embed = discord.Embed(
+                            title='Error',
+                            description=f'An error occurred while loading the embed for the anime.',
+                            color=ERROR_EMBED_COLOR)
+                        embed.set_footer(
+                            text=f'Provided by https://animethemes.moe/ • Page {page + 1}/{len(data.get("anime"))}')
+                    embeds.append(embed)
+
+                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                await menu.start(ctx)
+
+            else:
+                embed = discord.Embed(title=f'No themes for the anime `{anime}` found.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+
+    @commands.command(name='theme', usage='theme <OP|ED> <anime>', ignore_extra=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def theme(self, ctx: Context, theme: str, *, anime: str):
+        """Displays a specific opening or ending of the given anime."""
+        async with ctx.channel.typing():
+            data = await self.bot.animethemes.search(anime, 1, ['anime'])
+            if data.get('anime'):
+                anime_ = data.get('anime')[0]
+
+                for entry in anime_.get('themes'):
+                    if theme.upper() == entry.get('slug') or (theme.upper() == 'OP' and entry.get('slug') == 'OP1') or \
+                            (theme.upper() == 'ED' and entry.get('slug') == 'ED1'):
+
+                        embed = discord.Embed(title=anime_.get('name'), colour=DEFAULT_EMBED_COLOR)
+
+                        if anime_.get('images'):
+                            embed.set_thumbnail(url=anime_.get('images')[0]['link'])
+
+                        info = []
+                        sites = []
+                        for site in anime_.get('resources'):
+                            site_string = f'[{site.get("site")}]({site.get("link")})'
+                            sites.append(site_string)
+                        sites_joined = ' | '.join(sites) + '\n'
+                        info.append(sites_joined)
+
+                        if entry.get('song')['title']:
+                            info.append('**Title:** ' + entry.get('song')['title'])
+
+                        if entry.get('song')['artists']:
+                            if len(entry.get('song')['artists']) > 1:
+                                artists = []
+                                for artist in entry.get('song')['artists']:
+                                    artists.append(artist.get('name'))
+                                info.append('**Artists:** ' + ', '.join(artists))
+                            else:
+                                info.append('**Artist:** ' + entry.get('song')['artists'][0]['name'])
+
+                        if len(info) > 0:
+                            embed.description = '\n'.join(info)
+
+                        embed.set_footer(
+                            text=f'Provided by https://animethemes.moe/')
+
+                        await ctx.channel.send(embed=embed)
+                        return await ctx.channel.send(
+                            f'http://animethemes.moe/video/{entry.get("entries")[0]["videos"][0]["basename"]}')
+
+                embed = discord.Embed(
+                    title=f'Cannot find `{theme.upper()}` for the anime `{anime}`.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+
+            else:
+                embed = discord.Embed(title=f'No theme for the anime `{anime}` found.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+
+    @commands.command(name='trace', aliases=['t'], usage='trace <image-url|with image as attachment>',
+                      ignore_extra=False)
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def trace(self, ctx, source=None):
+        """Tries to find the anime the image is from through the image url or the image as attachment."""
+        async with ctx.channel.typing():
+            url = None
+            if source is None:
+                if ctx.message.attachments:
+                    url = ctx.message.attachments[0].url
+                else:
+                    embed = discord.Embed(title='No image to look for the anime.', color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+            else:
+                url = source
+            if url:
+                if not url.endswith(('.jpg', '.png', '.bmp', '.jpeg')):
+                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`).',
+                                          color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+                else:
+                    try:
+                        data = await self.bot.tracemoe.search(url)
+
+                    except Exception as e:
+                        log.exception(e)
+
+                        embed = discord.Embed(
+                            title=f'An error occurred while searching for the anime or the link is invalid.',
+                            color=ERROR_EMBED_COLOR)
+
+                        return await ctx.channel.send(embed=embed)
+
+                    if data:
+                        embeds = []
+                        for page, anime in enumerate(data):
+                            try:
+                                embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
+
+                                if anime['title_english'] is None or anime['title_english'] == anime['title_romaji']:
+                                    embed.title = anime['title_romaji']
+                                else:
+                                    embed.title = '{} ({})'.format(anime['title_romaji'], anime['title_english'])
+
+                                try:
+                                    image_url = \
+                                        f"https://trace.moe/thumbnail.php?anilist_id={anime['anilist_id']}&file=" \
+                                        f"{anime['filename']}&t={anime['at']}&token={anime['tokenthumb']}" \
+                                            .replace(' ', '%20')
+                                    embed.set_image(url=image_url)
+                                except Exception as e:
+                                    log.exception(e)
+
+                                if anime.get('episode'):
+                                    embed.add_field(name='Episode', value=anime.get('episode'), inline=False)
+                                if anime.get('synonyms'):
+                                    embed.add_field(name='Synonyms', value=', '.join(anime.get('synonyms')),
+                                                    inline=False)
+                                if anime.get('anilist_id'):
+                                    anilist_link = f'https://anilist.co/anime/{str(anime.get("anilist_id"))}'
+                                    embed.add_field(name='Anilist Link', value=anilist_link, inline=False)
+                                if anime.get('mal_id'):
+                                    myanimelist_link = f'https://myanimelist.net/anime/{str(anime.get("mal_id"))}'
+                                    embed.add_field(name='MyAnimeList Link', value=myanimelist_link, inline=False)
+
+                                embed.set_footer(
+                                    text=f'Provided by https://trace.moe • Page {page + 1}/{len(data)}')
+
+                            except Exception as e:
+                                log.info(e)
+
+                                embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
+                                                      description='An error occurred while loading the embed.')
+                                embed.set_footer(
+                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data.get("docs"))}')
+
+                            embeds.append(embed)
+
+                        menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                        await menu.start(ctx)
+
+                    else:
+                        embed = discord.Embed(title='No anime found.', color=ERROR_EMBED_COLOR)
+                        await ctx.channel.send(embed=embed)

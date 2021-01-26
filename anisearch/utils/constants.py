@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
+TRACEMOE_BASE_URL = 'https://trace.moe/api'
 
 DEFAULT_EMBED_COLOR = 0x4169E1
 ERROR_EMBED_COLOR = 0xff0000
