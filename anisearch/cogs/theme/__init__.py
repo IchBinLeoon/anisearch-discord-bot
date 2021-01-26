@@ -17,8 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
-ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
+import logging
 
-DEFAULT_EMBED_COLOR = 0x4169E1
-ERROR_EMBED_COLOR = 0xff0000
+from anisearch.bot import AniSearchBot
+from anisearch.cogs.theme.theme import Theme
+
+log = logging.getLogger(__name__)
+
+
+def setup(bot: AniSearchBot):
+    """Sets up the `Theme` cog."""
+    bot.add_cog(Theme(bot))
+    log.info('Theme cog loaded.')

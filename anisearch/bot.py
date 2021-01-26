@@ -27,6 +27,7 @@ from discord.ext.commands import AutoShardedBot, CommandError, Context, when_men
 
 from anisearch.config import OWNER_ID
 from anisearch.utils.anilist import AniListClient
+from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.database import DataBase
 
 log = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ log = logging.getLogger(__name__)
 initial_extensions = [
     'anisearch.cogs.search',
     'anisearch.cogs.help',
+    'anisearch.cogs.theme',
     'anisearch.cogs.settings'
 ]
 
@@ -49,6 +51,7 @@ class AniSearchBot(AutoShardedBot):
         self.db = DataBase()
         self.session = ClientSession(loop=self.loop)
         self.anilist = AniListClient(ClientSession(loop=self.loop))
+        self.animethemes = AnimeThemesClient(ClientSession(loop=self.loop))
         self.load_cogs()
 
     def load_cogs(self) -> None:
@@ -65,6 +68,7 @@ class AniSearchBot(AutoShardedBot):
     async def close(self):
         self.db.close()
         await self.anilist.close()
+        await self.animethemes.close()
         if self.session is not None:
             await self.session.close()
         await super().close()

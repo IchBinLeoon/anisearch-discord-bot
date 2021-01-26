@@ -34,7 +34,7 @@ class AnilistException(Exception):
 class AnilistAPIError(AnilistException):
     """Exception due to an error response from the AniList API."""
 
-    def __init__(self, msg: str, status: int, locations: Optional[List[Dict[str, Any]]]) -> None:
+    def __init__(self, msg: str, status: int, locations: List[Dict[str, Any]]) -> None:
         """
         Initializes the APIError exception.
 

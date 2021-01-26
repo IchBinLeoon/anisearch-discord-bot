@@ -77,6 +77,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.
 
+### Theme
+- `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
+
+- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.  
+
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
 
