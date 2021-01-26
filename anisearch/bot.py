@@ -20,14 +20,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 import time
 
+import dbl
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands
 from discord.ext.commands import AutoShardedBot, CommandError, Context, when_mentioned_or
 
-from anisearch.config import OWNER_ID
+from anisearch.config import OWNER_ID, TOPGG_TOKEN
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animethemes import AnimeThemesClient
+from anisearch.utils.constants import ERROR_EMBED_COLOR
 from anisearch.utils.database import DataBase
 
 log = logging.getLogger(__name__)
@@ -45,13 +47,24 @@ class AniSearchBot(AutoShardedBot):
 
     def __init__(self) -> None:
         """Initializes the AniSearchBot."""
-        intents = discord.Intents(messages=True, guilds=True, reactions=True)
+        intents = discord.Intents(
+            messages=True,
+            guilds=True,
+            reactions=True
+        )
         super().__init__(command_prefix=get_prefix, intents=intents, owner_id=int(OWNER_ID))
+
         self.start_time = time.time()
-        self.db = DataBase()
         self.session = ClientSession(loop=self.loop)
+
+        self.db = DataBase()
         self.anilist = AniListClient(ClientSession(loop=self.loop))
         self.animethemes = AnimeThemesClient(ClientSession(loop=self.loop))
+
+        # Posts guild count to top.gg every 30 minutes.
+        self.topgg_token = TOPGG_TOKEN
+        self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
+
         self.load_cogs()
 
     def load_cogs(self) -> None:
@@ -64,6 +77,9 @@ class AniSearchBot(AutoShardedBot):
             except Exception as e:
                 log.exception(e)
         log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded.')
+
+    def run(self, token):
+        super().run(token)
 
     async def close(self):
         self.db.close()
@@ -105,7 +121,48 @@ class AniSearchBot(AutoShardedBot):
         self.db.delete_prefix(guild)
 
     async def on_command_error(self, ctx: Context, error: CommandError) -> None:
-        log.exception(error)
+        title = 'An error occurred.'
+        if isinstance(error, commands.CommandNotFound):
+            title = 'Command not found.'
+        elif isinstance(error, commands.CommandOnCooldown):
+            title = f'Command on cooldown for `{error.retry_after:.2f}s`.'
+        elif isinstance(error, commands.TooManyArguments):
+            title = 'Too many arguments.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            title = 'Missing required argument.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.BadArgument):
+            title = 'Wrong arguments.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.MissingPermissions):
+            title = 'Missing permissions.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.BotMissingPermissions):
+            title = 'Bot missing permissions.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.NoPrivateMessage):
+            title = 'Command cannot be used in private messages.'
+            ctx.command.reset_cooldown(ctx)
+        elif isinstance(error, commands.NotOwner):
+            title = 'You are not the owner of the bot.'
+            ctx.command.reset_cooldown(ctx)
+        else:
+            if not ctx.me.guild_permissions.manage_messages:
+                title = 'Bot does not have `Manage Messages` permission.'
+            elif not ctx.me.guild_permissions.embed_links:
+                title = 'Bot does not have `Embed Links` permission.'
+            elif not ctx.me.guild_permissions.read_message_history:
+                title = 'Bot does not have `Read Message History` permissions.'
+            elif not ctx.me.guild_permissions.add_reactions:
+                title = 'Bot cannot add reactions.'
+            else:
+                log.exception(error)
+        embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
+        await ctx.channel.send(embed=embed)
+
+    async def on_guild_post(self):
+        log.info(f'TopGG server count posted ({self.dblpy.guild_count()}).')
 
 
 async def get_prefix(bot: AniSearchBot, message: discord.Message) -> when_mentioned_or():
