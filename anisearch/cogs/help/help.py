@@ -121,6 +121,15 @@ class Help(commands.Cog, name='Help'):
                                           f'• {prefix}{self.bot.get_command("source").usage}\n'
                                           f'```'
                                           f'\n'
+                                          f'**Profile**\n'
+                                          f'```'
+                                          f'• {prefix}{self.bot.get_command("anilist").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("myanimelist").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("kitsu").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("setprofile").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("remove").usage}\n'
+                                          f'```'
+                                          f'\n'
                                           f'**Help**\n'
                                           f'```'
                                           f'• {prefix}{self.bot.get_command("help").usage}\n'
@@ -135,8 +144,7 @@ class Help(commands.Cog, name='Help'):
                                           f'• {prefix}{self.bot.get_command("prefix").usage}\n'
                                           f'```',
                               colour=DEFAULT_EMBED_COLOR)
-        embed.set_author(name="AniSearch's commands",
-                         icon_url=self.bot.user.avatar_url)
+        embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
     @commands.command(name='about', usage='about', ignore_extra=False)

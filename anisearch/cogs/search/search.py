@@ -821,43 +821,33 @@ class Search(commands.Cog, name='Search'):
                         sankaku = re.search(r'<a href=\"https://chan\.sankakucomplex\.com/post/show/(\d+)\">', content)
 
                         embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
-
                         embed.set_thumbnail(url=url)
 
                         if material:
                             embed.add_field(name='Material', value=material.group(1), inline=False)
-
                         if artist:
                             embed.add_field(name='Artist', value=artist.group(1), inline=False)
-
                         if characters:
                             embed.add_field(name='Characters', value=str(characters.group(1)).replace('<br />', ', '),
                                             inline=False)
-
                         if pixiv:
                             embed.add_field(name='Pixiv', value=pixiv.group(1), inline=False)
-
                         if danbooru:
                             embed.add_field(name='Danbooru', value='https://danbooru.donmai.us/post/show/' +
                                                                    danbooru.group(1), inline=False)
-
                         if gelbooru:
                             embed.add_field(name='Gelbooru',
                                             value='https://gelbooru.com/index.php?page=post&s=view&id=' +
                                                   gelbooru.group(1), inline=False)
-
                         if yandere:
                             embed.add_field(name='Yande.re',
                                             value='https://yande.re/post/show/' + yandere.group(1), inline=False)
-
                         if konachan:
                             embed.add_field(name='Konachan', value='http://konachan.com/post/show/' + konachan.group(1),
                                             inline=False)
-
                         if sankaku:
                             embed.add_field(name='Sankaku', value='https://chan.sankakucomplex.com/post/show/' +
                                                                   sankaku.group(1), inline=False)
-
                         embed.set_footer(text='Provided by https://saucenao.com/')
 
                         if material or artist or characters or pixiv or danbooru or gelbooru or yandere or konachan or \

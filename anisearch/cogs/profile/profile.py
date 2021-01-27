@@ -18,8 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+from typing import Optional
 
 from discord.ext import commands
+from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 
@@ -32,3 +34,39 @@ class Profile(commands.Cog, name='Profile'):
     def __init__(self, bot: AniSearchBot):
         """Initializes the `Profile` cog."""
         self.bot = bot
+
+    @commands.command(name='anilist', aliases=['al'], usage='anilist [username|@member]', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def anilist(self, ctx: Context, username: Optional[str] = None):
+        """Displays information about the given AniList profile such as anime stats, manga stats and favorites."""
+        async with ctx.channel.typing():
+            pass
+
+    @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def myanimelist(self, ctx: Context, username: Optional[str] = None):
+        """Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites."""
+        async with ctx.channel.typing():
+            pass
+
+    @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def kitsu(self, ctx: Context, username: Optional[str] = None):
+        """Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!"""
+        async with ctx.channel.typing():
+            pass
+
+    @commands.command(name='setprofile', aliases=['set'], usage='setprofile <al|mal|kitsu> <username>',
+                      ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def setprofile(self, ctx: Context, site: Optional[str] = None, username: Optional[str] = None):
+        """Sets an AniList, MyAnimeList or Kitsu profile."""
+        async with ctx.channel.typing():
+            pass
+
+    @commands.command(name='remove', aliases=['rm'], usage='remove', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def remove(self, ctx: Context):
+        """Removes the set AniList, MyAnimeList and Kitsu profile."""
+        async with ctx.channel.typing():
+            pass

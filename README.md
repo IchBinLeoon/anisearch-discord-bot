@@ -80,6 +80,17 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
 
+### Profile
+- `anilist [username|@member]:` Displays information about the given AniList profile such as anime stats, manga stats and favorites.  
+
+- `myanimelist [username|@member]:` Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites.  
+
+- `kitsu [username|@member]:` Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!  
+
+- `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu profile.  
+
+- `remove:` Removes the set AniList, MyAnimeList and Kitsu profile.  
+
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
 
