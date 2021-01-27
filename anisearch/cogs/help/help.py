@@ -28,8 +28,7 @@ from discord.utils import get
 from anisearch.bot import AniSearchBot
 from anisearch.config import OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR
-from anisearch.utils.miscellaneous import get_guild_count, get_user_count, get_channel_count, get_uptime, get_invite, \
-    get_vote, get_version, get_creator, get_bot, get_url
+from anisearch.utils.miscellaneous import get_invite, get_vote, get_version, get_creator, get_bot, get_url
 
 log = logging.getLogger(__name__)
 
@@ -169,10 +168,9 @@ class Help(commands.Cog, name='Help'):
         """Displays statistics about the bot."""
         embed = discord.Embed(description=f'The current instance of the Bot is owned by <@!{OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
-        embed.set_author(name="AniSearch's statistics",
-                         icon_url=self.bot.user.avatar_url)
-        embed.add_field(name='❯ Guilds', value=str(get_guild_count(self.bot)), inline=True)
-        embed.add_field(name='❯ Users', value=str(get_user_count(self.bot)), inline=True)
-        embed.add_field(name='❯ Channels', value=str(get_channel_count(self.bot)), inline=True)
-        embed.add_field(name="❯ AniSearch's Uptime", value=str(get_uptime(self.bot)), inline=True)
+        embed.set_author(name="AniSearch's statistics", icon_url=self.bot.user.avatar_url)
+        embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)
+        embed.add_field(name='❯ Users', value=str(self.bot.get_user_count()), inline=True)
+        embed.add_field(name='❯ Channels', value=str(self.bot.get_channel_count()), inline=True)
+        embed.add_field(name="❯ AniSearch's Uptime", value=str(self.bot.get_uptime()), inline=True)
         await ctx.channel.send(embed=embed)

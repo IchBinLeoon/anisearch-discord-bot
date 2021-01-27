@@ -19,11 +19,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 import time
+from asyncio import sleep
+from datetime import timedelta
 
 import dbl
 import discord
 from aiohttp import ClientSession
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands import AutoShardedBot, CommandError, Context, when_mentioned_or
 
 from anisearch.config import OWNER_ID, TOPGG_TOKEN
@@ -38,7 +40,8 @@ log = logging.getLogger(__name__)
 initial_extensions = [
     'anisearch.cogs.search',
     'anisearch.cogs.help',
-    'anisearch.cogs.settings'
+    'anisearch.cogs.settings',
+    'anisearch.cogs.admin'
 ]
 
 
@@ -52,7 +55,7 @@ class AniSearchBot(AutoShardedBot):
             guilds=True,
             reactions=True
         )
-        super().__init__(command_prefix=get_prefix, intents=intents, owner_id=int(OWNER_ID))
+        super().__init__(command_prefix=self.get_prefix, intents=intents, owner_id=int(OWNER_ID))
 
         self.start_time = time.time()
         self.session = ClientSession(loop=self.loop)
@@ -79,28 +82,49 @@ class AniSearchBot(AutoShardedBot):
                 log.exception(e)
         log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded.')
 
-    def run(self, token):
-        """Runs the bot."""
-        super().run(token)
-
-    async def close(self):
-        """Closes the bot and all other sessions."""
-        self.db.close()
-        await self.anilist.close()
-        await self.animethemes.close()
-        await self.tracemoe.close()
-        if self.session is not None:
-            await self.session.close()
-        await super().close()
+    def unload_cogs(self) -> None:
+        """Unloads all cogs."""
+        for extension in initial_extensions:
+            try:
+                self.unload_extension(extension)
+            except discord.ext.commands.errors.ExtensionNotLoaded:
+                pass
+            except Exception as e:
+                log.exception(e)
+        log.info(f'{len(initial_extensions)-len(self.cogs)}/{len(initial_extensions)} cogs unloaded.')
 
     async def on_ready(self) -> None:
         log.info(f'Logged in as {self.user}')
         log.info(f'Bot-Name: {self.user.name}')
         log.info(f'Bot-Discriminator: {self.user.discriminator}')
         log.info(f'Bot-ID: {self.user.id}')
+        log.info(f'Shards: {self.shard_count}')
+        self.set_status.start()
+        log.info('Bot is ready.')
+
+    async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
+        """
+        Gets the command prefix of the bot for the current guild.
+
+        Args:
+            message (discord.Message): A Discord message.
+
+        Returns:
+            when_mentioned_or()
+        """
+        if isinstance(message.channel, discord.channel.DMChannel):
+            return when_mentioned_or('as!')(self, message)
+        prefix = self.db.get_prefix(message)
+        return when_mentioned_or(prefix, 'as!')(self, message)
+
+    @tasks.loop(seconds=30)
+    async def set_status(self) -> None:
+        """Sets the discord status of the bot."""
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
                                    status=discord.Status.online)
-        log.info('Bot is ready.')
+        await sleep(20)
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
+                                   status=discord.Status.online)
 
     async def on_connect(self) -> None:
         log.info('Connected to Discord.')
@@ -123,6 +147,48 @@ class AniSearchBot(AutoShardedBot):
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         log.info(f'Left server {guild.name}.')
         self.db.delete_prefix(guild)
+
+    def get_guild_count(self) -> int:
+        """Returns the bot guild count."""
+        guilds = len(self.guilds)
+        return guilds
+
+    def get_user_count(self) -> int:
+        """Returns the bot user count."""
+        users = 0
+        for guild in self.guilds:
+            users += guild.member_count
+        return users
+
+    def get_channel_count(self) -> int:
+        """Returns the bot channel count."""
+        channels = 0
+        for guild in self.guilds:
+            channels += len(guild.channels)
+        return channels
+
+    def get_uptime(self) -> timedelta:
+        """Returns the bot uptime."""
+        uptime = timedelta(seconds=round(time.time() - self.start_time))
+        return uptime
+
+    def run(self, token):
+        """Runs the bot."""
+        super().run(token)
+
+    async def close(self):
+        """Closes the discord connection, the database pool connections and the aiohttp sessions."""
+        self.unload_cogs()
+        self.db.close()
+        await self.anilist.close()
+        await self.animethemes.close()
+        await self.tracemoe.close()
+        if self.session is not None:
+            await self.session.close()
+        await super().close()
+
+    async def on_guild_post(self):
+        log.info(f'TopGG server count posted ({self.dblpy.guild_count()}).')
 
     async def on_command_error(self, ctx: Context, error: CommandError) -> None:
         title = 'An error occurred.'
@@ -164,23 +230,3 @@ class AniSearchBot(AutoShardedBot):
                 log.exception(error)
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
-
-    async def on_guild_post(self):
-        log.info(f'TopGG server count posted ({self.dblpy.guild_count()}).')
-
-
-async def get_prefix(bot: AniSearchBot, message: discord.Message) -> when_mentioned_or():
-    """
-    Gets the command prefix of the bot for the current guild.
-
-    Args:
-        bot (AniSearchBot): The Discord bot.
-        message (discord.Message): A Discord message.
-
-    Returns:
-        when_mentioned_or()
-    """
-    if isinstance(message.channel, discord.channel.DMChannel):
-        return when_mentioned_or('as!')(bot, message)
-    prefix = bot.db.get_prefix(message)
-    return when_mentioned_or(prefix, 'as!')(bot, message)

@@ -18,41 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import time
-from datetime import timedelta
 
 import anisearch
-from anisearch.bot import AniSearchBot
 
 log = logging.getLogger(__name__)
-
-
-def get_guild_count(bot: AniSearchBot) -> int:
-    """Returns the bot guild count."""
-    guilds = len(bot.guilds)
-    return guilds
-
-
-def get_user_count(bot: AniSearchBot) -> int:
-    """Returns the bot user count."""
-    users = 0
-    for guild in bot.guilds:
-        users += guild.member_count
-    return users
-
-
-def get_channel_count(bot: AniSearchBot) -> int:
-    """Returns the bot channel count."""
-    channels = 0
-    for guild in bot.guilds:
-        channels += len(guild.channels)
-    return channels
-
-
-def get_uptime(bot: AniSearchBot) -> timedelta:
-    """Returns the bot uptime."""
-    uptime = timedelta(seconds=round(time.time() - bot.start_time))
-    return uptime
 
 
 def get_version() -> str:

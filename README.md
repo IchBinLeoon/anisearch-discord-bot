@@ -13,17 +13,12 @@
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue?style=flat-square" alt="Python">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/releases">
-    <img src="https://img.shields.io/github/v/release/ichbinleoon/anisearch-discord-bot?style=flat-square" alt="Release">
-  </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="License">
   </a>
   <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
     <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge?style=flat-square" alt="CodeFactor">
   </a>
-</p>
-<p align="center">
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
     <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL&style=flat-square" alt="CodeQL">
   </a>
@@ -75,14 +70,13 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `studio <name>:` Searches for a studio with the given name and displays information about the search results such as the studio productions!  
 
-- `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.
+- `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
 
 - `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
 
-- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime. 
+- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.  
 
 - `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
-
 
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
@@ -96,7 +90,20 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 ### Settings
 Can only be used by a server administrator.
 
-- `prefix <prefix>:` Changes the current server prefix.
+- `prefix <prefix>:` Changes the current server prefix.  
+
+### Admin
+Can only be used by the bot owner.  
+
+- `status:` Displays the current status of the bot.  
+
+- `load <cog>:` Loads a cog.  
+
+- `unload <cog>:` Unloads a cog.  
+
+- `reload <cog>:` Reloads a cog.  
+
+- `shutdown:` Shutdowns the bot.  
 
 ## Examples
 
