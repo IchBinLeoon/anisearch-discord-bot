@@ -118,6 +118,7 @@ class Help(commands.Cog, name='Help'):
                                           f'• {prefix}{self.bot.get_command("themes").usage}\n'
                                           f'• {prefix}{self.bot.get_command("theme").usage}\n'
                                           f'• {prefix}{self.bot.get_command("trace").usage}\n'
+                                          f'• {prefix}{self.bot.get_command("source").usage}\n'
                                           f'```'
                                           f'\n'
                                           f'**Help**\n'

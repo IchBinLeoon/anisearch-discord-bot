@@ -39,6 +39,7 @@ log = logging.getLogger(__name__)
 
 initial_extensions = [
     'anisearch.cogs.search',
+    'anisearch.cogs.profile',
     'anisearch.cogs.help',
     'anisearch.cogs.settings',
     'anisearch.cogs.admin'

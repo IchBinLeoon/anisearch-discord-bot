@@ -270,6 +270,7 @@ class Query:
                 url
               }
               siteUrl
+              isAdult
               nextAiringEpisode {
                 episode
                 timeUntilAiring
@@ -473,6 +474,7 @@ class Query:
                 url
               }
               siteUrl
+              isAdult
               nextAiringEpisode {
                 episode
                 timeUntilAiring
@@ -544,6 +546,7 @@ class Query:
                 url
               }
               siteUrl
+              isAdult
               nextAiringEpisode {
                 episode
                 timeUntilAiring

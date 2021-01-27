@@ -78,6 +78,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
 
+- `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
+
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
 

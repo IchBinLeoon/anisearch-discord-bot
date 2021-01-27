@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import datetime
 import logging
 import random
+import re
 from typing import Union, List, Dict, Any, Optional
 
 import discord
@@ -28,6 +29,7 @@ from discord.ext import commands, menus
 from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
+from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
 from anisearch.utils.formats import get_media_title, get_media_stats, format_description, format_date, \
     get_char_staff_name, format_media_type
@@ -43,11 +45,12 @@ class Search(commands.Cog, name='Search'):
         """Initializes the `Search` cog."""
         self.bot = bot
 
-    async def anilist_search(self, search: str, type_: str) -> Union[List[Embed], None]:
+    async def anilist_search(self, ctx: Context, search: str, type_: str) -> Union[List[Embed], None]:
         """
         Returns a list of Discord embeds with the retrieved anilist data about the searched entry.
 
         Args:
+            ctx (Context): The context in which the command was invoked under.
             search (str): The entry to be searched for.
             type_ (str): The type to be searched for (`anime`, `manga`, `character`, `staff`, `studio`).
 
@@ -97,6 +100,15 @@ class Search(commands.Cog, name='Search'):
                     elif type_ == 'studio':
                         embed = self.get_studio_embed(entry, page + 1, len(data))
 
+                    if is_adult(entry):
+                        if not ctx.channel.is_nsfw():
+                            embed = discord.Embed(
+                                title='Error',
+                                color=ERROR_EMBED_COLOR,
+                                description=f'Adult content. No NSFW channel.')
+                            embed.set_footer(
+                                text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+
                 except Exception as e:
                     log.exception(e)
 
@@ -112,14 +124,15 @@ class Search(commands.Cog, name='Search'):
             return embeds
         return None
 
-    async def anilist_random(self, search: str, type_: str, format_in: List[str]) -> Union[Embed, None]:
+    async def anilist_random(self, ctx: Context, search: str, type_: str, format_in: List[str]) -> Union[Embed, None]:
         """
         Returns a Discord embed with the retrieved anilist data about a random media of a specified genre.
 
         Args:
+            ctx (Context): The context in which the command was invoked under.
             search (str): The media genre to be searched for.
             type_ (str): The media search type (`anime`, `manga`).
-            format_in: The media format. (`TV`, `MOVIE`, `MANGA`)
+            format_in (list): The media format.
 
         Returns:
             Embed: A discord embed.
@@ -160,6 +173,11 @@ class Search(commands.Cog, name='Search'):
 
             try:
                 embed = self.get_media_embed(data.get('data')['Page']['media'][0])
+
+                if is_adult(data.get('data')['Page']['media'][0]):
+                    if not ctx.channel.is_nsfw():
+                        embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                              description=f'Adult content. No NSFW channel.')
 
             except Exception as e:
                 log.exception(e)
@@ -459,7 +477,7 @@ class Search(commands.Cog, name='Search'):
     async def anime(self, ctx: Context, *, title: str):
         """Searches for an anime with the given title and displays information about the search results such as type, status, episodes, description, and more!"""
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(title, 'anime')
+            embeds = await self.anilist_search(ctx, title, 'anime')
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(
                     embeds), clear_reactions_after=True, timeout=30)
@@ -474,7 +492,7 @@ class Search(commands.Cog, name='Search'):
     async def manga(self, ctx: Context, *, title: str):
         """Searches for a manga with the given title and displays information about the search results such as type, status, chapters, description, and more!"""
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(title, 'manga')
+            embeds = await self.anilist_search(ctx, title, 'manga')
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(
                     embeds), clear_reactions_after=True, timeout=30)
@@ -490,7 +508,7 @@ class Search(commands.Cog, name='Search'):
     async def character(self, ctx: Context, *, name: str):
         """Searches for a character with the given name and displays information about the search results such as description, synonyms, and appearances!"""
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(name, 'character')
+            embeds = await self.anilist_search(ctx, name, 'character')
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(
                     embeds), clear_reactions_after=True, timeout=30)
@@ -506,7 +524,7 @@ class Search(commands.Cog, name='Search'):
     async def staff(self, ctx: Context, *, name: str):
         """Searches for a staff with the given name and displays information about the search results such as description, staff roles, and character roles!"""
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(name, 'staff')
+            embeds = await self.anilist_search(ctx, name, 'staff')
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(
                     embeds), clear_reactions_after=True, timeout=30)
@@ -522,7 +540,7 @@ class Search(commands.Cog, name='Search'):
     async def studio(self, ctx: Context, *, name: str):
         """Searches for a studio with the given name and displays information about the search results such as the studio productions!"""
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(name, 'studio')
+            embeds = await self.anilist_search(ctx, name, 'studio')
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(
                     embeds), clear_reactions_after=True, timeout=30)
@@ -539,7 +557,8 @@ class Search(commands.Cog, name='Search'):
         """Displays a random anime or manga of the specified genre."""
         async with ctx.channel.typing():
             if media.lower() == 'anime':
-                embed = await self.anilist_random(genre, 'anime', ['TV', 'MOVIE'])
+                embed = await self.anilist_random(ctx, genre, 'anime', ['TV', 'MOVIE', 'OVA', 'ONA', 'TV_SHORT',
+                                                                        'MUSIC', 'SPECIAL'])
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
@@ -547,7 +566,7 @@ class Search(commands.Cog, name='Search'):
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             elif media.lower() == 'manga':
-                embed = await self.anilist_random(genre, 'manga', ['MANGA'])
+                embed = await self.anilist_random(ctx, genre, 'manga', ['MANGA', 'ONE_SHOT', 'NOVEL'])
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
@@ -625,8 +644,11 @@ class Search(commands.Cog, name='Search'):
                 anime_ = data.get('anime')[0]
 
                 for entry in anime_.get('themes'):
-                    if theme.upper() == entry.get('slug') or (theme.upper() == 'OP' and entry.get('slug') == 'OP1') or \
-                            (theme.upper() == 'ED' and entry.get('slug') == 'ED1'):
+                    if theme.upper() == entry.get('slug') or \
+                            (theme.upper() == 'OP' and entry.get('slug') == 'OP1') or \
+                            (theme.upper() == 'ED' and entry.get('slug') == 'ED1') or \
+                            (theme.upper() == 'OP1' and entry.get('slug') == 'OP') or \
+                            (theme.upper() == 'ED1' and entry.get('slug') == 'ED'):
 
                         embed = discord.Embed(title=anime_.get('name'), colour=DEFAULT_EMBED_COLOR)
 
@@ -635,6 +657,7 @@ class Search(commands.Cog, name='Search'):
 
                         info = []
                         sites = []
+
                         for site in anime_.get('resources'):
                             site_string = f'[{site.get("site")}]({site.get("link")})'
                             sites.append(site_string)
@@ -674,7 +697,7 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='trace', aliases=['t'], usage='trace <image-url|with image as attachment>',
                       ignore_extra=False)
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def trace(self, ctx, source=None):
+    async def trace(self, ctx, source: Optional[str] = None):
         """Tries to find the anime the image is from through the image url or the image as attachment."""
         async with ctx.channel.typing():
             url = None
@@ -710,16 +733,18 @@ class Search(commands.Cog, name='Search'):
                             try:
                                 embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
 
-                                if anime['title_english'] is None or anime['title_english'] == anime['title_romaji']:
-                                    embed.title = anime['title_romaji']
+                                if anime.get('title_english') is None or anime.get('title_english') == \
+                                        anime.get('title_romaji'):
+                                    embed.title = anime.get('title_romaji')
                                 else:
-                                    embed.title = '{} ({})'.format(anime['title_romaji'], anime['title_english'])
+                                    embed.title = '{} ({})'.format(anime.get('title_romaji'),
+                                                                   anime.get('title_english'))
 
                                 try:
                                     image_url = \
-                                        f"https://trace.moe/thumbnail.php?anilist_id={anime['anilist_id']}&file=" \
-                                        f"{anime['filename']}&t={anime['at']}&token={anime['tokenthumb']}" \
-                                            .replace(' ', '%20')
+                                        f"https://trace.moe/thumbnail.php?anilist_id={anime.get('anilist_id')}&file=" \
+                                        f"{anime.get('filename')}&t={anime.get('at')}&token={anime.get('tokenthumb')}" \
+                                        .replace(' ', '%20')
                                     embed.set_image(url=image_url)
                                 except Exception as e:
                                     log.exception(e)
@@ -755,3 +780,100 @@ class Search(commands.Cog, name='Search'):
                     else:
                         embed = discord.Embed(title='No anime found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)
+
+    @commands.command(name='source', aliases=['sauce'], usage='source <image-url|with image as attachment>',
+                      ignore_extra=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def source(self, ctx: Context, source: Optional[str] = None):
+        """Tries to find the source of an image through the image url or the image as attachment."""
+        async with ctx.channel.typing():
+            url = None
+            if source is None:
+                if ctx.message.attachments:
+                    url = ctx.message.attachments[0].url
+                else:
+                    embed = discord.Embed(title='No image to look for the source.', color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+            else:
+                url = source
+            if url:
+                if not url.endswith(('.jpg', '.png', '.bmp', '.jpeg')):
+                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`).',
+                                          color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+                else:
+                    try:
+                        r = await self.bot.session.get(f'http://saucenao.com/search.php?url={url}')
+                        if r.status == 200:
+                            content = await r.text()
+                        else:
+                            content = None
+
+                        material = re.search(r'<strong>Material: </strong>(.*?)<br', content)
+                        artist = re.search(r'<strong>Creator: </strong>(.*?)<br', content)
+                        characters = re.search(r'<strong>Characters: </strong><br />(.*?)<br /></div>', content)
+                        pixiv = re.search(r'<strong>Pixiv ID: </strong><a href=\"(.*?)\" class', content)
+                        danbooru = re.search(r'<a href=\"https://danbooru\.donmai\.us/post/show/(\d+)\">', content)
+                        gelbooru = re.search(
+                            r'<a href=\"https://gelbooru\.com/index\.php\?page=post&s=view&id=(\d+)\">', content)
+                        yandere = re.search(r'<a href=\"https://yande\.re/post/show/(\d+)\">', content)
+                        konachan = re.search(r'<a href=\"http://konachan\.com/post/show/(\d+)\">', content)
+                        sankaku = re.search(r'<a href=\"https://chan\.sankakucomplex\.com/post/show/(\d+)\">', content)
+
+                        embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
+
+                        embed.set_thumbnail(url=url)
+
+                        if material:
+                            embed.add_field(name='Material', value=material.group(1), inline=False)
+
+                        if artist:
+                            embed.add_field(name='Artist', value=artist.group(1), inline=False)
+
+                        if characters:
+                            embed.add_field(name='Characters', value=str(characters.group(1)).replace('<br />', ', '),
+                                            inline=False)
+
+                        if pixiv:
+                            embed.add_field(name='Pixiv', value=pixiv.group(1), inline=False)
+
+                        if danbooru:
+                            embed.add_field(name='Danbooru', value='https://danbooru.donmai.us/post/show/' +
+                                                                   danbooru.group(1), inline=False)
+
+                        if gelbooru:
+                            embed.add_field(name='Gelbooru',
+                                            value='https://gelbooru.com/index.php?page=post&s=view&id=' +
+                                                  gelbooru.group(1), inline=False)
+
+                        if yandere:
+                            embed.add_field(name='Yande.re',
+                                            value='https://yande.re/post/show/' + yandere.group(1), inline=False)
+
+                        if konachan:
+                            embed.add_field(name='Konachan', value='http://konachan.com/post/show/' + konachan.group(1),
+                                            inline=False)
+
+                        if sankaku:
+                            embed.add_field(name='Sankaku', value='https://chan.sankakucomplex.com/post/show/' +
+                                                                  sankaku.group(1), inline=False)
+
+                        embed.set_footer(text='Provided by https://saucenao.com/')
+
+                        if material or artist or characters or pixiv or danbooru or gelbooru or yandere or konachan or \
+                                sankaku:
+                            await ctx.channel.send(embed=embed)
+
+                        else:
+                            embed = discord.Embed(title='No source found.', color=ERROR_EMBED_COLOR)
+                            await ctx.channel.send(embed=embed)
+
+                    except Exception as e:
+                        log.exception(e)
+
+                        embed = discord.Embed(
+                            title=f'An error occurred while searching for the source or the link is invalid.',
+                            color=ERROR_EMBED_COLOR)
+
+                        return await ctx.channel.send(embed=embed)
+
