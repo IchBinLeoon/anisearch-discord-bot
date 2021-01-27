@@ -13,9 +13,6 @@
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue?style=flat-square" alt="Python">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/releases">
-    <img src="https://img.shields.io/github/v/release/ichbinleoon/anisearch-discord-bot?style=flat-square" alt="Release">
-  </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="License">
   </a>
