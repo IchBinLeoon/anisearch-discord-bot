@@ -31,7 +31,9 @@ from anisearch.config import TOKEN
 
 
 def main() -> None:
-    """Main function."""
+    """
+    Main function.
+    """
     setup_logging()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(check_update())
@@ -42,13 +44,17 @@ def main() -> None:
 
 
 def setup_logging() -> None:
-    """Sets up the logging."""
+    """
+    Sets up the logging.
+    """
     logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(asctime)s:%(name)s:%(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S')
 
 
 async def check_update() -> None:
-    """Checks GitHub for a newer version of the bot."""
+    """
+    Checks GitHub for a newer version of the bot.
+    """
     async with aiohttp.ClientSession() as s:
         async with s.get('https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main/anisearch/__init__'
                          '.py') as r:
@@ -61,7 +67,9 @@ async def check_update() -> None:
 
 
 def start() -> None:
-    """Starts the bot."""
+    """
+    Starts the bot.
+    """
     try:
         bot = AniSearchBot()
         bot.run(TOKEN)

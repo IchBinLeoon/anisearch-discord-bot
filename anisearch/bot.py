@@ -47,10 +47,14 @@ initial_extensions = [
 
 
 class AniSearchBot(AutoShardedBot):
-    """A subclass of `discord.ext.commands.AutoShardedBot`."""
+    """
+    A subclass of `discord.ext.commands.AutoShardedBot`.
+    """
 
     def __init__(self) -> None:
-        """Initializes the AniSearchBot."""
+        """
+        Initializes the AniSearchBot.
+        """
         intents = discord.Intents(
             messages=True,
             guilds=True,
@@ -73,7 +77,9 @@ class AniSearchBot(AutoShardedBot):
         self.load_cogs()
 
     def load_cogs(self) -> None:
-        """Loads all cogs."""
+        """
+        Loads all cogs.
+        """
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
@@ -84,7 +90,9 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded.')
 
     def unload_cogs(self) -> None:
-        """Unloads all cogs."""
+        """
+        Unloads all cogs.
+        """
         for extension in initial_extensions:
             try:
                 self.unload_extension(extension)
@@ -120,7 +128,9 @@ class AniSearchBot(AutoShardedBot):
 
     @tasks.loop(seconds=30)
     async def set_status(self) -> None:
-        """Sets the discord status of the bot."""
+        """
+        Sets the discord status of the bot.
+        """
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
                                    status=discord.Status.online)
         await sleep(20)
@@ -150,35 +160,47 @@ class AniSearchBot(AutoShardedBot):
         self.db.delete_prefix(guild)
 
     def get_guild_count(self) -> int:
-        """Returns the bot guild count."""
+        """
+        Returns the bot guild count.
+        """
         guilds = len(self.guilds)
         return guilds
 
     def get_user_count(self) -> int:
-        """Returns the bot user count."""
+        """
+        Returns the bot user count.
+        """
         users = 0
         for guild in self.guilds:
             users += guild.member_count
         return users
 
     def get_channel_count(self) -> int:
-        """Returns the bot channel count."""
+        """
+        Returns the bot channel count.
+        """
         channels = 0
         for guild in self.guilds:
             channels += len(guild.channels)
         return channels
 
     def get_uptime(self) -> timedelta:
-        """Returns the bot uptime."""
+        """
+        Returns the bot uptime.
+        """
         uptime = timedelta(seconds=round(time.time() - self.start_time))
         return uptime
 
     def run(self, token):
-        """Runs the bot."""
+        """
+        Runs the bot.
+        """
         super().run(token)
 
     async def close(self):
-        """Closes the discord connection, the database pool connections and the aiohttp sessions."""
+        """
+        Closes the discord connection, the database pool connections and the aiohttp sessions.
+        """
         self.unload_cogs()
         self.db.close()
         await self.anilist.close()
@@ -191,33 +213,44 @@ class AniSearchBot(AutoShardedBot):
     async def on_guild_post(self):
         log.info(f'TopGG server count posted ({self.dblpy.guild_count()}).')
 
-    async def on_command_error(self, ctx: Context, error: CommandError) -> None:
+    async def on_command_error(self, ctx: Context, error: Exception) -> None:
+
         title = 'An error occurred.'
+
         if isinstance(error, commands.CommandNotFound):
             title = 'Command not found.'
+
         elif isinstance(error, commands.CommandOnCooldown):
             title = f'Command on cooldown for `{error.retry_after:.2f}s`.'
+
         elif isinstance(error, commands.TooManyArguments):
             title = 'Too many arguments.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.MissingRequiredArgument):
             title = 'Missing required argument.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.BadArgument):
             title = 'Wrong arguments.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.MissingPermissions):
             title = 'Missing permissions.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.BotMissingPermissions):
             title = 'Bot missing permissions.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.NoPrivateMessage):
             title = 'Command cannot be used in private messages.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.NotOwner):
             title = 'You are not the owner of the bot.'
             ctx.command.reset_cooldown(ctx)
+
         else:
             if not ctx.me.guild_permissions.manage_messages:
                 title = 'Bot does not have `Manage Messages` permission.'
@@ -229,5 +262,6 @@ class AniSearchBot(AutoShardedBot):
                 title = 'Bot cannot add reactions.'
             else:
                 log.exception(error)
+
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         await ctx.channel.send(embed=embed)

@@ -28,11 +28,15 @@ log = logging.getLogger(__name__)
 
 
 class TraceMoeException(Exception):
-    """Base exception class for the trace.moe API wrapper."""
+    """
+    Base exception class for the trace.moe API wrapper.
+    """
 
 
 class TraceMoeAPIError(TraceMoeException):
-    """Exception due to an error response from the trace.moe API."""
+    """
+    Exception due to an error response from the trace.moe API.
+    """
 
     def __init__(self, status: int) -> None:
         """
@@ -45,7 +49,9 @@ class TraceMoeAPIError(TraceMoeException):
 
 
 class TraceMoeError(TraceMoeException):
-    """Exceptions that do not involve the API."""
+    """
+    Exceptions that do not involve the API.
+    """
 
 
 class TraceMoeClient:
@@ -73,7 +79,9 @@ class TraceMoeClient:
         await self.close()
 
     async def close(self) -> None:
-        """Closes the aiohttp session."""
+        """
+        Closes the aiohttp session.
+        """
         if self.session is not None:
             await self.session.close()
 

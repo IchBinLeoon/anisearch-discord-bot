@@ -29,30 +29,40 @@ log = logging.getLogger(__name__)
 
 
 class Profile(commands.Cog, name='Profile'):
-    """Profile cog."""
+    """
+    Profile cog.
+    """
 
     def __init__(self, bot: AniSearchBot):
-        """Initializes the `Profile` cog."""
+        """
+        Initializes the `Profile` cog.
+        """
         self.bot = bot
 
     @commands.command(name='anilist', aliases=['al'], usage='anilist [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def anilist(self, ctx: Context, username: Optional[str] = None):
-        """Displays information about the given AniList profile such as anime stats, manga stats and favorites."""
+        """
+        Displays information about the given AniList profile such as anime stats, manga stats and favorites.
+        """
         async with ctx.channel.typing():
             pass
 
     @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def myanimelist(self, ctx: Context, username: Optional[str] = None):
-        """Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites."""
+        """
+        Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites.
+        """
         async with ctx.channel.typing():
             pass
 
     @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def kitsu(self, ctx: Context, username: Optional[str] = None):
-        """Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!"""
+        """
+        Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!
+        """
         async with ctx.channel.typing():
             pass
 
@@ -60,13 +70,17 @@ class Profile(commands.Cog, name='Profile'):
                       ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def setprofile(self, ctx: Context, site: Optional[str] = None, username: Optional[str] = None):
-        """Sets an AniList, MyAnimeList or Kitsu profile."""
+        """
+        Sets an AniList, MyAnimeList or Kitsu profile.
+        """
         async with ctx.channel.typing():
             pass
 
     @commands.command(name='remove', aliases=['rm'], usage='remove', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def remove(self, ctx: Context):
-        """Removes the set AniList, MyAnimeList and Kitsu profile."""
+        """
+        Removes the set AniList, MyAnimeList and Kitsu profile.
+        """
         async with ctx.channel.typing():
             pass

@@ -34,17 +34,23 @@ log = logging.getLogger(__name__)
 
 
 class Help(commands.Cog, name='Help'):
-    """Help cog."""
+    """
+    Help cog.
+    """
 
     def __init__(self, bot: AniSearchBot):
-        """Initializes the `Help` cog."""
+        """
+        Initializes the `Help` cog.
+        """
         self.bot = bot
         self.bot.remove_command('help')
 
     @commands.command(name='help', aliases=['h'], usage='help [command]', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def help(self, ctx: Context, cmd: Optional[str]):
-        """Shows help or displays information about a command."""
+        """
+        Shows help or displays information about a command.
+        """
         prefix = self.bot.db.get_prefix(ctx)
         if isinstance(ctx.channel, discord.channel.DMChannel):
             server_prefix = ''
@@ -72,8 +78,9 @@ class Help(commands.Cog, name='Help'):
                     title=f'Command - {command}', colour=DEFAULT_EMBED_COLOR)
                 embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`',
                                 inline=False)
+                description = command.help.replace('\n', ' ').replace('\r', '')
                 embed.add_field(name='Description',
-                                value=f'{command.help}', inline=False)
+                                value=description, inline=False)
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
                     embed.add_field(
@@ -93,7 +100,9 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='commands', aliases=['cmds'], usage='commands', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def commands_(self, ctx: Context):
-        """Displays all commands."""
+        """
+        Displays all commands.
+        """
         prefix = self.bot.db.get_prefix(ctx)
         if isinstance(ctx.channel, discord.channel.DMChannel):
             server_prefix = ''
@@ -150,7 +159,9 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='about', usage='about', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def about(self, ctx: Context):
-        """Displays information about the bot."""
+        """
+        Displays information about the bot.
+        """
         embed = discord.Embed(title='About AniSearch',
                               description=f'<@!{get_bot()}> is an easy-to-use Discord bot written in Python '
                                           f'that allows you to search for anime, manga, characters, staff, studios and '
@@ -174,7 +185,9 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='stats', usage='stats', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def stats(self, ctx: Context):
-        """Displays statistics about the bot."""
+        """
+        Displays statistics about the bot.
+        """
         embed = discord.Embed(description=f'The current instance of the Bot is owned by <@!{OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
         embed.set_author(name="AniSearch's statistics", icon_url=self.bot.user.avatar_url)

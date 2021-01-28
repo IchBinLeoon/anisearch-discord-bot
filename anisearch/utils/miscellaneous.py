@@ -25,36 +25,48 @@ log = logging.getLogger(__name__)
 
 
 def get_version() -> str:
-    """Returns the bot version."""
+    """
+    Returns the bot version.
+    """
     version = anisearch.__version__
     return version
 
 
 def get_creator() -> int:
-    """Returns the discord id of the bot creator."""
+    """
+    Returns the discord id of the bot creator.
+    """
     creator_id = 223871059068321793
     return creator_id
 
 
 def get_bot() -> int:
-    """Returns the discord id of the official bot instance."""
+    """
+    Returns the discord id of the official bot instance.
+    """
     bot_id = 737236600878137363
     return bot_id
 
 
 def get_invite() -> str:
-    """Returns the discord invite link for the bot."""
+    """
+    Returns the discord invite link for the bot.
+    """
     invite = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
     return invite
 
 
 def get_vote() -> str:
-    """Returns the top.gg vote link for the bot."""
+    """
+    Returns the top.gg vote link for the bot.
+    """
     vote = 'https://top.gg/bot/737236600878137363/vote'
     return vote
 
 
 def get_url() -> str:
-    """Returns the github url for the source code of the bot."""
+    """
+    Returns the github url for the source code of the bot.
+    """
     url = anisearch.__url__
     return url

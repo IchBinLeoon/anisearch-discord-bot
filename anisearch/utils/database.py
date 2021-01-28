@@ -37,18 +37,24 @@ class DataBase:
     """
 
     def __init__(self) -> None:
-        """Initializes the DataBase class."""
+        """
+        Initializes the DataBase class.
+        """
         self.pool = psycopg2.pool.SimpleConnectionPool(5, 20, host=DB_HOST, dbname=DB_NAME,
                                                        user=DB_USER, password=BD_PASSWORD)
 
     def _connect(self):
-        """Creates a connection with the Postgres database."""
+        """
+        Creates a connection with the Postgres database.
+        """
         conn = psycopg2.connect(host=DB_HOST, dbname=DB_NAME, user=DB_USER,
                                 password=BD_PASSWORD)
         return conn
 
     def close(self) -> None:
-        """Closes all connections handled by the pool."""
+        """
+        Closes all connections handled by the pool.
+        """
         self.pool.closeall()
 
     def get_prefix(self, message: discord.Message) -> str:
@@ -84,7 +90,8 @@ class DataBase:
             self.pool.putconn(conn)
 
     def insert_prefix(self, guild: discord.Guild) -> None:
-        """Inserts a new guild and the default prefix into the database.
+        """
+        Inserts a new guild and the default prefix into the database.
 
         Args:
             guild (discord.Guild): A Discord guild.
@@ -102,7 +109,8 @@ class DataBase:
             self.pool.putconn(conn)
 
     def delete_prefix(self, guild: discord.Guild) -> None:
-        """Deletes a guild from the database.
+        """
+        Deletes a guild from the database.
 
         Args:
             guild (discord.Guild): A Discord guild.
@@ -139,5 +147,7 @@ class DataBase:
             self.pool.putconn(conn)
 
     def setup(self):
-        """Sets up the database tables."""
+        """
+        Sets up the database tables.
+        """
         pass

@@ -30,10 +30,14 @@ log = logging.getLogger(__name__)
 
 
 class Settings(commands.Cog, name='Settings'):
-    """Settings cog."""
+    """
+    Settings cog.
+    """
 
     def __init__(self, bot: AniSearchBot):
-        """Initializes the `Settings` cog."""
+        """
+        Initializes the `Settings` cog.
+        """
         self.bot = bot
 
     @commands.command(name='prefix', usage='prefix <prefix>', ignore_extra=False)
@@ -41,7 +45,9 @@ class Settings(commands.Cog, name='Settings'):
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def prefix(self, ctx: Context, prefix: str):
-        """Changes the current server prefix. Can only be used by a server administrator."""
+        """
+        Changes the current server prefix. Can only be used by a server administrator.
+        """
         if len(prefix) > 5:
             embed = discord.Embed(
                 title='The prefix cannot be longer than 5 characters.', color=ERROR_EMBED_COLOR)

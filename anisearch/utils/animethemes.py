@@ -28,11 +28,15 @@ log = logging.getLogger(__name__)
 
 
 class AnimeThemesException(Exception):
-    """Base exception class for the AnimeThemes API wrapper."""
+    """
+    Base exception class for the AnimeThemes API wrapper.
+    """
 
 
 class AnimeThemesAPIError(AnimeThemesException):
-    """Exception due to an error response from the AnimeThemes API."""
+    """
+    Exception due to an error response from the AnimeThemes API.
+    """
 
     def __init__(self, msg: str, status: int) -> None:
         """
@@ -46,7 +50,9 @@ class AnimeThemesAPIError(AnimeThemesException):
 
 
 class AnimeThemesError(AnimeThemesException):
-    """Exceptions that do not involve the API."""
+    """
+    Exceptions that do not involve the API.
+    """
 
 
 class AnimeThemesClient:
@@ -78,7 +84,9 @@ class AnimeThemesClient:
         await self.close()
 
     async def close(self) -> None:
-        """Closes the aiohttp session."""
+        """
+        Closes the aiohttp session.
+        """
         if self.session is not None:
             await self.session.close()
 

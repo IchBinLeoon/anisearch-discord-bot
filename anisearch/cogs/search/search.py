@@ -39,10 +39,14 @@ log = logging.getLogger(__name__)
 
 
 class Search(commands.Cog, name='Search'):
-    """Search cog."""
+    """
+    Search cog.
+    """
 
     def __init__(self, bot: AniSearchBot):
-        """Initializes the `Search` cog."""
+        """
+        Initializes the `Search` cog.
+        """
         self.bot = bot
 
     async def anilist_search(self, ctx: Context, search: str, type_: str) -> Union[List[Embed], None]:
@@ -475,7 +479,10 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='anime', aliases=['a', 'ani'], usage='anime <title>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def anime(self, ctx: Context, *, title: str):
-        """Searches for an anime with the given title and displays information about the search results such as type, status, episodes, description, and more!"""
+        """
+        Searches for an anime with the given title and displays information about the search results such as type,
+        status, episodes, description, and more!
+        """
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, 'anime')
             if embeds:
@@ -490,7 +497,10 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='manga', aliases=['m'], usage='manga <title>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def manga(self, ctx: Context, *, title: str):
-        """Searches for a manga with the given title and displays information about the search results such as type, status, chapters, description, and more!"""
+        """
+        Searches for a manga with the given title and displays information about the search results such as type,
+        status, chapters, description, and more!
+        """
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, 'manga')
             if embeds:
@@ -506,7 +516,10 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='character', aliases=['c', 'char'], usage='character <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def character(self, ctx: Context, *, name: str):
-        """Searches for a character with the given name and displays information about the search results such as description, synonyms, and appearances!"""
+        """
+        Searches for a character with the given name and displays information about the search results such as
+        description, synonyms, and appearances!
+        """
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, 'character')
             if embeds:
@@ -522,7 +535,10 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='staff', usage='staff <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def staff(self, ctx: Context, *, name: str):
-        """Searches for a staff with the given name and displays information about the search results such as description, staff roles, and character roles!"""
+        """
+        Searches for a staff with the given name and displays information about the search results such as description,
+        staff roles, and character roles!
+        """
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, 'staff')
             if embeds:
@@ -538,7 +554,10 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='studio', usage='studio <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def studio(self, ctx: Context, *, name: str):
-        """Searches for a studio with the given name and displays information about the search results such as the studio productions!"""
+        """
+        Searches for a studio with the given name and displays information about the search results such as the studio
+        productions!
+        """
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, 'studio')
             if embeds:
@@ -554,7 +573,9 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='random', aliases=['r'], usage='random <anime|manga> <genre>', ignore_extra=False)
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def random(self, ctx: Context, media: str, *, genre: str):
-        """Displays a random anime or manga of the specified genre."""
+        """
+        Displays a random anime or manga of the specified genre.
+        """
         async with ctx.channel.typing():
             if media.lower() == 'anime':
                 embed = await self.anilist_random(ctx, genre, 'anime', ['TV', 'MOVIE', 'OVA', 'ONA', 'TV_SHORT',
@@ -580,7 +601,9 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='themes', usage='themes <anime>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def themes(self, ctx: Context, *, anime: str):
-        """Searches for the openings and endings of the given anime and displays them."""
+        """
+        Searches for the openings and endings of the given anime and displays them.
+        """
         async with ctx.channel.typing():
             data = await self.bot.animethemes.search(anime, 5, ['anime'])
             if data.get('anime'):
@@ -637,7 +660,9 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='theme', usage='theme <OP|ED> <anime>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def theme(self, ctx: Context, theme: str, *, anime: str):
-        """Displays a specific opening or ending of the given anime."""
+        """
+        Displays a specific opening or ending of the given anime.
+        """
         async with ctx.channel.typing():
             data = await self.bot.animethemes.search(anime, 1, ['anime'])
             if data.get('anime'):
@@ -697,18 +722,20 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='trace', aliases=['t'], usage='trace <image-url|with image as attachment>',
                       ignore_extra=False)
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def trace(self, ctx, source: Optional[str] = None):
-        """Tries to find the anime the image is from through the image url or the image as attachment."""
+    async def trace(self, ctx, trace: Optional[str] = None):
+        """
+        Tries to find the anime the image is from through the image url or the image as attachment.
+        """
         async with ctx.channel.typing():
             url = None
-            if source is None:
+            if trace is None:
                 if ctx.message.attachments:
                     url = ctx.message.attachments[0].url
                 else:
                     embed = discord.Embed(title='No image to look for the anime.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                url = source
+                url = trace
             if url:
                 if not url.endswith(('.jpg', '.png', '.bmp', '.jpeg')):
                     embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`).',
@@ -785,7 +812,9 @@ class Search(commands.Cog, name='Search'):
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def source(self, ctx: Context, source: Optional[str] = None):
-        """Tries to find the source of an image through the image url or the image as attachment."""
+        """
+        Tries to find the source of an image through the image url or the image as attachment.
+        """
         async with ctx.channel.typing():
             url = None
             if source is None:

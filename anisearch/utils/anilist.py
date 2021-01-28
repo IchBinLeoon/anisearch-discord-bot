@@ -28,11 +28,15 @@ log = logging.getLogger(__name__)
 
 
 class AnilistException(Exception):
-    """Base exception class for the Anilist API wrapper."""
+    """
+    Base exception class for the Anilist API wrapper.
+    """
 
 
 class AnilistAPIError(AnilistException):
-    """Exception due to an error response from the AniList API."""
+    """
+    Exception due to an error response from the AniList API.
+    """
 
     def __init__(self, msg: str, status: int, locations: List[Dict[str, Any]]) -> None:
         """
@@ -47,7 +51,9 @@ class AnilistAPIError(AnilistException):
 
 
 class AnilistClientError(AnilistException):
-    """Exceptions that do not involve the API."""
+    """
+    Exceptions that do not involve the API.
+    """
 
 
 class AniListClient:
@@ -75,7 +81,9 @@ class AniListClient:
         await self.close()
 
     async def close(self) -> None:
-        """Closes the aiohttp session."""
+        """
+        Closes the aiohttp session.
+        """
         if self.session is not None:
             await self.session.close()
 
@@ -210,7 +218,9 @@ class AniListClient:
 
 
 class Query:
-    """Query class."""
+    """
+    Query class.
+    """
 
     @classmethod
     def media(cls) -> str:
