@@ -27,7 +27,6 @@ import discord
 
 import anisearch
 from anisearch.bot import AniSearchBot
-from anisearch.config import TOKEN
 
 
 def main() -> None:
@@ -72,7 +71,7 @@ def start() -> None:
     """
     try:
         bot = AniSearchBot()
-        bot.run(TOKEN)
+        bot.run()
     except Exception as e:
         logging.exception(e)
 

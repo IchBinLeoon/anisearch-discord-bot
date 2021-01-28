@@ -74,11 +74,7 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
 
-- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.  
-
-- `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
-
-- `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
+- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
 
 ### Profile
 - `anilist [username|@member]:` Displays information about the given AniList profile such as anime stats, manga stats and favorites.  
@@ -90,6 +86,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu profile.  
 
 - `remove:` Removes the set AniList, MyAnimeList and Kitsu profile.  
+
+### Image
+- `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
+
+- `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
 
 ### Help
 - `help [command]:` Shows help or displays information about a command.  

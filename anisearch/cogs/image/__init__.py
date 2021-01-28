@@ -17,21 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-# The token the bot will use for auth with Discord.
-TOKEN = 'my cool bot token'
+import logging
 
-# The Discord ID of the user hosting the bot.
-OWNER_ID = 'my discord id'
+from anisearch.bot import AniSearchBot
+from anisearch.cogs.image.image import Image
 
-# The Postgres database credentials.
-DB_HOST = 'hostname'
-DB_NAME = 'database'
-DB_USER = 'username'
-BD_PASSWORD = 'password'
+log = logging.getLogger(__name__)
 
-# The SauceNAO API key. Is required for the `source` command.
-SAUCENAO = 'my api key'
 
-# Everything below can be ignored and does not need to be edited to run the bot.
-# The token for top.gg.
-TOPGG_TOKEN = ''
+def setup(bot: AniSearchBot):
+    """
+    Sets up the `Image` cog.
+    """
+    bot.add_cog(Image(bot))
+    log.info('Image cog loaded.')

@@ -25,14 +25,15 @@ from datetime import timedelta
 import dbl
 import discord
 from aiohttp import ClientSession
-from discord.ext import commands, tasks
-from discord.ext.commands import AutoShardedBot, CommandError, Context, when_mentioned_or
+from discord.ext import commands, tasks, menus
+from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
-from anisearch.config import OWNER_ID, TOPGG_TOKEN
+from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.constants import ERROR_EMBED_COLOR
 from anisearch.utils.database import DataBase
+from anisearch.utils.saucenao import SauceNAOClient
 from anisearch.utils.tracemoe import TraceMoeClient
 
 log = logging.getLogger(__name__)
@@ -40,6 +41,7 @@ log = logging.getLogger(__name__)
 initial_extensions = [
     'anisearch.cogs.search',
     'anisearch.cogs.profile',
+    'anisearch.cogs.image',
     'anisearch.cogs.help',
     'anisearch.cogs.settings',
     'anisearch.cogs.admin'
@@ -66,9 +68,16 @@ class AniSearchBot(AutoShardedBot):
         self.session = ClientSession(loop=self.loop)
 
         self.db = DataBase()
-        self.anilist = AniListClient(ClientSession(loop=self.loop))
-        self.animethemes = AnimeThemesClient(ClientSession(loop=self.loop))
-        self.tracemoe = TraceMoeClient(ClientSession(loop=self.loop))
+
+        self.anilist = AniListClient(session=ClientSession(loop=self.loop))
+
+        self.animethemes = AnimeThemesClient(session=ClientSession(loop=self.loop),
+                                             headers={'User-Agent': 'AniSearch Discord Bot'})
+
+        self.tracemoe = TraceMoeClient(session=ClientSession(loop=self.loop))
+
+        self.saucenao = SauceNAOClient(api_key=SAUCENAO, db=999, output_type=2, numres=10,
+                                       session=ClientSession(loop=self.loop))
 
         # Posts the guild count to top.gg every 30 minutes.
         self.topgg_token = TOPGG_TOKEN
@@ -191,11 +200,11 @@ class AniSearchBot(AutoShardedBot):
         uptime = timedelta(seconds=round(time.time() - self.start_time))
         return uptime
 
-    def run(self, token):
+    def run(self):
         """
         Runs the bot.
         """
-        super().run(token)
+        super().run(TOKEN)
 
     async def close(self):
         """
@@ -215,7 +224,12 @@ class AniSearchBot(AutoShardedBot):
 
     async def on_command_error(self, ctx: Context, error: Exception) -> None:
 
-        title = 'An error occurred.'
+        if hasattr(ctx.command, 'on_error'):
+            return
+
+        error = getattr(error, 'original', error)
+
+        title = 'An unknown error occurred.'
 
         if isinstance(error, commands.CommandNotFound):
             title = 'Command not found.'
@@ -251,17 +265,24 @@ class AniSearchBot(AutoShardedBot):
             title = 'You are not the owner of the bot.'
             ctx.command.reset_cooldown(ctx)
 
+        elif isinstance(error, menus.CannotAddReactions):
+            title = 'Cannot add reactions.'
+            ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, menus.CannotEmbedLinks):
+            title = 'Cannot embed links.'
+            ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, menus.CannotReadMessageHistory):
+            title = 'Cannot read message history.'
+            ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, discord.errors.Forbidden):
+            log.warning(error)
+            return
+
         else:
-            if not ctx.me.guild_permissions.manage_messages:
-                title = 'Bot does not have `Manage Messages` permission.'
-            elif not ctx.me.guild_permissions.embed_links:
-                title = 'Bot does not have `Embed Links` permission.'
-            elif not ctx.me.guild_permissions.read_message_history:
-                title = 'Bot does not have `Read Message History` permissions.'
-            elif not ctx.me.guild_permissions.add_reactions:
-                title = 'Bot cannot add reactions.'
-            else:
-                log.exception(error)
+            log.exception('An unknown exception occurred while executing a command.', exc_info=error)
 
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         await ctx.channel.send(embed=embed)

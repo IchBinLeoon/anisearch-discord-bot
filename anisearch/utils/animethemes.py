@@ -65,17 +65,19 @@ class AnimeThemesClient:
         headers (dict): HTTP headers used in the request.
     """
 
-    def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
+    def __init__(self, session: Optional[aiohttp.ClientSession] = None, headers: Dict[str, Any] = None) -> None:
         """
         Initializes the AnimeThemesClient.
 
         Args:
             session (aiohttp.ClientSession, optional): An aiohttp session.
+            headers (dict, optional): HTTP headers used in the request.
         """
         self.session = session
-        self.headers = {
-            'User-Agent': 'AniSearch Discord Bot'
-        }
+        if headers:
+            self.headers = headers
+        else:
+            self.headers = {}
 
     async def __aenter__(self):
         return self
