@@ -27,3 +27,9 @@ class AniListSearchType(Enum):
     CHARACTER = 'CHARACTER'
     STAFF = 'STAFF'
     STUDIO = 'STUDIO'
+
+
+class AniListMediaType(Enum):
+    """AniListMediaType Enum."""
+    ANIME = 'ANIME'
+    MANGA = 'MANGA'

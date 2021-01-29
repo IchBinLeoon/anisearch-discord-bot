@@ -30,7 +30,7 @@ from discord.ext.commands import Context
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
-from anisearch.utils.enums import AniListSearchType
+from anisearch.utils.enums import AniListSearchType, AniListMediaType
 from anisearch.utils.formats import get_media_title, get_media_stats, format_description, format_date, \
     get_char_staff_name, format_media_type
 from anisearch.utils.paginator import EmbedListMenu
@@ -128,7 +128,7 @@ class Search(commands.Cog, name='Search'):
             return embeds
         return None
 
-    async def anilist_random(self, ctx: Context, search: str, type_: AniListSearchType, format_in: List[str]) \
+    async def anilist_random(self, ctx: Context, search: str, type_: AniListMediaType, format_in: List[str]) \
             -> Union[Embed, None]:
         """
         Returns a Discord embed with the retrieved anilist data about a random media of a specified genre.
@@ -136,7 +136,7 @@ class Search(commands.Cog, name='Search'):
         Args:
             ctx (Context): The context in which the command was invoked under.
             search (str): The media genre to be searched for.
-            type_ (AniListSearchType): The media search type (`ANIME`, `MANGA`).
+            type_ (AniListMediaType): The media search type (`ANIME`, `MANGA`).
             format_in (list): The media format.
 
         Returns:
@@ -572,23 +572,23 @@ class Search(commands.Cog, name='Search'):
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='random', aliases=['r'], usage='random <anime|manga> <genre>', ignore_extra=False)
-    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def random(self, ctx: Context, media: str, *, genre: str):
         """
         Displays a random anime or manga of the specified genre.
         """
         async with ctx.channel.typing():
-            if media.lower() == AniListSearchType.ANIME.value.lower():
-                embed = await self.anilist_random(ctx, genre, AniListSearchType.ANIME, ['TV', 'MOVIE', 'OVA', 'ONA',
-                                                                                        'TV_SHORT', 'MUSIC', 'SPECIAL'])
+            if media.lower() == AniListMediaType.ANIME.value.lower():
+                embed = await self.anilist_random(ctx, genre, AniListMediaType.ANIME, ['TV', 'MOVIE', 'OVA', 'ONA',
+                                                                                       'TV_SHORT', 'MUSIC', 'SPECIAL'])
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title=f'An anime with the genre `{genre}` could not be found.',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
-            elif media.lower() == AniListSearchType.MANGA.value.lower():
-                embed = await self.anilist_random(ctx, genre, AniListSearchType.MANGA, ['MANGA', 'ONE_SHOT', 'NOVEL'])
+            elif media.lower() == AniListMediaType.MANGA.value.lower():
+                embed = await self.anilist_random(ctx, genre, AniListMediaType.MANGA, ['MANGA', 'ONE_SHOT', 'NOVEL'])
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
