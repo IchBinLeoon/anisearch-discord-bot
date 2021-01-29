@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 
 import anisearch
+from anisearch.utils.constants import DISCORD_INVITE, CREATOR_ID, BOT_ID, TOPGG_VOTE
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ def get_creator() -> int:
     """
     Returns the discord id of the bot creator.
     """
-    creator_id = 223871059068321793
+    creator_id = CREATOR_ID
     return creator_id
 
 
@@ -44,7 +45,7 @@ def get_bot() -> int:
     """
     Returns the discord id of the official bot instance.
     """
-    bot_id = 737236600878137363
+    bot_id = BOT_ID
     return bot_id
 
 
@@ -52,7 +53,7 @@ def get_invite() -> str:
     """
     Returns the discord invite link for the bot.
     """
-    invite = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
+    invite = DISCORD_INVITE
     return invite
 
 
@@ -60,7 +61,7 @@ def get_vote() -> str:
     """
     Returns the top.gg vote link for the bot.
     """
-    vote = 'https://top.gg/bot/737236600878137363/vote'
+    vote = TOPGG_VOTE
     return vote
 
 

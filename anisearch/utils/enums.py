@@ -17,17 +17,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-DEFAULT_PREFIX = 'as!'
+from enum import Enum
 
-ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
-ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
-TRACEMOE_BASE_URL = 'https://trace.moe/api'
-SAUCENAO_BASE_URL = 'https://saucenao.com/search.php'
 
-DEFAULT_EMBED_COLOR = 0x4169E1
-ERROR_EMBED_COLOR = 0xff0000
-
-CREATOR_ID = 223871059068321793
-BOT_ID = 737236600878137363
-DISCORD_INVITE = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
-TOPGG_VOTE = 'https://top.gg/bot/737236600878137363/vote'
+class AniListSearchType(Enum):
+    """AniListSearchType Enum."""
+    ANIME = 'ANIME'
+    MANGA = 'MANGA'
+    CHARACTER = 'CHARACTER'
+    STAFF = 'STAFF'
+    STUDIO = 'STUDIO'

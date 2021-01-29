@@ -76,9 +76,9 @@ class Profile(commands.Cog, name='Profile'):
         async with ctx.channel.typing():
             pass
 
-    @commands.command(name='remove', aliases=['rm'], usage='remove', ignore_extra=False)
+    @commands.command(name='removeprofile', aliases=['rmp'], usage='removeprofile', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def remove(self, ctx: Context):
+    async def removeprofile(self, ctx: Context):
         """
         Removes the set AniList, MyAnimeList and Kitsu profile.
         """

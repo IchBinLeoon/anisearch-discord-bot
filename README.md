@@ -85,7 +85,7 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu profile.  
 
-- `remove:` Removes the set AniList, MyAnimeList and Kitsu profile.  
+- `removeprofile:` Removes the set AniList, MyAnimeList and Kitsu profile.  
 
 ### Image
 - `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
@@ -104,7 +104,7 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 ### Settings
 Can only be used by a server administrator.
 
-- `prefix <prefix>:` Changes the current server prefix.  
+- `setprefix <prefix>:` Changes the current server prefix.  
 
 ### Admin
 Can only be used by the bot owner.  
@@ -214,19 +214,22 @@ CREATE TABLE users (
 
 5. Edit `config.py`.   
 
-    ```py
-    # The token the bot will use for auth with Discord.
-    TOKEN = 'my cool bot token'
-
-    # The Discord ID of the user hosting the bot.
-    OWNER_ID = 'my discord id'
-
-    # The Postgres database credentials.
-    DB_HOST = 'hostname'
-    DB_NAME = 'database'
-    DB_USER = 'username'
-    BD_PASSWORD = 'password'
-    ```
+   ```py
+   # The token the bot will use for auth with Discord.
+   TOKEN = 'my cool bot token'
+   
+   # The Discord ID of the user hosting the bot.
+   OWNER_ID = 'my discord id'
+   
+   # The Postgres database credentials.
+   DB_HOST = 'hostname'
+   DB_NAME = 'database'
+   DB_USER = 'username'
+   BD_PASSWORD = 'password'
+   
+   # The SauceNAO API key. Is required for the `source` command.
+   SAUCENAO = 'my api key'
+   ```
 
 ## 3. Run
 

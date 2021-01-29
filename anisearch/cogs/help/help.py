@@ -21,14 +21,15 @@ import logging
 from typing import Optional
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, menus
 from discord.ext.commands import Context
 from discord.utils import get
 
 from anisearch.bot import AniSearchBot
 from anisearch.config import OWNER_ID
-from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR
+from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX
 from anisearch.utils.miscellaneous import get_invite, get_vote, get_version, get_creator, get_bot, get_url
+from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
 
@@ -108,57 +109,43 @@ class Help(commands.Cog, name='Help'):
             server_prefix = ''
         else:
             server_prefix = f'Current server prefix: `{prefix}`\n'
-        embed = discord.Embed(description=f'To view information about a specified command use: '
-                                          f'`{prefix}help [command]`\n'
-                                          f'{server_prefix}'
-                                          f'\n'
-                                          f'**Parameters:** `<> - required, [] - optional, | - either/or`\n'
-                                          f'\n'
-                                          f'Do __not__ include `<>`, `[]` or `|` when executing the command.\n'
-                                          f'\n'
-                                          f'**Search**\n'
-                                          f'```'
-                                          f'• {prefix}{self.bot.get_command("anime").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("manga").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("character").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("staff").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("studio").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("random").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("themes").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("theme").usage}\n'
-                                          f'```'
-                                          f'\n'
-                                          f'**Profile**\n'
-                                          f'```'
-                                          f'• {prefix}{self.bot.get_command("anilist").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("myanimelist").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("kitsu").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("setprofile").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("remove").usage}\n'
-                                          f'```'
-                                          f'\n'
-                                          f'**Image**\n'
-                                          f'```'
-                                          f'• {prefix}{self.bot.get_command("trace").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("source").usage}\n'
-                                          f'```'
-                                          f'\n'
-                                          f'**Help**\n'
-                                          f'```'
-                                          f'• {prefix}{self.bot.get_command("help").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("commands").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("about").usage}\n'
-                                          f'• {prefix}{self.bot.get_command("stats").usage}\n'
-                                          f'```'
-                                          f'\n'
-                                          f'**Settings**\n'
-                                          f'Can only be used by a server administrator.'
-                                          f'```'
-                                          f'• {prefix}{self.bot.get_command("prefix").usage}\n'
-                                          f'```',
-                              colour=DEFAULT_EMBED_COLOR)
-        embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
-        await ctx.send(embed=embed)
+
+        embeds = []
+        page = 1
+
+        for cog in self.bot.cogs:
+            cog_ = self.bot.get_cog(cog)
+            cmds = cog_.get_commands()
+            cmds_ = []
+            for cmd in cmds:
+                cmd_ = f'• {prefix}{cmd.usage}'
+                cmds_.append(cmd_)
+            cmds__ = '\n'.join(cmds_)
+
+            if cog_.qualified_name == 'Settings':
+                cmds__ = f'Can only be used by a server administrator.\n```\n{cmds__}\n```'
+            else:
+                cmds__ = f'```\n{cmds__}\n```'
+
+            if cog_.qualified_name != 'Admin':
+                embed = discord.Embed(description=f'To view information about a specified command use: '
+                                                  f'`{prefix}help [command]`\n'
+                                                  f'{server_prefix}'
+                                                  f'\n'
+                                                  f'**Parameters:** `<> - required, [] - optional, | - either/or`\n'
+                                                  f'\n'
+                                                  f'Do __not__ include `<>`, `[]` or `|` when executing the command.\n'
+                                                  f'\n'
+                                                  f'**{cog_.qualified_name}**\n'
+                                                  f'{cmds__}',
+                                      colour=DEFAULT_EMBED_COLOR)
+                embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
+                embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
+                page += 1
+                embeds.append(embed)
+
+        menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+        await menu.start(ctx)
 
     @commands.command(name='about', usage='about', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -175,7 +162,7 @@ class Help(commands.Cog, name='Help'):
                         inline=True)
         embed.add_field(name='❯ Version', value=f'v{get_version()}',
                         inline=True)
-        embed.add_field(name='❯ Commands', value='as!help',
+        embed.add_field(name='❯ Commands', value=f'{DEFAULT_PREFIX}help',
                         inline=True)
         embed.add_field(name='❯ Invite', value=f'[Click me!]({get_invite()})',
                         inline=True)

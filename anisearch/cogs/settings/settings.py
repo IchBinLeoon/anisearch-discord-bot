@@ -24,7 +24,7 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR
+from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX
 
 log = logging.getLogger(__name__)
 
@@ -40,11 +40,11 @@ class Settings(commands.Cog, name='Settings'):
         """
         self.bot = bot
 
-    @commands.command(name='prefix', usage='prefix <prefix>', ignore_extra=False)
+    @commands.command(name='setprefix', usage='setprefix <prefix>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
-    async def prefix(self, ctx: Context, prefix: str):
+    async def setprefix(self, ctx: Context, prefix: str):
         """
         Changes the current server prefix. Can only be used by a server administrator.
         """
@@ -56,7 +56,7 @@ class Settings(commands.Cog, name='Settings'):
             prefix_old = self.bot.db.get_prefix(ctx.message)
             self.bot.db.update_prefix(ctx.message, prefix)
             prefix_new = self.bot.db.get_prefix(ctx.message)
-            if prefix_new == 'as!':
+            if prefix_new == DEFAULT_PREFIX:
                 embed = discord.Embed(
                     title=f'{ctx.author} resetted the prefix.', color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)

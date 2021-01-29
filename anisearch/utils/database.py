@@ -24,6 +24,7 @@ import psycopg2
 import psycopg2.pool
 
 from anisearch.config import BD_PASSWORD, DB_HOST, DB_NAME, DB_USER
+from anisearch.utils.constants import DEFAULT_PREFIX
 
 log = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class DataBase:
             prefix (str): Prefix for the current guild.
         """
         if isinstance(message.channel, discord.channel.DMChannel):
-            return 'as!'
+            return DEFAULT_PREFIX
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -79,7 +80,7 @@ class DataBase:
                     return prefix
                 except TypeError:
                     cur.execute(
-                        'INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, 'as!'))
+                        'INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, DEFAULT_PREFIX))
                     conn.commit()
                     cur.execute(
                         'SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
@@ -100,9 +101,9 @@ class DataBase:
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    'UPDATE guilds SET prefix = %s WHERE id = %s;', ('as!', guild.id,))
+                    'UPDATE guilds SET prefix = %s WHERE id = %s;', (DEFAULT_PREFIX, guild.id,))
                 cur.execute('INSERT INTO guilds (id, prefix) SELECT %s, %s WHERE NOT EXISTS '
-                            '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, 'as!', guild.id, ))
+                            '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id, ))
                 conn.commit()
                 log.info(f'Inserted prefix for guild {guild.id}.')
         finally:

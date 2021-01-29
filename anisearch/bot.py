@@ -31,7 +31,7 @@ from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animethemes import AnimeThemesClient
-from anisearch.utils.constants import ERROR_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
 from anisearch.utils.database import DataBase
 from anisearch.utils.saucenao import SauceNAOClient
 from anisearch.utils.tracemoe import TraceMoeClient
@@ -109,7 +109,7 @@ class AniSearchBot(AutoShardedBot):
                 pass
             except Exception as e:
                 log.exception(e)
-        log.info(f'{len(initial_extensions)-len(self.cogs)}/{len(initial_extensions)} cogs unloaded.')
+        log.info(f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded.')
 
     async def on_ready(self) -> None:
         log.info(f'Logged in as {self.user}')
@@ -131,17 +131,17 @@ class AniSearchBot(AutoShardedBot):
             when_mentioned_or()
         """
         if isinstance(message.channel, discord.channel.DMChannel):
-            return when_mentioned_or('as!')(self, message)
+            return when_mentioned_or(DEFAULT_PREFIX)(self, message)
         prefix = self.db.get_prefix(message)
-        return when_mentioned_or(prefix, 'as!')(self, message)
+        return when_mentioned_or(prefix, DEFAULT_PREFIX)(self, message)
 
     @tasks.loop(seconds=30)
     async def set_status(self) -> None:
         """
         Sets the discord status of the bot.
         """
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
-                                   status=discord.Status.online)
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
+                                   name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
         await sleep(20)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
                                    status=discord.Status.online)
