@@ -22,25 +22,25 @@ from typing import Optional, Any, Dict, Union
 
 import aiohttp
 
-from anisearch.utils.constants import SAUCENAO_BASE_URL
+from anisearch.utils.constants import KITSU_BASE_URL
 
 log = logging.getLogger(__name__)
 
 
-class SauceNAOException(Exception):
+class KitsuException(Exception):
     """
-    Base exception class for the SauceNAO API wrapper.
+    Base exception class for the Kitsu API wrapper.
     """
 
 
-class SauceNAOAPIError(SauceNAOException):
+class KitsuAPIError(KitsuException):
     """
-    Exception due to an error response from the SauceNAO API.
+    Exception due to an error response from the Kitsu API.
     """
 
     def __init__(self, status: int) -> None:
         """
-        Initializes the SauceNAOAPIError exception.
+        Initializes the KitsuAPIError exception.
 
         Args:
             status (int): The status code.
@@ -48,44 +48,29 @@ class SauceNAOAPIError(SauceNAOException):
         super().__init__(status)
 
 
-class SauceNAOError(SauceNAOException):
+class KitsuError(KitsuException):
     """
     Exceptions that do not involve the API.
     """
 
 
-class SauceNAOClient:
+class KitsuClient:
     """
-    Asynchronous wrapper client for the SauceNAO API.
+    Asynchronous wrapper client for the Kitsu API.
     This class is used to interact with the API.
 
     Attributes:
         session (aiohttp.ClientSession): An aiohttp session.
-        api_key (str): The SauceNAO API key.
-        db (int): Index num or 999 for all.
-        output_type (int): The output type (0=normal html, 1=xml api, 2=json api).
-        numres (int): Number of the results requested.
-        long_remaining (int): Remaining daily API requests.
     """
 
-    def __init__(self, api_key: str, db: int, output_type: int, numres: int,
-                 session: Optional[aiohttp.ClientSession] = None) -> None:
+    def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
         """
-        Initializes the SauceNAOClient.
+        Initializes the KitsuClient.
 
         Args:
             session (aiohttp.ClientSession, optional): An aiohttp session.
-            api_key (str): The SauceNAO API key.
-            db (int): Index num or 999 for all.
-            output_type (int): The output type (0=normal html, 1=xml api, 2=json api).
-            numres (int): Number of the results requested.
         """
         self.session = session
-        self.api_key = api_key
-        self.db = db
-        self.output_type = output_type
-        self.numres = numres
-        self.long_remaining = None
 
     async def __aenter__(self):
         return self
@@ -113,7 +98,7 @@ class SauceNAOClient:
 
     async def _request(self, url: str) -> Dict[str, Any]:
         """
-        Makes a request to the SauceNAO API.
+        Makes a request to the Kitsu API.
 
         Args:
             url (str): The url used for the request.
@@ -122,30 +107,42 @@ class SauceNAOClient:
             dict: Dictionary with the data from the response.
 
         Raises:
-            SauceNAOAPIError: If the response contains an error.
+            KitsuAPIError: If the response contains an error.
         """
         session = await self._session()
         response = await session.get(url)
         if response.status == 200:
             data = await response.json()
-            self.long_remaining = data.get('header')['long_remaining']
         else:
-            raise SauceNAOAPIError(response.status)
+            raise KitsuAPIError(response.status)
         return data
 
-    async def search(self, url: str) -> Union[Dict[str, Any], None]:
+    @staticmethod
+    async def get_url(endpoint: str, parameters: str) -> str:
         """
-        Look up the source of an image by url.
+        Creates the request url for the Kitsu endpoints.
 
         Args:
-            url (str): The image url.
+            endpoint (str): The API endpoint.
+            parameters (str): The query parameters.
+        """
+        request_url = f'{KITSU_BASE_URL}/{endpoint}{parameters}'
+        return request_url
+
+    async def user(self, username: str) -> Union[Dict[str, Any], None]:
+        """
+        Gets a user based on the given username.
+
+        Args:
+            username (str): The username of the searched user.
 
         Returns:
-            list: Dictionaries with the data about the found entries.
+            dict: Dictionary with the data about the requested user.
+            None: If no user was found.
         """
-        url = f'{SAUCENAO_BASE_URL}?db={str(self.db)}&output_type={str(self.output_type)}&numres={str(self.numres)}' \
-              f'&api_key={str(self.api_key)}&url={url}'
-        data = await self._request(url)
-        if data.get('results'):
-            return data.get('results')
+        parameters = f'?filter[name]={username}&include=stats,favorites'
+        url = await self.get_url('users', parameters)
+        data = await self._request(url=url)
+        if data.get('data'):
+            return data.get('data')
         return None

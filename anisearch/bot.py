@@ -33,6 +33,8 @@ from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
 from anisearch.utils.database import DataBase
+from anisearch.utils.jikan import JikanClient
+from anisearch.utils.kitsu import KitsuClient
 from anisearch.utils.saucenao import SauceNAOClient
 from anisearch.utils.tracemoe import TraceMoeClient
 
@@ -79,11 +81,16 @@ class AniSearchBot(AutoShardedBot):
         self.saucenao = SauceNAOClient(api_key=SAUCENAO, db=999, output_type=2, numres=10,
                                        session=ClientSession(loop=self.loop))
 
+        self.myanimelist = JikanClient(session=ClientSession(loop=self.loop))
+
+        self.kitsu = KitsuClient(session=ClientSession(loop=self.loop))
+
         # Posts the guild count to top.gg every 30 minutes.
         self.topgg_token = TOPGG_TOKEN
         self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
 
         self.load_cogs()
+        self.set_status.start()
 
     def load_cogs(self) -> None:
         """
@@ -117,7 +124,6 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'Bot-Discriminator: {self.user.discriminator}')
         log.info(f'Bot-ID: {self.user.id}')
         log.info(f'Shards: {self.shard_count}')
-        self.set_status.start()
         log.info('Bot is ready.')
 
     async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
@@ -145,6 +151,13 @@ class AniSearchBot(AutoShardedBot):
         await sleep(20)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
                                    status=discord.Status.online)
+
+    @set_status.before_loop
+    async def set_status_before(self) -> None:
+        """
+        Waits for the bot to be ready before starting the `set_status` task.
+        """
+        await self.wait_until_ready()
 
     async def on_connect(self) -> None:
         log.info('Connected to Discord.')
@@ -231,7 +244,11 @@ class AniSearchBot(AutoShardedBot):
 
         title = 'An unknown error occurred.'
 
-        if isinstance(error, commands.CommandNotFound):
+        if isinstance(error, discord.errors.Forbidden):
+            log.warning(error)
+            return await ctx.message.add_reaction(emoji='🔇')
+
+        elif isinstance(error, commands.CommandNotFound):
             title = 'Command not found.'
 
         elif isinstance(error, commands.CommandOnCooldown):
@@ -276,10 +293,6 @@ class AniSearchBot(AutoShardedBot):
         elif isinstance(error, menus.CannotReadMessageHistory):
             title = 'Cannot read message history.'
             ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, discord.errors.Forbidden):
-            log.warning(error)
-            return
 
         else:
             log.exception('An unknown exception occurred while executing a command.', exc_info=error)

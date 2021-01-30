@@ -105,6 +105,9 @@ class TraceMoeClient:
 
         Returns:
             dict: Dictionary with the data from the response.
+
+        Raises:
+            TraceMoeAPIError: If the response contains an error.
         """
         session = await self._session()
         response = await session.get(url)

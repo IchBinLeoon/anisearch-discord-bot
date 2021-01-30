@@ -46,7 +46,8 @@ class Profile(commands.Cog, name='Profile'):
         Displays information about the given AniList profile such as anime stats, manga stats and favorites.
         """
         async with ctx.channel.typing():
-            pass
+            data = await self.bot.anilist.user(name=username, page=1, perPage=1)
+            print(data)
 
     @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -55,7 +56,8 @@ class Profile(commands.Cog, name='Profile'):
         Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites.
         """
         async with ctx.channel.typing():
-            pass
+            data = await self.bot.myanimelist.user(username=username)
+            print(data)
 
     @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -64,9 +66,10 @@ class Profile(commands.Cog, name='Profile'):
         Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!
         """
         async with ctx.channel.typing():
-            pass
+            data = await self.bot.kitsu.user(username=username)
+            print(data)
 
-    @commands.command(name='setprofile', aliases=['set'], usage='setprofile <al|mal|kitsu> <username>',
+    @commands.command(name='setprofile', aliases=['setp'], usage='setprofile <al|mal|kitsu> <username>',
                       ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def setprofile(self, ctx: Context, site: Optional[str] = None, username: Optional[str] = None):

@@ -110,7 +110,7 @@ class AniListClient:
             dict: Dictionary with the data from the response.
 
         Raises:
-            APIError: If the response contains an error.
+            AnilistAPIError: If the response contains an error.
         """
         session = await self._session()
         response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
@@ -120,7 +120,7 @@ class AniListClient:
                                   data.get('errors')[0]['locations'])
         return data
 
-    async def media(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+    async def media(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
         Gets a list of media entries based on the given search variable.
 
@@ -136,7 +136,7 @@ class AniListClient:
             return data.get('data')['Page']['media']
         return None
 
-    async def character(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+    async def character(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
         Gets a list of characters based on the given search variable.
 
@@ -152,7 +152,7 @@ class AniListClient:
             return data.get('data')['Page']['characters']
         return None
 
-    async def staff(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+    async def staff(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
         Gets a list of staff entries based on the given search variable.
 
@@ -168,7 +168,7 @@ class AniListClient:
             return data.get('data')['Page']['staff']
         return None
 
-    async def studio(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+    async def studio(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
         Gets a list of studios based on the given search variable.
 
@@ -186,13 +186,13 @@ class AniListClient:
 
     async def genre(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
         """
-        Gets a list of media entries based on the given genre.
+        Gets a dictionary with media entries based on the given genre.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
 
         Returns:
-            list: Dictionaries with the data about the requested media entries.
+            dict: Dictionary with the data about the requested media entries.
             None: If no media entries were found.
         """
         data = await self._request(query=Query.genre(), **variables)
@@ -202,18 +202,34 @@ class AniListClient:
 
     async def tag(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
         """
-        Gets a list of media entries based on the given tag.
+        Gets a dictionary with media entries based on the given tag.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
 
         Returns:
-            list: Dictionaries with the data about the requested media entries.
+            dict: Dictionary with the data about the requested media entries.
             None: If no media entries were found.
         """
         data = await self._request(query=Query.tag(), **variables)
         if data:
             return data
+        return None
+
+    async def user(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """
+        Gets a user based on the given search variable.
+
+        Args:
+            variables (union): Variables and values that will be used in the query request.
+
+        Returns:
+            dict: Dictionary with the data about the requested user.
+            None: If no user was found.
+        """
+        data = await self._request(query=Query.user(), **variables)
+        if data.get('data')['Page']['users']:
+            return data.get('data')['Page']['users'][0]
         return None
 
 
@@ -566,3 +582,100 @@ class Query:
         }
         '''
         return TAG_QUERY
+
+    @classmethod
+    def user(cls) -> str:
+        """
+        Gets the user query.
+
+        Returns:
+            str: Query used for a user request.
+        """
+        USER_QUERY: str = '''
+        query ($page: Int, $perPage: Int, $name: String) {
+          Page(page: $page, perPage: $perPage) {
+            users(name: $name) {
+              name
+              avatar {
+                large
+                medium
+              }
+              about
+              bannerImage
+              statistics {
+                anime {
+                  count
+                  meanScore
+                  minutesWatched
+                  episodesWatched
+                }
+                manga {
+                  count
+                  meanScore
+                  chaptersRead
+                  volumesRead
+                }
+              }
+              favourites {
+                anime {
+                  nodes {
+                    id
+                    siteUrl
+                    title {
+                      romaji
+                      english
+                      native
+                      userPreferred
+                    }
+                  }
+                }
+                manga {
+                  nodes {
+                    id
+                    siteUrl
+                    title {
+                      romaji
+                      english
+                      native
+                      userPreferred
+                    }
+                  }
+                }
+                characters {
+                  nodes {
+                    id
+                    siteUrl
+                    name {
+                      first
+                      last
+                      full
+                      native
+                    }
+                  }
+                }
+                staff {
+                  nodes {
+                    id
+                    siteUrl
+                    name {
+                      first
+                      last
+                      full
+                      native
+                    }
+                  }
+                }
+                studios {
+                  nodes {
+                    id
+                    siteUrl
+                    name
+                  }
+                }
+              }
+              siteUrl
+            }
+          }
+        }
+        '''
+        return USER_QUERY

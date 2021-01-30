@@ -132,12 +132,10 @@ class Help(commands.Cog, name='Help'):
                                                   f'`{prefix}help [command]`\n'
                                                   f'{server_prefix}'
                                                   f'\n'
-                                                  f'**Parameters:** `<> - required, [] - optional, | - either/or`\n'
-                                                  f'\n'
-                                                  f'Do __not__ include `<>`, `[]` or `|` when executing the command.\n'
-                                                  f'\n'
                                                   f'**{cog_.qualified_name}**\n'
-                                                  f'{cmds__}',
+                                                  f'{cmds__}'
+                                                  f'\n'
+                                                  f'`<>` - required, `[]` - optional, `|` - either/or',
                                       colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
                 embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
