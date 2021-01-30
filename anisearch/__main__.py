@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-
+import argparse
 import asyncio
 import logging
 import platform
@@ -46,8 +46,8 @@ def setup_logging() -> None:
     """
     Sets up the logging.
     """
-    logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(asctime)s:%(name)s:%(message)s',
-                        datefmt='%m/%d/%Y %H:%M:%S')
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
+                        format='%(levelname)s:%(asctime)s:%(name)s:%(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 
 
 async def check_update() -> None:
@@ -77,4 +77,8 @@ def start() -> None:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='AniSearch Discord Bot')
+    parser.add_argument('--version', action='version', version=anisearch.__version__, help='Display version.')
+    parser.add_argument('-d', '--debug', action='store_true', help='Start the bot in debugging mode.')
+    args = parser.parse_args()
     main()
