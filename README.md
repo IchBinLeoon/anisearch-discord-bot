@@ -85,7 +85,7 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu profile.  
 
-- `removeprofile:` Removes the set AniList, MyAnimeList and Kitsu profile.  
+- `removeprofiles:` Removes the set AniList, MyAnimeList and Kitsu profile.  
 
 ### Image
 - `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  

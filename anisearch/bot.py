@@ -228,6 +228,9 @@ class AniSearchBot(AutoShardedBot):
         await self.anilist.close()
         await self.animethemes.close()
         await self.tracemoe.close()
+        await self.saucenao.close()
+        await self.myanimelist.close()
+        await self.kitsu.close()
         if self.session is not None:
             await self.session.close()
         await super().close()

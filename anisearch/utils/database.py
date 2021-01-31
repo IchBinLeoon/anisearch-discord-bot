@@ -103,7 +103,7 @@ class DataBase:
                 cur.execute(
                     'UPDATE guilds SET prefix = %s WHERE id = %s;', (DEFAULT_PREFIX, guild.id,))
                 cur.execute('INSERT INTO guilds (id, prefix) SELECT %s, %s WHERE NOT EXISTS '
-                            '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id, ))
+                            '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id,))
                 conn.commit()
                 log.info(f'Inserted prefix for guild {guild.id}.')
         finally:
@@ -144,6 +144,81 @@ class DataBase:
                 conn.commit()
                 log.info(
                     f'Changed prefix for guild {message.guild.id} to `{prefix}`.')
+        finally:
+            self.pool.putconn(conn)
+
+    def insert_profile(self, site: str, username: str, id_: int) -> None:
+        """
+        Inserts a profile of a user into the database.
+
+        Args:
+            site (str): The anime tracking site (`anilist`, `myanimelist`, `kitsu`).
+            username (str): The profile name.
+            id_ (int): The ID of the discord user.
+        """
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                if site == 'anilist':
+                    cur.execute('UPDATE users SET anilist = %s WHERE id = %s;', (username, id_,))
+                    cur.execute('INSERT INTO users (id, anilist) SELECT %s, %s WHERE NOT EXISTS '
+                                '(SELECT 1 FROM users WHERE id = %s);', (id_, username, id_,))
+                elif site == 'myanimelist':
+                    cur.execute('UPDATE users SET myanimelist = %s WHERE id = %s;', (username, id_,))
+                    cur.execute('INSERT INTO users (id, myanimelist) SELECT %s, %s WHERE NOT EXISTS '
+                                '(SELECT 1 FROM users WHERE id = %s);', (id_, username, id_,))
+                elif site == 'kitsu':
+                    cur.execute('UPDATE users SET kitsu = %s WHERE id = %s;', (username, id_,))
+                    cur.execute('INSERT INTO users (id, kitsu) SELECT %s, %s WHERE NOT EXISTS '
+                                '(SELECT 1 FROM users WHERE id = %s);', (id_, username, id_,))
+                conn.commit()
+                log.info(f'Set {site} profile for user {id_} to {username}.')
+        finally:
+            self.pool.putconn(conn)
+
+    def select_profile(self, site: str, id_: int) -> None:
+        """
+        Selects a profile of a user from the database.
+
+        Args:
+            site (str): The anime tracking site (`anilist`, `myanimelist`, `kitsu`).
+            id_ (int): The ID of the discord user.
+
+        Returns:
+            profile (str): The requested profile.
+        """
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                try:
+                    if site == 'anilist':
+                        cur.execute('SELECT anilist FROM users WHERE id = %s;', (id_,))
+                        profile = cur.fetchone()[0]
+                    elif site == 'myanimelist':
+                        cur.execute('SELECT myanimelist FROM users WHERE id = %s;', (id_,))
+                        profile = cur.fetchone()[0]
+                    elif site == 'kitsu':
+                        cur.execute('SELECT kitsu FROM users WHERE id = %s;', (id_,))
+                        profile = cur.fetchone()[0]
+                    return profile
+                except TypeError:
+                    return None
+        finally:
+            self.pool.putconn(conn)
+
+    def delete_user(self, id_: int) -> None:
+        """
+        Deletes a user from the database.
+
+        Args:
+            id_ (int): The ID of the discord user.
+        """
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute('DELETE FROM users WHERE id = %s;', (id_,))
+                conn.commit()
+                log.info(f'Removed all profiles for user {id_}.')
         finally:
             self.pool.putconn(conn)
 

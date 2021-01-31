@@ -144,5 +144,5 @@ class KitsuClient:
         url = await self.get_url('users', parameters)
         data = await self._request(url=url)
         if data.get('data'):
-            return data.get('data')
+            return data
         return None

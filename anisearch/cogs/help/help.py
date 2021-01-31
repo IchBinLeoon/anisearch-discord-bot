@@ -177,7 +177,7 @@ class Help(commands.Cog, name='Help'):
         """
         Displays statistics about the bot.
         """
-        embed = discord.Embed(description=f'The current instance of the Bot is owned by <@!{OWNER_ID}>',
+        embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
         embed.set_author(name="AniSearch's statistics", icon_url=self.bot.user.avatar_url)
         embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)
