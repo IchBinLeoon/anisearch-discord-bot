@@ -85,7 +85,7 @@ class Help(commands.Cog, name='Help'):
                 if command.aliases:
                     aliases = ', '.join(command.aliases)
                     embed.add_field(
-                        name='Aliases', value=f'{aliases}', inline=False)
+                        name='Aliases', value=f'`{aliases}`', inline=False)
                 else:
                     aliases = '-'
                     embed.add_field(

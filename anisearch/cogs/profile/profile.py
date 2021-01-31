@@ -251,7 +251,8 @@ class Profile(commands.Cog, name='Profile'):
         if data is not None:
 
             try:
-                embed = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=f'{data.get("name")} - AniList',
+                                      url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
 
                 if data.get('avatar')['large']:
                     embed.set_thumbnail(url=data.get('avatar')['large'])
@@ -299,7 +300,8 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=f'{data.get("name")} - AniList',
+                                      url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
 
                 if data.get('avatar')['large']:
                     embed.set_thumbnail(url=data.get('avatar')['large'])
@@ -416,7 +418,8 @@ class Profile(commands.Cog, name='Profile'):
                     joined = data.get('joined').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
 
                 embed = discord.Embed(
-                    title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR,
+                    title=f'{data.get("username")} - MyAnimeList',
+                    url=data.get('url'), color=DEFAULT_EMBED_COLOR,
                     description=
                     f'**Last Online:** {last_online if data.get("last_online") else "N/A"}\n'
                     f'**Gender:** {data.get("gender") if data.get("gender") else "N/A"}\n'
@@ -481,7 +484,8 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=f'{data.get("username")} - MyAnimeList',
+                                      url=data.get('url'), color=DEFAULT_EMBED_COLOR)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -602,7 +606,7 @@ class Profile(commands.Cog, name='Profile'):
                 else:
                     gender = 'N/A'
 
-                embed = discord.Embed(title=data.get("data")[0]["attributes"]["name"],
+                embed = discord.Embed(title=f'{data.get("data")[0]["attributes"]["name"]} - Kitsu',
                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
                                       color=DEFAULT_EMBED_COLOR, description=f'**Gender:** {gender}\n'
                                                                              f'**Birthday:** {birthday}\n'
