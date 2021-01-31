@@ -29,6 +29,9 @@ DB_NAME = 'database'
 DB_USER = 'username'
 BD_PASSWORD = 'password'
 
+# The SauceNAO API key. Is required for the `source` command.
+SAUCENAO = 'my api key'
+
 # Everything below can be ignored and does not need to be edited to run the bot.
 # The token for top.gg.
 TOPGG_TOKEN = ''

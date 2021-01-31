@@ -17,12 +17,26 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+
 from discord.ext import menus
+
+log = logging.getLogger(__name__)
 
 
 class EmbedListMenu(menus.ListPageSource):
+    """
+    Paginated embed menu.
+    """
+
     def __init__(self, data):
+        """
+        Initializes the EmbedListMenu.
+        """
         super().__init__(data, per_page=1)
 
     async def format_page(self, menu, embeds):
+        """
+        Formats the page.
+        """
         return embeds

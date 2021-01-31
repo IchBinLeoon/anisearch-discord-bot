@@ -17,10 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+
+from anisearch.bot import AniSearchBot
 from anisearch.cogs.help.help import Help
-from anisearch.utils.logger import logger
+
+log = logging.getLogger(__name__)
 
 
-def setup(bot):
+def setup(bot: AniSearchBot):
+    """
+    Sets up the `Help` cog.
+    """
     bot.add_cog(Help(bot))
-    logger.info('Loaded cog Help')
+    log.info('Help cog loaded.')

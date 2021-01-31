@@ -17,172 +17,131 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import math
-import platform
-import sys
-from datetime import datetime
-from datetime import timedelta
-from time import time
+import logging
+
 import discord
-import psutil
 from discord.ext import commands
-from anisearch.bot import initial_extensions
-from anisearch.utils.logger import logger
+from discord.ext.commands import Context
+
+from anisearch.bot import AniSearchBot, initial_extensions
+from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR
+
+log = logging.getLogger(__name__)
 
 
 class Admin(commands.Cog, name='Admin'):
+    """
+    Admin cog.
+    """
 
-    def __init__(self, bot):
+    def __init__(self, bot: AniSearchBot):
+        """
+        Initializes the `Admin` cog.
+        """
         self.bot = bot
 
-    @commands.command(name='load', usage='load <cog>', brief='5s', ignore_extra=False)
+    @commands.command(name='status', usage='status', ignore_extra=False, hidden=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
-    async def cmd_load(self, ctx, extension):
-        """Loads a cog. // Owner only"""
-        try:
-            self.bot.load_extension(extension)
-            embed = discord.Embed(title='Loaded cog `{}`.'.format(extension),
-                                  color=0x4169E1)
-            await ctx.channel.send(embed=embed)
-            logger.info('Loaded cog {}'.format(extension))
-        except discord.ext.commands.errors.ExtensionAlreadyLoaded:
-            embed = discord.Embed(title='Cog `{}` is already loaded.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Cog {} is already loaded'.format(extension))
-        except discord.ext.commands.errors.ExtensionNotFound:
-            embed = discord.Embed(title='Cog `{}` could not be found.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Cog {} could not be found'.format(extension))
-        except Exception as exception:
-            embed = discord.Embed(title='An error occurred while loading the cog `{}`.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.exception(exception)
-
-    @commands.command(name='unload', usage='unload <cog>', brief='5s', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.is_owner()
-    async def cmd_unload(self, ctx, extension):
-        """Unloads a cog. // Owner only"""
-        try:
-            self.bot.unload_extension(extension)
-            embed = discord.Embed(title='Unloaded cog `{}`.'.format(extension),
-                                  color=0x4169E1)
-            await ctx.channel.send(embed=embed)
-            logger.info('Unloaded cog {}'.format(extension))
-        except discord.ext.commands.errors.ExtensionNotLoaded:
-            embed = discord.Embed(title='Cog `{}` has not been loaded.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Cog {} has not been loaded'.format(extension))
-        except discord.ext.commands.errors.ExtensionNotFound:
-            embed = discord.Embed(title='Cog `{}` could not be found.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Cog {} could not be found'.format(extension))
-        except Exception as exception:
-            embed = discord.Embed(title='An error occurred while loading the cog `{}`.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.exception(exception)
-
-    @commands.command(name='reload', usage='reload <cog>', brief='5s', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.is_owner()
-    async def cmd_reload(self, ctx, extension):
-        """Reloads a cog. // Owner only"""
-        try:
-            self.bot.reload_extension(extension)
-            embed = discord.Embed(title='Reloaded cog `{}`.'.format(extension),
-                                  color=0x4169E1)
-            await ctx.channel.send(embed=embed)
-            logger.info('Reloaded cog {}'.format(extension))
-        except discord.ext.commands.errors.ExtensionNotLoaded:
-            embed = discord.Embed(title='Cog `{}` has not been loaded.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Cog {} has not been loaded'.format(extension))
-        except discord.ext.commands.errors.ExtensionNotFound:
-            embed = discord.Embed(title='Cog `{}` could not be found.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.info('Cog {} could not be found'.format(extension))
-        except Exception as exception:
-            embed = discord.Embed(title='An error occurred while loading the cog `{}`.'.format(extension),
-                                  color=0xff0000)
-            await ctx.channel.send(embed=embed)
-            logger.exception(exception)
-
-    @commands.command(name='shutdown', usage='shutdown', brief='5s', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.is_owner()
-    async def cmd_shutdown(self, ctx):
-        """Shutdowns the bot. // Owner only"""
-        embed = discord.Embed(title='Bot is stopping...', color=0x4169E1)
-        await ctx.channel.send(embed=embed)
-        await self.bot.logout()
-        logger.info('Bot is logged out')
-        sys.exit(0)
-
-    @commands.command(name='status', usage='status', brief='5s', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.is_owner()
-    async def cmd_status(self, ctx):
-        """Displays the current status of the client. // Owner only"""
-        embed = discord.Embed(title='{} - Status'.format(self.bot.user.name),
-                              color=0x4169E1)
-        embed.add_field(name='Guilds', value=str(len(self.bot.guilds)), inline=True)
-        users = 0
-        for guild in self.bot.guilds:
-            users = users + guild.member_count
-        embed.add_field(name='Users', value=users, inline=True)
-        channels = 0
-        for guild in self.bot.guilds:
-            channels = channels + len(guild.channels)
-        embed.add_field(name='Channels', value=channels, inline=True)
-        proc = psutil.Process()
-        with proc.oneshot():
-            uptime = timedelta(seconds=round(time() - proc.create_time()))
-        try:
-            uptime = str(uptime)
-        except AttributeError:
-            uptime = '-'
-        embed.add_field(name="AniSearch's Uptime", value=uptime, inline=True)
+    async def status(self, ctx: Context):
+        """
+        Displays the current status of the bot. Can only be user by the bot owner.
+        """
+        embed = discord.Embed(title='AniSearch - Status', color=DEFAULT_EMBED_COLOR)
+        embed.add_field(name='Guilds', value=str(self.bot.get_guild_count()), inline=True)
+        embed.add_field(name='Users', value=str(self.bot.get_user_count()), inline=True)
+        embed.add_field(name='Channels', value=str(self.bot.get_channel_count()), inline=True)
+        embed.add_field(name="AniSearch's Uptime", value=str(self.bot.get_uptime()), inline=False)
         cogs = []
         for i in self.bot.cogs:
             cogs.append(i)
-        embed.add_field(name='{}/{} Cogs Loaded'.format(len(self.bot.cogs), len(initial_extensions)),
-                        value=', '.join(cogs), inline=False)
-        temperature = ''
-        try:
-            temp = psutil.sensors_temperatures(False)
-            if len(temp) > 0:
-                core_temp = temp['cpu_thermal']
-                temperature = core_temp[0][1]
-        except AttributeError:
-            temperature = '-'
-        system_started = datetime.fromtimestamp(psutil.boot_time()).strftime('%d-%m-%Y %H:%M:%S')
-        embed.add_field(name='System',
-                        value=f'**OS:** {platform.system()}\n'
-                              f'**Temperature:** {temperature}\n'
-                              f'**Started:** {system_started}',
+        embed.add_field(
+            name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(cogs), inline=False)
+        embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)
+        embed.add_field(name='Latency', value=f'{self.bot.latency:.10f}', inline=False)
+        embed.add_field(name='SauceNAO', value=f'{str(self.bot.saucenao.long_remaining)}',
                         inline=False)
-        embed.add_field(name='CPU',
-                        value=f'**Usage:** {psutil.cpu_percent(interval=None)} %\n'
-                              f'**Frequency:** {psutil.cpu_freq(percpu=False)[0]} MHz\n'
-                              f'**Cores:** {psutil.cpu_count()}\n',
-                        inline=True)
-        embed.add_field(name='Memory',
-                        value=f'**Usage:** {psutil.virtual_memory()[2]} %\n'
-                              f'**Used:** {math.ceil(psutil.virtual_memory()[3] // 1000000)} MB\n'
-                              f'**Total:** {math.ceil(psutil.virtual_memory()[0] // 1000000)} MB\n',
-                        inline=True)
-        embed.add_field(name='Disk',
-                        value=f'**Usage:** {psutil.disk_usage("/")[3]} %\n'
-                              f'**Used:** {math.ceil(psutil.disk_usage("/")[1] // 1000000)} MB\n'
-                              f'**Total:** {math.ceil(psutil.disk_usage("/")[0] // 1000000)} MB\n',
-                        inline=True)
         await ctx.channel.send(embed=embed)
+
+    @commands.command(name='load', usage='load <cog>', ignore_extra=False, hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.is_owner()
+    async def load(self, ctx: Context, extension: str):
+        """
+        Loads a cog. Can only be used by the bot owner.
+        """
+        try:
+            self.bot.load_extension(extension)
+            title = f'Loaded cog `{extension}`.'
+            color = DEFAULT_EMBED_COLOR
+        except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+            title = f'Cog `{extension}` is already loaded.'
+            color = ERROR_EMBED_COLOR
+        except discord.ext.commands.errors.ExtensionNotFound:
+            title = f'Cog `{extension}` could not be found.'
+            color = ERROR_EMBED_COLOR
+        except Exception as e:
+            log.info(e)
+            title = f'An error occurred while loading the cog `{extension}`.'
+            color = ERROR_EMBED_COLOR
+        embed = discord.Embed(title=title, color=color)
+        await ctx.channel.send(embed=embed)
+
+    @commands.command(name='unload', usage='unload <cog>', ignore_extra=False, hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.is_owner()
+    async def unload(self, ctx: Context, extension: str):
+        """
+        Unloads a cog. Can only be used by the bot owner.
+        """
+        try:
+            self.bot.unload_extension(extension)
+            title = f'Unloaded cog `{extension}`.'
+            color = DEFAULT_EMBED_COLOR
+        except discord.ext.commands.errors.ExtensionNotLoaded:
+            title = f'Cog `{extension}` has not been loaded.'
+            color = ERROR_EMBED_COLOR
+        except discord.ext.commands.errors.ExtensionNotFound:
+            title = f'Cog `{extension}` could not be found.'
+            color = ERROR_EMBED_COLOR
+        except Exception as e:
+            log.info(e)
+            title = f'An error occurred while unloading the cog `{extension}`.'
+            color = ERROR_EMBED_COLOR
+        embed = discord.Embed(title=title, color=color)
+        await ctx.channel.send(embed=embed)
+
+    @commands.command(name='reload', usage='reload <cog>', brief='5s', ignore_extra=False, hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.is_owner()
+    async def reload(self, ctx: Context, extension: str):
+        """
+        Reloads a cog. Can only be used by the bot owner.
+        """
+        try:
+            self.bot.reload_extension(extension)
+            title = f'Reloaded cog `{extension}`.'
+            color = DEFAULT_EMBED_COLOR
+        except discord.ext.commands.errors.ExtensionNotLoaded:
+            title = f'Cog `{extension}` has not been loaded.'
+            color = ERROR_EMBED_COLOR
+        except discord.ext.commands.errors.ExtensionNotFound:
+            title = f'Cog `{extension}` could not be found.'
+            color = ERROR_EMBED_COLOR
+        except Exception as e:
+            log.info(e)
+            title = f'An error occurred while reloading the cog `{extension}`.'
+            color = ERROR_EMBED_COLOR
+        embed = discord.Embed(title=title, color=color)
+        await ctx.channel.send(embed=embed)
+
+    @commands.command(name='shutdown', usage='shutdown', ignore_extra=False, hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.is_owner()
+    async def shutdown(self, ctx: Context):
+        """
+        Shutdowns the bot. Can only be used by the bot owner.
+        """
+        embed = discord.Embed(title='Stopping the bot.', color=DEFAULT_EMBED_COLOR)
+        await ctx.channel.send(embed=embed)
+        await self.bot.close()

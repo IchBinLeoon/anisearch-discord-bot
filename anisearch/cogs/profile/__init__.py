@@ -17,10 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+
+from anisearch.bot import AniSearchBot
 from anisearch.cogs.profile.profile import Profile
-from anisearch.utils.logger import logger
+
+log = logging.getLogger(__name__)
 
 
-def setup(bot):
+def setup(bot: AniSearchBot):
+    """
+    Sets up the `Profile` cog.
+    """
     bot.add_cog(Profile(bot))
-    logger.info('Loaded cog Profile')
+    log.info('Profile cog loaded.')

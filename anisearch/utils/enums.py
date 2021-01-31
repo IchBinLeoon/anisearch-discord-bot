@@ -17,10 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from anisearch.cogs.anilist.anilist import AniList
-from anisearch.utils.logger import logger
+from enum import Enum
 
 
-def setup(bot):
-    bot.add_cog(AniList(bot))
-    logger.info('Loaded cog AniList')
+class AniListSearchType(Enum):
+    """AniListSearchType Enum."""
+    ANIME = 'ANIME'
+    MANGA = 'MANGA'
+    CHARACTER = 'CHARACTER'
+    STAFF = 'STAFF'
+    STUDIO = 'STUDIO'
+
+
+class AniListMediaType(Enum):
+    """AniListMediaType Enum."""
+    ANIME = 'ANIME'
+    MANGA = 'MANGA'

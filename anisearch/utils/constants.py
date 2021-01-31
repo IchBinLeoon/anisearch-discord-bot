@@ -17,10 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from anisearch.cogs.myanimelist.myanimelist import MyAnimeList
-from anisearch.utils.logger import logger
+DEFAULT_PREFIX = 'as!'
 
+ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
+ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
+TRACEMOE_BASE_URL = 'https://trace.moe/api'
+SAUCENAO_BASE_URL = 'https://saucenao.com/search.php'
+JIKAN_BASE_URL = 'https://api.jikan.moe/v3'
+KITSU_BASE_URL = 'https://kitsu.io/api/edge'
 
-def setup(bot):
-    bot.add_cog(MyAnimeList(bot))
-    logger.info('Loaded cog MyAnimeList')
+DEFAULT_EMBED_COLOR = 0x4169E1
+ERROR_EMBED_COLOR = 0xff0000
+
+CREATOR_ID = 223871059068321793
+BOT_ID = 737236600878137363
+DISCORD_INVITE = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
+TOPGG_VOTE = 'https://top.gg/bot/737236600878137363/vote'

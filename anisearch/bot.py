@@ -17,136 +17,288 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+import time
+from asyncio import sleep
+from datetime import timedelta
+
+import dbl
 import discord
-from anisearch.utils.database.prefix import get_command_prefix
-from anisearch.utils.database.prefix import insert_prefix
-from anisearch.utils.database.prefix import delete_prefix
-from discord.ext import commands
-from discord.ext.commands import Bot as BotBase
-from anisearch import config
-from anisearch.utils.logger import logger
+from aiohttp import ClientSession
+from discord.ext import commands, tasks, menus
+from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
+
+from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO
+from anisearch.utils.anilist import AniListClient
+from anisearch.utils.animethemes import AnimeThemesClient
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
+from anisearch.utils.database import DataBase
+from anisearch.utils.jikan import JikanClient
+from anisearch.utils.kitsu import KitsuClient
+from anisearch.utils.saucenao import SauceNAOClient
+from anisearch.utils.tracemoe import TraceMoeClient
+
+log = logging.getLogger(__name__)
 
 initial_extensions = [
-    'anisearch.cogs.help',
-    'anisearch.cogs.admin',
-    'anisearch.cogs.events',
-    'anisearch.cogs.settings',
-    'anisearch.cogs.anime',
-    'anisearch.cogs.manga',
-    'anisearch.cogs.character',
-    'anisearch.cogs.staff',
-    'anisearch.cogs.studio',
-    'anisearch.cogs.random',
-    'anisearch.cogs.anilist',
-    'anisearch.cogs.myanimelist',
-    'anisearch.cogs.kitsu',
+    'anisearch.cogs.search',
     'anisearch.cogs.profile',
     'anisearch.cogs.image',
-    'anisearch.cogs.theme'
+    'anisearch.cogs.help',
+    'anisearch.cogs.settings',
+    'anisearch.cogs.admin'
 ]
 
 
-class AniSearchBot(BotBase):
+class AniSearchBot(AutoShardedBot):
+    """
+    A subclass of `discord.ext.commands.AutoShardedBot`.
+    """
 
-    def __init__(self):
-        intents = discord.Intents(messages=True, guilds=True, reactions=True)
-        super().__init__(command_prefix=get_command_prefix, intents=intents, owner_id=int(config.OWNER_ID))
+    def __init__(self) -> None:
+        """
+        Initializes the AniSearchBot.
+        """
+        intents = discord.Intents(
+            messages=True,
+            guilds=True,
+            reactions=True
+        )
+        super().__init__(command_prefix=self.get_prefix, intents=intents, owner_id=int(OWNER_ID))
+
+        self.start_time = time.time()
+        self.session = ClientSession(loop=self.loop)
+
+        self.db = DataBase()
+
+        self.anilist = AniListClient(session=ClientSession(loop=self.loop))
+
+        self.animethemes = AnimeThemesClient(session=ClientSession(loop=self.loop),
+                                             headers={'User-Agent': 'AniSearch Discord Bot'})
+
+        self.tracemoe = TraceMoeClient(session=ClientSession(loop=self.loop))
+
+        self.saucenao = SauceNAOClient(api_key=SAUCENAO, db=999, output_type=2, numres=10,
+                                       session=ClientSession(loop=self.loop))
+
+        self.myanimelist = JikanClient(session=ClientSession(loop=self.loop))
+
+        self.kitsu = KitsuClient(session=ClientSession(loop=self.loop))
+
+        # Posts the guild count to top.gg every 30 minutes.
+        self.topgg_token = TOPGG_TOKEN
+        self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
+
         self.load_cogs()
+        self.set_status.start()
 
-    def load_cogs(self):
+    def load_cogs(self) -> None:
+        """
+        Loads all cogs.
+        """
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
             except discord.ext.commands.errors.ExtensionAlreadyLoaded:
                 pass
-            except Exception as exception:
-                logger.exception(exception)
-        logger.info('Cogs loaded {}/{}'.format(len(self.cogs), len(initial_extensions)))
+            except Exception as e:
+                log.exception(e)
+        log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded.')
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        logger.info('Logged in as {}'.format(self.user))
-        logger.info('Bot-Name: {}'.format(self.user.name))
-        logger.info('Bot-Discriminator: {}'.format(self.user.discriminator))
-        logger.info('Bot-ID: {}'.format(self.user.id))
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='as!help'),
+    def unload_cogs(self) -> None:
+        """
+        Unloads all cogs.
+        """
+        for extension in initial_extensions:
+            try:
+                self.unload_extension(extension)
+            except discord.ext.commands.errors.ExtensionNotLoaded:
+                pass
+            except Exception as e:
+                log.exception(e)
+        log.info(f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded.')
+
+    async def on_ready(self) -> None:
+        log.info(f'Logged in as {self.user}')
+        log.info(f'Bot-Name: {self.user.name}')
+        log.info(f'Bot-Discriminator: {self.user.discriminator}')
+        log.info(f'Bot-ID: {self.user.id}')
+        log.info(f'Shards: {self.shard_count}')
+        log.info('Bot is ready.')
+
+    async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
+        """
+        Gets the command prefix of the bot for the current guild.
+
+        Args:
+            message (discord.Message): A Discord message.
+
+        Returns:
+            when_mentioned_or()
+        """
+        if isinstance(message.channel, discord.channel.DMChannel):
+            return when_mentioned_or(DEFAULT_PREFIX)(self, message)
+        prefix = self.db.get_prefix(message)
+        return when_mentioned_or(prefix, DEFAULT_PREFIX)(self, message)
+
+    @tasks.loop(seconds=30)
+    async def set_status(self) -> None:
+        """
+        Sets the discord status of the bot.
+        """
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
+                                   name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
+        await sleep(20)
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
                                    status=discord.Status.online)
-        logger.info('Bot is online')
 
-    @commands.Cog.listener()
-    async def on_connect(self):
-        logger.info('Connected to Discord')
+    @set_status.before_loop
+    async def set_status_before(self) -> None:
+        """
+        Waits for the bot to be ready before starting the `set_status` task.
+        """
+        await self.wait_until_ready()
 
-    @commands.Cog.listener()
-    async def on_disconnect(self):
-        logger.info('Disconnected from Discord')
+    async def on_connect(self) -> None:
+        log.info('Connected to Discord.')
 
-    @commands.Cog.listener()
-    async def on_command(self, ctx):
+    async def on_disconnect(self) -> None:
+        log.info('Disconnected from Discord.')
+
+    async def on_command(self, ctx: Context) -> None:
         if isinstance(ctx.channel, discord.channel.DMChannel):
-            logger.info('Private Message | Author: {} | Content: {}'.format(ctx.author, ctx.message.content))
+            log.info(
+                f'Private Message - Author: {ctx.author} - Content: {ctx.message.content}')
         else:
-            logger.info('Server: {} | Author: {} | Content: {}'.format(ctx.guild.name, ctx.author, ctx.message.content))
-            missing_perms = []
-            if not ctx.me.guild_permissions.send_messages:
-                missing_perms.append('Send Messages')
-            if not ctx.me.guild_permissions.manage_messages:
-                missing_perms.append('Manage Messages')
-            if not ctx.me.guild_permissions.embed_links:
-                missing_perms.append('Embed Links')
-            if not ctx.me.guild_permissions.attach_files:
-                missing_perms.append('Attach Files')
-            if not ctx.me.guild_permissions.read_message_history:
-                missing_perms.append('Read Message History')
-            if not ctx.me.guild_permissions.add_reactions:
-                missing_perms.append('Add Reactions')
-            if len(missing_perms) > 0:
-                embed = discord.Embed(title='Warning',
-                                      description='**Missing bot permissions to function properly:** `{}`'
-                                      .format(', '.join(missing_perms)),
-                                      color=0xff0000)
-                await ctx.channel.send(embed=embed)
-                logger.info('Missing Permissions Warning')
+            log.info(
+                f'Server: {ctx.guild.name} - Author: {ctx.author} - Content: {ctx.message.content}')
 
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild):
-        logger.info('Joined server {}'.format(guild.name))
-        insert_prefix(guild)
+    async def on_guild_join(self, guild: discord.Guild) -> None:
+        log.info(f'Joined server {guild.name}.')
+        self.db.insert_prefix(guild)
 
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        logger.info('Left server {}'.format(guild.name))
-        delete_prefix(guild)
+    async def on_guild_remove(self, guild: discord.Guild) -> None:
+        log.info(f'Left server {guild.name}.')
+        self.db.delete_prefix(guild)
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        title = 'An error occurred.'
-        if isinstance(error, commands.CommandNotFound):
+    def get_guild_count(self) -> int:
+        """
+        Returns the bot guild count.
+        """
+        guilds = len(self.guilds)
+        return guilds
+
+    def get_user_count(self) -> int:
+        """
+        Returns the bot user count.
+        """
+        users = 0
+        for guild in self.guilds:
+            users += guild.member_count
+        return users
+
+    def get_channel_count(self) -> int:
+        """
+        Returns the bot channel count.
+        """
+        channels = 0
+        for guild in self.guilds:
+            channels += len(guild.channels)
+        return channels
+
+    def get_uptime(self) -> timedelta:
+        """
+        Returns the bot uptime.
+        """
+        uptime = timedelta(seconds=round(time.time() - self.start_time))
+        return uptime
+
+    def run(self):
+        """
+        Runs the bot.
+        """
+        super().run(TOKEN)
+
+    async def close(self):
+        """
+        Closes the discord connection, the database pool connections and the aiohttp sessions.
+        """
+        self.unload_cogs()
+        self.db.close()
+        await self.anilist.close()
+        await self.animethemes.close()
+        await self.tracemoe.close()
+        await self.saucenao.close()
+        await self.myanimelist.close()
+        await self.kitsu.close()
+        if self.session is not None:
+            await self.session.close()
+        await super().close()
+
+    async def on_guild_post(self):
+        log.info(f'TopGG server count posted ({self.dblpy.guild_count()}).')
+
+    async def on_command_error(self, ctx: Context, error: Exception) -> None:
+
+        if hasattr(ctx.command, 'on_error'):
+            return
+
+        error = getattr(error, 'original', error)
+
+        title = 'An unknown error occurred.'
+
+        if isinstance(error, discord.errors.Forbidden):
+            log.warning(error)
+            return await ctx.message.add_reaction(emoji='🔇')
+
+        elif isinstance(error, commands.CommandNotFound):
             title = 'Command not found.'
+
         elif isinstance(error, commands.CommandOnCooldown):
-            title = 'Command on cooldown for `{:.2f}s`.'.format(error.retry_after)
+            title = f'Command on cooldown for `{error.retry_after:.2f}s`.'
+
         elif isinstance(error, commands.TooManyArguments):
             title = 'Too many arguments.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.MissingRequiredArgument):
             title = 'Missing required argument.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.BadArgument):
             title = 'Wrong arguments.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.MissingPermissions):
             title = 'Missing permissions.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.BotMissingPermissions):
             title = 'Bot missing permissions.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.NoPrivateMessage):
             title = 'Command cannot be used in private messages.'
             ctx.command.reset_cooldown(ctx)
+
         elif isinstance(error, commands.NotOwner):
             title = 'You are not the owner of the bot.'
             ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, menus.CannotAddReactions):
+            title = 'Cannot add reactions.'
+            ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, menus.CannotEmbedLinks):
+            title = 'Cannot embed links.'
+            ctx.command.reset_cooldown(ctx)
+
+        elif isinstance(error, menus.CannotReadMessageHistory):
+            title = 'Cannot read message history.'
+            ctx.command.reset_cooldown(ctx)
+
         else:
-            logger.exception(error)
-        embed = discord.Embed(title=title, color=0xff0000)
+            log.exception('An unknown exception occurred while executing a command.', exc_info=error)
+
+        embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         await ctx.channel.send(embed=embed)

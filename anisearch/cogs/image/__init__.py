@@ -17,10 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+
+from anisearch.bot import AniSearchBot
 from anisearch.cogs.image.image import Image
-from anisearch.utils.logger import logger
+
+log = logging.getLogger(__name__)
 
 
-def setup(bot):
+def setup(bot: AniSearchBot):
+    """
+    Sets up the `Image` cog.
+    """
     bot.add_cog(Image(bot))
-    logger.info('Loaded cog Image')
+    log.info('Image cog loaded.')

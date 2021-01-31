@@ -19,19 +19,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
-logger = logging.getLogger('anisearch')
-logger.setLevel(logging.INFO)
+from anisearch.bot import AniSearchBot
+from anisearch.cogs.search.search import Search
 
-formatter = logging.Formatter('%(name)s - %(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
+log = logging.getLogger(__name__)
 
-file_handler = logging.FileHandler('./anisearch.log')
-file_handler.setFormatter(formatter)
 
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-if logger.hasHandlers():
-    logger.handlers.clear()
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+def setup(bot: AniSearchBot):
+    """
+    Sets up the `Search` cog.
+    """
+    bot.add_cog(Search(bot))
+    log.info('Search cog loaded.')

@@ -17,105 +17,69 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import argparse
 import asyncio
+import logging
 import platform
 import re
-import sys
 
 import aiohttp
 import discord
-import psycopg2
 
 import anisearch
-from anisearch import config
 from anisearch.bot import AniSearchBot
-from anisearch.utils.logger import logger
 
 
-def main():
-    logger.info('Starting AniSearch Discord Bot')
-    logger.info('Name: {}'.format(anisearch.__name__))
-    logger.info('Author: {}'.format(anisearch.__author__))
-    logger.info('Description: {}'.format(anisearch.__description__))
-    logger.info('Url: {}'.format(anisearch.__url__))
-    logger.info('License: {}'.format(anisearch.__license__))
-    logger.info('Version: {}'.format(anisearch.__version__))
-    logger.info('Discord.py-Version: {}'.format(discord.__version__))
-    logger.info('Python-Version: {}'.format(platform.python_version()))
-    try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(version_check())
-        database_check()
-        start_bot()
-    except Exception as exception:
-        logger.exception(exception)
-        sys.exit()
+def main() -> None:
+    """
+    Main function.
+    """
+    setup_logging()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(check_update())
+    logging.info('Starting AniSearch Discord Bot.')
+    logging.info(f'Discord.py version: {discord.__version__}')
+    logging.info(f'Python version: {platform.python_version()}')
+    start()
 
 
-async def version_check():
-    logger.info('Checking for a newer version')
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get('https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main'
-                                   '/anisearch/__init__.py') as response:
-                github_version = str(re.findall("__version__ = '(.*)'", await response.text())[0])
+def setup_logging() -> None:
+    """
+    Sets up the logging.
+    """
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
+                        format='%(levelname)s:%(asctime)s:%(name)s:%(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+
+
+async def check_update() -> None:
+    """
+    Checks GitHub for a newer version of the bot.
+    """
+    async with aiohttp.ClientSession() as s:
+        async with s.get('https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main/anisearch/__init__'
+                         '.py') as r:
+            if r.status == 200:
+                github_version = str(re.findall("__version__ = '(.*)'", await r.text())[0])
                 if github_version != anisearch.__version__:
-                    logger.info('Update available! You are running version {}. Version {}'
-                                ' is available at https://github.com/IchBinLeoon/anisearch-discord-bot.'
-                                .format(anisearch.__version__, github_version))
-                else:
-                    logger.info('The bot is up to date')
-    except Exception as exception:
-        logger.error('An error occurred while checking for a newer version: {}'.format(exception))
+                    logging.info(
+                        f'Update available! You are running version {anisearch.__version__}. Version {github_version} '
+                        f'is available at https://github.com/IchBinLeoon/anisearch-discord-bot.')
 
 
-def database_check():
-    logger.info('Checking Database')
-    try:
-        db = psycopg2.connect(host=config.DB_HOST, dbname=config.DB_NAME, user=config.DB_USER,
-                              password=config.BD_PASSWORD)
-        logger.info('Database connection is working properly')
-    except Exception as exception:
-        logger.exception(exception)
-        logger.info('Cannot connect to Database')
-        sys.exit()
-    logger.info('Checking Tables')
-    cur = db.cursor()
-    cur.execute('SELECT EXISTS(SELECT * FROM information_schema.tables WHERE TABLE_NAME = %s)', ('guilds',))
-    guilds_table = cur.fetchone()[0]
-    if guilds_table:
-        logger.info('Guilds Table exist')
-    else:
-        logger.info("Guilds Table doesn't exist")
-        logger.info('Creating Guilds Table')
-        cur.execute('CREATE TABLE guilds (id bigint, prefix VARCHAR (255))')
-        logger.info('Guilds Table created')
-    cur.execute('SELECT EXISTS(SELECT * FROM information_schema.tables WHERE TABLE_NAME = %s)', ('users',))
-    users_table = cur.fetchone()[0]
-    if users_table:
-        logger.info('Users Table exist')
-    else:
-        logger.info("Users Table doesn't exist")
-        logger.info('Creating Users Table')
-        cur.execute('CREATE TABLE users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu '
-                    'VARCHAR (255))')
-        logger.info('Users Table created')
-    db.commit()
-    cur.close()
-    db.close()
-    logger.info('Database Check completed')
-
-
-def start_bot():
-    logger.info('Running Bot')
+def start() -> None:
+    """
+    Starts the bot.
+    """
     try:
         bot = AniSearchBot()
-        bot.run(config.TOKEN)
-    except Exception as exception:
-        logger.exception(exception)
-        sys.exit()
+        bot.run()
+    except Exception as e:
+        logging.exception(e)
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='AniSearch Discord Bot')
+    parser.add_argument('--version', action='version', version=anisearch.__version__, help='Display version.')
+    parser.add_argument('-d', '--debug', action='store_true', help='Start the bot in debugging mode.')
+    args = parser.parse_args()
     main()

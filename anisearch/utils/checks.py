@@ -17,10 +17,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from anisearch.cogs.manga.manga import Manga
-from anisearch.utils.logger import logger
+import logging
+from typing import Dict, Any
+
+log = logging.getLogger(__name__)
 
 
-def setup(bot):
-    bot.add_cog(Manga(bot))
-    logger.info('Loaded cog Manga')
+def is_adult(data: Dict[str, Any]) -> bool:
+    """
+    Checks if the media is intended only for 18+ adult audiences.
+    """
+    if data.get('isAdult') is True:
+        return True
+    if data.get('is_adult') is True:
+        return True
+    return False
