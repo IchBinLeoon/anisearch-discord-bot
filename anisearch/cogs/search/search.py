@@ -626,16 +626,27 @@ class Search(commands.Cog, name='Search'):
 
                         for theme in entry.get('themes'):
                             if count >= 15:
+                                embed.add_field(
+                                    name=theme.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '),
+                                    value='...', inline=False)
                                 break
-                            theme_string = '**Title:** {}{}\n[Link](http://animethemes.moe/video/{})' \
-                                .format(theme.get('song')['title'],
-                                        ('\n**Artist:** ' + theme.get('song')['artists'][0]['name']) if
-                                        theme.get('song')['artists'] else
-                                        None, theme.get('entries')[0]['videos'][0]['basename'] if
-                                        theme.get('entries')[0]['videos'][0]['basename'] else 'N/A')
+
+                            theme_string = []
+
+                            title = '**Title:** ' + theme.get('song')['title']
+                            theme_string.append(title)
+
+                            if theme.get('song')['artists']:
+                                artist = '**Artist:** ' + theme.get('song')['artists'][0]['name']
+                                theme_string.append(artist)
+
+                            link = '[Link](http://animethemes.moe/video/{})'.format(
+                                theme.get('entries')[0]['videos'][0]['basename'])
+                            theme_string.append(link)
+
                             embed.add_field(
                                 name=theme.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '),
-                                value=theme_string, inline=False)
+                                value='\n'.join(theme_string), inline=False)
                             count += 1
 
                         embed.set_footer(
