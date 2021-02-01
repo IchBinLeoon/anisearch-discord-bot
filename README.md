@@ -46,7 +46,7 @@
 
 
 # 🔍 AniSearch
-**AniSearch** is an easy-to-use Discord bot written in Python that allows you to search for anime, manga, characters, staff, studios and much more directly in Discord and displays the results as interactive, reaction-based embeds! 
+**AniSearch** is an easy-to-use Discord bot written in Python that allows you to search for anime, manga, characters, staff, studios and much more directly in Discord and displays the results as paginated embeds! 
 
 You can also:
 - Search for a random anime or manga of a specific genre.
@@ -138,7 +138,7 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 ### Settings
 Can only be used by a server administrator.
 
-- `setprefix <prefix>:` Changes the current server prefix.  
+- `setprefix <prefix>:` Changes the current server prefix. Max 5 characters.  
 
 ### Admin
 Can only be used by the bot owner.  

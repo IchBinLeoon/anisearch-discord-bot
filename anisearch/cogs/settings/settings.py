@@ -46,7 +46,7 @@ class Settings(commands.Cog, name='Settings'):
     @commands.guild_only()
     async def setprefix(self, ctx: Context, prefix: str):
         """
-        Changes the current server prefix. Can only be used by a server administrator.
+        Changes the current server prefix. Max 5 characters. Can only be used by a server administrator.
         """
         if len(prefix) > 5:
             embed = discord.Embed(

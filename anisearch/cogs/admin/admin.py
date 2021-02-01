@@ -59,8 +59,9 @@ class Admin(commands.Cog, name='Admin'):
             name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(cogs), inline=False)
         embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)
         embed.add_field(name='Latency', value=f'{self.bot.latency:.10f}', inline=False)
-        embed.add_field(name='SauceNAO', value=f'{str(self.bot.saucenao.long_remaining)}',
-                        inline=False)
+        embed.add_field(
+            name='SauceNAO Requests', inline=False,
+            value=f'{str(self.bot.saucenao.long_remaining) if self.bot.saucenao.long_remaining else "N/A"} remaining')
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='load', usage='load <cog>', ignore_extra=False, hidden=True)
