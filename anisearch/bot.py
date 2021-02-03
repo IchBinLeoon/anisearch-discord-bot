@@ -44,6 +44,7 @@ initial_extensions = [
     'anisearch.cogs.search',
     'anisearch.cogs.profile',
     'anisearch.cogs.image',
+    'anisearch.cogs.schedule',
     'anisearch.cogs.help',
     'anisearch.cogs.settings',
     'anisearch.cogs.admin'

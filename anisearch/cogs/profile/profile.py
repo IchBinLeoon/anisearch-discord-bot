@@ -77,7 +77,7 @@ class Profile(commands.Cog, name='Profile'):
             if site == 'anilist':
                 self.bot.db.insert_profile('anilist', data.get('name'), ctx.author.id)
 
-                embed = discord.Embed(title=f'Set AniList profile {data.get("name")}.', color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=f'Set AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
 
                 if data.get('avatar')['large']:
                     embed.set_thumbnail(url=data.get('avatar')['large'])
@@ -86,21 +86,21 @@ class Profile(commands.Cog, name='Profile'):
                     name='Anime Stats', inline=True,
                     value=f'Anime Count: {data.get("statistics")["anime"]["count"]}\n'
                           f'Mean Score: {data.get("statistics")["anime"]["meanScore"]}\n'
-                          f'Days Watched: {round(data.get("statistics")["anime"]["minutesWatched"] / 60 / 24, 2)}\n'
-                          f'Episodes: {data.get("statistics")["anime"]["episodesWatched"]}')
+                          f'Days Watched: {round(data.get("statistics")["anime"]["minutesWatched"] / 60 / 24, 2)}')
                 embed.add_field(
                     name='Manga Stats', inline=True,
                     value=f'Manga Count: {data.get("statistics")["manga"]["count"]}\n'
                           f'Mean Score: {data.get("statistics")["manga"]["meanScore"]}\n'
-                          f'Chapters Read: {data.get("statistics")["manga"]["chaptersRead"]}\n'
-                          f'Volumes Read: {data.get("statistics")["manga"]["volumesRead"]}')
+                          f'Chapters Read: {data.get("statistics")["manga"]["chaptersRead"]}')
+
+                embed.set_footer(text=f'Provided by https://anilist.co/')
 
                 await ctx.channel.send(embed=embed)
 
             if site == 'myanimelist':
                 self.bot.db.insert_profile('myanimelist', data.get('username'), ctx.author.id)
 
-                embed = discord.Embed(title=f'Set MyAnimeList profile {data.get("username")}.',
+                embed = discord.Embed(title=f'Set MyAnimeList Profile `{data.get("username")}`',
                                       color=DEFAULT_EMBED_COLOR)
 
                 if data.get('image_url'):
@@ -110,27 +110,14 @@ class Profile(commands.Cog, name='Profile'):
                     name='Anime Stats', inline=True,
                     value=f'Days Watched: {data.get("anime_stats")["days_watched"]}\n'
                           f'Mean Score: {data.get("anime_stats")["mean_score"]}\n'
-                          f'Watching: {data.get("anime_stats")["watching"]}\n'
-                          f'Completed: {data.get("anime_stats")["completed"]}\n'
-                          f'On-Hold: {data.get("anime_stats")["on_hold"]}\n'
-                          f'Dropped: {data.get("anime_stats")["dropped"]}\n'
-                          f'Plan to Watch: {data.get("anime_stats")["plan_to_watch"]}\n'
-                          f'Total Entries: {data.get("anime_stats")["total_entries"]}\n'
-                          f'Rewatched: {data.get("anime_stats")["rewatched"]}\n'
-                          f'Episodes: {data.get("anime_stats")["episodes_watched"]}')
+                          f'Total Entries: {data.get("anime_stats")["total_entries"]}')
                 embed.add_field(
                     name='Manga Stats', inline=True,
                     value=f'Days Read: {data.get("manga_stats")["days_read"]}\n'
                           f'Mean Score: {data.get("manga_stats")["mean_score"]}\n'
-                          f'Reading: {data.get("manga_stats")["reading"]}\n'
-                          f'Completed: {data.get("manga_stats")["completed"]}\n'
-                          f'On-Hold: {data.get("manga_stats")["on_hold"]}\n'
-                          f'Dropped: {data.get("manga_stats")["dropped"]}\n'
-                          f'Plan to Read: {data.get("manga_stats")["plan_to_read"]}\n'
-                          f'Reread: {data.get("manga_stats")["reread"]}\n'
-                          f'Total Entries: {data.get("manga_stats")["total_entries"]}\n'
-                          f'Chapters Read: {data.get("manga_stats")["chapters_read"]}\n'
-                          f'Volumes Read: {data.get("manga_stats")["volumes_read"]}')
+                          f'Total Entries: {data.get("manga_stats")["total_entries"]}')
+
+                embed.set_footer(text=f'Provided by https://myanimelist.net/')
 
                 await ctx.channel.send(embed=embed)
 
@@ -139,13 +126,12 @@ class Profile(commands.Cog, name='Profile'):
 
                 self.bot.db.insert_profile('kitsu', user.get('attributes')['name'], ctx.author.id)
 
-                embed = discord.Embed(title=f'Set Kitsu profile {user.get("attributes")["name"]}.',
+                embed = discord.Embed(title=f'Set Kitsu Profile `{user.get("attributes")["name"]}`',
                                       color=DEFAULT_EMBED_COLOR)
 
                 if user.get('attributes')['avatar']:
                     embed.set_thumbnail(url=user.get('attributes')['avatar']['original'])
 
-                anime_days_watched = 'N/A'
                 anime_completed = 'N/A'
                 anime_episodes_watched = 'N/A'
                 anime_total_entries = 'N/A'
@@ -162,12 +148,9 @@ class Profile(commands.Cog, name='Profile'):
                                 if x['attributes']['statsData']:
                                     try:
                                         anime_stats = x['attributes']['statsData']
-                                        anime_days_watched = \
-                                            str(datetime.timedelta(seconds=anime_stats['time'])).split(',')
-                                        anime_days_watched = anime_days_watched[0]
                                         anime_completed = anime_stats['completed']
-                                        anime_episodes_watched = anime_stats['units']
                                         anime_total_entries = anime_stats['media']
+                                        anime_episodes_watched = anime_stats['units']
                                         stats += 1
                                     except Exception as e:
                                         log.exception(e)
@@ -175,9 +158,9 @@ class Profile(commands.Cog, name='Profile'):
                                 if x['attributes']['statsData']:
                                     try:
                                         manga_stats = x['attributes']['statsData']
-                                        manga_total_entries = manga_stats['media']
                                         manga_chapters = manga_stats['units']
                                         manga_completed = manga_stats['completed']
+                                        manga_total_entries = manga_stats['media']
                                         stats += 1
                                     except Exception as e:
                                         log.exception(e)
@@ -185,15 +168,16 @@ class Profile(commands.Cog, name='Profile'):
                         pass
                     except Exception as e:
                         log.exception(e)
-                embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+                embed.add_field(name='Anime Stats', value=f'Episodes: {anime_episodes_watched}\n'
                                                           f'Completed: {anime_completed}\n'
-                                                          f'Episodes: {anime_episodes_watched}\n'
                                                           f'Total Entries: {anime_total_entries}\n',
                                 inline=True)
-                embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
-                                                          f'Chapters Read: {manga_chapters}\n'
+                embed.add_field(name='Manga Stats', value=f'Chapters: {manga_chapters}\n'
+                                                          f'Completed: {manga_completed}\n'
                                                           f'Total Entries: {manga_total_entries}\n',
                                 inline=True)
+
+                embed.set_footer(text=f'Provided by https://kitsu.io/')
 
                 await ctx.channel.send(embed=embed)
 
@@ -641,8 +625,8 @@ class Profile(commands.Cog, name='Profile'):
                                             str(datetime.timedelta(seconds=anime_stats['time'])).split(',')
                                         anime_days_watched = anime_days_watched[0]
                                         anime_completed = anime_stats['completed']
-                                        anime_episodes_watched = anime_stats['units']
                                         anime_total_entries = anime_stats['media']
+                                        anime_episodes_watched = anime_stats['units']
                                         stats += 1
                                     except Exception as e:
                                         log.exception(e)
@@ -650,9 +634,9 @@ class Profile(commands.Cog, name='Profile'):
                                 if x['attributes']['statsData']:
                                     try:
                                         manga_stats = x['attributes']['statsData']
-                                        manga_total_entries = manga_stats['media']
                                         manga_chapters = manga_stats['units']
                                         manga_completed = manga_stats['completed']
+                                        manga_total_entries = manga_stats['media']
                                         stats += 1
                                     except Exception as e:
                                         log.exception(e)
@@ -660,14 +644,15 @@ class Profile(commands.Cog, name='Profile'):
                         pass
                     except Exception as e:
                         log.exception(e)
-                embed.add_field(name='Anime Stats', value=f'Days Watched: {anime_days_watched}\n'
+
+                embed.add_field(name='Anime Stats', value=f'Episodes: {anime_episodes_watched}\n'
                                                           f'Completed: {anime_completed}\n'
-                                                          f'Episodes: {anime_episodes_watched}\n'
-                                                          f'Total Entries: {anime_total_entries}\n',
+                                                          f'Total Entries: {anime_total_entries}\n'
+                                                          f'Days Watched: {anime_days_watched}',
                                 inline=True)
-                embed.add_field(name='Manga Stats', value=f'Completed: {manga_completed}\n'
-                                                          f'Chapters Read: {manga_chapters}\n'
-                                                          f'Total Entries: {manga_total_entries}\n',
+                embed.add_field(name='Manga Stats', value=f'Chapters: {manga_chapters}\n'
+                                                          f'Completed: {manga_completed}\n'
+                                                          f'Total Entries: {manga_total_entries}',
                                 inline=True)
 
                 embed.set_footer(text=f'Provided by https://kitsu.io/ • Page 1/1')

@@ -122,7 +122,7 @@ class AniListClient:
 
     async def media(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
-        Gets a list of media entries based on the given search variable.
+        Gets a list of media entries based on the given search variables.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
@@ -138,7 +138,7 @@ class AniListClient:
 
     async def character(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
-        Gets a list of characters based on the given search variable.
+        Gets a list of characters based on the given search variables.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
@@ -154,7 +154,7 @@ class AniListClient:
 
     async def staff(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
-        Gets a list of staff entries based on the given search variable.
+        Gets a list of staff entries based on the given search variables.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
@@ -170,7 +170,7 @@ class AniListClient:
 
     async def studio(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
         """
-        Gets a list of studios based on the given search variable.
+        Gets a list of studios based on the given search variables.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
@@ -218,7 +218,7 @@ class AniListClient:
 
     async def user(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
         """
-        Gets a user based on the given search variable.
+        Gets a user based on the given search variables.
 
         Args:
             variables (union): Variables and values that will be used in the query request.
@@ -230,6 +230,22 @@ class AniListClient:
         data = await self._request(query=Query.user(), **variables)
         if data.get('data')['Page']['users']:
             return data.get('data')['Page']['users'][0]
+        return None
+
+    async def schedule(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """
+        Gets a airing schedule based on the given search variables.
+
+        Args:
+            variables (union): Variables and values that will be used in the query request.
+
+        Returns:
+            dict: Dictionary with the data about the requested airing schedule.
+            None: If no airing schedule was found.
+        """
+        data = await self._request(query=Query.schedule(), **variables)
+        if data.get('data')['Page']['airingSchedules']:
+            return data.get('data')['Page']['airingSchedules']
         return None
 
 
@@ -679,3 +695,47 @@ class Query:
         }
         '''
         return USER_QUERY
+
+    @classmethod
+    def schedule(cls) -> str:
+        """
+        Gets the airing schedule query.
+
+        Returns:
+            str: Query used for a airing schedule request.
+        """
+        SCHEDULE_QUERY: str = '''
+        query ($page: Int, $perPage: Int, $notYetAired: Boolean, $sort: [AiringSort]) {
+          Page(page: $page, perPage: $perPage) {
+            airingSchedules(notYetAired: $notYetAired, sort: $sort) {
+              timeUntilAiring
+              airingAt
+              episode
+              media {
+                id
+                idMal
+                siteUrl
+                title {
+                  romaji
+                  english
+                }
+                coverImage {
+                  large
+                }
+                externalLinks {
+                  site
+                  url
+                }
+                duration
+                format
+                isAdult
+                trailer {
+                  id
+                  site
+                }
+              }
+            }
+          }
+        }
+        '''
+        return SCHEDULE_QUERY
