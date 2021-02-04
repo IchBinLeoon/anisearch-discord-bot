@@ -217,7 +217,6 @@ class Profile(commands.Cog, name='Profile'):
             None: If no profile was found.
         """
         embeds = []
-        data = None
 
         try:
             data = await self.bot.anilist.user(name=username, page=1, perPage=1)
@@ -294,9 +293,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_anime = []
                     for anime in data.get('favourites')['anime']['nodes']:
                         fav_anime.append(f"[{anime.get('title')['romaji']}]({anime.get('siteUrl')})")
-                    if len(fav_anime) > 10:
-                        fav_anime = fav_anime[0:10]
-                        fav_anime[9] = fav_anime[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_anime):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_anime = fav_anime[0:i]
+                            fav_anime[i-1] = fav_anime[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Anime', value=' | '.join(fav_anime), inline=False)
                 else:
                     embed.add_field(name='Favorite Anime', value='N/A', inline=False)
@@ -305,9 +308,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_manga = []
                     for manga in data.get('favourites')['manga']['nodes']:
                         fav_manga.append(f"[{manga.get('title')['romaji']}]({manga.get('siteUrl')})")
-                    if len(fav_manga) > 10:
-                        fav_manga = fav_manga[0:10]
-                        fav_manga[9] = fav_manga[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_manga):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_manga = fav_manga[0:i]
+                            fav_manga[i-1] = fav_manga[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Manga', value=' | '.join(fav_manga), inline=False)
                 else:
                     embed.add_field(name='Favorite Manga', value='N/A', inline=False)
@@ -316,9 +323,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_characters = []
                     for character in data.get('favourites')['characters']['nodes']:
                         fav_characters.append(f"[{character.get('name')['full']}]({character.get('siteUrl')})")
-                    if len(fav_characters) > 10:
-                        fav_characters = fav_characters[0:10]
-                        fav_characters[9] = fav_characters[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_characters):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_characters = fav_characters[0:i]
+                            fav_characters[i-1] = fav_characters[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Characters', value=' | '.join(fav_characters), inline=False)
                 else:
                     embed.add_field(name='Favorite Characters', value='N/A', inline=False)
@@ -327,9 +338,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_staff = []
                     for staff in data.get('favourites')['staff']['nodes']:
                         fav_staff.append(f"[{staff.get('name')['full']}]({staff.get('siteUrl')})")
-                    if len(fav_staff) > 10:
-                        fav_staff = fav_staff[0:10]
-                        fav_staff[9] = fav_staff[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_staff):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_staff = fav_staff[0:i]
+                            fav_staff[i-1] = fav_staff[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Staff', value=' | '.join(fav_staff), inline=False)
                 else:
                     embed.add_field(name='Favorite Staff', value='N/A', inline=False)
@@ -338,9 +353,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_studio = []
                     for studio in data.get('favourites')['studios']['nodes']:
                         fav_studio.append(f"[{studio.get('name')}]({studio.get('siteUrl')})")
-                    if len(fav_studio) > 10:
-                        fav_studio = fav_studio[0:10]
-                        fav_studio[9] = fav_studio[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_studio):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_studio = fav_studio[0:i]
+                            fav_studio[i-1] = fav_studio[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Staff', value=' | '.join(fav_studio), inline=False)
                 else:
                     embed.add_field(name='Favorite Staff', value='N/A', inline=False)
@@ -375,7 +394,6 @@ class Profile(commands.Cog, name='Profile'):
             None: If no profile was found.
         """
         embeds = []
-        data = None
 
         try:
             data = await self.bot.myanimelist.user(username=username)
@@ -396,10 +414,13 @@ class Profile(commands.Cog, name='Profile'):
                 last_online = None
                 if data.get('last_online'):
                     last_online = data.get('last_online').__str__().replace('-', '/') \
-                        .replace('T', ' ').replace('+', ' +')
+                        .replace('T', ' ').replace('+', ' +').replace('+00:00', 'UTC')
                 joined = None
                 if data.get('joined'):
                     joined = data.get('joined').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
+                birthday = None
+                if data.get('birthday'):
+                    birthday = data.get('birthday').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
 
                 embed = discord.Embed(
                     title=f'{data.get("username")} - MyAnimeList',
@@ -407,7 +428,7 @@ class Profile(commands.Cog, name='Profile'):
                     description=
                     f'**Last Online:** {last_online if data.get("last_online") else "N/A"}\n'
                     f'**Gender:** {data.get("gender") if data.get("gender") else "N/A"}\n'
-                    f'**Birthday:** {data.get("birthday") if data.get("birthday") else "N/A"}\n'
+                    f'**Birthday:** {birthday if data.get("birthday") else "N/A"}\n'
                     f'**Location:** {data.get("location") if data.get("location") else "N/A"}\n'
                     f'**Joined:** {joined if data.get("joined") else "N/A"}\n'
                 )
@@ -478,9 +499,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_anime = []
                     for anime in data.get('favorites')['anime']:
                         fav_anime.append(f"[{anime.get('name')}]({anime.get('url')})")
-                    if len(fav_anime) > 10:
-                        fav_anime = fav_anime[0:10]
-                        fav_anime[9] = fav_anime[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_anime):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_anime = fav_anime[0:i]
+                            fav_anime[i-1] = fav_anime[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Anime', value=' | '.join(fav_anime), inline=False)
                 else:
                     embed.add_field(name='Favorite Anime', value='N/A', inline=False)
@@ -489,9 +514,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_manga = []
                     for manga in data.get('favorites')['manga']:
                         fav_manga.append(f"[{manga.get('name')}]({manga.get('url')})")
-                    if len(fav_manga) > 10:
-                        fav_manga = fav_manga[0:10]
-                        fav_manga[9] = fav_manga[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_manga):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_manga = fav_manga[0:i]
+                            fav_manga[i-1] = fav_manga[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Manga', value=' | '.join(fav_manga), inline=False)
                 else:
                     embed.add_field(name='Favorite Manga', value='N/A', inline=False)
@@ -500,9 +529,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_characters = []
                     for character in data.get('favorites')['characters']:
                         fav_characters.append(f"[{character.get('name')}]({character.get('url')})")
-                    if len(fav_characters) > 10:
-                        fav_characters = fav_characters[0:10]
-                        fav_characters[9] = fav_characters[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_characters):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_characters = fav_characters[0:i]
+                            fav_characters[i-1] = fav_characters[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite Characters', value=' | '.join(fav_characters), inline=False)
                 else:
                     embed.add_field(name='Favorite Characters', value='N/A', inline=False)
@@ -511,9 +544,13 @@ class Profile(commands.Cog, name='Profile'):
                     fav_people = []
                     for people in data.get('favorites')['people']:
                         fav_people.append(f"[{people.get('name')}]({people.get('url')})")
-                    if len(fav_people) > 10:
-                        fav_people = fav_people[0:10]
-                        fav_people[9] = fav_people[9] + '...'
+                    total = 0
+                    for i, fav in enumerate(fav_people):
+                        total += len(fav)
+                        if total >= 1024:
+                            fav_people = fav_people[0:i]
+                            fav_people[i-1] = fav_people[i-1] + '...'
+                            break
                     embed.add_field(name='Favorite People', value=' | '.join(fav_people), inline=False)
                 else:
                     embed.add_field(name='Favorite People', value='N/A', inline=False)
@@ -548,7 +585,6 @@ class Profile(commands.Cog, name='Profile'):
             None: If no profile was found.
         """
         embeds = []
-        data = None
 
         try:
             data = await self.bot.kitsu.user(username=username)

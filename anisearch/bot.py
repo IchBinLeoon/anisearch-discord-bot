@@ -169,17 +169,18 @@ class AniSearchBot(AutoShardedBot):
     async def on_command(self, ctx: Context) -> None:
         if isinstance(ctx.channel, discord.channel.DMChannel):
             log.info(
-                f'Private Message - Author: {ctx.author} - Content: {ctx.message.content}')
+                f'Private Message | Author: `{ctx.author}` - ID: {ctx.author.id} | Command: {ctx.message.content}')
         else:
             log.info(
-                f'Server: {ctx.guild.name} - Author: {ctx.author} - Content: {ctx.message.content}')
+                f'Server: `{ctx.guild.name}` - ID: {ctx.guild.id} | Author: `{ctx.author}` ID: - {ctx.author.id} | '
+                f'Command: {ctx.message.content}')
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
-        log.info(f'Joined server {guild.name}.')
+        log.info(f'Joined guild `{guild.name}` - ID: {guild.id}')
         self.db.insert_prefix(guild)
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
-        log.info(f'Left server {guild.name}.')
+        log.info(f'Left guild `{guild.name}` - ID: {guild.id}')
         self.db.delete_prefix(guild)
 
     def get_guild_count(self) -> int:
