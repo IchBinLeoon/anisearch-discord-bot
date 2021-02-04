@@ -295,7 +295,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_anime.append(f"[{anime.get('title')['romaji']}]({anime.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_anime):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_anime = fav_anime[0:i]
                             fav_anime[i-1] = fav_anime[i-1] + '...'
@@ -310,7 +310,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_manga.append(f"[{manga.get('title')['romaji']}]({manga.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_manga):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_manga = fav_manga[0:i]
                             fav_manga[i-1] = fav_manga[i-1] + '...'
@@ -325,7 +325,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_characters.append(f"[{character.get('name')['full']}]({character.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_characters):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_characters = fav_characters[0:i]
                             fav_characters[i-1] = fav_characters[i-1] + '...'
@@ -340,7 +340,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_staff.append(f"[{staff.get('name')['full']}]({staff.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_staff):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_staff = fav_staff[0:i]
                             fav_staff[i-1] = fav_staff[i-1] + '...'
@@ -355,14 +355,14 @@ class Profile(commands.Cog, name='Profile'):
                         fav_studio.append(f"[{studio.get('name')}]({studio.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_studio):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_studio = fav_studio[0:i]
                             fav_studio[i-1] = fav_studio[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Staff', value=' | '.join(fav_studio), inline=False)
+                    embed.add_field(name='Favorite Studios', value=' | '.join(fav_studio), inline=False)
                 else:
-                    embed.add_field(name='Favorite Staff', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Studios', value='N/A', inline=False)
 
                 embed.set_footer(text=f'Provided by https://anilist.co/ • Page 2/2')
 
@@ -501,7 +501,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_anime.append(f"[{anime.get('name')}]({anime.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_anime):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_anime = fav_anime[0:i]
                             fav_anime[i-1] = fav_anime[i-1] + '...'
@@ -516,7 +516,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_manga.append(f"[{manga.get('name')}]({manga.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_manga):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_manga = fav_manga[0:i]
                             fav_manga[i-1] = fav_manga[i-1] + '...'
@@ -531,7 +531,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_characters.append(f"[{character.get('name')}]({character.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_characters):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_characters = fav_characters[0:i]
                             fav_characters[i-1] = fav_characters[i-1] + '...'
@@ -546,7 +546,7 @@ class Profile(commands.Cog, name='Profile'):
                         fav_people.append(f"[{people.get('name')}]({people.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_people):
-                        total += len(fav)
+                        total += len(fav)+3
                         if total >= 1024:
                             fav_people = fav_people[0:i]
                             fav_people[i-1] = fav_people[i-1] + '...'
