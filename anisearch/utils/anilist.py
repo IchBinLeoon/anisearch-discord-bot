@@ -334,13 +334,6 @@ class Query:
         CHARACTER_QUERY: str = '''
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
-            pageInfo {
-              total
-              perPage
-              currentPage
-              lastPage
-              hasNextPage
-            }
             characters(search: $search) {
               name {
                 full
@@ -352,7 +345,7 @@ class Query:
               }
               description
               siteUrl
-              media {
+              media(perPage: 6) {
                 nodes {
                   siteUrl
                   title {
@@ -377,13 +370,6 @@ class Query:
         STAFF_QUERY: str = '''
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
-            pageInfo {
-              total
-              perPage
-              currentPage
-              lastPage
-              hasNextPage
-            }
             staff(search: $search) {
               name {
                 full
@@ -395,7 +381,7 @@ class Query:
               }
               description
               siteUrl
-              staffMedia {
+              staffMedia(perPage: 6) {
                 nodes {
                   siteUrl
                   title {
@@ -403,7 +389,7 @@ class Query:
                   }
                 }
               }
-              characters {
+              characters(perPage: 6) {
                 nodes {
                   id
                   siteUrl
@@ -429,16 +415,9 @@ class Query:
         STUDIO_QUERY: str = '''
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
-            pageInfo {
-              total
-              perPage
-              currentPage
-              lastPage
-              hasNextPage
-            }
             studios(search: $search) {
               name
-              media(sort:POPULARITY_DESC) {
+              media(sort: POPULARITY_DESC, perPage: 10, isMain: true) {
                 nodes {
                   siteUrl
                   title {
@@ -446,8 +425,12 @@ class Query:
                   }
                   format
                   episodes
+                  coverImage {
+                    large
+                  }
                 }
               }
+              isAnimationStudio
               siteUrl
             }
           }

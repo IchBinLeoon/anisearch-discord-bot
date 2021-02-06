@@ -19,9 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, Dict, Any
 
 import discord
+from discord import Embed
 from discord.ext import commands, menus
 from discord.ext.commands import Context
 
@@ -43,6 +44,111 @@ class Image(commands.Cog, name='Image'):
         Initializes the `Image` cog.
         """
         self.bot = bot
+
+    @staticmethod
+    async def get_trace_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
+        """
+        Returns the `trace` embed.
+
+        Args:
+            data (dict): The data about the anime.
+            page (int): The current page.
+            pages (page): The number of all pages.
+
+        Returns:
+            Embed: A discord embed.
+        """
+        embed = discord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
+
+        embed.set_author(name=f'Similarity -> {(data.get("similarity")) * 100:0.2f}%')
+
+        if data.get('title_english') is None or data.get('title_english') == \
+                data.get('title_romaji'):
+            name = data.get('title_romaji')
+        else:
+            name = '{} ({})'.format(data.get('title_romaji'), data.get('title_english'))
+        embed.add_field(name='Anime', value=name, inline=False)
+
+        image_url = f'https://trace.moe/thumbnail.php?anilist_id={data.get("anilist_id")}' \
+                    f'&file={data.get("filename")}&t={data.get("at")}' \
+                    f'&token={data.get("tokenthumb")}'.replace(' ', '%20')
+        embed.set_image(url=image_url)
+
+        embed.add_field(name='Episode', inline=False,
+                        value=f'{data.get("episode")} ({str(timedelta(seconds=round(data.get("at"))))})'
+                        if data.get("at") else data.get("episode"))
+
+        embed.add_field(name='Synonyms', inline=False,
+                        value=', '.join(data.get('synonyms')) if
+                        data.get('synonyms') else 'N/A')
+
+        embed.add_field(name='Anilist', inline=False,
+                        value=f'https://anilist.co/anime/{str(data.get("anilist_id"))}' if
+                        data.get('anilist_id') else 'N/A')
+
+        embed.add_field(name='MyAnimeList', inline=False,
+                        value=f'https://myanimelist.net/anime/{str(data.get("mal_id"))}' if
+                        data.get('mal_id') else 'N/A')
+
+        embed.set_footer(text=f'Provided by https://trace.moe/ • Page {page}/{pages}')
+
+        return embed
+
+    @staticmethod
+    async def get_source_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
+        """
+        Returns the `source` embed.
+
+        Args:
+            data (dict): The data about the source.
+            page (int): The current page.
+            pages (page): The number of all pages.
+
+        Returns:
+            Embed: A discord embed.
+        """
+        embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
+
+        embed.set_author(name=f'Similarity -> {float(data.get("header").get("similarity")):0.2f}%')
+
+        embed.set_image(url=data.get('header')['thumbnail'])
+
+        if data.get('data').get('material'):
+            embed.add_field(name='Material', value=data.get('data')['material'], inline=False)
+
+        if data.get('data').get('title'):
+            embed.add_field(name='Title', value=data.get('data')['title'], inline=False)
+
+        if data.get('data').get('characters'):
+            embed.add_field(name='Characters', value=data.get('data')['characters'], inline=False)
+
+        if data.get('data').get('creator'):
+            embed.add_field(name='Creator', inline=False,
+                            value=', '.join(data.get('data')['creator']) if
+                            isinstance(data.get('data')['creator'], list)
+                            else data.get('data')['creator'])
+
+        if data.get('data').get('author_name'):
+            embed.add_field(name='Author Name', value=data.get('data')['author_name'], inline=False)
+
+        if data.get('data').get('author_url'):
+            embed.add_field(name='Author Url', value=data.get('data')['author_url'], inline=False)
+
+        if data.get('data').get('eng_name'):
+            embed.add_field(name='English Name', value=data.get('data')['eng_name'], inline=False)
+
+        if data.get('data').get('jp_name'):
+            embed.add_field(name='Japanese Name', value=data.get('data')['jp_name'], inline=False)
+
+        if data.get('data').get('source'):
+            embed.add_field(name='Source', value=data.get('data')['source'], inline=False)
+
+        if data.get('data').get('ext_urls'):
+            embed.add_field(name="URL's", value='\n'.join(data.get('data')['ext_urls']), inline=False)
+
+        embed.set_footer(text=f'Provided by https://saucenao.com/ • Page {page}/{pages}')
+
+        return embed
 
     @commands.command(name='trace', aliases=['t'], usage='trace <image-url|with image as attachment>',
                       ignore_extra=False)
@@ -71,79 +177,32 @@ class Image(commands.Cog, name='Image'):
                 else:
                     try:
                         data = await self.bot.tracemoe.search(url)
-
                     except Exception as e:
                         log.exception(e)
-
                         embed = discord.Embed(
                             title=f'An error occurred while searching for the anime or the link is invalid.',
                             color=ERROR_EMBED_COLOR)
-
                         return await ctx.channel.send(embed=embed)
-
                     if data:
                         embeds = []
                         for page, anime in enumerate(data):
                             try:
-                                embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-
-                                if anime.get('title_english') is None or anime.get('title_english') == \
-                                        anime.get('title_romaji'):
-                                    embed.title = anime.get('title_romaji')
-                                else:
-                                    embed.title = '{} ({})'.format(anime.get('title_romaji'),
-                                                                   anime.get('title_english'))
-
-                                try:
-                                    image_url = \
-                                        f"https://trace.moe/thumbnail.php?anilist_id={anime.get('anilist_id')}&file=" \
-                                        f"{anime.get('filename')}&t={anime.get('at')}&token={anime.get('tokenthumb')}" \
-                                            .replace(' ', '%20')
-                                    embed.set_image(url=image_url)
-                                except Exception as e:
-                                    log.exception(e)
-
-                                if anime.get('episode'):
-                                    episode = anime.get('episode')
-                                    if anime.get('at'):
-                                        episode = \
-                                            f"{anime.get('episode')} ({str(timedelta(seconds=round(anime.get('at'))))})"
-                                    embed.add_field(name='Episode', value=episode, inline=False)
-                                if anime.get('synonyms'):
-                                    embed.add_field(name='Synonyms', value=', '.join(anime.get('synonyms')),
-                                                    inline=False)
-                                if anime.get('anilist_id'):
-                                    anilist_link = f'https://anilist.co/anime/{str(anime.get("anilist_id"))}'
-                                    embed.add_field(name='Anilist Link', value=anilist_link, inline=False)
-                                if anime.get('mal_id'):
-                                    myanimelist_link = f'https://myanimelist.net/anime/{str(anime.get("mal_id"))}'
-                                    embed.add_field(name='MyAnimeList Link', value=myanimelist_link, inline=False)
-
-                                embed.set_footer(
-                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
-
+                                embed = await self.get_trace_embed(anime, page + 1, len(data))
                                 if is_adult(anime):
                                     if not ctx.channel.is_nsfw():
-                                        embed = discord.Embed(
-                                            title='Error',
-                                            color=ERROR_EMBED_COLOR,
-                                            description=f'Adult content. No NSFW channel.')
+                                        embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                              description=f'Adult content. No NSFW channel.')
                                         embed.set_footer(
                                             text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
-
                             except Exception as e:
-                                log.info(e)
-
+                                log.exception(e)
                                 embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
                                     text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data.get("docs"))}')
-
                             embeds.append(embed)
-
                         menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                         await menu.start(ctx)
-
                     else:
                         embed = discord.Embed(title='No anime found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)
@@ -175,84 +234,27 @@ class Image(commands.Cog, name='Image'):
                 else:
                     try:
                         data = await self.bot.saucenao.search(url)
-
                     except Exception as e:
                         log.exception(e)
-
                         embed = discord.Embed(
                             title=f'An error occurred while looking for the source, the link is invalid, or the '
                                   f'daily limit has been reached.',
                             color=ERROR_EMBED_COLOR)
-
                         return await ctx.channel.send(embed=embed)
-
                     if data:
                         embeds = []
                         for page, entry in enumerate(data):
                             try:
-                                embed = discord.Embed(title='Source', colour=DEFAULT_EMBED_COLOR)
-
-                                if entry.get('header').get('similarity'):
-                                    embed.title = f"Source - Similarity: {entry.get('header')['similarity']}%"
-
-                                if entry.get('header').get('thumbnail'):
-                                    embed.set_image(url=entry.get('header')['thumbnail'])
-
-                                if entry.get('data').get('material'):
-                                    embed.add_field(name='Material', value=entry.get('data')['material'], inline=False)
-
-                                if entry.get('data').get('title'):
-                                    embed.add_field(name='Title', value=entry.get('data')['title'], inline=False)
-
-                                if entry.get('data').get('characters'):
-                                    embed.add_field(name='Characters', value=entry.get('data')['characters'],
-                                                    inline=False)
-
-                                if entry.get('data').get('creator'):
-                                    embed.add_field(name='Creator', inline=False,
-                                                    value=', '.join(entry.get('data')['creator']) if
-                                                    isinstance(entry.get('data')['creator'], list)
-                                                    else entry.get('data')['creator'])
-
-                                if entry.get('data').get('author_name'):
-                                    embed.add_field(name='Author name', value=entry.get('data')['author_name'],
-                                                    inline=False)
-
-                                if entry.get('data').get('author_url'):
-                                    embed.add_field(name='Author url', value=entry.get('data')['author_url'],
-                                                    inline=False)
-
-                                if entry.get('data').get('eng_name'):
-                                    embed.add_field(name='English name', value=entry.get('data')['eng_name'],
-                                                    inline=False)
-
-                                if entry.get('data').get('jp_name'):
-                                    embed.add_field(name='Japanese name', value=entry.get('data')['jp_name'],
-                                                    inline=False)
-
-                                if entry.get('data').get('source'):
-                                    embed.add_field(name='Source', value=entry.get('data')['source'], inline=False)
-
-                                if entry.get('data').get('ext_urls'):
-                                    embed.add_field(name="URL's", value='\n'.join(entry.get('data')['ext_urls']),
-                                                    inline=False)
-
-                                embed.set_footer(
-                                    text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
-
+                                embed = await self.get_source_embed(entry, page + 1, len(data))
                             except Exception as e:
-                                log.info(e)
-
-                                embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
+                                log.exception(e)
+                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
                                     text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
-
                             embeds.append(embed)
-
                         menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                         await menu.start(ctx)
-
                     else:
                         embed = discord.Embed(title='No source found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)

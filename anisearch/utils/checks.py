@@ -31,4 +31,6 @@ def is_adult(data: Dict[str, Any]) -> bool:
         return True
     if data.get('is_adult') is True:
         return True
+    if data.get('nsfw') is True:
+        return True
     return False

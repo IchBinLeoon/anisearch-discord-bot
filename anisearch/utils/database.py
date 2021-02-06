@@ -44,7 +44,8 @@ class DataBase:
         self.pool = psycopg2.pool.SimpleConnectionPool(5, 20, host=DB_HOST, dbname=DB_NAME,
                                                        user=DB_USER, password=BD_PASSWORD)
 
-    def _connect(self):
+    @staticmethod
+    def _connect():
         """
         Creates a connection with the Postgres database.
         """
@@ -226,4 +227,3 @@ class DataBase:
         """
         Sets up the database tables.
         """
-        pass

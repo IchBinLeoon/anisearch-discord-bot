@@ -21,14 +21,16 @@ import logging
 from typing import Optional
 
 import discord
+from discord.channel import DMChannel
 from discord.ext import commands, menus
 from discord.ext.commands import Context
 from discord.utils import get
 
+import anisearch
 from anisearch.bot import AniSearchBot
 from anisearch.config import OWNER_ID
-from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX
-from anisearch.utils.miscellaneous import get_invite, get_vote, get_version, get_creator, get_bot, get_url
+from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
+    DISCORD_INVITE, TOPGG_VOTE
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -52,50 +54,30 @@ class Help(commands.Cog, name='Help'):
         """
         Shows help or displays information about a command.
         """
-        prefix = self.bot.db.get_prefix(ctx)
-        if isinstance(ctx.channel, discord.channel.DMChannel):
-            server_prefix = ''
-        else:
-            server_prefix = f'Current server prefix: `{prefix}`\n'
+        prefix = self.bot.db.get_prefix(ctx.message)
+        server_prefix = '' if isinstance(ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
+
         if cmd is None:
-            embed = discord.Embed(title='AniSearch',
-                                  description=f'{server_prefix}'
-                                              f'\n'
-                                              f'**Command help:**\n'
-                                              f'`{prefix}help [command]`\n'
-                                              f'\n'
-                                              f'**Command list:**\n'
-                                              f'`{prefix}commands`\n'
-                                              f'\n'
-                                              f'**Links:**\n'
-                                              f'[Invite AniSearch!]({get_invite()}) | '
-                                              f'[Vote for AniSearch!]({get_vote()})',
-                                  color=DEFAULT_EMBED_COLOR)
+            embed = discord.Embed(title='AniSearch', color=DEFAULT_EMBED_COLOR,
+                                  description=f'{server_prefix}\n**Command help:**\n`{prefix}help [command]`\n\n'
+                                              f'**Command list:**\n`{prefix}commands`\n\n**Links:**\n'
+                                              f'[Invite AniSearch!]({DISCORD_INVITE}) | '
+                                              f'[Vote for AniSearch!]({TOPGG_VOTE})')
             embed.set_thumbnail(url=self.bot.user.avatar_url)
             await ctx.send(embed=embed)
+
         else:
-            if command := get(self.bot.commands, name=cmd):
-                embed = discord.Embed(
-                    title=f'Command - {command}', colour=DEFAULT_EMBED_COLOR)
-                embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`',
+            if command := get(self.bot.commands, name=cmd.lower()):
+                embed = discord.Embed(title=f'Command -> `{command}`', colour=DEFAULT_EMBED_COLOR)
+                embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
+                embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
                                 inline=False)
-                description = command.help.replace('\n', ' ').replace('\r', '')
-                embed.add_field(name='Description',
-                                value=description, inline=False)
-                if command.aliases:
-                    aliases = ', '.join(command.aliases)
-                    embed.add_field(
-                        name='Aliases', value=f'`{aliases}`', inline=False)
-                else:
-                    aliases = '-'
-                    embed.add_field(
-                        name='Aliases', value=aliases, inline=False)
-                embed.set_footer(
-                    text='<> - required, [] - optional, | - either/or')
+                embed.add_field(name='Aliases', inline=False,
+                                value=', '.join([f"`{a}`" for a in command.aliases]) if command.aliases else '-')
+                embed.set_footer(text=f'<> - required, [] - optional, | - either/or')
                 await ctx.send(embed=embed)
             else:
-                embed = discord.Embed(title=f'The command `{cmd}` does not exist.',
-                                      color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(title=f'The command `{cmd}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='commands', aliases=['cmds'], usage='commands', ignore_extra=False)
@@ -104,43 +86,26 @@ class Help(commands.Cog, name='Help'):
         """
         Displays all commands.
         """
-        prefix = self.bot.db.get_prefix(ctx)
-        if isinstance(ctx.channel, discord.channel.DMChannel):
-            server_prefix = ''
-        else:
-            server_prefix = f'Current server prefix: `{prefix}`\n'
-
-        embeds = []
-        page = 1
+        prefix = self.bot.db.get_prefix(ctx.message)
+        server_prefix = '' if isinstance(ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
+        embeds, page = [], 1
 
         for cog in self.bot.cogs:
-            cog_ = self.bot.get_cog(cog)
-            cmds = cog_.get_commands()
-            cmds_ = []
-            for cmd in cmds:
-                cmd_ = f'• {prefix}{cmd.usage}'
-                cmds_.append(cmd_)
-            cmds__ = '\n'.join(cmds_)
+            if self.bot.get_cog(cog).qualified_name != 'Admin':
+                cmds = '\n'.join([f'• {prefix}{cmd.usage}' for cmd in self.bot.get_cog(cog).get_commands()])
 
-            if cog_.qualified_name == 'Settings':
-                cmds__ = f'Can only be used by a server administrator.\n```\n{cmds__}\n```'
-            else:
-                cmds__ = f'```\n{cmds__}\n```'
+                cmds = ''.join(f'Can only be used by a server administrator.\n```\n{cmds}\n```'
+                               if self.bot.get_cog(cog).qualified_name == 'Settings' else f'```\n{cmds}\n```')
 
-            if cog_.qualified_name != 'Admin':
                 embed = discord.Embed(description=f'To view information about a specified command use: '
-                                                  f'`{prefix}help [command]`\n'
-                                                  f'{server_prefix}'
-                                                  f'\n'
-                                                  f'**{cog_.qualified_name}**\n'
-                                                  f'{cmds__}'
-                                                  f'\n'
+                                                  f'`{prefix}help [command]`\n{server_prefix}\n'
+                                                  f'**{self.bot.get_cog(cog).qualified_name}**\n{cmds}\n'
                                                   f'`<>` - required, `[]` - optional, `|` - either/or',
                                       colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
                 embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
-                page += 1
                 embeds.append(embed)
+                page += 1
 
         menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
         await menu.start(ctx)
@@ -151,23 +116,16 @@ class Help(commands.Cog, name='Help'):
         """
         Displays information about the bot.
         """
-        embed = discord.Embed(title='About AniSearch',
-                              description=f'<@!{get_bot()}> is an easy-to-use Discord bot written in Python '
-                                          f'that allows you to search for anime, manga, characters, staff, studios and '
-                                          f'much more directly in Discord!',
-                              color=DEFAULT_EMBED_COLOR)
-        embed.add_field(name='❯ Creator', value=f'<@!{get_creator()}>',
-                        inline=True)
-        embed.add_field(name='❯ Version', value=f'v{get_version()}',
-                        inline=True)
-        embed.add_field(name='❯ Commands', value=f'{DEFAULT_PREFIX}help',
-                        inline=True)
-        embed.add_field(name='❯ Invite', value=f'[Click me!]({get_invite()})',
-                        inline=True)
-        embed.add_field(name='❯ Vote', value=f'[Click me!]({get_vote()})',
-                        inline=True)
-        embed.add_field(name='❯ GitHub', value=f'[Click me!]({get_url()})',
-                        inline=True)
+        embed = discord.Embed(title='About AniSearch', color=DEFAULT_EMBED_COLOR,
+                              description=f'<@!{BOT_ID}> is an easy-to-use Discord bot written in Python '
+                                          f'that allows you to search for anime, manga, characters, staff, studios '
+                                          f'and much more directly in Discord!')
+        embed.add_field(name='❯ Creator', value=f'<@!{CREATOR_ID}>', inline=True)
+        embed.add_field(name='❯ Version', value=f'v{anisearch.__version__}', inline=True)
+        embed.add_field(name='❯ Commands', value=f'{DEFAULT_PREFIX}help', inline=True)
+        embed.add_field(name='❯ Invite', value=f'[Click me!]({DISCORD_INVITE})', inline=True)
+        embed.add_field(name='❯ Vote', value=f'[Click me!]({TOPGG_VOTE})', inline=True)
+        embed.add_field(name='❯ GitHub', value=f'[Click me!]({anisearch.__url__})', inline=True)
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.channel.send(embed=embed)
 

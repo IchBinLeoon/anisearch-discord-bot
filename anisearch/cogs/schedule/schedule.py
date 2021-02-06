@@ -19,8 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import datetime
 import logging
+from typing import Dict, Any
 
 import discord
+from discord import Embed
 from discord.ext import commands, menus
 from discord.ext.commands import Context
 
@@ -44,98 +46,130 @@ class Schedule(commands.Cog, name='Schedule'):
         """
         self.bot = bot
 
+    @staticmethod
+    async def get_next_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
+        """
+        Returns the `next` embed.
+
+        Args:
+            data (dict): The data about the next airing anime episode.
+            page (int): The current page.
+            pages (page): The number of all pages.
+
+        Returns:
+            Embed: A discord embed.
+        """
+        sites = []
+        if data.get('media').get('siteUrl'):
+            sites.append(f'[Anilist]({data.get("media").get("siteUrl")})')
+        if data.get('media').get('idMal'):
+            sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{str(data.get("media").get("idMal"))})')
+        if data.get('media').get('trailer'):
+            if data.get('media').get('trailer')['site'] == 'youtube':
+                sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("media").get("trailer")["id"]})')
+        if data.get('media').get('externalLinks'):
+            for i in data.get('media').get('externalLinks'):
+                sites.append(f'[{i["site"]}]({i["url"]})')
+
+        embed = discord.Embed(
+            title=get_media_title(data.get('media')['title']), colour=DEFAULT_EMBED_COLOR,
+            description=f'Episode **{data.get("episode")}** airing in '
+                        f'**{str(datetime.timedelta(seconds=data.get("timeUntilAiring")))}**.\n\n**Type:** '
+                        f'{format_media_type(data.get("media")["format"]) if data.get("media")["format"] else "N/A"}'
+                        f'\n**Duration:** '
+                        f'{str(data.get("media")["duration"]) + " min" if data.get("media")["duration"] else "N/A"}\n'
+                        f'\n{" | ".join(sites) if len(sites) > 0 else ""}')
+
+        embed.set_author(name='Next Airing Episode')
+
+        if data.get('media').get('coverImage').get('large'):
+            embed.set_thumbnail(url=data.get('media')['coverImage']['large'])
+
+        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page}/{pages}')
+
+        return embed
+
+    @staticmethod
+    async def get_last_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
+        """
+        Returns the `last` embed.
+
+        Args:
+            data (dict): The data about the recently aired anime episode.
+            page (int): The current page.
+            pages (page): The number of all pages.
+
+        Returns:
+            Embed: A discord embed.
+        """
+        sites = []
+        if data.get('media').get('siteUrl'):
+            sites.append(f'[Anilist]({data.get("media").get("siteUrl")})')
+        if data.get('media').get('idMal'):
+            sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{str(data.get("media").get("idMal"))})')
+        if data.get('media').get('trailer'):
+            if data.get('media').get('trailer')['site'] == 'youtube':
+                sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("media").get("trailer")["id"]})')
+        if data.get('media').get('externalLinks'):
+            for i in data.get('media').get('externalLinks'):
+                sites.append(f'[{i["site"]}]({i["url"]})')
+
+        date = datetime.datetime.utcfromtimestamp(data.get("airingAt")).strftime("%B %d, %Y - %H:%M")
+
+        embed = discord.Embed(
+            title=get_media_title(data.get('media')['title']), colour=DEFAULT_EMBED_COLOR,
+            description=f'Episode **{data.get("episode")}** aired at **{str(date)}** UTC.\n\n**Type:** '
+                        f'{format_media_type(data.get("media")["format"]) if data.get("media")["format"] else "N/A"}'
+                        f'\n**Duration:** '
+                        f'{str(data.get("media")["duration"]) + " min" if data.get("media")["duration"] else "N/A"}\n'
+                        f'\n{" | ".join(sites) if len(sites) > 0 else ""}')
+
+        embed.set_author(name='Recently Aired Episode')
+
+        if data.get('media').get('coverImage').get('large'):
+            embed.set_thumbnail(url=data.get('media')['coverImage']['large'])
+
+        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page}/{pages}')
+
+        return embed
+
     @commands.command(name='next', usage='next', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def next(self, ctx: Context):
         """
         Displays the next airing anime episodes.
         """
-        try:
-            data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=True, sort='TIME')
-
-        except Exception as e:
-            log.exception(e)
-
-            embed = discord.Embed(
-                title=f'An error occurred while searching for the next airing episodes. Try again.',
-                color=ERROR_EMBED_COLOR)
-
-            return await ctx.channel.send(embed=embed)
-
-        if data is not None and len(data) > 0:
-
-            embeds = []
-
-            for page, anime in enumerate(data):
-                try:
-
-                    sites = []
-                    if anime.get('media').get('siteUrl'):
-                        sites.append(f'[Anilist]({anime.get("media").get("siteUrl")})')
-                    if anime.get('media').get('idMal'):
-                        sites.append(
-                            f'[MyAnimeList](https://myanimelist.net/anime/{str(anime.get("media").get("idMal"))})')
-                    if anime.get('media').get('trailer'):
-                        if anime.get('media').get('trailer')['site'] == 'youtube':
-                            trailer_site = 'https://www.youtube.com/watch?v=' + \
-                                           anime.get('media').get('trailer')['id']
-                            sites.append('[Trailer]({})'.format(trailer_site))
-                    if anime.get('media').get('externalLinks'):
-                        for i in anime.get('media').get('externalLinks'):
-                            sites.append('[{}]({})'.format(i['site'], i['url']))
-                    if len(sites) > 0:
-                        sites = ' | '.join(sites)
-
-                    embed = discord.Embed(
-                        title=get_media_title(anime.get('media')['title']),
-                        colour=DEFAULT_EMBED_COLOR,
-                        description=
-                        f'Episode **{anime.get("episode")}** airing in '
-                        f'**{str(datetime.timedelta(seconds=anime.get("timeUntilAiring")))}**.\n'
-                        f'\n'
-                        f'**Type:** '
-                        f'{format_media_type(anime.get("media")["format"]) if anime.get("media")["format"] else "N/A"}'
-                        f'\n'
-                        f'**Duration:** '
-                        f'{str(anime.get("media")["duration"]) + " min" if anime.get("media")["duration"] else "N/A"}\n'
-                        f'\n'
-                        f'{sites}'
-                    )
-
-                    embed.set_author(name='Next Airing Episode')
-                    if anime.get('media').get('coverImage').get('large'):
-                        embed.set_thumbnail(url=anime.get('media')['coverImage']['large'])
-                    embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
-
-                    if is_adult(anime.get('media')):
-                        if not ctx.channel.is_nsfw():
-                            embed = discord.Embed(
-                                title='Error',
-                                color=ERROR_EMBED_COLOR,
-                                description=f'Adult content. No NSFW channel.')
-                            embed.set_footer(
-                                text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
-
+        async with ctx.channel.typing():
+            try:
+                data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=True, sort='TIME')
+            except Exception as e:
+                log.exception(e)
+                embed = discord.Embed(
+                    title=f'An error occurred while searching for the next airing episodes. Try again.',
+                    color=ERROR_EMBED_COLOR)
+                return await ctx.channel.send(embed=embed)
+            if data is not None and len(data) > 0:
+                embeds = []
+                for page, anime in enumerate(data):
+                    try:
+                        embed = await self.get_next_embed(anime, page + 1, len(data))
+                        if is_adult(anime.get('media')):
+                            if not ctx.channel.is_nsfw():
+                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                      description=f'Adult content. No NSFW channel.')
+                                embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                    except Exception as e:
+                        log.exception(e)
+                        embed = discord.Embed(
+                            title='Error', color=ERROR_EMBED_COLOR,
+                            description=f'An error occurred while loading the embed for the next airing episode.')
+                        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-
-                except Exception as e:
-                    log.exception(e)
-
-                    embed = discord.Embed(
-                        title='Error',
-                        description=f'An error occurred while loading the embed for the next airing episode.',
-                        color=ERROR_EMBED_COLOR)
-                    embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
-
-                    embeds.append(embed)
-
-            menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
-            await menu.start(ctx)
-
-        else:
-            embed = discord.Embed(
-                title=f'The next airing episodes could not be found.', color=ERROR_EMBED_COLOR)
-            await ctx.channel.send(embed=embed)
+                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                await menu.start(ctx)
+            else:
+                embed = discord.Embed(title=f'The next airing episodes could not be found.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
 
     @commands.command(name='last', usage='last', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -143,90 +177,35 @@ class Schedule(commands.Cog, name='Schedule'):
         """
         Displays the most recently aired anime episodes.
         """
-        try:
-            data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=False, sort='TIME_DESC')
-
-        except Exception as e:
-            log.exception(e)
-
-            embed = discord.Embed(
-                title=f'An error occurred while searching for the most recently aired episodes. Try again.',
-                color=ERROR_EMBED_COLOR)
-
-            return await ctx.channel.send(embed=embed)
-
-        if data is not None and len(data) > 0:
-
-            embeds = []
-
-            for page, anime in enumerate(data):
-                try:
-
-                    sites = []
-                    if anime.get('media').get('siteUrl'):
-                        sites.append(f'[Anilist]({anime.get("media").get("siteUrl")})')
-                    if anime.get('media').get('idMal'):
-                        sites.append(
-                            f'[MyAnimeList](https://myanimelist.net/anime/{str(anime.get("media").get("idMal"))})')
-                    if anime.get('media').get('trailer'):
-                        if anime.get('media').get('trailer')['site'] == 'youtube':
-                            trailer_site = 'https://www.youtube.com/watch?v=' + \
-                                           anime.get('media').get('trailer')['id']
-                            sites.append('[Trailer]({})'.format(trailer_site))
-                    if anime.get('media').get('externalLinks'):
-                        for i in anime.get('media').get('externalLinks'):
-                            sites.append('[{}]({})'.format(i['site'], i['url']))
-                    if len(sites) > 0:
-                        sites = ' | '.join(sites)
-
-                    date = datetime.datetime.utcfromtimestamp(anime.get("airingAt")).strftime("%B %d, %Y - %H:%M")
-
-                    embed = discord.Embed(
-                        title=get_media_title(anime.get('media')['title']),
-                        colour=DEFAULT_EMBED_COLOR,
-                        description=
-                        f'Episode **{anime.get("episode")}** aired at **{str(date)}** UTC.\n'
-                        f'\n'
-                        f'**Type:** '
-                        f'{format_media_type(anime.get("media")["format"]) if anime.get("media")["format"] else "N/A"}'
-                        f'\n'
-                        f'**Duration:** '
-                        f'{str(anime.get("media")["duration"]) + " min" if anime.get("media")["duration"] else "N/A"}\n'
-                        f'\n'
-                        f'{sites}'
-                    )
-
-                    embed.set_author(name='Recently Aired Episode')
-                    if anime.get('media').get('coverImage').get('large'):
-                        embed.set_thumbnail(url=anime.get('media')['coverImage']['large'])
-                    embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
-
-                    if is_adult(anime.get('media')):
-                        if not ctx.channel.is_nsfw():
-                            embed = discord.Embed(
-                                title='Error',
-                                color=ERROR_EMBED_COLOR,
-                                description=f'Adult content. No NSFW channel.')
-                            embed.set_footer(
-                                text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
-
+        async with ctx.channel.typing():
+            try:
+                data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=False, sort='TIME_DESC')
+            except Exception as e:
+                log.exception(e)
+                embed = discord.Embed(
+                    title=f'An error occurred while searching for the most recently aired episodes. Try again.',
+                    color=ERROR_EMBED_COLOR)
+                return await ctx.channel.send(embed=embed)
+            if data is not None and len(data) > 0:
+                embeds = []
+                for page, anime in enumerate(data):
+                    try:
+                        embed = await self.get_last_embed(anime, page + 1, len(data))
+                        if is_adult(anime.get('media')):
+                            if not ctx.channel.is_nsfw():
+                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                      description=f'Adult content. No NSFW channel.')
+                                embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                    except Exception as e:
+                        log.exception(e)
+                        embed = discord.Embed(
+                            title='Error', color=ERROR_EMBED_COLOR,
+                            description=f'An error occurred while loading the embed for the recently aired episode.')
+                        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-
-                except Exception as e:
-                    log.exception(e)
-
-                    embed = discord.Embed(
-                        title='Error',
-                        description=f'An error occurred while loading the embed for the recently aired episode.',
-                        color=ERROR_EMBED_COLOR)
-                    embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
-
-                    embeds.append(embed)
-
-            menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
-            await menu.start(ctx)
-
-        else:
-            embed = discord.Embed(
-                title=f'The most recently aired episodes could not be found.', color=ERROR_EMBED_COLOR)
-            await ctx.channel.send(embed=embed)
+                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                await menu.start(ctx)
+            else:
+                embed = discord.Embed(
+                    title=f'The most recently aired episodes could not be found.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)

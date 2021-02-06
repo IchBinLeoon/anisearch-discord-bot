@@ -45,18 +45,15 @@ class Admin(commands.Cog, name='Admin'):
     @commands.is_owner()
     async def status(self, ctx: Context):
         """
-        Displays the current status of the bot. Can only be user by the bot owner.
+        Displays the current status of the bot. Can only be used by the bot owner.
         """
         embed = discord.Embed(title='AniSearch - Status', color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Guilds', value=str(self.bot.get_guild_count()), inline=True)
         embed.add_field(name='Users', value=str(self.bot.get_user_count()), inline=True)
         embed.add_field(name='Channels', value=str(self.bot.get_channel_count()), inline=True)
         embed.add_field(name="AniSearch's Uptime", value=str(self.bot.get_uptime()), inline=False)
-        cogs = []
-        for i in self.bot.cogs:
-            cogs.append(i)
         embed.add_field(
-            name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(cogs), inline=False)
+            name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(self.bot.cogs), inline=False)
         embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)
         embed.add_field(name='Latency', value=f'{self.bot.latency:.10f}', inline=False)
         embed.add_field(

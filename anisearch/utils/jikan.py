@@ -114,7 +114,7 @@ class JikanClient:
         data = await response.json()
         if data.get('error'):
             if data.get('status') == 404:
-                return None
+                data = None
             else:
                 raise JikanAPIError(data.get('type'), data.get('status'), data.get('message'), data.get('error'))
         return data

@@ -303,4 +303,4 @@ class AniSearchBot(AutoShardedBot):
             log.exception('An unknown exception occurred while executing a command.', exc_info=error)
 
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
-        await ctx.channel.send(embed=embed)
+        return await ctx.channel.send(embed=embed)
