@@ -232,7 +232,7 @@ class Search(commands.Cog, name='Search'):
                 except TypeError:
                     embed.add_field(name='Episodes', value=data.get('episodes') if data.get('episodes') else 'N/A',
                                     inline=True)
-            elif data.get('episodes'):
+            else:
                 embed.add_field(name='Episodes', value=data.get('episodes') if data.get('episodes') else 'N/A',
                                 inline=True)
 
@@ -268,10 +268,10 @@ class Search(commands.Cog, name='Search'):
                             else 'N/A', inline=True)
 
         if data.get('synonyms'):
-            embed.add_field(name='Synonyms', value=', '.join(data.get('synonyms')), inline=False)
+            embed.add_field(name='Synonyms', value=', '.join([f'`{s}`' for s in data.get('synonyms')]), inline=False)
 
-        embed.add_field(name='Genres', value=', '.join(data.get('genres')) if data.get('genres') else 'N/A',
-                        inline=False)
+        embed.add_field(name='Genres', inline=False,
+                        value=', '.join([f'`{g}`' for g in data.get('genres')] if data.get('genres') else 'N/A'))
 
         sites = []
         if data.get('trailer'):
@@ -321,9 +321,9 @@ class Search(commands.Cog, name='Search'):
         if data.get('siteUrl'):
             embed.url = data.get('siteUrl')
 
-        if data.get('name')['alternative'] != [""]:
+        if data.get('name')['alternative'] != ['']:
             embed.add_field(name='Synonyms', inline=False,
-                            value=', '.join([f"`{a}`" for a in data.get('name')['alternative']]))
+                            value=', '.join([f'`{a}`' for a in data.get('name')['alternative']]))
 
         if data.get('media')['nodes']:
             media = []

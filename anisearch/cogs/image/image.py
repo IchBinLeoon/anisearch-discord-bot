@@ -78,9 +78,8 @@ class Image(commands.Cog, name='Image'):
                         value=f'{data.get("episode")} ({str(timedelta(seconds=round(data.get("at"))))})'
                         if data.get("at") else data.get("episode"))
 
-        embed.add_field(name='Synonyms', inline=False,
-                        value=', '.join(data.get('synonyms')) if
-                        data.get('synonyms') else 'N/A')
+        if data.get('synonyms'):
+            embed.add_field(name='Synonyms', inline=False, value=', '.join([f'`{s}`' for s in data.get('synonyms')]))
 
         embed.add_field(name='Anilist', inline=False,
                         value=f'https://anilist.co/anime/{str(data.get("anilist_id"))}' if

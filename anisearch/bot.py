@@ -30,6 +30,7 @@ from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
 from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO
 from anisearch.utils.anilist import AniListClient
+from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
 from anisearch.utils.database import DataBase
@@ -45,6 +46,7 @@ initial_extensions = [
     'anisearch.cogs.profile',
     'anisearch.cogs.image',
     'anisearch.cogs.schedule',
+    'anisearch.cogs.news',
     'anisearch.cogs.help',
     'anisearch.cogs.settings',
     'anisearch.cogs.admin'
@@ -85,6 +87,8 @@ class AniSearchBot(AutoShardedBot):
         self.myanimelist = JikanClient(session=ClientSession(loop=self.loop))
 
         self.kitsu = KitsuClient(session=ClientSession(loop=self.loop))
+
+        self.animenewsnetwork = AnimeNewsNetworkClient(session=ClientSession(loop=self.loop))
 
         # Posts the guild count to top.gg every 30 minutes.
         self.topgg_token = TOPGG_TOKEN

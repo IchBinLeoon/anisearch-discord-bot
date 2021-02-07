@@ -54,6 +54,7 @@ You can also:
 - View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) or [Kitsu](https://kitsu.io/).
 - Search for the anime or the source of an image.
 - View the next airing, and the most recently aired anime episodes.
+- View the latest anime related news.  
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
@@ -131,6 +132,9 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `next:` Displays the next airing anime episodes.  
 
 - `last:` Displays the most recently aired anime episodes.  
+
+### News
+- `aninews:` Displays the latest anime news from Anime News Network.  
 
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
@@ -295,6 +299,7 @@ Thanks to the people who made this discord bot possible.
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)  
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
 #### [SauceNAO](https://saucenao.com)
+#### [Anime News Network](https://www.animenewsnetwork.com)
 
 
 # 📝 License
