@@ -31,8 +31,8 @@ from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
 from anisearch.utils.enums import AniListSearchType, AniListMediaType
-from anisearch.utils.formats import get_media_title, get_media_stats, format_description, format_date, \
-    get_char_staff_name, format_media_type
+from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
+    format_manga_status
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -203,11 +203,15 @@ class Search(commands.Cog, name='Search'):
         Returns:
             Embed: A discord embed.
         """
-        embed = discord.Embed(title=get_media_title(data.get('title')),
-                              description=format_description(data.get('description'), 400)
+        embed = discord.Embed(description=format_description(data.get('description'), 400)
                               if data.get('description') else 'N/A',
                               colour=int('0x' + data.get('coverImage')['color'].replace('#', ''), 0)
                               if data.get('coverImage')['color'] else DEFAULT_EMBED_COLOR)
+
+        if data.get('title')['english'] is None or data.get('title')['english'] == data.get('title')['romaji']:
+            embed.title = data.get('title')['romaji']
+        else:
+            embed.title = f'{data.get("title")["romaji"]} ({data.get("title")["english"]})'
 
         if data.get('coverImage')['large']:
             embed.set_thumbnail(url=data.get('coverImage')['large'])
@@ -215,8 +219,21 @@ class Search(commands.Cog, name='Search'):
         if data.get('bannerImage'):
             embed.set_image(url=data.get('bannerImage'))
 
-        embed.set_author(name=get_media_stats(data.get('format'), data.get('type'), data.get('status'),
-                                              data.get('meanScore')))
+        stats = []
+        type_ = f'Type: {format_media_type(data.get("format")) if data.get("format") else "N/A"}'
+        stats.append(type_)
+
+        status = 'N/A'
+        if data.get('type') == 'ANIME':
+            status = f'Status: {format_anime_status(data.get("status"))}'
+        elif data.get('type') == 'MANGA':
+            status = f'Status: {format_manga_status(data.get("status"))}'
+        stats.append(status)
+
+        score = f'Score: {str(data.get("meanScore")) if data.get("meanScore") else "N/A"}'
+        stats.append(score)
+
+        embed.set_author(name=' | '.join(stats))
 
         if data.get('type') == 'ANIME':
             if data.get('status') == 'RELEASING':
@@ -312,8 +329,15 @@ class Search(commands.Cog, name='Search'):
             Embed: A discord embed.
         """
         embed = discord.Embed(
-            color=DEFAULT_EMBED_COLOR, title=get_char_staff_name(data.get('name')),
+            color=DEFAULT_EMBED_COLOR,
             description=format_description(data.get('description'), 1000) if data.get('description') else 'N/A')
+
+        if data.get('name')['full'] is None or data.get('name')['full'] == data.get('name')['native']:
+            embed.title = data.get('name')['native']
+        elif data.get('name')['native'] is None:
+            embed.title = data.get('name')['full']
+        else:
+            embed.title = f'{data.get("name")["full"]} ({data.get("name")["native"]})'
 
         if data.get('image')['large']:
             embed.set_thumbnail(url=data.get('image')['large'])
@@ -354,8 +378,15 @@ class Search(commands.Cog, name='Search'):
             Embed: A discord embed.
         """
         embed = discord.Embed(
-            title=get_char_staff_name(data.get('name')), color=DEFAULT_EMBED_COLOR,
+            color=DEFAULT_EMBED_COLOR,
             description=format_description(data.get('description'), 1000) if data.get('description') else 'N/A')
+
+        if data.get('name')['full'] is None or data.get('name')['full'] == data.get('name')['native']:
+            embed.title = data.get('name')['native']
+        elif data.get('name')['native'] is None:
+            embed.title = data.get('name')['full']
+        else:
+            embed.title = f'{data.get("name")["full"]} ({data.get("name")["native"]})'
 
         if data.get('image')['large']:
             embed.set_thumbnail(url=data.get('image')['large'])

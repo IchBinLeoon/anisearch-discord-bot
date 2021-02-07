@@ -29,7 +29,7 @@ from discord.ext.commands import Context
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
-from anisearch.utils.formats import get_media_title, format_media_type
+from anisearch.utils.formatters import format_media_type
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -72,13 +72,19 @@ class Schedule(commands.Cog, name='Schedule'):
                 sites.append(f'[{i["site"]}]({i["url"]})')
 
         embed = discord.Embed(
-            title=get_media_title(data.get('media')['title']), colour=DEFAULT_EMBED_COLOR,
+            colour=DEFAULT_EMBED_COLOR,
             description=f'Episode **{data.get("episode")}** airing in '
                         f'**{str(datetime.timedelta(seconds=data.get("timeUntilAiring")))}**.\n\n**Type:** '
                         f'{format_media_type(data.get("media")["format"]) if data.get("media")["format"] else "N/A"}'
                         f'\n**Duration:** '
                         f'{str(data.get("media")["duration"]) + " min" if data.get("media")["duration"] else "N/A"}\n'
                         f'\n{" | ".join(sites) if len(sites) > 0 else ""}')
+
+        if data.get('media')['title']['english'] is None or data.get('media')['title']['english'] \
+                == data.get('media')['title']['romaji']:
+            embed.title = data.get('media')['title']['romaji']
+        else:
+            embed.title = f'{data.get("media")["title"]["romaji"]} ({data.get("media")["title"]["english"]})'
 
         embed.set_author(name='Next Airing Episode')
 
@@ -117,12 +123,18 @@ class Schedule(commands.Cog, name='Schedule'):
         date = datetime.datetime.utcfromtimestamp(data.get("airingAt")).strftime("%B %d, %Y - %H:%M")
 
         embed = discord.Embed(
-            title=get_media_title(data.get('media')['title']), colour=DEFAULT_EMBED_COLOR,
+            colour=DEFAULT_EMBED_COLOR,
             description=f'Episode **{data.get("episode")}** aired at **{str(date)}** UTC.\n\n**Type:** '
                         f'{format_media_type(data.get("media")["format"]) if data.get("media")["format"] else "N/A"}'
                         f'\n**Duration:** '
                         f'{str(data.get("media")["duration"]) + " min" if data.get("media")["duration"] else "N/A"}\n'
                         f'\n{" | ".join(sites) if len(sites) > 0 else ""}')
+
+        if data.get('media')['title']['english'] is None or data.get('media')['title']['english'] \
+                == data.get('media')['title']['romaji']:
+            embed.title = data.get('media')['title']['romaji']
+        else:
+            embed.title = f'{data.get("media")["title"]["romaji"]} ({data.get("media")["title"]["english"]})'
 
         embed.set_author(name='Recently Aired Episode')
 

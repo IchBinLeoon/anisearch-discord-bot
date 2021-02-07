@@ -27,7 +27,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
-from anisearch.utils.formats import clean_html
+from anisearch.utils.formatters import clean_html
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)

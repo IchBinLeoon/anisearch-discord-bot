@@ -16,53 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import datetime
 import logging
 import re
-from typing import Dict, Any
 
 log = logging.getLogger(__name__)
-
-
-def get_media_title(data: Dict[str, Any]) -> str:
-    """
-    Returns the media title.
-    """
-    if data.get('english') is None or data.get('english') == data.get('romaji'):
-        title = data.get('romaji')
-    else:
-        title = '{} ({})'.format(data.get('romaji'), data.get('english'))
-    return title
-
-
-def get_media_stats(format_: str, type_: str, status: str, mean_score: int) -> str:
-    """
-    Returns the media stats.
-    """
-    anime_stats = []
-    anime_type = 'Type: ' + format_media_type(format_) if format_ else 'N/A'
-    anime_stats.append(anime_type)
-    anime_status = 'N/A'
-    if type_ == 'ANIME':
-        anime_status = 'Status: ' + format_anime_status(status)
-    elif type_ == 'MANGA':
-        anime_status = 'Status: ' + format_manga_status(status)
-    anime_stats.append(anime_status)
-    anime_score = 'Score: ' + str(mean_score) if mean_score else 'N/A'
-    anime_stats.append(anime_score)
-    stats = ' | '.join(anime_stats)
-    return stats
-
-
-def get_char_staff_name(data: Dict[str, Any]) -> str:
-    """
-    Returns the character/staff name.
-    """
-    if data.get('full') is None or data.get('full') == data.get('native'):
-        name = data.get('native')
-    else:
-        if data.get('native') is None:
-            name = data.get('full')
-        else:
-            name = '{} ({})'.format(data.get('full'), data.get('native'))
-    return name
 
 
 def format_media_type(media_type: str) -> str:
@@ -112,7 +67,7 @@ def format_manga_status(media_status: str) -> str:
 
 def clean_html(raw_text) -> str:
     """
-    Removes the unwanted html tags.
+    Removes the html tags from a text.
     """
     clean = re.compile('<.*?>')
     clean_text = re.sub(clean, '', raw_text)
@@ -139,6 +94,5 @@ def format_date(day: int, month: int, year: int) -> str:
     Makes the anilist date suitable for an embed.
     """
     month = datetime.date(1900, month, 1).strftime('%B')
-    month_day = month + ' ' + str(day)
-    date = '{}, {}'.format(month_day, year)
+    date = f'{month} {str(day)}, {year}'
     return date
