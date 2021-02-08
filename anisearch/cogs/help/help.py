@@ -69,6 +69,7 @@ class Help(commands.Cog, name='Help'):
         else:
             if command := get(self.bot.commands, name=cmd.lower()):
                 embed = discord.Embed(title=f'Command -> `{command}`', colour=DEFAULT_EMBED_COLOR)
+                embed.set_author(name='AniSearch Help', icon_url=ANISEARCH_LOGO)
                 embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
                 embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
                                 inline=False)
@@ -99,8 +100,9 @@ class Help(commands.Cog, name='Help'):
 
                 embed = discord.Embed(description=f'To view information about a specified command use: '
                                                   f'`{prefix}help [command]`\n{server_prefix}\n'
+                                                  f'`<>` - required, `[]` - optional, `|` - either/or\n\n'
                                                   f'**{self.bot.get_cog(cog).qualified_name}**\n{cmds}\n'
-                                                  f'`<>` - required, `[]` - optional, `|` - either/or',
+                                                  f'Do **not** include `<>`, `[]` or `|` when executing the command.',
                                       colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name="AniSearch's commands", icon_url=ANISEARCH_LOGO)
                 embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')

@@ -79,6 +79,8 @@ class Profile(commands.Cog, name='Profile'):
 
                 embed = discord.Embed(title=f'Set AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
 
+                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+
                 if data.get('avatar')['large']:
                     embed.set_thumbnail(url=data.get('avatar')['large'])
 
@@ -102,6 +104,8 @@ class Profile(commands.Cog, name='Profile'):
 
                 embed = discord.Embed(title=f'Set MyAnimeList Profile `{data.get("username")}`',
                                       color=DEFAULT_EMBED_COLOR)
+
+                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -128,6 +132,8 @@ class Profile(commands.Cog, name='Profile'):
 
                 embed = discord.Embed(title=f'Set Kitsu Profile `{user.get("attributes")["name"]}`',
                                       color=DEFAULT_EMBED_COLOR)
+
+                embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
                 if user.get('attributes')['avatar']:
                     embed.set_thumbnail(url=user.get('attributes')['avatar']['original'])

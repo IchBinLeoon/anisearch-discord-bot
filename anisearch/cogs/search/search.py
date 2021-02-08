@@ -29,7 +29,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANILIST_LOGO, ANIMETHEMES_LOGO
 from anisearch.utils.enums import AniListSearchType, AniListMediaType
 from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
     format_manga_status
@@ -233,7 +233,7 @@ class Search(commands.Cog, name='Search'):
         score = f'Score: {str(data.get("meanScore")) if data.get("meanScore") else "N/A"}'
         stats.append(score)
 
-        embed.set_author(name=' | '.join(stats))
+        embed.set_author(name=' | '.join(stats), icon_url=ANILIST_LOGO)
 
         if data.get('type') == 'ANIME':
             if data.get('status') == 'RELEASING':
@@ -339,6 +339,8 @@ class Search(commands.Cog, name='Search'):
         else:
             embed.title = f'{data.get("name")["full"]} ({data.get("name")["native"]})'
 
+        embed.set_author(name='Character', icon_url=ANILIST_LOGO)
+
         if data.get('image')['large']:
             embed.set_thumbnail(url=data.get('image')['large'])
 
@@ -388,6 +390,8 @@ class Search(commands.Cog, name='Search'):
         else:
             embed.title = f'{data.get("name")["full"]} ({data.get("name")["native"]})'
 
+        embed.set_author(name='Staff', icon_url=ANILIST_LOGO)
+
         if data.get('image')['large']:
             embed.set_thumbnail(url=data.get('image')['large'])
 
@@ -435,6 +439,8 @@ class Search(commands.Cog, name='Search'):
         """
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR, title=data.get('name'))
 
+        embed.set_author(name='Studio', icon_url=ANILIST_LOGO)
+
         if data.get('siteUrl'):
             embed.url = data.get('siteUrl')
 
@@ -471,6 +477,8 @@ class Search(commands.Cog, name='Search'):
             Embed: A discord embed.
         """
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR, title=data.get('name'))
+
+        embed.set_author(name='Themes', icon_url=ANIMETHEMES_LOGO)
 
         if data.get('images'):
             embed.set_thumbnail(url=data.get('images')[0]['link'])
@@ -514,7 +522,8 @@ class Search(commands.Cog, name='Search'):
         """
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR, title=anime.get("name"))
 
-        embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '))
+        embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '),
+                         icon_url=ANIMETHEMES_LOGO)
 
         if anime.get('images'):
             embed.set_thumbnail(url=anime.get("images")[0]["link"])

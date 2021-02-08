@@ -28,7 +28,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANILIST_LOGO
 from anisearch.utils.formatters import format_media_type
 from anisearch.utils.paginator import EmbedListMenu
 
@@ -86,7 +86,7 @@ class Schedule(commands.Cog, name='Schedule'):
         else:
             embed.title = f'{data.get("media")["title"]["romaji"]} ({data.get("media")["title"]["english"]})'
 
-        embed.set_author(name='Next Airing Episode')
+        embed.set_author(name='Next Airing Episode', icon_url=ANILIST_LOGO)
 
         if data.get('media').get('coverImage').get('large'):
             embed.set_thumbnail(url=data.get('media')['coverImage']['large'])
@@ -136,7 +136,7 @@ class Schedule(commands.Cog, name='Schedule'):
         else:
             embed.title = f'{data.get("media")["title"]["romaji"]} ({data.get("media")["title"]["english"]})'
 
-        embed.set_author(name='Recently Aired Episode')
+        embed.set_author(name='Recently Aired Episode', icon_url=ANILIST_LOGO)
 
         if data.get('media').get('coverImage').get('large'):
             embed.set_thumbnail(url=data.get('media')['coverImage']['large'])

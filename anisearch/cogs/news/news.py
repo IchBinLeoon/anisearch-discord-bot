@@ -94,7 +94,7 @@ class News(commands.Cog, name='News'):
         return embed
 
     @commands.command(name='aninews', usage='aninews', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def aninews(self, ctx: Context):
         """
         Displays the latest anime news from Anime News Network.
@@ -128,7 +128,7 @@ class News(commands.Cog, name='News'):
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='crunchynews', aliases=['crnews'], usage='crunchynews', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def crunchynews(self, ctx: Context):
         """
         Displays the latest anime news from Crunchyroll.
