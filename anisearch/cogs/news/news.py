@@ -26,7 +26,7 @@ from discord.ext import commands, menus
 from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, CRUNCHYROLL_LOGO, ANIMENEWSNETWORK_LOGO
 from anisearch.utils.formatters import clean_html
 from anisearch.utils.paginator import EmbedListMenu
 
@@ -65,7 +65,7 @@ class News(commands.Cog, name='News'):
             category = f' | {data.get("category")}'
 
         embed.set_author(name=f'Anime News Network News | {data.get("date").replace("-0500", "EST")}'
-                              f'{category if data.get("category") else ""}', icon_url='https://i.imgur.com/PhlqOk1.jpg')
+                              f'{category if data.get("category") else ""}', icon_url=ANIMENEWSNETWORK_LOGO)
 
         embed.set_footer(text=f'Provided by https://www.animenewsnetwork.com/ • Page {page}/{pages}')
 
@@ -87,7 +87,7 @@ class News(commands.Cog, name='News'):
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
                               description=f'```{clean_html(data.get("description"))}```')
 
-        embed.set_author(name=f'Crunchyroll News | {data.get("date")}', icon_url='https://i.imgur.com/P5hPOpg.jpg')
+        embed.set_author(name=f'Crunchyroll News | {data.get("date")}', icon_url=CRUNCHYROLL_LOGO)
 
         embed.set_footer(text=f'Provided by https://www.crunchyroll.com/ • Page {page}/{pages}')
 

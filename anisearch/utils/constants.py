@@ -37,3 +37,11 @@ CREATOR_ID = 223871059068321793
 BOT_ID = 737236600878137363
 DISCORD_INVITE = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
 TOPGG_VOTE = 'https://top.gg/bot/737236600878137363/vote'
+
+ANISEARCH_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/anisearch-logo.png?raw=true'
+
+ANILIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/AniList.jpg?raw=true'
+ANIMENEWSNETWORK_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/AnimeNewsNetwork.jpg?raw=true'
+CRUNCHYROLL_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/Crunchyroll.jpg?raw=true'
+KITSU_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/Kitsu.jpg?raw=true'
+MYANIMELIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/MyAnimeList.jpg?raw=true'

@@ -26,7 +26,7 @@ from discord.ext import commands, menus
 from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, ANILIST_LOGO
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -234,8 +234,9 @@ class Profile(commands.Cog, name='Profile'):
         if data is not None:
 
             try:
-                embed = discord.Embed(title=f'{data.get("name")} - AniList',
-                                      url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+
+                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
 
                 if data.get('avatar')['large']:
                     embed.set_thumbnail(url=data.get('avatar')['large'])
@@ -283,8 +284,9 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=f'{data.get("name")} - AniList',
-                                      url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+
+                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
 
                 if data.get('avatar')['large']:
                     embed.set_thumbnail(url=data.get('avatar')['large'])
@@ -423,7 +425,7 @@ class Profile(commands.Cog, name='Profile'):
                     birthday = data.get('birthday').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
 
                 embed = discord.Embed(
-                    title=f'{data.get("username")} - MyAnimeList',
+                    title=data.get('username'),
                     url=data.get('url'), color=DEFAULT_EMBED_COLOR,
                     description=
                     f'**Last Online:** {last_online if data.get("last_online") else "N/A"}\n'
@@ -432,6 +434,8 @@ class Profile(commands.Cog, name='Profile'):
                     f'**Location:** {data.get("location") if data.get("location") else "N/A"}\n'
                     f'**Joined:** {joined if data.get("joined") else "N/A"}\n'
                 )
+
+                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -489,8 +493,10 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=f'{data.get("username")} - MyAnimeList',
+                embed = discord.Embed(title=data.get('username'),
                                       url=data.get('url'), color=DEFAULT_EMBED_COLOR)
+
+                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -626,13 +632,15 @@ class Profile(commands.Cog, name='Profile'):
                 else:
                     gender = 'N/A'
 
-                embed = discord.Embed(title=f'{data.get("data")[0]["attributes"]["name"]} - Kitsu',
+                embed = discord.Embed(title=data.get('data')[0]['attributes']['name'],
                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
                                       color=DEFAULT_EMBED_COLOR, description=f'**Gender:** {gender}\n'
                                                                              f'**Birthday:** {birthday}\n'
                                                                              f'**Location:** {location}\n'
                                                                              f'**Created at:** {createdAt}\n'
-                                                                             f'**Updated at:** {updatedAt}\n', )
+                                                                             f'**Updated at:** {updatedAt}\n')
+
+                embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
                 if data.get('data')[0].get('attributes').get('avatar'):
                     embed.set_thumbnail(url=data.get('data')[0]['attributes']['avatar']['original'])
