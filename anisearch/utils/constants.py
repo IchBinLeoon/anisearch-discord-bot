@@ -28,6 +28,7 @@ JIKAN_BASE_URL = 'https://api.jikan.moe/v3'
 KITSU_BASE_URL = 'https://kitsu.io/api/edge'
 
 ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT = 'https://www.animenewsnetwork.com/newsroom/rss.xml'
+CRUNCHYROLL_NEWS_FEED_ENDPOINT = 'https://www.crunchyroll.com/newsrss?lang=enEN'
 
 DEFAULT_EMBED_COLOR = 0x4169E1
 ERROR_EMBED_COLOR = 0xff0000

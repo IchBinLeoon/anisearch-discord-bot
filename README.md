@@ -51,10 +51,10 @@
 You can also:
 - Search for a random anime or manga of a specific genre.
 - View the opening and ending themes of an anime.
-- View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net/) or [Kitsu](https://kitsu.io/).
+- View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net) or [Kitsu](https://kitsu.io).
 - Search for the anime or the source of an image.
 - View the next airing, and the most recently aired anime episodes.
-- View the latest anime related news.  
+- View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com).  
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
@@ -135,6 +135,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 ### News
 - `aninews:` Displays the latest anime news from Anime News Network.  
+
+- `crunchynews:` Displays the latest anime news from Crunchyroll.  
 
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
@@ -300,6 +302,7 @@ Thanks to the people who made this discord bot possible.
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
 #### [SauceNAO](https://saucenao.com)
 #### [Anime News Network](https://www.animenewsnetwork.com)
+#### [Crunchyroll](https://www.crunchyroll.com)
 
 
 # 📝 License

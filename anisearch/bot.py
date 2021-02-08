@@ -33,6 +33,7 @@ from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
+from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
 from anisearch.utils.jikan import JikanClient
 from anisearch.utils.kitsu import KitsuClient
@@ -89,6 +90,8 @@ class AniSearchBot(AutoShardedBot):
         self.kitsu = KitsuClient(session=ClientSession(loop=self.loop))
 
         self.animenewsnetwork = AnimeNewsNetworkClient(session=ClientSession(loop=self.loop))
+
+        self.crunchyroll = CrunchyrollClient(session=ClientSession(loop=self.loop))
 
         # Posts the guild count to top.gg every 30 minutes.
         self.topgg_token = TOPGG_TOKEN

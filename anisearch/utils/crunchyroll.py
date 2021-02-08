@@ -23,25 +23,25 @@ from typing import Optional, Any, Dict, Union, List
 import aiohttp
 from bs4 import BeautifulSoup
 
-from anisearch.utils.constants import ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT
+from anisearch.utils.constants import CRUNCHYROLL_NEWS_FEED_ENDPOINT
 
 log = logging.getLogger(__name__)
 
 
-class AnimeNewsNetworkException(Exception):
+class CrunchyrollException(Exception):
     """
-    Base exception class for the Anime News Network RSS feed parser.
+    Base exception class for the Crunchyroll RSS feed parser.
     """
 
 
-class AnimeNewsNetworkFeedError(AnimeNewsNetworkException):
+class CrunchyrollFeedError(CrunchyrollException):
     """
-    Exception due to an error response from the Anime News Network RSS feed.
+    Exception due to an error response from the Crunchyroll RSS feed.
     """
 
     def __init__(self, status: int) -> None:
         """
-        Initializes the AnimeNewsNetworkFeedError exception.
+        Initializes the CrunchyrollFeedError exception.
 
         Args:
             status (int): The status code.
@@ -49,15 +49,15 @@ class AnimeNewsNetworkFeedError(AnimeNewsNetworkException):
         super().__init__(status)
 
 
-class AnimeNewsNetworkClientError(AnimeNewsNetworkException):
+class CrunchyrollClientError(CrunchyrollException):
     """
     Exceptions that do not involve the RSS feed.
     """
 
 
-class AnimeNewsNetworkClient:
+class CrunchyrollClient:
     """
-    Asynchronous parser client for the Anime News Network RSS feed.
+    Asynchronous parser client for the Crunchyroll RSS feed.
     This class is used to interact with the RSS feed.
 
     Attributes:
@@ -66,7 +66,7 @@ class AnimeNewsNetworkClient:
 
     def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
         """
-        Initializes the AnimeNewsNetworkClient.
+        Initializes the CrunchyrollClient.
 
         Args:
             session (aiohttp.ClientSession, optional): An aiohttp session.
@@ -99,7 +99,7 @@ class AnimeNewsNetworkClient:
 
     async def _request(self, url: str) -> str:
         """
-        Makes a request to the Anime News Network RSS feed.
+        Makes a request to the Crunchyroll RSS feed.
 
         Args:
             url (str): The url used for the request.
@@ -108,14 +108,14 @@ class AnimeNewsNetworkClient:
             str: The RSS feed as text.
 
         Raises:
-            AnimeNewsNetworkFeedError: If the response contains an error.
+            CrunchyrollFeedError: If the response contains an error.
         """
         session = await self._session()
         response = await session.get(url)
         if response.status == 200:
             data = await response.text()
         else:
-            raise AnimeNewsNetworkFeedError(response.status)
+            raise CrunchyrollFeedError(response.status)
         return data
 
     @staticmethod
@@ -140,10 +140,10 @@ class AnimeNewsNetworkClient:
                     break
                 feed = {
                     'title': item.find('title').text,
-                    'link': item.find('guid').text,
+                    'author': item.find('author').text,
                     'description': item.find('description').text,
-                    'category': item.find('category').text if item.find('category') else None,
-                    'date': item.find('pubdate').text
+                    'date': item.find('pubdate').text,
+                    'link': item.find('guid').text
                 }
                 data.append(feed)
             return data
@@ -160,7 +160,7 @@ class AnimeNewsNetworkClient:
             list: Dictionaries with the data about the anime news.
             None: If no anime news were found.
         """
-        text = await self._request(ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT)
+        text = await self._request(CRUNCHYROLL_NEWS_FEED_ENDPOINT)
         data = await self._parse_feed(text=text, count=count)
         if data:
             return data
