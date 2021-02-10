@@ -117,7 +117,7 @@ class AniListClient:
         data = await response.json()
         if data.get('errors'):
             raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],
-                                  data.get('errors')[0]['locations'])
+                                  data.get('errors')[0].get('locations'))
         return data
 
     async def media(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
