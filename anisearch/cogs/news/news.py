@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import html
 import logging
 from typing import Dict, Any
 
@@ -58,7 +59,7 @@ class News(commands.Cog, name='News'):
             Embed: A discord embed.
         """
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
-                              description=f'```{clean_html(data.get("description"))}```')
+                              description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
         category = None
         if data.get('category'):
@@ -85,7 +86,7 @@ class News(commands.Cog, name='News'):
             Embed: A discord embed.
         """
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
-                              description=f'```{clean_html(data.get("description"))}```')
+                              description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
         embed.set_author(name=f'Crunchyroll News | {data.get("date")}', icon_url=CRUNCHYROLL_LOGO)
 
