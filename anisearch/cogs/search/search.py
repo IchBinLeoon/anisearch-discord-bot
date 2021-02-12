@@ -452,10 +452,14 @@ class Search(commands.Cog, name='Search'):
             embed.description = '**Animation Studio**'
 
         if data.get('media')['nodes']:
-            media = []
+            media, length = [], 0
             for x in data.get('media')['nodes']:
-                media.append(f'[{[x][0]["title"]["romaji"]}]({[x][0]["siteUrl"]}) -> '
-                             f'Type: **{format_media_type([x][0]["format"])}** | Episodes: **{[x][0]["episodes"]}**')
+                studio = f'[{[x][0]["title"]["romaji"]}]({[x][0]["siteUrl"]}) -> Type: ' \
+                         f'**{format_media_type([x][0]["format"])}** | Episodes: **{[x][0]["episodes"]}**'
+                length += len(studio)
+                if length >= 1024:
+                    break
+                media.append(studio)
 
             embed.add_field(name='Most Popular Productions', value='\n'.join(media), inline=False)
 
