@@ -203,7 +203,10 @@ class AniSearchBot(AutoShardedBot):
         """
         users = 0
         for guild in self.guilds:
-            users += guild.member_count
+            try:
+                users += guild.member_count
+            except Exception as e:
+                logging.warning(e)
         return users
 
     def get_channel_count(self) -> int:
@@ -240,6 +243,8 @@ class AniSearchBot(AutoShardedBot):
         await self.saucenao.close()
         await self.myanimelist.close()
         await self.kitsu.close()
+        await self.animenewsnetwork.close()
+        await self.crunchyroll.close()
         if self.session is not None:
             await self.session.close()
         await super().close()
