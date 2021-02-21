@@ -112,14 +112,14 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
    <details close>
    <summary>Themes Example</summary>
    <br>
-   <img src="assets/examples/themes-example.png">
+   <img src="assets/examples/themes-example.PNG">
    </details>
 
 - `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
    <details close>
    <summary>Theme Example</summary>
    <br>
-   <img src="assets/examples/theme-example.png">
+   <img src="assets/examples/theme-example.PNG">
    </details>
 
 ### Profile
