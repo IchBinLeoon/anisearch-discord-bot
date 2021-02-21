@@ -110,14 +110,14 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
    <details close>
-   <summary>Anime Example</summary>
+   <summary>Themes Example</summary>
    <br>
    <img src="assets/examples/themes-example.png">
    </details>
 
 - `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
    <details close>
-   <summary>Anime Example</summary>
+   <summary>Theme Example</summary>
    <br>
    <img src="assets/examples/theme-example.png">
    </details>
