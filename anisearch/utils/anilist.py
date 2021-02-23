@@ -40,7 +40,7 @@ class AnilistAPIError(AnilistException):
 
     def __init__(self, msg: str, status: int, locations: List[Dict[str, Any]]) -> None:
         """
-        Initializes the APIError exception.
+        Initializes the AnilistAPIError exception.
 
         Args:
             msg (str): The error message.
@@ -48,6 +48,21 @@ class AnilistAPIError(AnilistException):
             locations (list, optional): The locations of the error.
         """
         super().__init__(f'{msg} - Status: {str(status)} - Locations: {locations}')
+
+
+class AnilistRequestError(AnilistException):
+    """
+    Exception due to an error response from the AniList API.
+    """
+
+    def __init__(self, status: int) -> None:
+        """
+        Initializes the AnilistRequestError exception.
+
+        Args:
+            status (int): The status code.
+        """
+        super().__init__(status)
 
 
 class AnilistClientError(AnilistException):
@@ -114,6 +129,8 @@ class AniListClient:
         """
         session = await self._session()
         response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
+        if response.status != 200:
+            raise AnilistRequestError(response.status)
         data = await response.json()
         if data.get('errors'):
             raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],

@@ -542,7 +542,8 @@ class Search(commands.Cog, name='Search'):
 
         if data.get('song')['artists']:
             list_.append('**Artist:** ' + data.get('song')['artists'][0]['name'] if
-                         len(data.get('song')['artists']) == 1 else ', '.join([a for a in data.get('song')['artists']]))
+                         len(data.get('song')['artists']) == 1 else
+                         '**Artists:** ' + ', '.join([a.get("name") for a in data.get('song')['artists']]))
 
         embed.description = '\n'.join(list_) if len(list_) > 0 else 'N/A'
 
