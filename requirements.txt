@@ -1,6 +1,6 @@
 discord.py==1.6.0
 git+git://github.com/Rapptz/discord-ext-menus
-aiohttp==3.7.3
+aiohttp==3.7.4
 psycopg2==2.8.6
 beautifulsoup4==4.9.3
 dblpy==0.4.0
