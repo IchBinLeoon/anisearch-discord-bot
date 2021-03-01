@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--version', action='version', version=anisearch.__version__, help='Display version.')
     parser.add_argument('-d', '--debug', action='store_true', help='Start the bot in debugging mode.')
     args = parser.parse_args()
-    if not os.path.exists('config.py'):
+    if not os.path.exists(f'{os.path.dirname(os.path.abspath(__file__))}/config.py'):
         sys.exit('No `config.py` found. The `config.py` needs to be configured before the bot can run.')
     else:
         from anisearch.bot import AniSearchBot
