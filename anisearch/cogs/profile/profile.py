@@ -252,8 +252,6 @@ class Profile(commands.Cog, name='Profile'):
                     embed.add_field(name='About',
                                     value=data.get('about')[0:500] + '...' if len(data.get('about')) >= 500
                                     else data.get('about'), inline=False)
-                else:
-                    embed.add_field(name='About', value='N/A', inline=False)
 
                 embed.add_field(
                     name='Anime Stats', inline=True,
@@ -419,27 +417,24 @@ class Profile(commands.Cog, name='Profile'):
         if data is not None:
 
             try:
-                last_online = None
+                description = []
                 if data.get('last_online'):
                     last_online = data.get('last_online').__str__().replace('-', '/') \
                         .replace('T', ' ').replace('+', ' +').replace('+00:00', 'UTC')
-                joined = None
-                if data.get('joined'):
-                    joined = data.get('joined').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
-                birthday = None
+                    description.append(f'**Last Online:** {last_online}')
+                if data.get('gender'):
+                    description.append(f'**Gender:** {data.get("gender")}')
                 if data.get('birthday'):
                     birthday = data.get('birthday').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
+                    description.append(f'**Birthday:** {birthday}')
+                if data.get('location'):
+                    description.append(f'**Location:** {data.get("location")}')
+                if data.get('joined'):
+                    joined = data.get('joined').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
+                    description.append(f'**Joined:** {joined}')
 
-                embed = discord.Embed(
-                    title=data.get('username'),
-                    url=data.get('url'), color=DEFAULT_EMBED_COLOR,
-                    description=
-                    f'**Last Online:** {last_online if data.get("last_online") else "N/A"}\n'
-                    f'**Gender:** {data.get("gender") if data.get("gender") else "N/A"}\n'
-                    f'**Birthday:** {birthday if data.get("birthday") else "N/A"}\n'
-                    f'**Location:** {data.get("location") if data.get("location") else "N/A"}\n'
-                    f'**Joined:** {joined if data.get("joined") else "N/A"}\n'
-                )
+                embed = discord.Embed(title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR,
+                                      description='\n'.join(description))
 
                 embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
 
@@ -614,37 +609,29 @@ class Profile(commands.Cog, name='Profile'):
         if data is not None:
 
             try:
-                if data.get('data')[0].get('attributes').get('createdAt'):
-                    createdAt = data.get('data')[0].get('attributes').get('createdAt').split('T')
-                    createdAt = createdAt[0]
-                else:
-                    createdAt = 'N/A'
-                if data.get('data')[0].get('attributes').get('updatedAt'):
-                    updatedAt = data.get('data')[0].get('attributes').get('updatedAt').split('T')
-                    updatedAt = updatedAt[0]
-                else:
-                    updatedAt = 'N/A'
-                if data.get('data')[0].get('attributes').get('location'):
-                    location = data.get('data')[0].get('attributes').get('location')
-                else:
-                    location = 'N/A'
-                if data.get('data')[0].get('attributes').get('birthday'):
-                    birthday = data.get('data')[0].get('attributes').get('birthday')
-                else:
-                    birthday = 'N/A'
+                description = []
                 if data.get('data')[0].get('attributes').get('gender'):
                     gender = data.get('data')[0].get('attributes').get('gender') \
                         .replace('male', 'Male').replace('feMale', 'Female')
-                else:
-                    gender = 'N/A'
+                    description.append(f'**Gender:** {gender}')
+                if data.get('data')[0].get('attributes').get('birthday'):
+                    birthday = data.get('data')[0].get('attributes').get('birthday')
+                    description.append(f'**Birthday:** {birthday}')
+                if data.get('data')[0].get('attributes').get('location'):
+                    location = data.get('data')[0].get('attributes').get('location')
+                    description.append(f'**Location:** {location}')
+                if data.get('data')[0].get('attributes').get('createdAt'):
+                    createdAt = data.get('data')[0].get('attributes').get('createdAt').split('T')
+                    createdAt = createdAt[0]
+                    description.append(f'**Created at:** {createdAt}')
+                if data.get('data')[0].get('attributes').get('updatedAt'):
+                    updatedAt = data.get('data')[0].get('attributes').get('updatedAt').split('T')
+                    updatedAt = updatedAt[0]
+                    description.append(f'**Updated at:** {updatedAt}')
 
                 embed = discord.Embed(title=data.get('data')[0]['attributes']['name'],
                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
-                                      color=DEFAULT_EMBED_COLOR, description=f'**Gender:** {gender}\n'
-                                                                             f'**Birthday:** {birthday}\n'
-                                                                             f'**Location:** {location}\n'
-                                                                             f'**Created at:** {createdAt}\n'
-                                                                             f'**Updated at:** {updatedAt}\n')
+                                      color=DEFAULT_EMBED_COLOR, description='\n'.join(description))
 
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
