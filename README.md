@@ -189,35 +189,11 @@ Nevertheless, the installation steps are as follows:
 To be able to use the bot you need to set up a `PostgreSQL Database`.
 
 Make sure the tables are set up correctly as shown below to successfully connect to your PostgreSQL Database.
-
-### Database Table Structure
-
-guilds
-
-| id | prefix |
-|--------------|--------------|
-| bigint | character varying (255) |
-
-users
-
-| id | anilist | myanimelist | kitsu |
-|--------------|--------------|--------------|--------------|
-| bigint | character varying (255) | character varying (255) | character varying (255) |
-
-### Query Tool
+Type the following in your `PSQL Tool`:
 
 ```sql
-CREATE TABLE guilds (
-    id bigint,
-    prefix VARCHAR (255)
-)
-
-CREATE TABLE users (
-    id bigint,
-    anilist VARCHAR (255),
-    myanimelist VARCHAR (255),
-    kitsu VARCHAR (255)
-)
+CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (255))
+CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255))
 ```
 
 ## 2. 🔧 Set up Bot and Dashboard
@@ -256,16 +232,9 @@ The bot comes with an admin web dashboard running on port 5000.
     ```
 
 ## 3. 🐳 Run
+1. Make sure `Docker` and `Docker-Compose` are installed.
 
-1. Change back to the parent directory.
-    
-    ```
-    $ cd ..
-    ```
-   
-2. Make sure `Docker` and `Docker-Compose` are installed.
-
-3. Build the image and run the bot.
+2. Build the image and run the bot.
 
     ```
     $ docker-compose up --build
