@@ -49,7 +49,7 @@ def setup_logging() -> None:
     Sets up the logging.
     """
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO,
-                        format='%(levelname)s:%(asctime)s:%(name)s:%(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+                        format='[%(asctime)s] %(name)s » %(levelname)s: %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 
 
 async def check_update() -> None:
@@ -73,6 +73,7 @@ def start() -> None:
     """
     try:
         bot = AniSearchBot()
+        bot.ipc.start()
         bot.run()
     except Exception as e:
         logging.exception(e)

@@ -185,7 +185,7 @@ Self-hosting isn't fully supported. I would prefer if you don't run an instance 
 
 Nevertheless, the installation steps are as follows:  
 
-## 1. Set up Database
+## 1. 💾 Set up Database
 To be able to use the bot you need to set up a `PostgreSQL Database`.
 
 Make sure the tables are set up correctly as shown below to successfully connect to your PostgreSQL Database.
@@ -220,84 +220,82 @@ CREATE TABLE users (
 )
 ```
 
-## 2. Set up Bot
+## 2. 🔧 Set up Bot and Dashboard
+
+### Bot
 1. Clone the repository.    
 
     ```
     $ git clone https://github.com/IchBinLeoon/anisearch-discord-bot
     ```
 
-2. Change the working directory.
+2. Create a [Discord Application](https://discord.com/developers/applications).
+
+3. Change the working directory.
 
     ```
     $ cd anisearch-discord-bot/anisearch
     ```
 
-3. Create a [Discord Application](https://discord.com/developers/applications).
-
 4. Rename `config.example.py` to `config.py`.  
 
 5. Edit `config.py`.   
 
-   ```py
-   # The token the bot will use for auth with Discord.
-   TOKEN = 'my cool bot token'
-   
-   # The Discord ID of the user hosting the bot.
-   OWNER_ID = 'my discord id'
-   
-   # The Postgres database credentials.
-   DB_HOST = 'hostname'
-   DB_NAME = 'database'
-   DB_USER = 'username'
-   BD_PASSWORD = 'password'
-   
-   # The SauceNAO API key. Is required for the `source` command.
-   SAUCENAO = 'my api key'
-   ```
+    ```py
+    # The token the bot will use for auth with Discord.
+    TOKEN = 'my cool bot token'
+    
+    # The Discord ID of the user hosting the bot.
+    OWNER_ID = 'my discord id'
+    
+    # The Postgres database credentials.
+    DB_HOST = 'hostname'
+    DB_NAME = 'database'
+    DB_USER = 'username'
+    BD_PASSWORD = 'password'
+    
+    # The SauceNAO API key. Is required for the `source` command.
+    SAUCENAO = 'my api key'
+    
+    # The secret key used for authentication. Use what you want. Should be the same as your dashboard’s secret key.
+    IPC_SECRET_KEY = 'super secret key'
+    ```
 
-## 3. Run
+### Dashboard
+The bot comes with an admin web dashboard running on port 5000.
+
+1. Change the working directory.
+
+    ```
+    $ cd ..
+    $ cd dashboard
+    ```
+   
+2. Rename `config.example.py` to `config.py`.  
+
+3. Edit `config.py`.   
+
+    ```py
+    # The secret key used for authentication. Use what you want. Should be the same as your bot’s secret key.
+    IPC_SECRET_KEY = 'super secret key'
+    ```
+
+## 3. 🐳 Run
 
 1. Change back to the parent directory.
-
+    
     ```
     $ cd ..
     ```
    
-2. Run the bot either as a Docker container or manually.
+2. Make sure `Docker` and `Docker-Compose` are installed.
 
-### 🐳 Docker
-1. Make sure `Docker` and `Docker-Compose` are installed.
-
-2. Build the image and run the bot.
+3. Build the image and run the bot.
 
     ```
     $ docker-compose up --build
     ```
-
-### 🔧 Manually
-1. Make sure you have `Python 3.8` or higher.
-
-2. Set up and activate venv.
-
-    ```
-    $ python3 -m venv venv
-    $ source venv/bin/activate # On macOS and Linux
-    $ .\venv\Scripts\activate # On Windows
-    ```
-
-3. Install the requirements.
-
-    ```
-    $ python -m pip install -r requirements.txt
-    ```
-
-4. Run AniSearch.
-
-    ```
-    $ python -m anisearch
-    ```
-
+   
 
 # 📚 Libraries and API's
 Thanks to the people who made this discord bot possible.  
@@ -305,6 +303,8 @@ Thanks to the people who made this discord bot possible.
 #### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)  
 #### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)  
 #### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
+#### [Ext-Creators/discord-ext-ipc](https://github.com/Ext-Creators/discord-ext-ipc)  
+#### [pgjones/quart](https://gitlab.com/pgjones/quart)  
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)  
 #### [jikan-me/jikan](https://github.com/jikan-me/jikan)  
 #### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)  

@@ -25,10 +25,10 @@ from datetime import timedelta
 import dbl
 import discord
 from aiohttp import ClientSession
-from discord.ext import commands, tasks, menus
+from discord.ext import commands, tasks, menus, ipc
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
-from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO
+from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO, IPC_SECRET_KEY
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
@@ -50,7 +50,8 @@ initial_extensions = [
     'anisearch.cogs.news',
     'anisearch.cogs.help',
     'anisearch.cogs.settings',
-    'anisearch.cogs.admin'
+    'anisearch.cogs.admin',
+    'anisearch.cogs.ipc'
 ]
 
 
@@ -74,6 +75,7 @@ class AniSearchBot(AutoShardedBot):
         self.session = ClientSession(loop=self.loop)
 
         self.db = DataBase()
+        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host='0.0.0.0', port=8765, multicast_port=20000)
 
         self.anilist = AniListClient(session=ClientSession(loop=self.loop))
 
@@ -173,14 +175,20 @@ class AniSearchBot(AutoShardedBot):
     async def on_disconnect(self) -> None:
         log.info('Disconnected from Discord.')
 
+    async def on_ipc_ready(self):
+        log.info('Ipc is ready.')
+
+    async def on_ipc_error(self, endpoint, error):
+        log.exception(endpoint, 'raised', error)
+
     async def on_command(self, ctx: Context) -> None:
         if isinstance(ctx.channel, discord.channel.DMChannel):
             log.info(
-                f'Private Message | Author: `{ctx.author}` - ID: {ctx.author.id} | Command: {ctx.message.content}')
+                f"Private Message | Author: '{ctx.author}' - {ctx.author.id} | Command: {ctx.message.content}")
         else:
             log.info(
-                f'Server: `{ctx.guild.name}` - ID: {ctx.guild.id} | Author: `{ctx.author}` ID: - {ctx.author.id} | '
-                f'Command: {ctx.message.content}')
+                f"Server: '{ctx.guild.name}' - {ctx.guild.id} | Author: '{ctx.author}' - {ctx.author.id} | "
+                f"Command: {ctx.message.content}")
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         log.info(f'Joined guild `{guild.name}` - ID: {guild.id}')

@@ -1,0 +1,2 @@
+quart==0.14.1
+discord-ext-ipc==2.0.0

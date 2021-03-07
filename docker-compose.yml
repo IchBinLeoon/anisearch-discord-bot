@@ -1,7 +1,19 @@
 version: '3'
 
 services:
-  anisearch:
+  bot:
     build: .
+    ports:
+      - "8765:8765"
     restart: unless-stopped
-    container_name: anisearch-container
+    container_name: anisearch-bot
+  dashboard:
+    build: ./dashboard
+    depends_on:
+      - bot
+    ports:
+      - "5000:5000"
+    links:
+      - "bot"
+    restart: unless-stopped
+    container_name: anisearch-dashboard

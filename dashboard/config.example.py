@@ -17,25 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-# The token the bot will use for auth with Discord.
-TOKEN = 'my cool bot token'
-
-# The Discord ID of the user hosting the bot.
-OWNER_ID = 'my discord id'
-
-# The Postgres database credentials.
-DB_HOST = 'hostname'
-DB_NAME = 'database'
-DB_USER = 'username'
-BD_PASSWORD = 'password'
-
-# The SauceNAO API key. Is required for the `source` command.
-SAUCENAO = 'my api key'
-
-# The secret key used for authentication with the dashboard. Use what you want.
-# Should be the same as your dashboard’s secret key.
+# The secret key used for authentication with the bot. Use what you want.
+# Should be the same as your bot’s secret key.
 IPC_SECRET_KEY = 'super secret key'
-
-# Everything below can be ignored and does not need to be edited to run the bot.
-# The token for top.gg.
-TOPGG_TOKEN = ''

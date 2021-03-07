@@ -17,25 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-# The token the bot will use for auth with Discord.
-TOKEN = 'my cool bot token'
+import logging
 
-# The Discord ID of the user hosting the bot.
-OWNER_ID = 'my discord id'
+from anisearch.bot import AniSearchBot
+from anisearch.cogs.ipc.ipc import Ipc
 
-# The Postgres database credentials.
-DB_HOST = 'hostname'
-DB_NAME = 'database'
-DB_USER = 'username'
-BD_PASSWORD = 'password'
+log = logging.getLogger(__name__)
 
-# The SauceNAO API key. Is required for the `source` command.
-SAUCENAO = 'my api key'
 
-# The secret key used for authentication with the dashboard. Use what you want.
-# Should be the same as your dashboard’s secret key.
-IPC_SECRET_KEY = 'super secret key'
-
-# Everything below can be ignored and does not need to be edited to run the bot.
-# The token for top.gg.
-TOPGG_TOKEN = ''
+def setup(bot: AniSearchBot):
+    """
+    Sets up the `Ipc` cog.
+    """
+    bot.add_cog(Ipc(bot))
+    log.info('Ipc cog loaded.')
