@@ -20,15 +20,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import argparse
 import asyncio
 import logging
-import os
 import platform
 import re
-import sys
 
 import aiohttp
 import discord
 
 import anisearch
+from anisearch.bot import AniSearchBot
 
 
 def main() -> None:
@@ -84,8 +83,4 @@ if __name__ == '__main__':
     parser.add_argument('--version', action='version', version=anisearch.__version__, help='Display version.')
     parser.add_argument('-d', '--debug', action='store_true', help='Start the bot in debugging mode.')
     args = parser.parse_args()
-    if not os.path.exists(f'{os.path.dirname(os.path.abspath(__file__))}/config.py'):
-        sys.exit('No `config.py` found. The `config.py` needs to be configured before the bot can run.')
-    else:
-        from anisearch.bot import AniSearchBot
     main()

@@ -23,17 +23,17 @@ from discord.ext import ipc
 from config import IPC_SECRET_KEY
 
 app = Quart(__name__)
-ipc_client = ipc.Client(secret_key=IPC_SECRET_KEY, host='bot', port=8765, multicast_port=20000)
+ipc = ipc.Client(secret_key=IPC_SECRET_KEY, host='bot', port=8765, multicast_port=20000)
 
 
 @app.route('/')
 async def index():
     data = {
-        'guild_count': await ipc_client.request('get_guild_count'),
-        'user_count': await ipc_client.request('get_user_count'),
-        'channel_count': await ipc_client.request('get_channel_count'),
-        'uptime': await ipc_client.request('get_uptime'),
-        'shards': await ipc_client.request('get_shard_count')
+        'guild_count': await ipc.request('get_guild_count'),
+        'user_count': await ipc.request('get_user_count'),
+        'channel_count': await ipc.request('get_channel_count'),
+        'uptime': await ipc.request('get_uptime'),
+        'shards': await ipc.request('get_shard_count')
     }
     return await render_template('index.html', **data)
 

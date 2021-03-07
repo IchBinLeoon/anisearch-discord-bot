@@ -40,20 +40,35 @@ class Ipc(commands.Cog, name='Ipc'):
 
     @ipc.server.route()
     async def get_guild_count(self, data: IpcServerResponse):
+        """
+        Returns the bot guild count.
+        """
         return str(self.bot.get_guild_count())
 
     @ipc.server.route()
     async def get_user_count(self, data: IpcServerResponse):
+        """
+        Returns the bot user count.
+        """
         return str(self.bot.get_user_count())
 
     @ipc.server.route()
     async def get_channel_count(self, data: IpcServerResponse):
+        """
+        Returns the bot channel count.
+        """
         return str(self.bot.get_channel_count())
 
     @ipc.server.route()
     async def get_uptime(self, data: IpcServerResponse):
+        """
+        Returns the bot uptime.
+        """
         return str(self.bot.get_uptime())
 
     @ipc.server.route()
     async def get_shard_count(self, data: IpcServerResponse):
+        """
+        Returns the bot shard count.
+        """
         return str(self.bot.shard_count)

@@ -17,25 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-# The token the bot will use for auth with Discord.
-TOKEN = 'my cool bot token'
+import os
 
-# The Discord ID of the user hosting the bot.
-OWNER_ID = 'my discord id'
+TOKEN = os.getenv('TOKEN')
 
-# The Postgres database credentials.
-DB_HOST = 'hostname'
-DB_NAME = 'database'
-DB_USER = 'username'
-BD_PASSWORD = 'password'
+OWNER_ID = os.getenv('OWNER_ID')
 
-# The SauceNAO API key. Is required for the `source` command.
-SAUCENAO = 'my api key'
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+BD_PASSWORD = os.getenv('BD_PASSWORD')
 
-# The secret key used for authentication with the dashboard. Use what you want.
-# Should be the same as your dashboard’s secret key.
-IPC_SECRET_KEY = 'super secret key'
+SAUCENAO = os.getenv('SAUCENAO')
 
-# Everything below can be ignored and does not need to be edited to run the bot.
-# The token for top.gg.
-TOPGG_TOKEN = ''
+IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
+
+TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')

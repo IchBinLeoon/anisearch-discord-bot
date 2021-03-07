@@ -221,8 +221,8 @@ CREATE TABLE users (
 ```
 
 ## 2. 🔧 Set up Bot and Dashboard
+The bot comes with an admin web dashboard running on port 5000.
 
-### Bot
 1. Clone the repository.    
 
     ```
@@ -231,17 +231,11 @@ CREATE TABLE users (
 
 2. Create a [Discord Application](https://discord.com/developers/applications).
 
-3. Change the working directory.
+3. Rename `.env.example` to `.env`.  
+
+4. Edit `.env`.  
 
     ```
-    $ cd anisearch-discord-bot/anisearch
-    ```
-
-4. Rename `config.example.py` to `config.py`.  
-
-5. Edit `config.py`.   
-
-    ```py
     # The token the bot will use for auth with Discord.
     TOKEN = 'my cool bot token'
     
@@ -257,26 +251,7 @@ CREATE TABLE users (
     # The SauceNAO API key. Is required for the `source` command.
     SAUCENAO = 'my api key'
     
-    # The secret key used for authentication. Use what you want. Should be the same as your dashboard’s secret key.
-    IPC_SECRET_KEY = 'super secret key'
-    ```
-
-### Dashboard
-The bot comes with an admin web dashboard running on port 5000.
-
-1. Change the working directory.
-
-    ```
-    $ cd ..
-    $ cd dashboard
-    ```
-   
-2. Rename `config.example.py` to `config.py`.  
-
-3. Edit `config.py`.   
-
-    ```py
-    # The secret key used for authentication. Use what you want. Should be the same as your bot’s secret key.
+    # The secret key used for authentication between the bot and the dashboard. Use what you want.
     IPC_SECRET_KEY = 'super secret key'
     ```
 

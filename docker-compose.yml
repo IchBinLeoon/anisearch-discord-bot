@@ -3,12 +3,16 @@ version: '3'
 services:
   bot:
     build: .
+    env_file:
+      - ./.env
     ports:
       - "8765:8765"
     restart: unless-stopped
     container_name: anisearch-bot
   dashboard:
     build: ./dashboard
+    env_file:
+      - ./.env
     depends_on:
       - bot
     ports:

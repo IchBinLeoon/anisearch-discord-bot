@@ -17,6 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-# The secret key used for authentication with the bot. Use what you want.
-# Should be the same as your bot’s secret key.
-IPC_SECRET_KEY = 'super secret key'
+import os
+
+IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
