@@ -213,22 +213,22 @@ The bot comes with an admin web dashboard running on port 5000.
 
     ```
     # The token the bot will use for auth with Discord.
-    TOKEN = 'my cool bot token'
+    TOKEN=
     
     # The Discord ID of the user hosting the bot.
-    OWNER_ID = 'my discord id'
+    OWNER_ID=
     
     # The Postgres database credentials.
-    DB_HOST = 'hostname'
-    DB_NAME = 'database'
-    DB_USER = 'username'
-    BD_PASSWORD = 'password'
+    DB_HOST=
+    DB_NAME=
+    DB_USER=
+    BD_PASSWORD=
     
     # The SauceNAO API key. Is required for the `source` command.
-    SAUCENAO = 'my api key'
+    SAUCENAO=
     
     # The secret key used for authentication between the bot and the dashboard. Use what you want.
-    IPC_SECRET_KEY = 'super secret key'
+    IPC_SECRET_KEY=
     ```
 
 ## 3. 🐳 Run
