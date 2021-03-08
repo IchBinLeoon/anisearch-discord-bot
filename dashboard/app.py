@@ -29,11 +29,12 @@ ipc = ipc.Client(secret_key=IPC_SECRET_KEY, host='bot', port=8765, multicast_por
 @app.route('/')
 async def index():
     data = {
-        'guild_count': await ipc.request('get_guild_count'),
-        'user_count': await ipc.request('get_user_count'),
-        'channel_count': await ipc.request('get_channel_count'),
+        'guilds': await ipc.request('get_guild_count'),
+        'users': await ipc.request('get_user_count'),
+        'channels': await ipc.request('get_channel_count'),
         'uptime': await ipc.request('get_uptime'),
-        'shards': await ipc.request('get_shard_count')
+        'shards': await ipc.request('get_shard_count'),
+        'latency': await ipc.request('get_latency')
     }
     return await render_template('index.html', **data)
 

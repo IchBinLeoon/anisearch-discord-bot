@@ -72,3 +72,10 @@ class Ipc(commands.Cog, name='Ipc'):
         Returns the bot shard count.
         """
         return str(self.bot.shard_count)
+
+    @ipc.server.route()
+    async def get_latency(self, data: IpcServerResponse):
+        """
+        Returns the bot latency.
+        """
+        return str(round(self.bot.latency, 10))

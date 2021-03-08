@@ -222,7 +222,7 @@ The bot comes with an admin web dashboard running on port 5000.
     DB_HOST=
     DB_NAME=
     DB_USER=
-    BD_PASSWORD=
+    DB_PASSWORD=
     
     # The SauceNAO API key. Is required for the `source` command.
     SAUCENAO=
