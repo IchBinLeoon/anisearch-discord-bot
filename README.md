@@ -238,7 +238,7 @@ Run the bot and dashboard either as Docker containers or manually.
 ### 🐳 Docker
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
-2. Build the image and run the bot.
+2. Build the images and run the bot and dashboard.
 
     ```
     $ docker-compose up --build
