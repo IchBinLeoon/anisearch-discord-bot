@@ -92,7 +92,7 @@ class Help(commands.Cog, name='Help'):
         embeds, page = [], 1
 
         for cog in self.bot.cogs:
-            if self.bot.get_cog(cog).qualified_name != 'Admin':
+            if self.bot.get_cog(cog).qualified_name not in ['Admin', 'Ipc']:
                 cmds = '\n'.join([f'• {prefix}{cmd.usage}' for cmd in self.bot.get_cog(cog).get_commands()])
 
                 cmds = ''.join(f'Can only be used by a server administrator.\n```\n{cmds}\n```'
@@ -105,7 +105,7 @@ class Help(commands.Cog, name='Help'):
                                                   f'Do **not** include `<>`, `[]` or `|` when executing the command.',
                                       colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name="AniSearch's commands", icon_url=ANISEARCH_LOGO)
-                embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
+                embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 2}')
                 embeds.append(embed)
                 page += 1
 

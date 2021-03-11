@@ -30,6 +30,4 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 SAUCENAO = os.getenv('SAUCENAO')
 
-IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
-
 TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')

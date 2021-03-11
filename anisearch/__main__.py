@@ -17,11 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import argparse
 import asyncio
 import logging
 import platform
 import re
+import sys
+from io import StringIO
 
 import aiohttp
 import discord
@@ -34,21 +35,25 @@ def main() -> None:
     """
     Main function.
     """
-    setup_logging()
+    log_stream = setup_logging()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(check_update())
     logging.info('Starting AniSearch Discord Bot.')
     logging.info(f'Discord.py version: {discord.__version__}')
     logging.info(f'Python version: {platform.python_version()}')
-    start()
+    start(log_stream)
 
 
-def setup_logging() -> None:
+def setup_logging() -> StringIO:
     """
     Sets up the logging.
     """
+    log_stream = StringIO()
+    console_handler = logging.StreamHandler(sys.stdout)
+    log_handler = logging.StreamHandler(log_stream)
     logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(name)s » %(levelname)s: %(message)s',
-                        datefmt='%m/%d/%Y %H:%M:%S')
+                        datefmt='%m/%d/%Y %H:%M:%S', handlers=[console_handler, log_handler])
+    return log_stream
 
 
 async def check_update() -> None:
@@ -66,12 +71,12 @@ async def check_update() -> None:
                         f'is available at https://github.com/IchBinLeoon/anisearch-discord-bot.')
 
 
-def start() -> None:
+def start(log_stream: StringIO) -> None:
     """
     Starts the bot.
     """
     try:
-        bot = AniSearchBot()
+        bot = AniSearchBot(log_stream)
         bot.ipc.start()
         bot.run()
     except Exception as e:

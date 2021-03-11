@@ -11,8 +11,6 @@ services:
     container_name: anisearch-bot
   dashboard:
     build: ./dashboard
-    env_file:
-      - ./.env
     depends_on:
       - bot
     ports:

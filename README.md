@@ -171,9 +171,7 @@ Can only be used by the bot owner.
 
 - `unload <cog>:` Unloads a cog.  
 
-- `reload <cog>:` Reloads a cog.  
-
-- `shutdown:` Shutdowns the bot.
+- `reload <cog>:` Reloads a cog.
 
 
 # 🤝 Contribute
@@ -192,7 +190,7 @@ Make sure the tables are set up correctly as shown below to successfully connect
 Type the following in your `PSQL Tool`:
 
 ```sql
-CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (255))
+CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5))
 CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255))
 ```
 
@@ -226,9 +224,6 @@ The bot comes with an admin web dashboard running on port 5000.
     
     # The SauceNAO API key. Is required for the `source` command.
     SAUCENAO=
-    
-    # The secret key used for authentication between the bot and the dashboard. Use what you want.
-    IPC_SECRET_KEY=
     ```
 
 ## 3. 🐳 Run

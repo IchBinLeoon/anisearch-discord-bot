@@ -20,23 +20,54 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from quart import Quart, render_template
 from discord.ext import ipc
 
-from config import IPC_SECRET_KEY
-
 app = Quart(__name__)
-ipc = ipc.Client(secret_key=IPC_SECRET_KEY, host='bot', port=8765, multicast_port=20000)
+ipc = ipc.Client(secret_key='anisearch-discord-bot', host='bot', port=8765, multicast_port=20000)
 
 
 @app.route('/')
 async def index():
     data = {
-        'guilds': await ipc.request('get_guild_count'),
-        'users': await ipc.request('get_user_count'),
-        'channels': await ipc.request('get_channel_count'),
-        'uptime': await ipc.request('get_uptime'),
-        'shards': await ipc.request('get_shard_count'),
-        'latency': await ipc.request('get_latency')
+        'ready': await request('is_ready'),
+        'guilds': await request('get_guild_count'),
+        'users': await request('get_user_count'),
+        'channels': await request('get_channel_count'),
+        'uptime': await request('get_uptime'),
+        'shards': await request('get_shard_count'),
+        'latency': await request('get_latency'),
+        'cogs_count': await request('get_cogs_count'),
+        'cogs_loaded': await request('get_cogs_loaded')
     }
     return await render_template('index.html', **data)
+
+
+@app.route('/logs')
+async def logs():
+    data = await request('get_logs')
+    if data is not None:
+        data = data.split('\n')
+    return await render_template('logs.html', data=data)
+
+
+async def request(endpoint: str):
+    """
+    Makes a request to the IPC server.
+
+    Args:
+        endpoint (str): The endpoint to request on the server.
+    """
+    try:
+        return await ipc.request(endpoint)
+    except ConnectionResetError:
+        value = '-'
+    except Exception as e:
+        app.logger.exception(e)
+        value = '-'
+    if endpoint == 'is_ready':
+        return False
+    if endpoint == 'get_logs':
+        return None
+    return value
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

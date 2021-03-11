@@ -22,7 +22,7 @@ import logging
 from discord.ext import commands, ipc
 from discord.ext.ipc.server import IpcServerResponse
 
-from anisearch.bot import AniSearchBot
+from anisearch.bot import AniSearchBot, initial_extensions
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +37,15 @@ class Ipc(commands.Cog, name='Ipc'):
         Initializes the `Ipc` cog.
         """
         self.bot = bot
+
+    @ipc.server.route()
+    async def is_ready(self, data: IpcServerResponse):
+        """
+        Returns the bot status.
+        """
+        if self.bot.is_ready:
+            return True
+        return False
 
     @ipc.server.route()
     async def get_guild_count(self, data: IpcServerResponse):
@@ -79,3 +88,24 @@ class Ipc(commands.Cog, name='Ipc'):
         Returns the bot latency.
         """
         return str(round(self.bot.latency, 10))
+
+    @ipc.server.route()
+    async def get_cogs_count(self, data: IpcServerResponse):
+        """
+        Returns the bot cogs count.
+        """
+        return str(f'{len(self.bot.cogs)}/{len(initial_extensions)}')
+
+    @ipc.server.route()
+    async def get_cogs_loaded(self, data: IpcServerResponse):
+        """
+        Returns the bot cogs loaded.
+        """
+        return [str(cog) for cog in self.bot.cogs]
+
+    @ipc.server.route()
+    async def get_logs(self, data: IpcServerResponse):
+        """
+        Returns the bot logs.
+        """
+        return str(self.bot.log_stream.getvalue())

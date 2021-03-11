@@ -52,6 +52,7 @@ class Settings(commands.Cog, name='Settings'):
             embed = discord.Embed(
                 title='The prefix cannot be longer than 5 characters.', color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
+            ctx.command.reset_cooldown(ctx)
         else:
             prefix_old = self.bot.db.get_prefix(ctx.message)
             self.bot.db.update_prefix(ctx.message, prefix)

@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 import time
+from io import StringIO
 from asyncio import sleep
 from datetime import timedelta
 
@@ -28,7 +29,7 @@ from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus, ipc
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
-from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO, IPC_SECRET_KEY
+from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
@@ -60,7 +61,7 @@ class AniSearchBot(AutoShardedBot):
     A subclass of `discord.ext.commands.AutoShardedBot`.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, log_stream: StringIO) -> None:
         """
         Initializes the AniSearchBot.
         """
@@ -71,11 +72,13 @@ class AniSearchBot(AutoShardedBot):
         )
         super().__init__(command_prefix=self.get_prefix, intents=intents, owner_id=int(OWNER_ID))
 
+        self.log_stream = log_stream
+
         self.start_time = time.time()
         self.session = ClientSession(loop=self.loop)
 
         self.db = DataBase()
-        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host='0.0.0.0', port=8765, multicast_port=20000)
+        self.ipc = ipc.Server(self, secret_key='anisearch-discord-bot', host='0.0.0.0', port=8765, multicast_port=20000)
 
         self.anilist = AniListClient(session=ClientSession(loop=self.loop))
 

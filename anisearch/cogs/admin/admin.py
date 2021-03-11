@@ -132,14 +132,3 @@ class Admin(commands.Cog, name='Admin'):
             color = ERROR_EMBED_COLOR
         embed = discord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
-
-    @commands.command(name='shutdown', usage='shutdown', ignore_extra=False, hidden=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.is_owner()
-    async def shutdown(self, ctx: Context):
-        """
-        Shutdowns the bot. Can only be used by the bot owner.
-        """
-        embed = discord.Embed(title='Stopping the bot.', color=DEFAULT_EMBED_COLOR)
-        await ctx.channel.send(embed=embed)
-        await self.bot.close()
