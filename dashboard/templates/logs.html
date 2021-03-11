@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniSearch Logs</title>
+    <link href="{{url_for('static', filename='favicon.png')}}" rel="icon" type="image/png" sizes="256x256">
+    <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    {% if data %}
+      {% for line in data %}
+        <p>{{line}}</p>
+      {% endfor %}
+    {% endif %}
+  </body>
+</html>

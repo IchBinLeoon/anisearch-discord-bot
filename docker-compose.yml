@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  bot:
+    build: .
+    env_file:
+      - ./.env
+    ports:
+      - "${IPC_PORT}:${IPC_PORT}"
+    restart: unless-stopped
+    container_name: anisearch-bot
+  dashboard:
+    build: ./dashboard
+    env_file:
+      - ./.env
+    depends_on:
+      - bot
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    links:
+      - "bot"
+    restart: unless-stopped
+    container_name: anisearch-dashboard
