@@ -20,8 +20,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from quart import Quart, render_template
 from discord.ext import ipc
 
+from config import IPC_SECRET_KEY, IPC_CLIENT_HOST, IPC_PORT, APP_HOST, APP_PORT, IPC_MULTICAST_PORT
+
 app = Quart(__name__)
-ipc = ipc.Client(secret_key='anisearch-discord-bot', host='bot', port=8765, multicast_port=20000)
+ipc = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_CLIENT_HOST, port=int(IPC_PORT), multicast_port=IPC_MULTICAST_PORT)
 
 
 @app.route('/')
@@ -70,4 +72,4 @@ async def request(endpoint: str):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host=APP_HOST, port=int(APP_PORT))

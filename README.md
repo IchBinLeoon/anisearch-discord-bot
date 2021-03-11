@@ -184,12 +184,11 @@ Self-hosting isn't fully supported. I would prefer if you don't run an instance 
 Nevertheless, the installation steps are as follows:  
 
 ## Introduction
-The bot runs in a Docker container, and the associated admin web dashboard runs in another container. The dashboard can be accessed via port 5000.
+The bot and the associated admin web dashboard can either be run as Docker containers or manually. The dashboard can be accessed via the default port 5000.
 
 ### Requirements:
   - PostgreSQL Database
-  - Docker
-  - Docker-Compose
+  - Either `Docker and Docker-Compose` or `Python 3.8+`
 
 ## 1. 💾 Set up Database
 To be able to use the bot you need to set up a `PostgreSQL Database`.
@@ -202,7 +201,7 @@ CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5))
 CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255))
 ```
 
-## 2. 🔧 Set up Bot and Dashboard
+## 2. ⚙️Set up Bot and Dashboard
 
 1. Clone the repository.    
 
@@ -233,13 +232,49 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
     SAUCENAO=
     ```
 
-## 3. 🐳 Run
+## 3. Run
+Run the bot and dashboard either as Docker containers or manually.
+
+### 🐳 Docker
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
 2. Build the image and run the bot.
 
     ```
     $ docker-compose up --build
+    ```
+   
+### 🔧 Manually
+1. Make sure you have `Python 3.8` or higher.
+
+2. Edit `.env` and change `IPC_SERVER_HOST=`, `IPC_CLIENT_HOST=` and `APP_HOST=` to `localhost` or to the IP address of the device that you want the bot and dashboard to run on.
+
+2. Set up and activate venv for the bot and the dashboard. Can be one for both or two separate.
+
+    ```
+    $ python3 -m venv venv
+    $ source venv/bin/activate # On macOS and Linux
+    $ .\venv\Scripts\activate # On Windows
+    ```
+
+3. Install the requirements.
+
+    ```
+    # Bot requirements
+    $ python -m pip install -r requirements.txt
+    
+    # Dashboard requirements
+    $ python -m pip install -r dashboard/requirements.txt
+    ```
+
+4. Run the bot and dashboard.
+
+    ```
+    # Bot
+    $ python -m anisearch
+    
+    # Dashboard
+    $ python dashboard/app.py
     ```
    
 

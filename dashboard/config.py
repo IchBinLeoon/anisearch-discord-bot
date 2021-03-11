@@ -22,20 +22,10 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-TOKEN = os.getenv('TOKEN')
-
-OWNER_ID = os.getenv('OWNER_ID')
-
-DB_HOST = os.getenv('DB_HOST')
-DB_NAME = os.getenv('DB_NAME')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-
-SAUCENAO = os.getenv('SAUCENAO')
-
-TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')
-
-IPC_SERVER_HOST = os.getenv('IPC_SERVER_HOST')
+IPC_CLIENT_HOST = os.getenv('IPC_CLIENT_HOST')
 IPC_PORT = os.getenv('IPC_PORT')
 IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
 IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')
+
+APP_HOST = os.getenv('APP_HOST')
+APP_PORT = os.getenv('APP_PORT')
