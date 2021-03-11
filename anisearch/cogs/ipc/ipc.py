@@ -87,7 +87,7 @@ class Ipc(commands.Cog, name='Ipc'):
         """
         Returns the bot latency.
         """
-        return str(round(self.bot.latency, 10))
+        return str(round(self.bot.latency, 6))
 
     @ipc.server.route()
     async def get_cogs_count(self, data: IpcServerResponse):

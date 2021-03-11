@@ -55,7 +55,7 @@ class Admin(commands.Cog, name='Admin'):
         embed.add_field(
             name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(self.bot.cogs), inline=False)
         embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)
-        embed.add_field(name='Latency', value=f'{self.bot.latency:.10f}', inline=False)
+        embed.add_field(name='Latency', value=str(round(self.bot.latency, 6)), inline=False)
         embed.add_field(
             name='SauceNAO Requests', inline=False,
             value=f'{str(self.bot.saucenao.long_remaining) if self.bot.saucenao.long_remaining else "N/A"} remaining')
