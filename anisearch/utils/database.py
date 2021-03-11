@@ -86,7 +86,7 @@ class DataBase:
                     cur.execute(
                         'SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
                     prefix = cur.fetchone()[0]
-                    log.info(f'Inserted prefix for guild {message.guild.id}.')
+                    log.info(f'Inserted prefix for guild {message.guild.name} [{message.guild.id}].')
                     return prefix
         finally:
             self.pool.putconn(conn)
@@ -106,7 +106,7 @@ class DataBase:
                 cur.execute('INSERT INTO guilds (id, prefix) SELECT %s, %s WHERE NOT EXISTS '
                             '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id,))
                 conn.commit()
-                log.info(f'Inserted prefix for guild {guild.id}.')
+                log.info(f'Inserted prefix for guild {guild.name} [{guild.id}].')
         finally:
             self.pool.putconn(conn)
 
@@ -122,7 +122,7 @@ class DataBase:
             with conn.cursor() as cur:
                 cur.execute('DELETE FROM guilds WHERE id = %s;', (guild.id,))
                 conn.commit()
-                log.info(f'Deleted prefix for guild {guild.id}.')
+                log.info(f'Deleted prefix for guild {guild.name} [{guild.id}].')
         finally:
             self.pool.putconn(conn)
 
@@ -143,8 +143,7 @@ class DataBase:
                             (message.guild.id,))
                 prefix = cur.fetchone()[0]
                 conn.commit()
-                log.info(
-                    f'Changed prefix for guild {message.guild.id} to `{prefix}`.')
+                log.info(f'Changed prefix for guild {message.guild.name} [{message.guild.id}] to {prefix}.')
         finally:
             self.pool.putconn(conn)
 
@@ -173,7 +172,7 @@ class DataBase:
                     cur.execute('INSERT INTO users (id, kitsu) SELECT %s, %s WHERE NOT EXISTS '
                                 '(SELECT 1 FROM users WHERE id = %s);', (id_, username, id_,))
                 conn.commit()
-                log.info(f'Set {site} profile for user {id_} to `{username}`.')
+                log.info(f'Set {site} profile for user {id_} to {username}.')
         finally:
             self.pool.putconn(conn)
 
@@ -222,8 +221,3 @@ class DataBase:
                 log.info(f'Removed all profiles for user {id_}.')
         finally:
             self.pool.putconn(conn)
-
-    def setup(self):
-        """
-        Sets up the database tables.
-        """

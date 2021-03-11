@@ -183,6 +183,14 @@ Self-hosting isn't fully supported. I would prefer if you don't run an instance 
 
 Nevertheless, the installation steps are as follows:  
 
+## Introduction
+The bot runs in a Docker container, and the associated admin web dashboard runs in another container. The dashboard can be accessed via port 5000.
+
+### Requirements:
+  - PostgreSQL Database
+  - Docker
+  - Docker-Compose
+
 ## 1. 💾 Set up Database
 To be able to use the bot you need to set up a `PostgreSQL Database`.
 
@@ -195,7 +203,6 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
 ```
 
 ## 2. 🔧 Set up Bot and Dashboard
-The bot comes with an admin web dashboard running on port 5000.
 
 1. Clone the repository.    
 

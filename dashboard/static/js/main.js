@@ -1,3 +1,3 @@
 function redirectLogs() {
-    window.location.href = "/logs";
+    window.location = "/logs";
 }

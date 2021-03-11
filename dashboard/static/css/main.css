@@ -47,11 +47,11 @@ body {
     margin: 100px 0 0 100px;
     box-sizing: content-box;
     display: inline-block;
-    width: 300px;
+    width: 313px;
     height: 50px;
     background-color: #0D1117;
     border: 2px solid #30363D;
-    border-radius: 15px;
+    border-radius: 5px;
     overflow: hidden;
     cursor: pointer;
     text-align: center;
