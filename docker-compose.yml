@@ -17,7 +17,5 @@ services:
       - bot
     ports:
       - "${APP_PORT}:${APP_PORT}"
-    links:
-      - "bot"
     restart: unless-stopped
     container_name: anisearch-dashboard

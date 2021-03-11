@@ -247,9 +247,9 @@ Run the bot and dashboard either as Docker containers or manually.
 ### 🔧 Manually
 1. Make sure you have `Python 3.8` or higher.
 
-2. Edit `.env` and change `IPC_SERVER_HOST=`, `IPC_CLIENT_HOST=` and `APP_HOST=` to `localhost` or to the IP address of the device that you want the bot and dashboard to run on.
+2. Edit `.env` and change `IPC_HOST=` to `localhost` or to the IP address of the device the bot is running on.
 
-2. Set up and activate venv for the bot and the dashboard. Can be one for both or two separate.
+2. Set up and activate a venv for the bot and the dashboard. Can be one for both or two separate.
 
     ```
     $ python3 -m venv venv
@@ -260,20 +260,14 @@ Run the bot and dashboard either as Docker containers or manually.
 3. Install the requirements.
 
     ```
-    # Bot requirements
     $ python -m pip install -r requirements.txt
-    
-    # Dashboard requirements
     $ python -m pip install -r dashboard/requirements.txt
     ```
 
 4. Run the bot and dashboard.
 
     ```
-    # Bot
     $ python -m anisearch
-    
-    # Dashboard
     $ python dashboard/app.py
     ```
    

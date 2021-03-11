@@ -20,9 +20,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
-IPC_CLIENT_HOST = os.getenv('IPC_CLIENT_HOST')
+IPC_HOST = os.getenv('IPC_HOST')
 IPC_PORT = os.getenv('IPC_PORT')
 IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
 IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')

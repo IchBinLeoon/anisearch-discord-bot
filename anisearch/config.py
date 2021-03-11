@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import os
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 TOKEN = os.getenv('TOKEN')
@@ -35,7 +36,7 @@ SAUCENAO = os.getenv('SAUCENAO')
 
 TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')
 
-IPC_SERVER_HOST = os.getenv('IPC_SERVER_HOST')
+IPC_SERVER = os.getenv('IPC_SERVER')
 IPC_PORT = os.getenv('IPC_PORT')
 IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
 IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')
