@@ -228,11 +228,11 @@ class AniSearchBot(AutoShardedBot):
             channels += len(guild.channels)
         return channels
 
-    def get_uptime(self) -> timedelta:
+    def get_uptime(self) -> float:
         """
         Returns the bot uptime.
         """
-        uptime = timedelta(seconds=round(time.time() - self.start_time))
+        uptime = time.time() - self.start_time
         return uptime
 
     def run(self):

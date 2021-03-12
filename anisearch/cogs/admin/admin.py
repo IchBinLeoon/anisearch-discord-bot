@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+from datetime import timedelta
 
 import discord
 from discord.ext import commands
@@ -51,7 +52,8 @@ class Admin(commands.Cog, name='Admin'):
         embed.add_field(name='Guilds', value=str(self.bot.get_guild_count()), inline=True)
         embed.add_field(name='Users', value=str(self.bot.get_user_count()), inline=True)
         embed.add_field(name='Channels', value=str(self.bot.get_channel_count()), inline=True)
-        embed.add_field(name="AniSearch's Uptime", value=str(self.bot.get_uptime()), inline=False)
+        embed.add_field(name="AniSearch's Uptime", value=str(timedelta(seconds=round(self.bot.get_uptime()))),
+                        inline=False)
         embed.add_field(
             name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(self.bot.cogs), inline=False)
         embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)

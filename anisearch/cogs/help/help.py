@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+from datetime import timedelta
 from typing import Optional
 
 import discord
@@ -143,5 +144,6 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)
         embed.add_field(name='❯ Users', value=str(self.bot.get_user_count()), inline=True)
         embed.add_field(name='❯ Channels', value=str(self.bot.get_channel_count()), inline=True)
-        embed.add_field(name="❯ AniSearch's Uptime", value=str(self.bot.get_uptime()), inline=True)
+        embed.add_field(name="❯ AniSearch's Uptime", value=str(timedelta(seconds=round(self.bot.get_uptime()))),
+                        inline=True)
         await ctx.channel.send(embed=embed)

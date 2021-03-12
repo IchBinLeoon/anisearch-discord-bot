@@ -6,6 +6,9 @@
     <title>AniSearch Dashboard</title>
     <link href="{{url_for('static', filename='favicon.png')}}" rel="icon" type="image/png" sizes="256x256">
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+      let uptime = {{uptime}};
+    </script>
   </head>
   <body>
     <div class="header">
@@ -34,7 +37,7 @@
     </div>
     <div class="box">
       <p class="box-headline">Uptime</p>
-      <p class="box-value">{{uptime}}</p>
+      <p class="box-value" id="uptime">00:00:00</p>
     </div>
     <div class="box">
       <p class="box-headline">Shards</p>
@@ -46,9 +49,9 @@
     </div>
     <div class="box">
       <p class="box-headline">Cogs</p>
-      <p class="box-value">{{cogs_count}}</p>
+      <p class="box-value">{{cogs}}</p>
     </div>
-    <button class="button" onclick="redirectLogs()">AniSearch Logs</button>
+    <button class="button" onclick="logs()">AniSearch Logs</button>
     <button class="button" onclick="reconnect()">Reconnect</button>
     <script type=text/javascript src="{{url_for('static', filename='js/main.js')}}"></script>
   </body>

@@ -73,7 +73,7 @@ class Ipc(commands.Cog, name='Ipc'):
         """
         Returns the bot uptime.
         """
-        return str(self.bot.get_uptime())
+        return int(round(self.bot.get_uptime()))
 
     @ipc.server.route()
     async def get_shard_count(self, data: IpcServerResponse):
@@ -90,18 +90,11 @@ class Ipc(commands.Cog, name='Ipc'):
         return str(round(self.bot.latency, 6))
 
     @ipc.server.route()
-    async def get_cogs_count(self, data: IpcServerResponse):
+    async def get_cogs(self, data: IpcServerResponse):
         """
         Returns the bot cogs count.
         """
         return str(f'{len(self.bot.cogs)}/{len(initial_extensions)}')
-
-    @ipc.server.route()
-    async def get_cogs_loaded(self, data: IpcServerResponse):
-        """
-        Returns the bot cogs loaded.
-        """
-        return [str(cog) for cog in self.bot.cogs]
 
     @ipc.server.route()
     async def get_logs(self, data: IpcServerResponse):

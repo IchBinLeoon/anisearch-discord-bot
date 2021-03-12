@@ -28,10 +28,13 @@ ipc_client = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_P
 
 @app.route('/')
 async def index():
-    if request.args.get('reconnect') == 'True':
-        if not ipc_client.session.closed:
-            await ipc_client.session.close()
-        await ipc_client.init_sock()
+    if request.args.get('reconnect') == 'true':
+        try:
+            if not ipc_client.session.closed:
+                await ipc_client.session.close()
+            await ipc_client.init_sock()
+        except Exception as e:
+            app.logger.exception(e)
         return redirect(url_for('index'))
     data = {
         'ready': await ipc_request('is_ready'),
@@ -41,8 +44,7 @@ async def index():
         'uptime': await ipc_request('get_uptime'),
         'shards': await ipc_request('get_shard_count'),
         'latency': await ipc_request('get_latency'),
-        'cogs_count': await ipc_request('get_cogs_count'),
-        'cogs_loaded': await ipc_request('get_cogs_loaded')
+        'cogs': await ipc_request('get_cogs'),
     }
     return await render_template('index.html', **data)
 
@@ -73,6 +75,8 @@ async def ipc_request(endpoint: str):
         return False
     if endpoint == 'get_logs':
         return None
+    if endpoint == 'get_uptime':
+        return 'null'
     return value
 
 
