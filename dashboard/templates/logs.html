@@ -8,10 +8,16 @@
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet" type="text/css">
   </head>
   <body>
-    {% if data %}
-      {% for line in data %}
-        <p>{{line}}</p>
-      {% endfor %}
-    {% endif %}
+    <div class="logs-header">
+      <a>AniSearch Logs</a>
+    </div>
+    <div class="logs-box">
+      {% if data %}
+        {% for line in data %}
+          <p>{{line}}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <script type=text/javascript src="{{url_for('static', filename='js/logs.js')}}"></script>
   </body>
 </html>
