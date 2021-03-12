@@ -17,40 +17,45 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from quart import Quart, render_template
+from quart import Quart, render_template, request, redirect, url_for
 from discord.ext import ipc
 
 from config import IPC_SECRET_KEY, IPC_HOST, IPC_PORT, APP_HOST, APP_PORT, IPC_MULTICAST_PORT
 
 app = Quart(__name__)
-ipc = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT), multicast_port=IPC_MULTICAST_PORT)
+ipc_client = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT), multicast_port=IPC_MULTICAST_PORT)
 
 
 @app.route('/')
 async def index():
+    if request.args.get('reconnect') == 'True':
+        if not ipc_client.session.closed:
+            await ipc_client.session.close()
+        await ipc_client.init_sock()
+        return redirect(url_for('index'))
     data = {
-        'ready': await request('is_ready'),
-        'guilds': await request('get_guild_count'),
-        'users': await request('get_user_count'),
-        'channels': await request('get_channel_count'),
-        'uptime': await request('get_uptime'),
-        'shards': await request('get_shard_count'),
-        'latency': await request('get_latency'),
-        'cogs_count': await request('get_cogs_count'),
-        'cogs_loaded': await request('get_cogs_loaded')
+        'ready': await ipc_request('is_ready'),
+        'guilds': await ipc_request('get_guild_count'),
+        'users': await ipc_request('get_user_count'),
+        'channels': await ipc_request('get_channel_count'),
+        'uptime': await ipc_request('get_uptime'),
+        'shards': await ipc_request('get_shard_count'),
+        'latency': await ipc_request('get_latency'),
+        'cogs_count': await ipc_request('get_cogs_count'),
+        'cogs_loaded': await ipc_request('get_cogs_loaded')
     }
     return await render_template('index.html', **data)
 
 
 @app.route('/logs')
 async def logs():
-    data = await request('get_logs')
+    data = await ipc_request('get_logs')
     if data is not None:
         data = data.split('\n')
     return await render_template('logs.html', data=data)
 
 
-async def request(endpoint: str):
+async def ipc_request(endpoint: str):
     """
     Makes a request to the IPC server.
 
@@ -58,7 +63,7 @@ async def request(endpoint: str):
         endpoint (str): The endpoint to request on the server.
     """
     try:
-        return await ipc.request(endpoint)
+        return await ipc_client.request(endpoint)
     except ConnectionResetError:
         value = '-'
     except Exception as e:
