@@ -227,6 +227,10 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
     DB_NAME=
     DB_USER=
     DB_PASSWORD=
+   
+    # The secret key for the Ipc and the app. Choose what suits you best.
+    IPC_SECRET_KEY=
+    APP_SECRET_KEY=
     
     # The SauceNAO API key. Is required for the `source` command.
     SAUCENAO=

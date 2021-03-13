@@ -8,8 +8,11 @@
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <div class="logs-header">
-      <a>AniSearch Logs</a>
+    <div class="logs-header-container">
+      <div class="logs-header">
+        <a>AniSearch Logs</a>
+      </div>
+      <button class="logs-button" onclick="dashboard()">Dashboard</button>
     </div>
     <div class="logs-box">
       {% if data %}

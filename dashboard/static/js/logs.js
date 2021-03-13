@@ -1,3 +1,7 @@
+function dashboard() {
+    window.location.href = "/";
+}
+
 function autoRefresh() {
     window.location.href = "/logs";
 }

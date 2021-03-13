@@ -11,6 +11,16 @@
     </script>
   </head>
   <body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+          let messages = {{messages|safe}};
+          for (let i=0; i<messages.length; i++) {
+            alert(messages[i]);
+          }
+        </script>
+      {% endif %}
+    {% endwith %}
     <div class="header">
       <a>AniSearch Dashboard</a>
     </div>

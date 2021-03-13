@@ -17,13 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from quart import Quart, render_template, request, redirect, url_for
+from quart import Quart, render_template, request, redirect, url_for, flash
 from discord.ext import ipc
 
-from config import IPC_SECRET_KEY, IPC_HOST, IPC_PORT, APP_HOST, APP_PORT, IPC_MULTICAST_PORT
+from config import IPC_SECRET_KEY, IPC_HOST, IPC_PORT, APP_HOST, APP_PORT, IPC_MULTICAST_PORT, APP_SECRET_KEY
 
 app = Quart(__name__)
 ipc_client = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT), multicast_port=IPC_MULTICAST_PORT)
+app.secret_key = APP_SECRET_KEY
 
 
 @app.route('/')
@@ -35,6 +36,7 @@ async def index():
             await ipc_client.init_sock()
         except Exception as e:
             app.logger.exception(e)
+            await flash('Cannot connect to the IPC server. Is the bot running?')
         return redirect(url_for('index'))
     data = {
         'ready': await ipc_request('is_ready'),

@@ -9,7 +9,7 @@ body {
 .header {
     width: 750px;
     font-size: 75px;
-    margin: 50px 0 0 100px;
+    margin: 50px 0 0 110px;
 }
 
 .box {
@@ -61,14 +61,44 @@ body {
 }
 
 .button:hover {
-  background-color: #30363D;
-  border: 2px solid white;
+    background-color: #30363D;
+    border: 2px solid white;
+}
+
+.logs-header-container {
+    margin: 30px 70px 0 70px;
+    position: relative;
+    height: 60px;
 }
 
 .logs-header {
-    width: 500px;
+    position: absolute;
+    height: 60px;
     font-size: 50px;
-    margin: 30px 0 0 70px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.logs-button {
+    position: absolute;
+    right: 0;
+    width: 200px;
+    height: 50px;
+    background-color: #0D1117;
+    border: 2px solid #30363D;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 25px;
+    color: white;
+    transition-duration: 0.4s;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.logs-button:hover {
+    background-color: #30363D;
+    border: 2px solid white;
 }
 
 .logs-box {

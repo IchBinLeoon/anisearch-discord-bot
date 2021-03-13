@@ -30,3 +30,4 @@ IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')
 
 APP_HOST = os.getenv('APP_HOST')
 APP_PORT = os.getenv('APP_PORT')
+APP_SECRET_KEY = os.getenv('APP_SECRET_KEY')
