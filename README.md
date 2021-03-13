@@ -208,12 +208,18 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
     ```
     $ git clone https://github.com/IchBinLeoon/anisearch-discord-bot
     ```
+   
+2. Change the working directory.
 
-2. Create a [Discord Application](https://discord.com/developers/applications).
+    ```
+    $ cd anisearch-discord-bot
+    ```
 
-3. Rename `.env.example` to `.env`.  
+3. Create a [Discord Application](https://discord.com/developers/applications).
 
-4. Edit `.env`.  
+4. Rename `.env.example` to `.env`.  
+
+5. Edit `.env`.  
 
     ```
     # The token the bot will use for auth with Discord.
