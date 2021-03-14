@@ -29,7 +29,7 @@ from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus, ipc
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
-from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO, IPC_SERVER, IPC_PORT, IPC_SECRET_KEY, \
+from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO, IPC_HOST, IPC_PORT, IPC_SECRET_KEY, \
     IPC_MULTICAST_PORT
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
@@ -79,7 +79,7 @@ class AniSearchBot(AutoShardedBot):
         self.session = ClientSession(loop=self.loop)
 
         self.db = DataBase()
-        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host=IPC_SERVER, port=int(IPC_PORT),
+        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT),
                               multicast_port=IPC_MULTICAST_PORT)
 
         self.anilist = AniListClient(session=ClientSession(loop=self.loop))

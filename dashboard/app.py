@@ -34,6 +34,7 @@ async def index():
             if not ipc_client.session.closed:
                 await ipc_client.session.close()
             await ipc_client.init_sock()
+            await flash('Successfully reconnected to the IPC server.')
         except Exception as e:
             app.logger.exception(e)
             await flash('Cannot connect to the IPC server. Is the bot running?')

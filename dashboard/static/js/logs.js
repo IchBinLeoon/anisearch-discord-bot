@@ -1,9 +1,9 @@
-function dashboard() {
+function redirectDashboard() {
     window.location.href = "/";
 }
 
 function autoRefresh() {
-    window.location.href = "/logs";
+    location.reload();
 }
 
 setInterval(autoRefresh, 60000)

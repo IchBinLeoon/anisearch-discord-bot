@@ -1,4 +1,4 @@
-function logs() {
+function redirectLogs() {
     window.location.href = "/logs";
 }
 
@@ -24,7 +24,7 @@ if (uptime != null)
     setInterval(countUptime, 1000);
 
 function autoRefresh() {
-    window.location.href = "/";
+    location.reload();
 }
 
 setInterval(autoRefresh, 60000)

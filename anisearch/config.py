@@ -36,7 +36,7 @@ SAUCENAO = os.getenv('SAUCENAO')
 
 TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')
 
-IPC_SERVER = os.getenv('IPC_SERVER')
+IPC_HOST = os.getenv('IPC_HOST')
 IPC_PORT = os.getenv('IPC_PORT')
 IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
 IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')

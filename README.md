@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
     DB_NAME=
     DB_USER=
     DB_PASSWORD=
-   
+    
     # The secret key for the Ipc and the app. Choose what suits you best.
     IPC_SECRET_KEY=
     APP_SECRET_KEY=
@@ -257,7 +257,7 @@ Run the bot and dashboard either as Docker containers or manually.
 ### 🔧 Manually
 1. Make sure you have `Python 3.8` or higher.
 
-2. Edit `.env` and change `IPC_HOST=` to `localhost` or to the IP address of the device the bot is running on.
+2. Edit `.env` and change `IPC_HOST=` to `localhost` or to the IP address of the device the bot and dashboard are running on.
 
 2. Set up and activate a venv for the bot and the dashboard. Can be one for both or two separate.
 
