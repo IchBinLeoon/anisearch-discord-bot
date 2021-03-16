@@ -454,7 +454,7 @@ class Search(commands.Cog, name='Search'):
         if data.get('media')['nodes']:
             media, length = [], 0
             for x in data.get('media')['nodes']:
-                studio = f'[{[x][0]["title"]["romaji"]}]({[x][0]["siteUrl"]}) -> Type: ' \
+                studio = f'[{[x][0]["title"]["romaji"]}]({[x][0]["siteUrl"]}) » Type: ' \
                          f'**{format_media_type([x][0]["format"]) if [x][0]["format"] else "N/A"}** | Episodes: ' \
                          f'**{[x][0]["episodes"] if [x][0]["episodes"] else "N/A"}**'
                 length += len(studio)

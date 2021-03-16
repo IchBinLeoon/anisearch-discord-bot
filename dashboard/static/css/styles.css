@@ -1,3 +1,22 @@
+/*
+This file is part of the AniSearch Discord Bot.
+
+Copyright (C) 2021 IchBinLeoon
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 body {
     margin: 0;
     padding: 0;
@@ -57,7 +76,7 @@ body {
     text-align: center;
     font-size: 25px;
     color: white;
-    transition-duration: 0.4s;
+    transition: none
 }
 
 .button:hover {
@@ -91,14 +110,22 @@ body {
     text-align: center;
     font-size: 25px;
     color: white;
-    transition-duration: 0.4s;
     top: 50%;
     transform: translateY(-50%);
+    transition: none
 }
 
 .logs-button:hover {
     background-color: #30363D;
     border: 2px solid white;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    margin-right: 70px;
+    margin-top: 60px;
+    transition: none
 }
 
 .logs-box {

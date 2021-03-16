@@ -1,3 +1,22 @@
+<!--
+This file is part of the AniSearch Discord Bot.
+
+Copyright (C) 2021 IchBinLeoon
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -5,7 +24,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AniSearch Dashboard</title>
     <link href="{{url_for('static', filename='favicon.png')}}" rel="icon" type="image/png" sizes="256x256">
-    <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static', filename='css/styles.css')}}" rel="stylesheet" type="text/css">
     <script type="text/javascript">
       let uptime = {{uptime}};
     </script>
@@ -63,6 +82,6 @@
     </div>
     <button class="button" onclick="redirectLogs()">AniSearch Logs</button>
     <button class="button" onclick="reconnect()">Reconnect</button>
-    <script type=text/javascript src="{{url_for('static', filename='js/main.js')}}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='js/index.js')}}"></script>
   </body>
 </html>

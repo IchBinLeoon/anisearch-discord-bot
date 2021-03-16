@@ -109,18 +109,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
 
 - `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
-   <details close>
-   <summary>Themes Example</summary>
-   <br>
-   <img src="assets/examples/themes-example.PNG">
-   </details>
 
 - `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
-   <details close>
-   <summary>Theme Example</summary>
-   <br>
-   <img src="assets/examples/theme-example.PNG">
-   </details>
 
 ### Profile
 - `anilist [username|@member]:` Displays information about the given AniList profile such as anime stats, manga stats and favorites.  
