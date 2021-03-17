@@ -677,11 +677,11 @@ class Search(commands.Cog, name='Search'):
         """
         async with ctx.channel.typing():
             data = await self.bot.animethemes.search(anime, 5, ['anime'])
-            if data.get('anime'):
+            if data.get('search').get('anime'):
                 embeds = []
-                for page, entry in enumerate(data.get('anime')):
+                for page, entry in enumerate(data.get('search').get('anime')):
                     try:
-                        embed = await self.get_themes_embed(entry, page + 1, len(data.get('anime')))
+                        embed = await self.get_themes_embed(entry, page + 1, len(data.get('search').get('anime')))
                         if is_adult(entry.get('themes')[0]['entries'][0]):
                             if not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
@@ -711,8 +711,8 @@ class Search(commands.Cog, name='Search'):
         """
         async with ctx.channel.typing():
             data = await self.bot.animethemes.search(anime, 1, ['anime'])
-            if data.get('anime'):
-                anime_ = data.get('anime')[0]
+            if data.get('search').get('anime'):
+                anime_ = data.get('search').get('anime')[0]
                 for entry in anime_.get('themes'):
                     if theme.upper() == entry.get('slug') or \
                             (theme.upper() == 'OP' and entry.get('slug') == 'OP1') or \
