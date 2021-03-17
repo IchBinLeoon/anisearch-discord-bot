@@ -169,8 +169,8 @@ class Image(commands.Cog, name='Image'):
             else:
                 url = trace
             if url:
-                if not url.endswith(('.jpg', '.png', '.bmp', '.jpeg')):
-                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`).',
+                if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
+                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
@@ -226,8 +226,8 @@ class Image(commands.Cog, name='Image'):
             else:
                 url = source
             if url:
-                if not url.endswith(('.jpg', '.png', '.bmp', '.jpeg')):
-                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`).',
+                if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
+                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
