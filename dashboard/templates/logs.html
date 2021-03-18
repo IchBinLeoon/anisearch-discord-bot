@@ -31,7 +31,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
       <div class="logs-header">
         <a>AniSearch Logs</a>
       </div>
-      <button class="logs-button" id="dashboardButton" onclick="redirectDashboard()">Dashboard</button>
+      <div class="logs-button-container" id="button-container">
+        <div class="logs-scroll-button-container">
+          <button class="logs-scroll-button" onclick="scrollUp()">↑</button>
+          <button class="logs-scroll-button" onclick="scrollDown()">↓</button>
+        </div>
+        <button class="logs-dashboard-button" onclick="redirectDashboard()">Dashboard</button>
+      </div>
     </div>
     <div class="logs-box">
       {% if data %}

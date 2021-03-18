@@ -21,6 +21,14 @@ function redirectDashboard() {
     window.location.href = "/";
 }
 
+function scrollUp() {
+    window.scrollTo(0, 0);
+}
+
+function scrollDown() {
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
 function autoRefresh() {
     location.reload();
 }
@@ -29,7 +37,7 @@ setInterval(autoRefresh, 60000)
 
 window.onscroll = function() {stickyFunction()};
 
-const dashboardButton = document.getElementById("dashboardButton");
+const dashboardButton = document.getElementById("button-container");
 
 const sticky = dashboardButton.offsetTop;
 

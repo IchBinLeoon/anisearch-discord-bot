@@ -98,10 +98,20 @@ body {
     transform: translateY(-50%);
 }
 
-.logs-button {
+.logs-button-container {
     position: absolute;
     right: 0;
-    width: 200px;
+    width: 330px;
+    height: 50px;
+    font-size: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.logs-dashboard-button {
+    position: absolute;
+    right: 0;
+    width: 175px;
     height: 50px;
     background-color: #0D1117;
     border: 2px solid #30363D;
@@ -110,12 +120,35 @@ body {
     text-align: center;
     font-size: 25px;
     color: white;
-    top: 50%;
-    transform: translateY(-50%);
     transition: none
 }
 
-.logs-button:hover {
+.logs-dashboard-button:hover {
+    background-color: #30363D;
+    border: 2px solid white;
+}
+
+.logs-scroll-button-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.logs-scroll-button {
+    display: inline-block;
+    width: 60px;
+    height: 50px;
+    background-color: #0D1117;
+    border: 2px solid #30363D;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 25px;
+    color: white;
+    transition: none;
+}
+
+.logs-scroll-button:hover {
     background-color: #30363D;
     border: 2px solid white;
 }

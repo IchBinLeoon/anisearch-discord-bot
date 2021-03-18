@@ -60,7 +60,7 @@ class Image(commands.Cog, name='Image'):
         """
         embed = discord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
 
-        embed.set_author(name=f'Similarity -> {(data.get("similarity")) * 100:0.2f}%', icon_url=TRACEMOE_LOGO)
+        embed.set_author(name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%', icon_url=TRACEMOE_LOGO)
 
         if data.get('title_english') is None or data.get('title_english') == \
                 data.get('title_romaji'):
@@ -108,7 +108,7 @@ class Image(commands.Cog, name='Image'):
         """
         embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
 
-        embed.set_author(name=f'Similarity -> {float(data.get("header").get("similarity")):0.2f}%',
+        embed.set_author(name=f'Similarity » {float(data.get("header").get("similarity")):0.2f}%',
                          icon_url=SAUCENAO_LOGO)
 
         embed.set_image(url=data.get('header')['thumbnail'])
