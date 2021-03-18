@@ -129,8 +129,6 @@ class AniListClient:
         """
         session = await self._session()
         response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
-        if response.status != 200:
-            raise AnilistRequestError(response.status)
         data = await response.json()
         if data.get('errors'):
             raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],
