@@ -19,6 +19,15 @@
   <a href="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot">
     <img src="https://www.codefactor.io/repository/github/ichbinleoon/anisearch-discord-bot/badge?style=flat-square" alt="CodeFactor">
   </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot">
+    <img src="https://img.shields.io/github/repo-size/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Size">
+  </a>
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/commits/main">
+    <img src="https://img.shields.io/github/last-commit/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Commit">
+  </a>
+</p>
+
+<p align="center">
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
     <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL&style=flat-square" alt="CodeQL">
   </a>
