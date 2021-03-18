@@ -6,7 +6,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - "${IPC_PORT}:${IPC_PORT}"
+      - '${IPC_PORT}:${IPC_PORT}'
     restart: unless-stopped
     container_name: anisearch-bot
   dashboard:
@@ -16,6 +16,6 @@ services:
     depends_on:
       - bot
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - '${APP_PORT}:${APP_PORT}'
     restart: unless-stopped
     container_name: anisearch-dashboard
