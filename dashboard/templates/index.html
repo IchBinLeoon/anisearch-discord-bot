@@ -33,8 +33,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <script>
-          let messages = {{messages|safe}};
-          for (let i=0; i<messages.length; i++) {
+          let messages = {{messages | safe}};
+          for (let i = 0; i < messages.length; i++) {
             alert(messages[i]);
           }
         </script>
@@ -43,7 +43,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
     <div class="header">
       <a>AniSearch Dashboard</a>
     </div>
-    {% if ready == True%}
+    {% if ready == True %}
     <div class="box" style="background-color: green; border: 2px solid green">
       <p class="box-status">Online</p>
     </div>

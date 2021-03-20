@@ -37,13 +37,13 @@ setInterval(autoRefresh, 60000)
 
 window.onscroll = function() {stickyFunction()};
 
-const dashboardButton = document.getElementById("button-container");
+const buttonContainer = document.getElementById("button-container");
 
-const sticky = dashboardButton.offsetTop;
+const sticky = buttonContainer.offsetTop;
 
 function stickyFunction() {
     if (window.pageYOffset >= sticky)
-        dashboardButton.classList.add("sticky")
+        buttonContainer.classList.add("sticky")
     else
-        dashboardButton.classList.remove("sticky");
+        buttonContainer.classList.remove("sticky");
 }

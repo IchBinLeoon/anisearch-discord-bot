@@ -75,16 +75,13 @@ class DataBase:
         try:
             with conn.cursor() as cur:
                 try:
-                    cur.execute('SELECT prefix FROM guilds WHERE id = %s;',
-                                (message.guild.id,))
+                    cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
                     prefix = cur.fetchone()[0]
                     return prefix
                 except TypeError:
-                    cur.execute(
-                        'INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, DEFAULT_PREFIX))
+                    cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)', (message.guild.id, DEFAULT_PREFIX))
                     conn.commit()
-                    cur.execute(
-                        'SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
+                    cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
                     prefix = cur.fetchone()[0]
                     log.info(f'Inserted prefix for guild {message.guild.name} [{message.guild.id}].')
                     return prefix
@@ -101,8 +98,7 @@ class DataBase:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
-                cur.execute(
-                    'UPDATE guilds SET prefix = %s WHERE id = %s;', (DEFAULT_PREFIX, guild.id,))
+                cur.execute('UPDATE guilds SET prefix = %s WHERE id = %s;', (DEFAULT_PREFIX, guild.id,))
                 cur.execute('INSERT INTO guilds (id, prefix) SELECT %s, %s WHERE NOT EXISTS '
                             '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id,))
                 conn.commit()
@@ -137,10 +133,8 @@ class DataBase:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
-                cur.execute('UPDATE guilds SET prefix = %s WHERE id = %s;',
-                            (prefix, message.guild.id,))
-                cur.execute('SELECT prefix FROM guilds WHERE id = %s;',
-                            (message.guild.id,))
+                cur.execute('UPDATE guilds SET prefix = %s WHERE id = %s;', (prefix, message.guild.id,))
+                cur.execute('SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
                 prefix = cur.fetchone()[0]
                 conn.commit()
                 log.info(f'Changed prefix for guild {message.guild.name} [{message.guild.id}] to {prefix}.')
