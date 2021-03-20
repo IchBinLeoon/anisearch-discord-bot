@@ -38,14 +38,16 @@ class JikanAPIError(JikanException):
     Exception due to an error response from the Jikan API.
     """
 
-    def __init__(self, type_: str, status: int, msg: str, error: str) -> None:
+    def __init__(self, type_: str, status: int, msg: str) -> None:
         """
         Initializes the JikanAPIError exception.
 
         Args:
+            type_ (str): The error type.
             status (int): The status code.
+            msg (str): The error message.
         """
-        super().__init__(f'{type_} - Status: {str(status)} - Message: {msg} - Error: {error}')
+        super().__init__(f'{type_} - Status: {str(status)} - Message: {msg}')
 
 
 class JikanError(JikanException):
@@ -112,11 +114,11 @@ class JikanClient:
         session = await self._session()
         response = await session.get(url)
         data = await response.json()
-        if data.get('error'):
+        if response.status != 200:
             if data.get('status') == 404:
                 data = None
             else:
-                raise JikanAPIError(data.get('type'), data.get('status'), data.get('message'), data.get('error'))
+                raise JikanAPIError(data.get('type'), data.get('status'), data.get('message'))
         return data
 
     @staticmethod
