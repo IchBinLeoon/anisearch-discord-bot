@@ -25,7 +25,7 @@ import discord
 from discord.channel import DMChannel
 from discord.ext import commands, menus
 from discord.ext.commands import Context
-from discord.utils import get
+from discord.utils import get, find
 
 import anisearch
 from anisearch.bot import AniSearchBot
@@ -68,8 +68,9 @@ class Help(commands.Cog, name='Help'):
             await ctx.send(embed=embed)
 
         else:
-            if command := get(self.bot.commands, name=cmd.lower()):
-                embed = discord.Embed(title=f'Command -> `{command}`', colour=DEFAULT_EMBED_COLOR)
+            if command := get(self.bot.commands, name=cmd.lower()) or \
+                          find(lambda cmd_: cmd.lower() in cmd_.aliases, self.bot.commands):
+                embed = discord.Embed(title=f'Command » `{command}`', colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name='AniSearch Help', icon_url=ANISEARCH_LOGO)
                 embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
                 embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
