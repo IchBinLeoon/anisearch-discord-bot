@@ -110,7 +110,7 @@ class TooManyRequests(TraceMoeException):
 
 class TraceMoeBackendError(TraceMoeException):
     """
-    Raised when something went wrong in the TraceMoe backend.
+    Raised when something went wrong in the trace.moe backend.
     """
 
     def __init__(self, status: int, msg: str) -> None:
@@ -177,6 +177,11 @@ class TraceMoeClient:
             dict: Dictionary with the data from the response.
 
         Raises:
+            EmptySearchImage: If the search image is empty.
+            InvalidToken: If the token is invalid.
+            RequestEntityTooLarge: If the image size is too large.
+            TooManyRequests: If the requests are too fast.
+            TraceMoeBackendError: If something went wrong in the trace.moe backend.
             TraceMoeAPIError: If the response contains an error.
         """
         session = await self._session()
@@ -187,20 +192,19 @@ class TraceMoeClient:
             if response.status == 400:
                 raise EmptySearchImage(response.status)
 
-            elif response.status == 403:
+            if response.status == 403:
                 raise InvalidToken(response.status)
 
-            elif response.status == 413:
+            if response.status == 413:
                 raise RequestEntityTooLarge(response.status)
 
-            elif response.status == 429:
+            if response.status == 429:
                 raise TooManyRequests(response.status)
 
-            elif response.status == 500 or response.status == 503:
+            if response.status == 500 or response.status == 503:
                 raise TraceMoeBackendError(response.status, await response.text())
 
-            else:
-                raise TraceMoeAPIError(response.status)
+            raise TraceMoeAPIError(response.status)
 
         data = await response.json()
         return data
