@@ -130,6 +130,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu profile.  
 
+- `profiles [@member]:` Displays the set profiles of you, or the specified user.  
+
 - `removeprofiles:` Removes the set AniList, MyAnimeList and Kitsu profile.  
 
 ### Image

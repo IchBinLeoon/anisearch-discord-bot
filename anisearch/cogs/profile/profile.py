@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import datetime
 import logging
+import re
 from typing import Optional, Union, List
 
 import discord
@@ -192,24 +193,6 @@ class Profile(commands.Cog, name='Profile'):
             embed = discord.Embed(title=f'The {site} profile `{username}` could not be found.',
                                   color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
-
-    async def show_profiles(self, ctx: Context, id_: int):
-        """
-        Selects the set profiles of a user from the database and sends an embed with the profiles in the channel.
-
-        Args:
-            ctx (Context): The context in which the command was invoked under.
-            id_ (int): The ID of the discord user.
-        """
-        anilist = self.bot.db.select_profile('anilist', id_)
-        myanimelist = self.bot.db.select_profile('myanimelist', id_)
-        kitsu = self.bot.db.select_profile('kitsu', id_)
-        user = await self.bot.fetch_user(id_)
-        embed = discord.Embed(title=user.name, color=DEFAULT_EMBED_COLOR)
-        embed.add_field(name='AniList', value=anilist if anilist else '*Not Set*', inline=False)
-        embed.add_field(name='MyAnimeList', value=myanimelist if myanimelist else '*Not Set*', inline=False)
-        embed.add_field(name='Kitsu', value=kitsu if kitsu else '*Not Set*', inline=False)
-        await ctx.channel.send(embed=embed)
 
     async def get_anilist_profile(self, username: str) -> Union[List[discord.Embed], None]:
         """
@@ -719,9 +702,9 @@ class Profile(commands.Cog, name='Profile'):
         async with ctx.channel.typing():
             if username is None:
                 username = self.bot.db.select_profile('anilist', ctx.author.id)
-            elif username.startswith('<@!'):
-                id_ = int(username.replace('<@!', '').replace('>', ''))
-                username = self.bot.db.select_profile('anilist', id_)
+            elif username.startswith('<@') and username.endswith('>'):
+                id_ = re.match(r'^<@[!|&]?(?P<id>\d{18})>', username).group('id')
+                username = self.bot.db.select_profile('anilist', int(id_))
             else:
                 username = username
             if username:
@@ -744,26 +727,25 @@ class Profile(commands.Cog, name='Profile'):
         Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites.
         """
         async with ctx.channel.typing():
-            async with ctx.channel.typing():
-                if username is None:
-                    username = self.bot.db.select_profile('myanimelist', ctx.author.id)
-                elif username.startswith('<@!'):
-                    id_ = int(username.replace('<@!', '').replace('>', ''))
-                    username = self.bot.db.select_profile('myanimelist', id_)
+            if username is None:
+                username = self.bot.db.select_profile('myanimelist', ctx.author.id)
+            elif username.startswith('<@') and username.endswith('>'):
+                id_ = re.match(r'^<@[!|&]?(?P<id>\d{18})>', username).group('id')
+                username = self.bot.db.select_profile('myanimelist', int(id_))
+            else:
+                username = username
+            if username:
+                embeds = await self.get_myanimelist_profile(username)
+                if embeds:
+                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    await menu.start(ctx)
                 else:
-                    username = username
-                if username:
-                    embeds = await self.get_myanimelist_profile(username)
-                    if embeds:
-                        menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
-                        await menu.start(ctx)
-                    else:
-                        embed = discord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
-                                              color=ERROR_EMBED_COLOR)
-                        await ctx.channel.send(embed=embed)
-                else:
-                    embed = discord.Embed(title='No MyAnimeList profile set.', color=ERROR_EMBED_COLOR)
+                    embed = discord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
+                                          color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
+            else:
+                embed = discord.Embed(title='No MyAnimeList profile set.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
 
     @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -774,9 +756,9 @@ class Profile(commands.Cog, name='Profile'):
         async with ctx.channel.typing():
             if username is None:
                 username = self.bot.db.select_profile('kitsu', ctx.author.id)
-            elif username.startswith('<@!'):
-                id_ = int(username.replace('<@!', '').replace('>', ''))
-                username = self.bot.db.select_profile('kitsu', id_)
+            elif username.startswith('<@') and username.endswith('>'):
+                id_ = re.match(r'^<@[!|&]?(?P<id>\d{18})>', username).group('id')
+                username = self.bot.db.select_profile('kitsu', int(id_))
             else:
                 username = username
             if username:
@@ -795,30 +777,48 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='setprofile', aliases=['sp', 'setp'], usage='setprofile <al|mal|kitsu> <username>',
                       ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def setprofile(self, ctx: Context, site: Optional[str] = None, username: Optional[str] = None):
+    async def setprofile(self, ctx: Context, site: str, username: str):
         """
         Sets an AniList, MyAnimeList or Kitsu profile.
         """
         async with ctx.channel.typing():
-            if site:
-                if username:
-                    if site.lower() == 'anilist' or site.lower() == 'al':
-                        await self.set_profile(ctx, 'anilist', username)
-                    elif site.lower() == 'myanimelist' or site.lower() == 'mal':
-                        await self.set_profile(ctx, 'myanimelist', username)
-                    elif site.lower() == 'kitsu':
-                        await self.set_profile(ctx, 'kitsu', username)
-                    else:
-                        ctx.command.reset_cooldown(ctx)
-                        raise discord.ext.commands.BadArgument
-                elif site.startswith('<@!'):
-                    id_ = int(site.replace('<@!', '').replace('>', ''))
-                    await self.show_profiles(ctx, id_)
+            if site.lower() == 'anilist' or site.lower() == 'al':
+                await self.set_profile(ctx, 'anilist', username)
+            elif site.lower() == 'myanimelist' or site.lower() == 'mal':
+                await self.set_profile(ctx, 'myanimelist', username)
+            elif site.lower() == 'kitsu':
+                await self.set_profile(ctx, 'kitsu', username)
+            else:
+                ctx.command.reset_cooldown(ctx)
+                raise discord.ext.commands.BadArgument
+
+    @commands.command(name='profiles', usage='profiles [@member]', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def profiles(self, ctx: Context, user: Optional[str] = None):
+        """
+        Displays the set profiles of you, or the specified user.
+        """
+        async with ctx.channel.typing():
+            if user:
+                if user.startswith('<@&') and user.endswith('>'):
+                    ctx.command.reset_cooldown(ctx)
+                    raise discord.ext.commands.BadArgument
+                if user.startswith('<@') and user.endswith('>'):
+                    id_ = re.match(r'^<@(!)?(?P<id>\d{18})>', user).group('id')
                 else:
                     ctx.command.reset_cooldown(ctx)
                     raise discord.ext.commands.BadArgument
             else:
-                await self.show_profiles(ctx, ctx.author.id)
+                id_ = ctx.author.id
+            anilist = self.bot.db.select_profile('anilist', id_)
+            myanimelist = self.bot.db.select_profile('myanimelist', id_)
+            kitsu = self.bot.db.select_profile('kitsu', id_)
+            user = await self.bot.fetch_user(id_)
+            embed = discord.Embed(title=user.name, color=DEFAULT_EMBED_COLOR)
+            embed.add_field(name='AniList', value=anilist if anilist else '*Not Set*', inline=False)
+            embed.add_field(name='MyAnimeList', value=myanimelist if myanimelist else '*Not Set*', inline=False)
+            embed.add_field(name='Kitsu', value=kitsu if kitsu else '*Not Set*', inline=False)
+            await ctx.channel.send(embed=embed)
 
     @commands.command(name='removeprofiles', aliases=['rmp'], usage='removeprofiles', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
