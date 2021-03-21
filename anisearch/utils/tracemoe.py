@@ -48,10 +48,80 @@ class TraceMoeAPIError(TraceMoeException):
         super().__init__(status)
 
 
-class TraceMoeError(TraceMoeException):
+class EmptySearchImage(TraceMoeException):
     """
-    Exceptions that do not involve the API.
+    Raised when the search image is empty.
     """
+
+    def __init__(self, status: int) -> None:
+        """
+        Initializes the EmptySearchImage exception.
+
+        Args:
+            status (int): The status code.
+        """
+        super().__init__(status)
+
+
+class InvalidToken(TraceMoeException):
+    """
+    Raised when the token is invalid.
+    """
+
+    def __init__(self, status: int) -> None:
+        """
+        Initializes the InvalidToken exception.
+
+        Args:
+            status (int): The status code.
+        """
+        super().__init__(status)
+
+
+class RequestEntityTooLarge(TraceMoeException):
+    """
+    Raised when the image size is too large.
+    """
+
+    def __init__(self, status: int) -> None:
+        """
+        Initializes the RequestEntityTooLarge exception.
+
+        Args:
+            status (int): The status code.
+        """
+        super().__init__(status)
+
+
+class TooManyRequests(TraceMoeException):
+    """
+    Raised when the requests are too fast.
+    """
+
+    def __init__(self, status: int) -> None:
+        """
+        Initializes the TooManyRequests exception.
+
+        Args:
+            status (int): The status code.
+        """
+        super().__init__(status)
+
+
+class TraceMoeBackendError(TraceMoeException):
+    """
+    Raised when something went wrong in the TraceMoe backend.
+    """
+
+    def __init__(self, status: int, msg: str) -> None:
+        """
+        Initializes the TraceMoeBackendError exception.
+
+        Args:
+            status (int): The status code.
+            msg (str): The error message.
+        """
+        super().__init__(f'{status} - {msg}')
 
 
 class TraceMoeClient:
@@ -111,10 +181,28 @@ class TraceMoeClient:
         """
         session = await self._session()
         response = await session.get(url)
-        if response.status == 200:
-            data = await response.json()
-        else:
-            raise TraceMoeAPIError(response.status)
+
+        if response.status != 200:
+
+            if response.status == 400:
+                raise EmptySearchImage(response.status)
+
+            elif response.status == 403:
+                raise InvalidToken(response.status)
+
+            elif response.status == 413:
+                raise RequestEntityTooLarge(response.status)
+
+            elif response.status == 429:
+                raise TooManyRequests(response.status)
+
+            elif response.status == 500 or response.status == 503:
+                raise TraceMoeBackendError(response.status, await response.text())
+
+            else:
+                raise TraceMoeAPIError(response.status)
+
+        data = await response.json()
         return data
 
     async def search(self, url: str) -> Union[Dict[str, Any], None]:
