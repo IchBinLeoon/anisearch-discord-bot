@@ -141,31 +141,18 @@ body {
 
 .features-container {
     width: 100%;
-    height: 3200px;
+    height: 3400px;
     background-color: #292B2F;
 }
 
-.features-container img {
+.shadow {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-.features-headline-container {
-    line-height: 150px;
-    height: 150px;
-    text-align: center;
-}
-
-.features-headline-container a {
-    font-size: 60px;
-    font-family: 'Lato', sans-serif;
-    font-weight: bold;
-    color: white;
 }
 
 .example-image-container-left {
     width: 50%;
     float: left;
-    height: 2700px;
+    height: 3250px;
 }
 
 .example-image-container-left img {
@@ -178,7 +165,7 @@ body {
 .example-image-container-right {
     width: 50%;
     float: right;
-    height: 2700px;
+    height: 3250px;
 }
 
 .example-image-container-right img {
@@ -208,6 +195,10 @@ body {
 
 .visible {
     opacity: 1;
+}
+
+.zero-two {
+    width: 477px;
 }
 
 .commands-container {
