@@ -158,6 +158,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `stats:` Displays statistics about the bot.  
 
+- `github:` Displays information about the GitHub repository.  
+
 ### Settings
 Can only be used by a server administrator.
 
