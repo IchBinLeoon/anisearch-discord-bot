@@ -25,7 +25,6 @@ body {
     left: 50%;
     transform: translateX(-50%);
     height: 50px;
-    width: 680px;
 }
 
 .navbar-links-container li {
@@ -66,7 +65,7 @@ body {
 
 .home-container {
     margin: 0 200px 200px 200px;
-    height: 600px;
+    height: 650px;
     text-align: center;
 }
 
@@ -133,7 +132,7 @@ body {
 
 .parallax1 {
     background-image: url("../assets/imgs/parallax1.jpg");
-    min-height: 500px;
+    min-height: 550px;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
