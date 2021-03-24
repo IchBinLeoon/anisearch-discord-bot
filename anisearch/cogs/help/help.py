@@ -33,6 +33,7 @@ from anisearch.config import OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
     DISCORD_INVITE, WEBSITE, ANISEARCH_LOGO
 from anisearch.utils.paginator import EmbedListMenu
+from anisearch.utils.misc import get_command_example
 
 log = logging.getLogger(__name__)
 
@@ -75,8 +76,11 @@ class Help(commands.Cog, name='Help'):
                 embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
                 embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
                                 inline=False)
-                embed.add_field(name='Aliases', inline=False,
-                                value=', '.join([f"`{a}`" for a in command.aliases]) if command.aliases else '-')
+                if command.aliases:
+                    embed.add_field(name='Aliases', inline=False,
+                                    value=', '.join([f"`{a}`" for a in command.aliases]) if command.aliases else '-')
+                if example := get_command_example(ctx=ctx, command=str(command)):
+                    embed.add_field(name='Example', value=f'`{prefix}{example}`', inline=False)
                 embed.set_footer(text=f'<> - required, [] - optional, | - either/or')
                 await ctx.send(embed=embed)
             else:

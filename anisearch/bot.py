@@ -282,15 +282,15 @@ class AniSearchBot(AutoShardedBot):
             title = f'Command on cooldown for `{error.retry_after:.2f}s`.'
 
         elif isinstance(error, commands.TooManyArguments):
-            title = 'Too many arguments.'
+            title = f'Too many arguments. Use `{self.db.get_prefix(ctx.message)}help {ctx.command}` for help.'
             ctx.command.reset_cooldown(ctx)
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            title = 'Missing required argument.'
+            title = f'Missing required argument. Use `{self.db.get_prefix(ctx.message)}help {ctx.command}` for help.'
             ctx.command.reset_cooldown(ctx)
 
         elif isinstance(error, commands.BadArgument):
-            title = 'Wrong arguments.'
+            title = f'Wrong arguments. Use `{self.db.get_prefix(ctx.message)}help {ctx.command}` for help.'
             ctx.command.reset_cooldown(ctx)
 
         elif isinstance(error, commands.MissingPermissions):
