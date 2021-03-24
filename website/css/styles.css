@@ -202,7 +202,7 @@ body {
 
 .commands-container {
     width: 100%;
-    height: 3100px;
+    height: 3025px;
     background-color: #F5F5F5;
 }
 
@@ -236,7 +236,7 @@ body {
 }
 
 .commands-table-headline {
-    margin: 25px 300px 10px 300px;
+    margin: 25px 250px 10px 250px;
 }
 
 .commands-table-headline a {
@@ -247,7 +247,7 @@ body {
 }
 
 .commands-table-subtitle {
-    margin: 10px 300px 10px 300px;
+    margin: 10px 250px 10px 250px;
 }
 
 .commands-table-subtitle a {
@@ -258,7 +258,7 @@ body {
 }
 
 .commands-table-container {
-    margin: 0 300px 0 300px;
+    margin: 0 250px 0 250px;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
