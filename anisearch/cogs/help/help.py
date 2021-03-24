@@ -31,7 +31,7 @@ import anisearch
 from anisearch.bot import AniSearchBot
 from anisearch.config import OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
-    DISCORD_INVITE, TOPGG_VOTE, ANISEARCH_LOGO
+    DISCORD_INVITE, WEBSITE, ANISEARCH_LOGO
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class Help(commands.Cog, name='Help'):
                                   description=f'{server_prefix}\n**Command help:**\n`{prefix}help [command]`\n\n'
                                               f'**Command list:**\n`{prefix}commands`\n\n**Links:**\n'
                                               f'[Invite AniSearch!]({DISCORD_INVITE}) | '
-                                              f'[Vote for AniSearch!]({TOPGG_VOTE})')
+                                              f'[Visit the Website!]({WEBSITE})')
             embed.set_thumbnail(url=ANISEARCH_LOGO)
             await ctx.send(embed=embed)
 
@@ -128,7 +128,7 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='❯ Version', value=f'v{anisearch.__version__}', inline=True)
         embed.add_field(name='❯ Commands', value=f'{DEFAULT_PREFIX}help', inline=True)
         embed.add_field(name='❯ Invite', value=f'[Click me!]({DISCORD_INVITE})', inline=True)
-        embed.add_field(name='❯ Vote', value=f'[Click me!]({TOPGG_VOTE})', inline=True)
+        embed.add_field(name='❯ Website', value=f'[Click me!]({WEBSITE})', inline=True)
         embed.add_field(name='❯ GitHub', value=f'[Click me!]({anisearch.__url__})', inline=True)
         embed.set_thumbnail(url=ANISEARCH_LOGO)
         await ctx.channel.send(embed=embed)
