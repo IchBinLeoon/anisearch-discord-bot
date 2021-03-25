@@ -33,7 +33,7 @@ DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
-SAUCENAO = os.getenv('SAUCENAO')
+SAUCENAO_API_KEY = os.getenv('SAUCENAO_API_KEY')
 
 TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')
 

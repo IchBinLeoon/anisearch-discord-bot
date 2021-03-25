@@ -210,7 +210,7 @@ The bot and the associated local admin web dashboard can be run either as a Dock
 
 4. Rename `.env.example` to `.env`.  
 
-5. Edit `.env` and fill in `TOKEN`, `OWNER_ID` and `SAUCENAO`.
+5. Edit `.env` and fill in `TOKEN`, `OWNER_ID` and `SAUCENAO_API_KEY`.
 
     ```
     # The token the bot will use for auth with Discord.
@@ -220,7 +220,7 @@ The bot and the associated local admin web dashboard can be run either as a Dock
     OWNER_ID=
     
     # The SauceNAO API key. Is required for the `source` command.
-    SAUCENAO=
+    SAUCENAO_API_KEY=
     ```
 
 ## 2. Run
