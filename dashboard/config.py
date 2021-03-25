@@ -26,7 +26,6 @@ load_dotenv()
 IPC_HOST = os.getenv('IPC_HOST')
 IPC_PORT = os.getenv('IPC_PORT')
 IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
-IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')
 
 APP_HOST = os.getenv('APP_HOST')
 APP_PORT = os.getenv('APP_PORT')

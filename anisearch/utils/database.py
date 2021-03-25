@@ -23,7 +23,7 @@ import discord
 import psycopg2
 import psycopg2.pool
 
-from anisearch.config import DB_PASSWORD, DB_HOST, DB_NAME, DB_USER
+from anisearch.config import DB_PASSWORD, DB_HOST, DB_NAME, DB_USER, DB_PORT
 from anisearch.utils.constants import DEFAULT_PREFIX
 
 log = logging.getLogger(__name__)
@@ -41,16 +41,15 @@ class DataBase:
         """
         Initializes the DataBase class.
         """
-        self.pool = psycopg2.pool.SimpleConnectionPool(5, 20, host=DB_HOST, dbname=DB_NAME,
-                                                       user=DB_USER, password=DB_PASSWORD)
+        self.pool = psycopg2.pool.SimpleConnectionPool(5, 20, host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER,
+                                                       password=DB_PASSWORD)
 
     @staticmethod
     def _connect():
         """
         Creates a connection with the Postgres database.
         """
-        conn = psycopg2.connect(host=DB_HOST, dbname=DB_NAME, user=DB_USER,
-                                password=DB_PASSWORD)
+        conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD)
         return conn
 
     def close(self) -> None:
