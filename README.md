@@ -187,24 +187,12 @@ Self-hosting isn't fully supported. I would prefer if you don't run an instance 
 Nevertheless, the installation steps are as follows:  
 
 ## Introduction
-The bot and the associated admin web dashboard can either be run as Docker containers or manually. The dashboard can be accessed via the default port 5000.
+The bot and the associated local admin web dashboard can be run either as a Docker containers or manually. The dashboard can be accessed via port 5000 by default.
 
 ### Requirements:
-  - PostgreSQL Database
-  - Either `Docker and Docker-Compose` or `Python 3.8+`
+  - Either `Docker` and `Docker-Compose` or `Python 3.8+` and a `PostgreSQL Database`
 
-## 1. 💾 Set up Database
-To be able to use the bot you need to set up a `PostgreSQL Database`.
-
-Make sure the tables are set up correctly as shown below to successfully connect to your PostgreSQL Database.
-Type the following in your `PSQL Tool`:
-
-```sql
-CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5))
-CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255))
-```
-
-## 2. ⚙️Set up Bot and Dashboard
+## 1. ⚙️ Setup
 
 1. Clone the repository.    
 
@@ -222,7 +210,7 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
 
 4. Rename `.env.example` to `.env`.  
 
-5. Edit `.env`.  
+5. Edit `.env` and fill in `TOKEN`, `OWNER_ID` and `SAUCENAO`.
 
     ```
     # The token the bot will use for auth with Discord.
@@ -231,38 +219,34 @@ CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist 
     # The Discord ID of the user hosting the bot.
     OWNER_ID=
     
-    # The Postgres database credentials.
-    DB_HOST=
-    DB_NAME=
-    DB_USER=
-    DB_PASSWORD=
-    
-    # The secret key for the Ipc and the app. Choose what suits you best.
-    IPC_SECRET_KEY=
-    APP_SECRET_KEY=
-    
     # The SauceNAO API key. Is required for the `source` command.
     SAUCENAO=
     ```
 
-## 3. Run
-Run the bot and dashboard either as Docker containers or manually.
+## 2. Run
 
-### 🐳 Docker
+## 🐳 Docker
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
-2. Build the images and run the bot and dashboard.
+2. Build the images and run the bot, dashboard and database.
 
     ```
     $ docker-compose up --build
     ```
    
-### 🔧 Manually
-1. Make sure you have `Python 3.8` or higher.
+## 🔧 Manually
+1. To be able to use the bot you need to set up a `PostgreSQL Database`. Make sure the tables are set up correctly as shown below to successfully connect to your database. Type the following in your `PSQL Tool`:
+    
+    ```sql
+    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5));
+    CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255));
+    ```
 
-2. Edit `.env` and change `IPC_HOST=` to `localhost` or to the IP address of the device the bot and dashboard are running on.
+2. Edit `.env` and change `IPC_HOST` and `APP_HOST` to `localhost` or to the IP address of the device the bot and dashboard are running on. Also change the credentials for the Postgres database to match yours.
 
-2. Set up and activate a venv for the bot and the dashboard. Can be one for both or two separate.
+3. Make sure you have `Python 3.8` or higher.
+
+4. Set up and activate a venv for the bot and the dashboard. Can be one for both or two separate.
 
     ```
     $ python3 -m venv venv
@@ -270,14 +254,14 @@ Run the bot and dashboard either as Docker containers or manually.
     $ .\venv\Scripts\activate # On Windows
     ```
 
-3. Install the requirements.
+5. Install the requirements.
 
     ```
     $ python -m pip install -r requirements.txt
     $ python -m pip install -r dashboard/requirements.txt
     ```
 
-4. Run the bot and dashboard.
+6. Run the bot and dashboard.
 
     ```
     $ python -m anisearch
