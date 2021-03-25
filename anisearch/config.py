@@ -28,15 +28,15 @@ TOKEN = os.getenv('TOKEN')
 OWNER_ID = os.getenv('OWNER_ID')
 
 DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
-SAUCENAO = os.getenv('SAUCENAO')
+SAUCENAO_API_KEY = os.getenv('SAUCENAO_API_KEY')
 
 TOPGG_TOKEN = os.getenv('TOPGG_TOKEN')
 
 IPC_HOST = os.getenv('IPC_HOST')
 IPC_PORT = os.getenv('IPC_PORT')
 IPC_SECRET_KEY = os.getenv('IPC_SECRET_KEY')
-IPC_MULTICAST_PORT = os.getenv('IPC_MULTICAST_PORT')

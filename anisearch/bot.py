@@ -21,7 +21,6 @@ import logging
 import time
 from io import StringIO
 from asyncio import sleep
-from datetime import timedelta
 
 import dbl
 import discord
@@ -29,8 +28,7 @@ from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus, ipc
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
-from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO, IPC_HOST, IPC_PORT, IPC_SECRET_KEY, \
-    IPC_MULTICAST_PORT
+from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO_API_KEY, IPC_HOST, IPC_PORT, IPC_SECRET_KEY
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
@@ -79,8 +77,7 @@ class AniSearchBot(AutoShardedBot):
         self.session = ClientSession(loop=self.loop)
 
         self.db = DataBase()
-        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT),
-                              multicast_port=IPC_MULTICAST_PORT)
+        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT))
 
         self.anilist = AniListClient(session=ClientSession(loop=self.loop))
 
@@ -89,7 +86,7 @@ class AniSearchBot(AutoShardedBot):
 
         self.tracemoe = TraceMoeClient(session=ClientSession(loop=self.loop))
 
-        self.saucenao = SauceNAOClient(api_key=SAUCENAO, db=999, output_type=2, numres=10,
+        self.saucenao = SauceNAOClient(api_key=SAUCENAO_API_KEY, db=999, output_type=2, numres=10,
                                        session=ClientSession(loop=self.loop))
 
         self.myanimelist = JikanClient(session=ClientSession(loop=self.loop))

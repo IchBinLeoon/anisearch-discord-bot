@@ -20,10 +20,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from quart import Quart, render_template, request, redirect, url_for, flash
 from discord.ext import ipc
 
-from config import IPC_SECRET_KEY, IPC_HOST, IPC_PORT, APP_HOST, APP_PORT, IPC_MULTICAST_PORT, APP_SECRET_KEY
+from config import IPC_SECRET_KEY, IPC_HOST, IPC_PORT, APP_HOST, APP_PORT, APP_SECRET_KEY
 
 app = Quart(__name__)
-ipc_client = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT), multicast_port=IPC_MULTICAST_PORT)
+ipc_client = ipc.Client(secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT))
 app.secret_key = APP_SECRET_KEY
 
 
