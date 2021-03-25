@@ -688,14 +688,15 @@ class Search(commands.Cog, name='Search'):
                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
                                     text=f'Provided by https://animethemes.moe/ • Page {page + 1}/'
-                                         f'{len(data.get("anime"))}')
+                                         f'{len(data.get("search").get("anime"))}')
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the anime.')
                         embed.set_footer(
-                            text=f'Provided by https://animethemes.moe/ • Page {page + 1}/{len(data.get("anime"))}')
+                            text=f'Provided by https://animethemes.moe/ • Page '
+                                 f'{page + 1}/{len(data.get("search").get("anime"))}')
                     embeds.append(embed)
                 menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)

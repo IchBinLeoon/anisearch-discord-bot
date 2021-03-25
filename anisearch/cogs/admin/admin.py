@@ -71,18 +71,18 @@ class Admin(commands.Cog, name='Admin'):
         Loads a cog. Can only be used by the bot owner.
         """
         try:
-            self.bot.load_extension(extension)
-            title = f'Loaded cog `{extension}`.'
+            self.bot.load_extension(f'anisearch.cogs.{extension.lower()}')
+            title = f'Loaded cog `{extension.capitalize()}`.'
             color = DEFAULT_EMBED_COLOR
         except discord.ext.commands.errors.ExtensionAlreadyLoaded:
-            title = f'Cog `{extension}` is already loaded.'
+            title = f'Cog `{extension.capitalize()}` is already loaded.'
             color = ERROR_EMBED_COLOR
         except discord.ext.commands.errors.ExtensionNotFound:
-            title = f'Cog `{extension}` could not be found.'
+            title = f'Cog `{extension.capitalize()}` could not be found.'
             color = ERROR_EMBED_COLOR
         except Exception as e:
             log.info(e)
-            title = f'An error occurred while loading the cog `{extension}`.'
+            title = f'An error occurred while loading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
         embed = discord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
@@ -95,18 +95,18 @@ class Admin(commands.Cog, name='Admin'):
         Unloads a cog. Can only be used by the bot owner.
         """
         try:
-            self.bot.unload_extension(extension)
-            title = f'Unloaded cog `{extension}`.'
+            self.bot.unload_extension(f'anisearch.cogs.{extension.lower()}')
+            title = f'Unloaded cog `{extension.capitalize()}`.'
             color = DEFAULT_EMBED_COLOR
         except discord.ext.commands.errors.ExtensionNotLoaded:
-            title = f'Cog `{extension}` has not been loaded.'
+            title = f'Cog `{extension.capitalize()}` has not been loaded.'
             color = ERROR_EMBED_COLOR
         except discord.ext.commands.errors.ExtensionNotFound:
-            title = f'Cog `{extension}` could not be found.'
+            title = f'Cog `{extension.capitalize()}` could not be found.'
             color = ERROR_EMBED_COLOR
         except Exception as e:
             log.info(e)
-            title = f'An error occurred while unloading the cog `{extension}`.'
+            title = f'An error occurred while unloading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
         embed = discord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
@@ -119,18 +119,18 @@ class Admin(commands.Cog, name='Admin'):
         Reloads a cog. Can only be used by the bot owner.
         """
         try:
-            self.bot.reload_extension(extension)
-            title = f'Reloaded cog `{extension}`.'
+            self.bot.reload_extension(f'anisearch.cogs.{extension.lower()}')
+            title = f'Reloaded cog `{extension.capitalize()}`.'
             color = DEFAULT_EMBED_COLOR
         except discord.ext.commands.errors.ExtensionNotLoaded:
-            title = f'Cog `{extension}` has not been loaded.'
+            title = f'Cog `{extension.capitalize()}` has not been loaded.'
             color = ERROR_EMBED_COLOR
         except discord.ext.commands.errors.ExtensionNotFound:
-            title = f'Cog `{extension}` could not be found.'
+            title = f'Cog `{extension.capitalize()}` could not be found.'
             color = ERROR_EMBED_COLOR
         except Exception as e:
             log.info(e)
-            title = f'An error occurred while reloading the cog `{extension}`.'
+            title = f'An error occurred while reloading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
         embed = discord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)

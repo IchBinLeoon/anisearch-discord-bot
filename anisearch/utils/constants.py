@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 DEFAULT_PREFIX = 'as!'
 
 ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
+GITHUB_REPO_API_ENDPOINT = 'https://api.github.com/repos/IchBinLeoon/anisearch-discord-bot'
 
 ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
 TRACEMOE_BASE_URL = 'https://trace.moe/api'

@@ -31,7 +31,8 @@ import anisearch
 from anisearch.bot import AniSearchBot
 from anisearch.config import OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
-    DISCORD_INVITE, WEBSITE, ANISEARCH_LOGO
+    DISCORD_INVITE, WEBSITE, ANISEARCH_LOGO, GITHUB_REPO_API_ENDPOINT
+from anisearch.utils.http import get as get_request
 from anisearch.utils.paginator import EmbedListMenu
 from anisearch.utils.misc import get_command_example
 
@@ -152,3 +153,30 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name="❯ AniSearch's Uptime", value=str(timedelta(seconds=round(self.bot.get_uptime()))),
                         inline=True)
         await ctx.channel.send(embed=embed)
+
+    @commands.command(name='github', aliases=['gh'], usage='github', ignore_extra=False)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def github(self, ctx: Context):
+        """
+        Displays information about the GitHub repository.
+        """
+        data = None
+        try:
+            data = await get_request(url=GITHUB_REPO_API_ENDPOINT, session=self.bot.session, res_method='json')
+        except Exception as e:
+            log.exception(e)
+            embed = discord.Embed(title='An error occurred while retrieving data from the GitHub repository.',
+                                  color=ERROR_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+        if data:
+            embed = discord.Embed(title=data.get('full_name'), url=data.get('html_url'),
+                                  description=data.get('description'), color=DEFAULT_EMBED_COLOR)
+            embed.set_author(name='GitHub Repository')
+            embed.add_field(name='❯ Watchers', value=data.get('watchers_count'), inline=True)
+            embed.add_field(name='❯ Stargazers', value=data.get('stargazers_count'), inline=True)
+            embed.add_field(name='❯ Forks', value=data.get('forks_count'), inline=True)
+            embed.add_field(name='❯ Language', value=data.get('language'), inline=True)
+            embed.add_field(name='❯ License', value=data.get('license').get('spdx_id'), inline=True)
+            embed.add_field(name='❯ Issues', value=data.get('open_issues_count'), inline=True)
+            embed.set_thumbnail(url=ANISEARCH_LOGO)
+            await ctx.channel.send(embed=embed)

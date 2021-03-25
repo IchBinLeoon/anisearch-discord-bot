@@ -18,14 +18,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import random
+import random as rnd
+from typing import Union
 
 from discord.ext.commands import Context
 
 logger = logging.getLogger(__name__)
 
 
-def get_command_example(ctx: Context, command: str) -> str:
+def get_command_example(ctx: Context, command: str) -> Union[str, None]:
     """
     Returns an example of the specified command.
 
@@ -36,40 +37,75 @@ def get_command_example(ctx: Context, command: str) -> str:
     Returns:
         str: The command example.
     """
-    if command == 'anime':
-        example = f"{command} {random.choice(['Sword Art Online', 'Shingeki no Kyojin', 'Death Note', 'Steins;Gate'])}"
+    anime = [
+        'Sword Art Online',
+        'Shingeki no Kyojin',
+        'Death Note',
+        'Steins;Gate'
+    ]
 
-    elif command == 'manga':
-        example = f"{command} {random.choice(['Shingeki no Kyojin', 'One Piece', 'Tokyo Ghoul', 'Jujutsu Kaisen'])}"
+    manga = [
+        'Shingeki no Kyojin',
+        'One Piece',
+        'Tokyo Ghoul',
+        'Jujutsu Kaisen'
+    ]
 
-    elif command == 'character':
-        example = f"{command} {random.choice(['Zero Two', 'Kaito Kuroba', 'Rias Gremory', 'Megumin'])}"
+    character = [
+        'Zero Two',
+        'Kaito Kuroba',
+        'Rias Gremory',
+        'Megumin'
+    ]
 
-    elif command == 'staff':
-        example = f"{command} {random.choice(['Kevin Penkin', 'LiSA', 'Hajime Isayama', 'Hayao Miyazaki'])}"
+    staff = [
+        'Kevin Penkin',
+        'LiSA',
+        'Hajime Isayama',
+        'Hayao Miyazaki'
+    ]
 
-    elif command == 'studio':
-        example = f"{command} {random.choice(['Kyoto Animation', 'Shaft', 'White Fox', 'A-1 Pictures'])}"
+    studio = [
+        'Kyoto Animation',
+        'Shaft',
+        'White Fox',
+        'A-1 Pictures'
+    ]
 
-    elif command == 'random':
-        example = f"{command} {random.choice(['anime', 'manga'])} {random.choice(['action', 'romance', 'comedy'])}"
+    random = [
+        'anime action',
+        'anime romance',
+        'anime comedy',
+        'anime slice of life',
+        'manga action',
+        'manga romance',
+        'manga comedy',
+        'manga slice of life',
+    ]
 
-    elif command == 'themes':
-        example = f"{command} {random.choice(['Sword Art Online', 'Shingeki no Kyojin', 'Death Note', 'Steins;Gate'])}"
+    themes = [
+        'Shingeki no Kyojin',
+        'Code Geass: Hangyaku no Lelouch',
+        'Steins;Gate',
+        'Fate/Zero'
+    ]
 
-    elif command == 'theme':
-        example = f"{command} {random.choice(['OP', 'OP1', 'OP2', 'OP3', 'ED', 'ED1'])} Bakemonogatari"
+    theme = [
+        'OP1 Darling in the FranXX',
+        'OP4 Bakemonogatari',
+        'ED1 Re:Zero',
+        'ED2 Kaguya-sama',
+    ]
 
-    elif command in ['anilist', 'myanimelist', 'kitsu']:
-        example = random.choice([command, f"{command} {random.choice([ctx.author.name, f'@{ctx.author}'])}"])
+    setprofile = [
+        f'al {ctx.author.name}',
+        f'mal {ctx.author.name}',
+        f'kitsu {ctx.author.name}'
+    ]
 
-    elif command == 'setprofile':
-        example = f"{command} {random.choice(['al', 'mal', 'kitsu'])} {ctx.author.name}"
-
-    elif command == 'profiles':
-        example = random.choice([command, f"{command} @{ctx.author}"])
-
-    else:
+    try:
+        example = f'{command} {rnd.choice(locals()[command])}'
+    except KeyError:
         example = None
 
     return example
