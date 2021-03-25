@@ -190,9 +190,9 @@ Nevertheless, the installation steps are as follows:
 The bot and the associated local admin web dashboard can be run either as a Docker containers or manually. The dashboard can be accessed via port 5000 by default.
 
 ### Requirements:
-  - Either `Docker` and `Docker-Compose` or `Python 3.8+` and a `PostgreSQL Database`
+  - Either `Docker and Docker-Compose` or `Python 3.8+ and a PostgreSQL Database`
 
-## 1. ⚙️ Setup
+## 1. ⚙️ Set up the Bot
 
 1. Clone the repository.    
 
