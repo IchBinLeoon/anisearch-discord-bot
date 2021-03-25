@@ -1,12 +1,14 @@
-version: '3'
+version: '3.9'
 
 services:
   bot:
     build: .
     env_file:
       - ./.env
+    depends_on:
+      - db
     ports:
-      - '${IPC_PORT}:${IPC_PORT}'
+      - ${IPC_PORT}:${IPC_PORT}
     restart: unless-stopped
     container_name: anisearch-bot
   dashboard:
@@ -14,8 +16,25 @@ services:
     env_file:
       - ./.env
     depends_on:
+      - db
       - bot
     ports:
-      - '${APP_PORT}:${APP_PORT}'
+      - ${APP_PORT}:${APP_PORT}
     restart: unless-stopped
     container_name: anisearch-dashboard
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    container_name: anisearch-db
+
+volumes:
+  pgdata:
