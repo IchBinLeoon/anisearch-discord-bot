@@ -18,9 +18,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-from datetime import timedelta
+import platform
+from datetime import timedelta, datetime
 
 import discord
+import psutil
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -48,7 +50,7 @@ class Admin(commands.Cog, name='Admin'):
         """
         Displays the current status of the bot. Can only be used by the bot owner.
         """
-        embed = discord.Embed(title='AniSearch - Status', color=DEFAULT_EMBED_COLOR)
+        embed = discord.Embed(title='❯ Bot Status', color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Guilds', value=str(self.bot.get_guild_count()), inline=True)
         embed.add_field(name='Users', value=str(self.bot.get_user_count()), inline=True)
         embed.add_field(name='Channels', value=str(self.bot.get_channel_count()), inline=True)
@@ -133,4 +135,44 @@ class Admin(commands.Cog, name='Admin'):
             title = f'An error occurred while reloading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
         embed = discord.Embed(title=title, color=color)
+        await ctx.channel.send(embed=embed)
+
+    @commands.command(name='sysinfo', aliases=['system', 'sys'], usage='sysinfo', ignore_extra=False, hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.is_owner()
+    async def sysinfo(self, ctx: Context):
+        """
+        Displays basic information about the system on which the bot is currently running. Can only be used by the bot
+        owner.
+        """
+        embed = discord.Embed(title='❯ System Info', color=DEFAULT_EMBED_COLOR)
+
+        boot_time = datetime.fromtimestamp(psutil.boot_time()).strftime("%m/%d/%Y %H:%M:%S")
+        embed.add_field(name='Boot Time', value=boot_time, inline=False)
+
+        embed.add_field(name='Platform', value=platform.platform(), inline=False)
+
+        try:
+            core_temp = psutil.sensors_temperatures()['cpu_thermal'][0][1]
+        except (AttributeError, KeyError):
+            core_temp = None
+        embed.add_field(name='Temperature', value=f'{core_temp} °C' if core_temp else 'N/A', inline=False)
+
+        embed.add_field(name='Virtual Memory', inline=True,
+                        value=f'Total: {round(psutil.virtual_memory()[0] / 1000000000, 2)} GB\n'
+                              f'Available: {round(psutil.virtual_memory()[1] / 1000000000, 2)} GB\n'
+                              f'Used: {round(psutil.virtual_memory()[3] / 1000000000, 2)} GB\n'
+                              f'Usage: {round(psutil.virtual_memory()[2], 2)} %')
+
+        embed.add_field(name='Disk Usage', inline=True,
+                        value=f'Total: {round(psutil.disk_usage("/")[0] / 1000000000, 2)} GB\n'
+                              f'Available: {round(psutil.disk_usage("/")[2] / 1000000000, 2)} GB\n'
+                              f'Used: {round(psutil.disk_usage("/")[1] / 1000000000, 2)} GB\n'
+                              f'Usage: {round(psutil.disk_usage("/")[3], 2)} %')
+
+        embed.add_field(name='CPU', inline=True,
+                        value=f'Cores: {psutil.cpu_count()}\n'
+                              f'Frequency: {round(psutil.cpu_freq(percpu=False)[0], 2)} MHz\n'
+                              f'Usage: {round(psutil.cpu_percent(interval=None), 2)} %')
+
         await ctx.channel.send(embed=embed)

@@ -174,7 +174,9 @@ Can only be used by the bot owner.
 
 - `unload <cog>:` Unloads a cog.  
 
-- `reload <cog>:` Reloads a cog.
+- `reload <cog>:` Reloads a cog.  
+
+- `sysinfo:` Displays basic information about the system on which the bot is currently running.  
 
 
 # 🤝 Contribute
