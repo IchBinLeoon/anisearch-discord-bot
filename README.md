@@ -190,6 +190,7 @@ For info, the bot still contains a lot of code from a very early version that ca
 
 # 🚀 Running AniSearch
 **Self-hosting isn't fully supported and I don't recommend you to self-host the bot unless you want to contribute to the code.**  
+
 That's why I would prefer if you don't run an instance of my bot and recommend everyone to use the official instance instead, which you can add it to your Discord server [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!  
 
 Nevertheless, the installation steps are as follows:  
