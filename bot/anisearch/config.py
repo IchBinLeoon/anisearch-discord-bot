@@ -17,17 +17,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
+import os
 
-from anisearch.bot import AniSearchBot
-from anisearch.cogs.ipc.ipc import Ipc
+from dotenv import load_dotenv
 
-log = logging.getLogger(__name__)
+load_dotenv()
 
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_OWNER_ID = os.getenv('BOT_OWNER_ID')
+BOT_SAUCENAO_API_KEY = os.getenv('BOT_SAUCENAO_API_KEY')
+BOT_TOPGG_TOKEN = os.getenv('BOT_TOPGG_TOKEN')
+BOT_API_HOST = os.getenv('BOT_API_HOST')
+BOT_API_PORT = os.getenv('BOT_API_PORT')
+BOT_API_SECRET_KEY = os.getenv('BOT_API_SECRET_KEY')
 
-def setup(bot: AniSearchBot):
-    """
-    Sets up the `Ipc` cog.
-    """
-    bot.add_cog(Ipc(bot))
-    log.info('Ipc cog loaded.')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')

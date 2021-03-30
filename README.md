@@ -196,10 +196,10 @@ That's why I would prefer if you don't run an instance of my bot and recommend e
 Nevertheless, the installation steps are as follows:  
 
 ## Introduction
-The bot and the associated local admin web dashboard can be run either as a Docker containers or manually. The dashboard can be accessed via port 5000 by default.
+The bot and the associated admin panel can be run either as a Docker containers or manually. The admin panel can be accessed via port 5000 by default.
 
 ### Requirements:
-  - Either `Docker and Docker-Compose` or `Python 3.8+ and a PostgreSQL Database`
+- Either [Docker and Docker-Compose](https://www.docker.com/) or [Python](https://www.python.org/) 3.8+, [Go](https://golang.org/) 1.16+ and a [PostgreSQL](https://www.postgresql.org/) Database
 
 ## 1. ⚙️ Set up the Bot
 
@@ -219,17 +219,17 @@ The bot and the associated local admin web dashboard can be run either as a Dock
 
 4. Rename `.env.example` to `.env`.  
 
-5. Edit `.env` and fill in `TOKEN`, `OWNER_ID` and `SAUCENAO_API_KEY`.
+5. Edit `.env` and fill in `BOT_TOKEN`, `BOT_OWNER_ID` and `BOT_SAUCENAO_API_KEY`.
 
     ```
     # The token the bot will use for auth with Discord.
-    TOKEN=
+    BOT_TOKEN=
     
     # The Discord ID of the user hosting the bot.
-    OWNER_ID=
+    BOT_OWNER_ID=
     
     # The SauceNAO API key. Is required for the `source` command.
-    SAUCENAO_API_KEY=
+    BOT_SAUCENAO_API_KEY=
     ```
 
 ## 2. Run
@@ -237,7 +237,7 @@ The bot and the associated local admin web dashboard can be run either as a Dock
 ## 🐳 Docker
 1. Make sure `Docker` and `Docker-Compose` are installed.
 
-2. Build the images and run the bot, dashboard and database.
+2. Build the images and run the bot, admin panel and database.
 
     ```
     $ docker-compose up --build
@@ -245,55 +245,78 @@ The bot and the associated local admin web dashboard can be run either as a Dock
    
 ## 🔧 Manually
 1. To be able to use the bot you need to set up a `PostgreSQL Database`. Make sure the tables are set up correctly as shown below to successfully connect to your database. Type the following in your `PSQL Tool`:
-    
+
     ```sql
     CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5));
     CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255));
     ```
 
-2. Edit `.env` and change `IPC_HOST` and `APP_HOST` to `localhost` or to the IP address of the device the bot and dashboard are running on. Also change the credentials for the Postgres database to match yours.
+2. Edit `.env` and change `BOT_API_HOST` and `WEB_HOST` to localhost or to the IP address of the device the bot and admin panel are running on. Also change the credentials for the Postgres database to match yours.
 
-3. Make sure you have `Python 3.8` or higher.
+3. ### Bot
+    - Make sure you have `Python 3.8` or higher.
 
-4. Set up and activate a venv for the bot and the dashboard. Can be one for both or two separate.
+    - Change the working directory.
 
-    ```
-    $ python3 -m venv venv
-    $ source venv/bin/activate # On macOS and Linux
-    $ .\venv\Scripts\activate # On Windows
-    ```
+        ```
+        $ cd bot
+        ```   
 
-5. Install the requirements.
+    - Set up and activate a venv.
 
-    ```
-    $ python -m pip install -r requirements.txt
-    $ python -m pip install -r dashboard/requirements.txt
-    ```
+        ```
+        $ python3 -m venv venv
+        $ source venv/bin/activate # On macOS and Linux
+        $ .\venv\Scripts\activate # On Windows
+        ```
 
-6. Run the bot and dashboard.
+    - Install the requirements.
 
-    ```
-    $ python -m anisearch
-    $ python dashboard/app.py
-    ```
-   
+        ```
+        $ python -m pip install -r requirements.txt
+        ```
+
+    - Run the bot.
+
+        ```
+        $ python -m anisearch
+        ```
+
+4. ### Admin Panel
+    - Make sure you have `Go 1.16` or higher.
+
+    - Change the working directory.
+
+        ```
+        $ cd web
+        ```
+
+    - Build the executable.
+
+        ```
+        $ go build .
+        ```
+
+    - Run the admin panel.
+
+        ```
+        $ ./main # On macOS and Linux
+        $ main.exe # On Windows
+        ```
+
 
 # 📚 Libraries and API's
-Thanks to the people who made this discord bot possible.  
-#### [Rapptz/discord.py](https://github.com/Rapptz/discord.py)  
-#### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)  
-#### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)  
-#### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)  
-#### [Ext-Creators/discord-ext-ipc](https://github.com/Ext-Creators/discord-ext-ipc)  
-#### [pgjones/quart](https://gitlab.com/pgjones/quart)  
-#### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)  
-#### [jikan-me/jikan](https://github.com/jikan-me/jikan)  
-#### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)  
-#### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)  
-#### [soruly/trace.moe](https://github.com/soruly/trace.moe)  
-#### [SauceNAO](https://saucenao.com)
-#### [Anime News Network](https://www.animenewsnetwork.com)
-#### [Crunchyroll](https://www.crunchyroll.com)
+Thanks to the people who made this discord bot possible.
+#### [Rapptz/discord.py](https://github.com/Rapptz/discord.py)
+#### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)
+#### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)
+#### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)
+#### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)
+#### [jikan-me/jikan](https://github.com/jikan-me/jikan)
+#### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)
+#### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)
+#### [soruly/trace.moe](https://github.com/soruly/trace.moe)
+#### [gin-gonic/gin](https://github.com/gin-gonic/gin)
 
 
 # 📝 License

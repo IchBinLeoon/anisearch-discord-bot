@@ -29,7 +29,7 @@ from discord.utils import get, find
 
 import anisearch
 from anisearch.bot import AniSearchBot
-from anisearch.config import OWNER_ID
+from anisearch.config import BOT_OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
     DISCORD_INVITE, WEBSITE, ANISEARCH_LOGO, GITHUB_REPO_API_ENDPOINT
 from anisearch.utils.http import get as get_request
@@ -99,7 +99,7 @@ class Help(commands.Cog, name='Help'):
         embeds, page = [], 1
 
         for cog in self.bot.cogs:
-            if self.bot.get_cog(cog).qualified_name not in ['Admin', 'Ipc']:
+            if self.bot.get_cog(cog).qualified_name not in ['Admin']:
                 cmds = '\n'.join([f'• {prefix}{cmd.usage}' for cmd in self.bot.get_cog(cog).get_commands()])
 
                 cmds = ''.join(f'Can only be used by a server administrator.\n```\n{cmds}\n```'
@@ -144,7 +144,7 @@ class Help(commands.Cog, name='Help'):
         """
         Displays statistics about the bot.
         """
-        embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{OWNER_ID}>',
+        embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
         embed.set_author(name="AniSearch's statistics", icon_url=ANISEARCH_LOGO)
         embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)

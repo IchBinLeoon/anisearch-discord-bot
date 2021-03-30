@@ -2,26 +2,26 @@ version: '3.9'
 
 services:
   bot:
-    build: .
+    build: ./bot
     env_file:
       - ./.env
     depends_on:
       - db
     ports:
-      - ${IPC_PORT}:${IPC_PORT}
+      - ${BOT_API_PORT}:${BOT_API_PORT}
     restart: unless-stopped
     container_name: anisearch-bot
-  dashboard:
-    build: ./dashboard
+  web:
+    build: ./web
     env_file:
       - ./.env
     depends_on:
       - db
       - bot
     ports:
-      - ${APP_PORT}:${APP_PORT}
+      - ${WEB_PORT}:${WEB_PORT}
     restart: unless-stopped
-    container_name: anisearch-dashboard
+    container_name: anisearch-web
   db:
     image: postgres:latest
     environment:
