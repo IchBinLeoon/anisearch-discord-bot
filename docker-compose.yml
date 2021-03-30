@@ -8,7 +8,7 @@ services:
     depends_on:
       - db
     ports:
-      - ${IPC_PORT}:${IPC_PORT}
+      - ${BOT_API_PORT}:${BOT_API_PORT}
     restart: unless-stopped
     container_name: anisearch-bot
   web:
@@ -19,7 +19,7 @@ services:
       - db
       - bot
     ports:
-      - ${APP_PORT}:${APP_PORT}
+      - ${WEB_PORT}:${WEB_PORT}
     restart: unless-stopped
     container_name: anisearch-web
   db:

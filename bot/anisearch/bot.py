@@ -25,13 +25,15 @@ from asyncio import sleep
 import dbl
 import discord
 from aiohttp import ClientSession
-from discord.ext import commands, tasks, menus, ipc
+from discord.ext import commands, tasks, menus
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 
-from anisearch.config import TOKEN, OWNER_ID, TOPGG_TOKEN, SAUCENAO_API_KEY, IPC_HOST, IPC_PORT, IPC_SECRET_KEY
+from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCENAO_API_KEY, BOT_API_HOST, \
+    BOT_API_PORT, BOT_API_SECRET_KEY
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
+from anisearch.utils.api import Server
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
 from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
@@ -50,8 +52,7 @@ initial_extensions = [
     'anisearch.cogs.news',
     'anisearch.cogs.help',
     'anisearch.cogs.settings',
-    'anisearch.cogs.admin',
-    'anisearch.cogs.ipc'
+    'anisearch.cogs.admin'
 ]
 
 
@@ -69,7 +70,7 @@ class AniSearchBot(AutoShardedBot):
             guilds=True,
             reactions=True
         )
-        super().__init__(command_prefix=self.get_prefix, intents=intents, owner_id=int(OWNER_ID))
+        super().__init__(command_prefix=self.get_prefix, intents=intents, owner_id=int(BOT_OWNER_ID))
 
         self.log_stream = log_stream
 
@@ -77,7 +78,7 @@ class AniSearchBot(AutoShardedBot):
         self.session = ClientSession(loop=self.loop)
 
         self.db = DataBase()
-        self.ipc = ipc.Server(self, secret_key=IPC_SECRET_KEY, host=IPC_HOST, port=int(IPC_PORT))
+        self.api = Server(bot=self, host=BOT_API_HOST, port=int(BOT_API_PORT), secret_key=BOT_API_SECRET_KEY)
 
         self.anilist = AniListClient(session=ClientSession(loop=self.loop))
 
@@ -86,7 +87,7 @@ class AniSearchBot(AutoShardedBot):
 
         self.tracemoe = TraceMoeClient(session=ClientSession(loop=self.loop))
 
-        self.saucenao = SauceNAOClient(api_key=SAUCENAO_API_KEY, db=999, output_type=2, numres=10,
+        self.saucenao = SauceNAOClient(api_key=BOT_SAUCENAO_API_KEY, db=999, output_type=2, numres=10,
                                        session=ClientSession(loop=self.loop))
 
         self.myanimelist = JikanClient(session=ClientSession(loop=self.loop))
@@ -98,7 +99,7 @@ class AniSearchBot(AutoShardedBot):
         self.crunchyroll = CrunchyrollClient(session=ClientSession(loop=self.loop))
 
         # Posts the guild count to top.gg every 30 minutes.
-        self.topgg_token = TOPGG_TOKEN
+        self.topgg_token = BOT_TOPGG_TOKEN
         self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
 
         self.load_cogs()
@@ -177,11 +178,8 @@ class AniSearchBot(AutoShardedBot):
     async def on_disconnect(self) -> None:
         log.info('Disconnected from Discord.')
 
-    async def on_ipc_ready(self):
-        log.info('Ipc is ready.')
-
-    async def on_ipc_error(self, endpoint, error):
-        log.exception(endpoint, 'raised', error)
+    async def on_api_ready(self):
+        log.info('Api is ready.')
 
     async def on_command(self, ctx: Context) -> None:
         if isinstance(ctx.channel, discord.channel.DMChannel):
@@ -236,7 +234,7 @@ class AniSearchBot(AutoShardedBot):
         """
         Runs the bot.
         """
-        super().run(TOKEN)
+        super().run(BOT_TOKEN)
 
     async def close(self):
         """

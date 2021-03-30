@@ -38,7 +38,7 @@ def main() -> None:
     log_stream = setup_logging()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(check_update())
-    logging.info('Starting AniSearch Discord Bot.')
+    logging.info(f'Starting AniSearch Bot v{anisearch.__version__}.')
     logging.info(f'Discord.py version: {discord.__version__}')
     logging.info(f'Python version: {platform.python_version()}')
     start(log_stream)
@@ -77,7 +77,7 @@ def start(log_stream: StringIO) -> None:
     """
     try:
         bot = AniSearchBot(log_stream)
-        bot.ipc.start()
+        bot.api.start()
         bot.run()
     except Exception as e:
         logging.exception(e)

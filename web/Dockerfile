@@ -1,11 +1,9 @@
-FROM python:3.8.6-buster
+FROM golang:1.16.2-buster
 
 WORKDIR /web
 
-COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
 
-CMD [ "python", "app.py" ]
+RUN go build .
+
+ENTRYPOINT [ "./main" ]
