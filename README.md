@@ -199,7 +199,7 @@ Nevertheless, the installation steps are as follows:
 The bot and the associated admin panel can be run either as a Docker containers or manually. The admin panel can be accessed via port 5000 by default.
 
 ### Requirements:
-    - Either [Docker and Docker-Compose](https://www.docker.com/) or [Python](https://www.python.org/) 3.8+, [Go](https://golang.org/) 1.16+ and a [PostgreSQL](https://www.postgresql.org/) Database
+- Either [Docker and Docker-Compose](https://www.docker.com/) or [Python](https://www.python.org/) 3.8+, [Go](https://golang.org/) 1.16+ and a [PostgreSQL](https://www.postgresql.org/) Database
 
 ## 1. ⚙️ Set up the Bot
 
