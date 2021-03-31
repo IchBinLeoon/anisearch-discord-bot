@@ -21,19 +21,24 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 )
 
-var WebHost string
-var WebPort string
-var BotApiHost string
-var BotApiPort string
-var BotApiSecretKey string
+var (
+	host string
+	port string
+	mode string
+	botApiHost string
+	botApiPort string
+	botApiSecretKey string
+)
 
 type Stats struct {
 	Ready string `json:"ready"`
@@ -52,11 +57,19 @@ type Logs struct {
 
 func index(c *gin.Context) {
 
-	data, _ := request()
+	urlStr := fmt.Sprintf("http://%s:%s/api?type=stats", botApiHost, botApiPort)
+
+	headers := make(map[string]string)
+	headers["Authentication"] = botApiSecretKey
+
+	data, err := request("GET", urlStr, headers, nil)
+	if err != nil {
+		log.Println(err)
+	}
 
 	Data := Stats{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H {
@@ -74,40 +87,45 @@ func index(c *gin.Context) {
 
 func logs(c *gin.Context) {
 
-	data, _ := request()
+	urlStr := fmt.Sprintf("http://%s:%s/api?type=logs", botApiHost, botApiPort)
+
+	headers := make(map[string]string)
+	headers["Authentication"] = botApiSecretKey
+
+	data, err := request("GET", urlStr, headers, nil)
+	if err != nil {
+		log.Println(err)
+	}
 
 	Data := Logs{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	c.String(http.StatusOK, Data.Logs)
 
 }
 
-func request() (string, error) {
+func request(method string, url string, headers map[string]string, body io.Reader) (string, error) {
 
 	client := &http.Client{}
 
-	url := "http://" + BotApiHost + ":" + BotApiPort
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		log.Fatal(err)
+	req, _ := http.NewRequest(method, url, body)
+
+	if headers != nil {
+		for key, value := range headers {
+			req.Header.Add(key, value)
+		}
 	}
 
-	req.Header.Add("Authentication", BotApiSecretKey)
 	res, err := client.Do(req)
-
 	if err != nil {
-		data := `{"ready": "-", "guilds": "-", "users": "-", "channels": "-", "uptime": "-", "shards": "-", "latency": "-", "cogs": "-", "logs": ""}`
-		return data, err
+		return "", err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
-	defer res.Body.Close()
-
-	if err != nil {
-		log.Fatal(err)
+	if err := res.Body.Close(); err != nil {
+		return "", err
 	}
 
 	return string(data), nil
@@ -122,24 +140,27 @@ func init() {
 		}
 	}
 
-	WebHost = os.Getenv("WEB_HOST")
-	WebPort = os.Getenv("WEB_PORT")
-	BotApiHost = os.Getenv("BOT_API_HOST")
-	BotApiPort = os.Getenv("BOT_API_PORT")
-	BotApiSecretKey = os.Getenv("BOT_API_SECRET_KEY")
+	host = os.Getenv("WEB_HOST")
+	port = os.Getenv("WEB_PORT")
+	mode = os.Getenv("WEB_MODE")
+
+	botApiHost = os.Getenv("BOT_API_HOST")
+	botApiPort = os.Getenv("BOT_API_PORT")
+	botApiSecretKey = os.Getenv("BOT_API_SECRET_KEY")
 
 }
 
 func main() {
 
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(mode)
 	router := gin.Default()
 
 	router.LoadHTMLGlob("templates/*")
 	router.GET("/", index)
 	router.GET("/logs", logs)
 
-	if err := router.Run(WebHost + ":" + WebPort); err != nil {
+	bindStr := fmt.Sprintf("%s:%s", host, port)
+	if err := router.Run(bindStr); err != nil {
 		log.Fatal(err)
 	}
 
