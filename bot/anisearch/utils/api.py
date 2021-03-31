@@ -59,18 +59,27 @@ class Server:
             response = {'error': '403 Forbidden', 'code': status}
         else:
             try:
-                status = 200
-                response = {
-                    'ready': str(self.bot.is_ready()),
-                    'guilds': str(self.bot.get_guild_count()),
-                    'users': str(self.bot.get_user_count()),
-                    'channels': str(self.bot.get_channel_count()),
-                    'uptime': str(round(self.bot.get_uptime())),
-                    'shards': str(self.bot.shard_count),
-                    'latency': str(round(self.bot.latency, 6)),
-                    'cogs': str(len(self.bot.cogs)),
-                    'logs': str(self.bot.log_stream.getvalue())
-                }
+                q = request.query
+                if q.get('type') == 'stats':
+                    status = 200
+                    response = {
+                        'ready': str(self.bot.is_ready()),
+                        'guilds': str(self.bot.get_guild_count()),
+                        'users': str(self.bot.get_user_count()),
+                        'channels': str(self.bot.get_channel_count()),
+                        'uptime': str(round(self.bot.get_uptime())),
+                        'shards': str(self.bot.shard_count),
+                        'latency': str(round(self.bot.latency, 6)),
+                        'cogs': str(len(self.bot.cogs)),
+                    }
+                elif q.get('type') == 'logs':
+                    status = 200
+                    response = {
+                        'logs': str(self.bot.log_stream.getvalue())
+                    }
+                else:
+                    status = 400
+                    response = {'error': '400 Bad Request', 'code': status}
             except Exception as e:
                 log.exception(e)
                 status = 500
@@ -97,6 +106,6 @@ class Server:
         logger.setLevel(logging.ERROR)
 
         self._server = web.Application()
-        self._server.router.add_route('GET', '/', self.handle)
+        self._server.router.add_route('GET', '/api', self.handle)
 
         self.loop.run_until_complete(self._start())
