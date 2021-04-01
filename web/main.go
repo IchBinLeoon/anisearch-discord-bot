@@ -180,7 +180,20 @@ func users(c *gin.Context) {
 
 	var userStrList []string
 	for j, i := range users {
-		str := fmt.Sprintf("%d.\tID: %d | AL: %s | MAL: %s | Kitsu: %s", j, i.ID, i.Anilist, i.Myanimelist, i.Kitsu)
+
+		var profiles []string
+		if i.Anilist != "" {
+			profiles = append(profiles, fmt.Sprintf("AL: %s", i.Anilist))
+		}
+		if i.Myanimelist != "" {
+			profiles = append(profiles, fmt.Sprintf("MAL: %s", i.Myanimelist))
+		}
+		if i.Kitsu != "" {
+			profiles = append(profiles, fmt.Sprintf("Kitsu: %s", i.Kitsu))
+		}
+		profilesStr := strings.Join(profiles, " | ")
+
+		str := fmt.Sprintf("%d.\tID: %d | %s", j, i.ID, profilesStr)
 		userStrList = append(userStrList, str)
 	}
 
@@ -229,6 +242,8 @@ func init() {
 }
 
 func main() {
+	log.Println("Starting AniSearch Admin Panel")
+
 	connStr := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", dbHost, dbPort, dbName, dbUser, dbPassword)
 	db, connErr = gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if connErr != nil {
