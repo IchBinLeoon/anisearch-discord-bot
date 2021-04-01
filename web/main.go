@@ -41,14 +41,14 @@ var (
 )
 
 type Stats struct {
-	Ready string `json:"ready"`
-	Guilds string `json:"guilds"`
-	Users string `json:"users"`
-	Channels string `json:"channels"`
-	Uptime string `json:"uptime"`
-	Shards string `json:"shards"`
-	Latency string `json:"latency"`
-	Cogs string `json:"cogs"`
+	Ready 	 bool 	 `json:"ready"`
+	Guilds 	 int  	 `json:"guilds"`
+	Users 	 int  	 `json:"users"`
+	Channels int  	 `json:"channels"`
+	Uptime 	 int  	 `json:"uptime"`
+	Shards 	 int  	 `json:"shards"`
+	Latency  float32 `json:"latency"`
+	Cogs 	 int  	 `json:"cogs"`
 }
 
 type Logs struct {
