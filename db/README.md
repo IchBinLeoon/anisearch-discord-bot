@@ -1,3 +1,0 @@
-# Database
-
-AniSearch's Database
