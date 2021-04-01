@@ -144,17 +144,17 @@ func request(method string, url string, headers map[string]string, body io.Reade
 type Guild struct {
 	gorm.Model
 
-	ID	   int
+	ID     int
 	Prefix string
 }
 
 type User struct {
 	gorm.Model
 
-	ID			int
-	Anilist		string
-	Myanimelist	string
-	Kitsu		string
+	ID          int
+	Anilist     string
+	Myanimelist string
+	Kitsu       string
 }
 
 func guilds(c *gin.Context) {
