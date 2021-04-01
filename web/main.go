@@ -144,14 +144,14 @@ func request(method string, url string, headers map[string]string, body io.Reade
 type Guild struct {
 	gorm.Model
 
-	ID     int
+	ID     int64
 	Prefix string
 }
 
 type User struct {
 	gorm.Model
 
-	ID          int
+	ID          int64
 	Anilist     string
 	Myanimelist string
 	Kitsu       string
@@ -163,8 +163,8 @@ func guilds(c *gin.Context) {
 	db.Unscoped().Find(&guilds)
 
 	var guildStrList []string
-	for _, i := range guilds {
-		str := fmt.Sprintf("ID: %d | Prefix: %s", i.ID, i.Prefix)
+	for j, i := range guilds {
+		str := fmt.Sprintf("%d.\tID: %d | Prefix: %s", j, i.ID, i.Prefix)
 		guildStrList = append(guildStrList, str)
 	}
 
@@ -179,8 +179,8 @@ func users(c *gin.Context) {
 	db.Unscoped().Find(&users)
 
 	var userStrList []string
-	for _, i := range users {
-		str := fmt.Sprintf("ID: %d | AL: %s | MAL: %s | Kitsu: %s", i.ID, i.Anilist, i.Myanimelist, i.Kitsu)
+	for j, i := range users {
+		str := fmt.Sprintf("%d.\tID: %d | AL: %s | MAL: %s | Kitsu: %s", j, i.ID, i.Anilist, i.Myanimelist, i.Kitsu)
 		userStrList = append(userStrList, str)
 	}
 
