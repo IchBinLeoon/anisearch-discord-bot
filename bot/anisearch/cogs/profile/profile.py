@@ -703,7 +703,7 @@ class Profile(commands.Cog, name='Profile'):
             if username is None:
                 username = self.bot.db.select_profile('anilist', ctx.author.id)
             elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(r'^<@[!|&]?(?P<id>\d{18})>', username).group('id')
+                id_ = re.match(r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
                 username = self.bot.db.select_profile('anilist', int(id_))
             else:
                 username = username
@@ -730,7 +730,7 @@ class Profile(commands.Cog, name='Profile'):
             if username is None:
                 username = self.bot.db.select_profile('myanimelist', ctx.author.id)
             elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(r'^<@[!|&]?(?P<id>\d{18})>', username).group('id')
+                id_ = re.match(r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
                 username = self.bot.db.select_profile('myanimelist', int(id_))
             else:
                 username = username
@@ -757,7 +757,7 @@ class Profile(commands.Cog, name='Profile'):
             if username is None:
                 username = self.bot.db.select_profile('kitsu', ctx.author.id)
             elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(r'^<@[!|&]?(?P<id>\d{18})>', username).group('id')
+                id_ = re.match(r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
                 username = self.bot.db.select_profile('kitsu', int(id_))
             else:
                 username = username
@@ -804,7 +804,7 @@ class Profile(commands.Cog, name='Profile'):
                     ctx.command.reset_cooldown(ctx)
                     raise discord.ext.commands.BadArgument
                 if user.startswith('<@') and user.endswith('>'):
-                    id_ = re.match(r'^<@(!)?(?P<id>\d{18})>', user).group('id')
+                    id_ = re.match(r'^<@(!)?(?P<id>\d{17,18})>', user).group('id')
                 else:
                     ctx.command.reset_cooldown(ctx)
                     raise discord.ext.commands.BadArgument
