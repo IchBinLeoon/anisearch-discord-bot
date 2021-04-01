@@ -11,6 +11,14 @@
         window.location.href = "/logs";
       }
 
+      function redirectGuilds() {
+              window.location.href = "/guilds";
+      }
+
+      function redirectUsers() {
+              window.location.href = "/users";
+      }
+
       let uptime = {{ .uptime }};
 
       function countUptime() {
@@ -27,7 +35,7 @@
           ++uptime;
       }
 
-      if (uptime != "")
+      if (uptime != 0)
           setInterval(countUptime, 1000);
 
     </script>
@@ -106,10 +114,15 @@
     <div class="header">
       <a>AniSearch Admin Panel</a>
     </div>
-    <div class="box">
-      <p class="box-headline">Ready</p>
-      <p class="box-value">{{ .ready }}</p>
+    {{ if .ready }}
+    <div class="box" style="background-color: green; border: 2px solid green">
+      <p class="box-status">Online</p>
     </div>
+    {{ else }}
+    <div class="box" style="background-color: red; border: 2px solid red">
+      <p class="box-status">Offline</p>
+    </div>
+    {{ end }}
     <div class="box">
       <p class="box-headline">Guilds</p>
       <p class="box-value">{{ .guilds }}</p>
@@ -124,7 +137,7 @@
     </div>
     <div class="box">
       <p class="box-headline">Uptime</p>
-      <p class="box-value" id="uptime"></p>
+      <p class="box-value" id="uptime">{{ .uptime | formatUptime }}</p>
     </div>
     <div class="box">
       <p class="box-headline">Shards</p>
@@ -139,5 +152,7 @@
       <p class="box-value">{{ .cogs }}</p>
     </div>
     <button class="button" onclick="redirectLogs()">Logs</button>
+    <button class="button" onclick="redirectGuilds()">Guilds</button>
+    <button class="button" onclick="redirectUsers()">Users</button>
   </body>
 </html>

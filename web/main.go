@@ -24,11 +24,16 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var (
@@ -38,6 +43,16 @@ var (
 	botApiHost string
 	botApiPort string
 	botApiSecretKey string
+	dbHost string
+	dbPort string
+	dbName string
+	dbUser string
+	dbPassword string
+)
+
+var (
+	db *gorm.DB
+	connErr error
 )
 
 type Stats struct {
@@ -56,7 +71,6 @@ type Logs struct {
 }
 
 func index(c *gin.Context) {
-
 	urlStr := fmt.Sprintf("http://%s:%s/api?type=stats", botApiHost, botApiPort)
 
 	headers := make(map[string]string)
@@ -82,11 +96,9 @@ func index(c *gin.Context) {
 		"latency": Data.Latency,
 		"cogs": Data.Cogs,
 	})
-
 }
 
 func logs(c *gin.Context) {
-
 	urlStr := fmt.Sprintf("http://%s:%s/api?type=logs", botApiHost, botApiPort)
 
 	headers := make(map[string]string)
@@ -103,11 +115,9 @@ func logs(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, Data.Logs)
-
 }
 
 func request(method string, url string, headers map[string]string, body io.Reader) (string, error) {
-
 	client := &http.Client{}
 
 	req, _ := http.NewRequest(method, url, body)
@@ -129,11 +139,74 @@ func request(method string, url string, headers map[string]string, body io.Reade
 	}
 
 	return string(data), nil
+}
 
+type Guild struct {
+	gorm.Model
+
+	ID 	   int
+	Prefix string
+}
+
+type User struct {
+	gorm.Model
+
+	ID 	   		int
+	Anilist 	string
+	Myanimelist string
+	Kitsu 		string
+}
+
+func guilds(c *gin.Context) {
+	var guilds []Guild
+
+	db.Unscoped().Find(&guilds)
+
+	var guildStrList []string
+	for _, i := range guilds {
+		str := fmt.Sprintf("ID: %d | Prefix: %s", i.ID, i.Prefix)
+		guildStrList = append(guildStrList, str)
+	}
+
+	data := strings.Join(guildStrList, "\n")
+
+	c.String(http.StatusOK, data)
+}
+
+func users(c *gin.Context) {
+	var users []User
+
+	db.Unscoped().Find(&users)
+
+	var userStrList []string
+	for _, i := range users {
+		str := fmt.Sprintf("ID: %d | AL: %s | MAL: %s | Kitsu: %s", i.ID, i.Anilist, i.Myanimelist, i.Kitsu)
+		userStrList = append(userStrList, str)
+	}
+
+	data := strings.Join(userStrList, "\n")
+
+	c.String(http.StatusOK, data)
+}
+
+func formatUptime(uptime int) string {
+	t := float64(uptime)
+
+	h := math.Floor(t / 3600)
+	m := math.Floor((t - h * 3600) / 60)
+	s := t - (h * 3600 + m * 60)
+
+	var hStr string
+	if h < 10 {hStr = fmt.Sprintf("0%d", int(h))} else {hStr = fmt.Sprintf("%d", int(h))}
+	var mStr string
+	if m < 10 {mStr = fmt.Sprintf("0%d", int(m))} else {mStr = fmt.Sprintf("%d", int(m))}
+	var sStr string
+	if s < 10 {sStr = fmt.Sprintf("0%d", int(s))} else {sStr = fmt.Sprintf("%d", int(s))}
+
+	return fmt.Sprintf("%s:%s:%s", hStr, mStr, sStr)
 }
 
 func init() {
-
 	if _, err := os.Stat("../.env"); err == nil {
 		if err := godotenv.Load("../.env"); err != nil {
 			log.Fatal(err)
@@ -148,20 +221,38 @@ func init() {
 	botApiPort = os.Getenv("BOT_API_PORT")
 	botApiSecretKey = os.Getenv("BOT_API_SECRET_KEY")
 
+	dbHost = os.Getenv("DB_HOST")
+	dbPort = os.Getenv("DB_PORT")
+	dbName = os.Getenv("DB_NAME")
+	dbUser = os.Getenv("DB_USER")
+	dbPassword = os.Getenv("DB_PASSWORD")
 }
 
 func main() {
+	connStr := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", dbHost, dbPort, dbName, dbUser, dbPassword)
+	db, connErr = gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	if connErr != nil {
+		log.Fatal(connErr)
+	} else {
+		log.Println(fmt.Sprintf(`Connected to database "%s" on %s:%s`, dbName, dbHost, dbPort))
+	}
 
 	gin.SetMode(mode)
 	router := gin.Default()
 
+	router.SetFuncMap(template.FuncMap{
+		"formatUptime": formatUptime,
+	})
+
 	router.LoadHTMLGlob("templates/*")
+
 	router.GET("/", index)
 	router.GET("/logs", logs)
+	router.GET("/guilds", guilds)
+	router.GET("/users", users)
 
 	bindStr := fmt.Sprintf("%s:%s", host, port)
 	if err := router.Run(bindStr); err != nil {
 		log.Fatal(err)
 	}
-
 }
