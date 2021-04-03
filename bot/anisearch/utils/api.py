@@ -96,7 +96,7 @@ class Server:
         site = web.TCPSite(runner, self.host, self.port)
         await site.start()
 
-        self.bot.dispatch('api_ready')
+        self.bot.dispatch('api_ready', self.host, self.port)
 
     def start(self) -> None:
         """

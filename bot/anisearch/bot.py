@@ -178,8 +178,8 @@ class AniSearchBot(AutoShardedBot):
     async def on_disconnect(self) -> None:
         log.info('Disconnected from Discord.')
 
-    async def on_api_ready(self):
-        log.info('Api is ready.')
+    async def on_api_ready(self, host: str, port: int):
+        log.info(f'Api is ready. Listening and serving HTTP on {host}:{port}.')
 
     async def on_command(self, ctx: Context) -> None:
         if isinstance(ctx.channel, discord.channel.DMChannel):
