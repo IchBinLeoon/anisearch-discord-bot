@@ -56,14 +56,14 @@ var (
 )
 
 type Stats struct {
-	Ready 	 bool 	 `json:"ready"`
-	Guilds 	 int  	 `json:"guilds"`
-	Users 	 int  	 `json:"users"`
-	Channels int  	 `json:"channels"`
-	Uptime 	 int  	 `json:"uptime"`
-	Shards 	 int  	 `json:"shards"`
-	Latency  float32 `json:"latency"`
-	Cogs 	 int  	 `json:"cogs"`
+	IsReady      bool    `json:"is_ready"`
+	GuildCount   int     `json:"guild_count"`
+	UserCount    int     `json:"user_count"`
+	ChannelCount int     `json:"channel_count"`
+	Uptime       int     `json:"uptime"`
+	ShardCount   int     `json:"shard_count"`
+	Latency      float32 `json:"latency"`
+	CogCount     int     `json:"cog_count"`
 }
 
 type Logs struct {
@@ -87,14 +87,14 @@ func index(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H {
-		"ready": Data.Ready,
-		"guilds": Data.Guilds,
-		"users": Data.Users,
-		"channels": Data.Channels,
+		"ready": Data.IsReady,
+		"guilds": Data.GuildCount,
+		"users": Data.UserCount,
+		"channels": Data.ChannelCount,
 		"uptime": Data.Uptime,
-		"shards": Data.Shards,
+		"shards": Data.ShardCount,
 		"latency": Data.Latency,
-		"cogs": Data.Cogs,
+		"cogs": Data.CogCount,
 	})
 }
 

@@ -63,14 +63,14 @@ class Server:
                 if q.get('type') == 'stats':
                     status = 200
                     response = {
-                        'ready': self.bot.is_ready(),
-                        'guilds': self.bot.get_guild_count(),
-                        'users': self.bot.get_user_count(),
-                        'channels': self.bot.get_channel_count(),
+                        'is_ready': self.bot.is_ready(),
+                        'guild_count': self.bot.get_guild_count(),
+                        'user_count': self.bot.get_user_count(),
+                        'channel_count': self.bot.get_channel_count(),
                         'uptime': round(self.bot.get_uptime()),
-                        'shards': self.bot.shard_count,
+                        'shard_count': self.bot.shard_count,
                         'latency': round(self.bot.latency, 6),
-                        'cogs': len(self.bot.cogs),
+                        'cog_count': len(self.bot.cogs),
                     }
                 elif q.get('type') == 'logs':
                     status = 200
