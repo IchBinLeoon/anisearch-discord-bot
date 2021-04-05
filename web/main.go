@@ -60,14 +60,26 @@ type Stats struct {
 	GuildCount   int     `json:"guild_count"`
 	UserCount    int     `json:"user_count"`
 	ChannelCount int     `json:"channel_count"`
-	Uptime       int     `json:"uptime"`
+	Uptime       float64 `json:"uptime"`
 	ShardCount   int     `json:"shard_count"`
-	Latency      float32 `json:"latency"`
+	Latency      float64 `json:"latency"`
 	CogCount     int     `json:"cog_count"`
 }
 
 type Logs struct {
 	Logs string `json:"logs"`
+}
+
+type Shard struct {
+	ID              int     `json:"id"`
+	ShardCount      int     `json:"shard_count"`
+	IsClosed        bool    `json:"is_closed"`
+	Latency         float64 `json:"latency"`
+	IsWsRatelimited bool    `json:"is_ws_ratelimited"`
+}
+
+type Shards struct {
+	Shards []Shard
 }
 
 func index(c *gin.Context) {
@@ -91,9 +103,9 @@ func index(c *gin.Context) {
 		"guilds": Data.GuildCount,
 		"users": Data.UserCount,
 		"channels": Data.ChannelCount,
-		"uptime": Data.Uptime,
+		"uptime": int(math.Round(Data.Uptime)),
 		"shards": Data.ShardCount,
-		"latency": Data.Latency,
+		"latency": fmt.Sprintf("%.5f", Data.Latency),
 		"cogs": Data.CogCount,
 	})
 }
@@ -115,6 +127,33 @@ func logs(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, Data.Logs)
+}
+
+func shards(c *gin.Context) {
+	urlStr := fmt.Sprintf("http://%s:%s/api?type=shards", botApiHost, botApiPort)
+
+	headers := make(map[string]string)
+	headers["Authentication"] = botApiSecretKey
+
+	data, err := request("GET", urlStr, headers, nil)
+	if err != nil {
+		log.Println(err)
+	}
+
+	Data := Shards{}
+	if err := json.Unmarshal([]byte(data), &Data); err != nil {
+		log.Println(err)
+	}
+
+	var shardStrList []string
+	for j, i := range Data.Shards {
+		str := fmt.Sprintf("%d.\tID: %d | ShardCount: %d | IsClosed: %t | Latency: %.5f | IsWsRatelimited: %t", j, i.ID, i.ShardCount, i.IsClosed, i.Latency, i.IsWsRatelimited)
+		shardStrList = append(shardStrList, str)
+	}
+
+	str := strings.Join(shardStrList, "\n")
+
+	c.String(http.StatusOK, str)
 }
 
 func request(method string, url string, headers map[string]string, body io.Reader) (string, error) {
@@ -263,6 +302,7 @@ func main() {
 
 	router.GET("/", index)
 	router.GET("/logs", logs)
+	router.GET("/shards", shards)
 	router.GET("/guilds", guilds)
 	router.GET("/users", users)
 

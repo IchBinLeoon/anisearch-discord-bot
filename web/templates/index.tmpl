@@ -11,6 +11,10 @@
         window.location.href = "/logs";
       }
 
+      function redirectShards() {
+        window.location.href = "/shards";
+      }
+
       function redirectGuilds() {
               window.location.href = "/guilds";
       }
@@ -152,6 +156,7 @@
       <p class="box-value">{{ .cogs }}</p>
     </div>
     <button class="button" onclick="redirectLogs()">Logs</button>
+    <button class="button" onclick="redirectShards()">Shards</button>
     <button class="button" onclick="redirectGuilds()">Guilds</button>
     <button class="button" onclick="redirectUsers()">Users</button>
   </body>

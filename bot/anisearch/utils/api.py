@@ -67,15 +67,31 @@ class Server:
                         'guild_count': self.bot.get_guild_count(),
                         'user_count': self.bot.get_user_count(),
                         'channel_count': self.bot.get_channel_count(),
-                        'uptime': round(self.bot.get_uptime()),
+                        'uptime': self.bot.get_uptime(),
                         'shard_count': self.bot.shard_count,
-                        'latency': round(self.bot.latency, 6),
+                        'latency': self.bot.latency,
                         'cog_count': len(self.bot.cogs),
                     }
                 elif q.get('type') == 'logs':
                     status = 200
                     response = {
                         'logs': str(self.bot.log_stream.getvalue())
+                    }
+                elif q.get('type') == 'shards':
+                    shards = []
+                    for i in self.bot.shards:
+                        s = self.bot.get_shard(i)
+                        shard = {
+                            'id': s.id,
+                            'shard_count': s.shard_count,
+                            'is_closed': s.is_closed(),
+                            'latency': s.latency,
+                            'is_ws_ratelimited': s.is_ws_ratelimited()
+                        }
+                        shards.append(shard)
+                    status = 200
+                    response = {
+                        'shards': shards
                     }
                 else:
                     status = 400
