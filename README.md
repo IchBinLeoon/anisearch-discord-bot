@@ -176,6 +176,8 @@ Can only be used by the bot owner.
 
 - `reload <cog>:` Reloads a cog.  
 
+- `reloadall:` Reloads all cogs.  
+
 - `sysinfo:` Displays basic information about the system on which the bot is currently running.  
 
 
