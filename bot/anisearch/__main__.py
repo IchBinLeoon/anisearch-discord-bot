@@ -38,7 +38,7 @@ def main() -> None:
     log_stream = setup_logging()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(check_update())
-    logging.info(f'Starting AniSearch Bot v{anisearch.__version__}.')
+    logging.info(f'Starting AniSearch Bot v{anisearch.__version__}')
     logging.info(f'Discord.py version: {discord.__version__}')
     logging.info(f'Python version: {platform.python_version()}')
     start(log_stream)
@@ -51,7 +51,7 @@ def setup_logging() -> StringIO:
     log_stream = StringIO()
     console_handler = logging.StreamHandler(sys.stdout)
     log_handler = logging.StreamHandler(log_stream)
-    logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(name)s » %(levelname)s: %(message)s',
+    logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s %(name)s » %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S', handlers=[console_handler, log_handler])
     return log_stream
 

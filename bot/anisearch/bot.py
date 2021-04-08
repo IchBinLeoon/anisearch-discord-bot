@@ -131,14 +131,6 @@ class AniSearchBot(AutoShardedBot):
                 log.exception(e)
         log.info(f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded.')
 
-    async def on_ready(self) -> None:
-        log.info(f'Logged in as {self.user}')
-        log.info(f'Bot-Name: {self.user.name}')
-        log.info(f'Bot-Discriminator: {self.user.discriminator}')
-        log.info(f'Bot-ID: {self.user.id}')
-        log.info(f'Shards: {self.shard_count}')
-        log.info('Bot is ready.')
-
     async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
         """
         Gets the command prefix of the bot for the current guild.
@@ -172,11 +164,17 @@ class AniSearchBot(AutoShardedBot):
         """
         await self.wait_until_ready()
 
-    async def on_connect(self) -> None:
-        log.info('Connected to Discord.')
+    async def on_shard_ready(self, shard_id: int) -> None:
+        log.info(f'Shard ID {shard_id} is ready.')
 
-    async def on_disconnect(self) -> None:
-        log.info('Disconnected from Discord.')
+    async def on_shard_connect(self, shard_id: int) -> None:
+        log.info(f'Shard ID {shard_id} connected to Discord.')
+
+    async def on_shard_disconnect(self, shard_id: int) -> None:
+        log.info(f'Shard ID {shard_id} disconnected from Discord.')
+
+    async def on_shard_resumed(self, shard_id: int) -> None:
+        log.info(f'Shard ID {shard_id} resumed to Discord.')
 
     async def on_api_ready(self, host: str, port: int):
         log.info(f'Api is ready. Listening and serving HTTP on {host}:{port}.')

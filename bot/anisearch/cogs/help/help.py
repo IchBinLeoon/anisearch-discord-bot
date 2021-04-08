@@ -172,11 +172,12 @@ class Help(commands.Cog, name='Help'):
             embed = discord.Embed(title=data.get('full_name'), url=data.get('html_url'),
                                   description=data.get('description'), color=DEFAULT_EMBED_COLOR)
             embed.set_author(name='GitHub Repository')
-            embed.add_field(name='❯ Watchers', value=data.get('watchers_count'), inline=True)
             embed.add_field(name='❯ Stargazers', value=data.get('stargazers_count'), inline=True)
             embed.add_field(name='❯ Forks', value=data.get('forks_count'), inline=True)
+            embed.add_field(name='❯ Issues', value=data.get('open_issues_count'), inline=True)
             embed.add_field(name='❯ Language', value=data.get('language'), inline=True)
             embed.add_field(name='❯ License', value=data.get('license').get('spdx_id'), inline=True)
-            embed.add_field(name='❯ Issues', value=data.get('open_issues_count'), inline=True)
+            embed.add_field(name='❯ Updated', value=data.get('updated_at').replace('T', ' ').replace('Z', ' '),
+                            inline=True)
             embed.set_thumbnail(url=ANISEARCH_LOGO)
             await ctx.channel.send(embed=embed)
