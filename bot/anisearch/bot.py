@@ -98,9 +98,8 @@ class AniSearchBot(AutoShardedBot):
 
         self.crunchyroll = CrunchyrollClient(session=ClientSession(loop=self.loop))
 
-        # Posts the guild count to top.gg every 30 minutes.
-        self.topgg_token = BOT_TOPGG_TOKEN
-        self.dblpy = dbl.DBLClient(self, self.topgg_token, autopost=True)
+        self.dblpy = dbl.DBLClient(self, BOT_TOPGG_TOKEN)
+        self.update_topgg_stats.start()
 
         self.load_cogs()
         self.set_status.start()
@@ -149,7 +148,7 @@ class AniSearchBot(AutoShardedBot):
     @tasks.loop(seconds=30)
     async def set_status(self) -> None:
         """
-        Sets the discord status of the bot.
+        Sets the discord status of the bot every 30 seconds.
         """
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
                                    name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
@@ -192,6 +191,19 @@ class AniSearchBot(AutoShardedBot):
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         log.info(f'Left guild {guild.name} [{guild.id}].')
         self.db.delete_prefix(guild)
+
+    @tasks.loop(minutes=30)
+    async def update_topgg_stats(self):
+        """
+        Automatically updates the TopGG statistics every 30 minutes.
+        """
+        try:
+            await self.dblpy.post_guild_count(guild_count=self.get_guild_count(), shard_count=self.shard_count)
+            log.info(f'TopGG statistics posted. (Guilds: {self.get_guild_count()}, Shards: {self.shard_count})')
+        except dbl.UnauthorizedDetected as e:
+            log.warning(e)
+        except Exception as e:
+            log.exception(e)
 
     def get_guild_count(self) -> int:
         """
@@ -251,9 +263,6 @@ class AniSearchBot(AutoShardedBot):
         if self.session is not None:
             await self.session.close()
         await super().close()
-
-    async def on_guild_post(self):
-        log.info(f'TopGG server count posted ({self.dblpy.guild_count()}).')
 
     async def on_command_error(self, ctx: Context, error: Exception) -> None:
 
