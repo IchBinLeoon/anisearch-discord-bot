@@ -205,6 +205,13 @@ class AniSearchBot(AutoShardedBot):
         except Exception as e:
             log.exception(e)
 
+    @update_topgg_stats.before_loop
+    async def update_topgg_stats_before(self) -> None:
+        """
+        Waits for the bot to be ready before starting the `update_topgg_stats` task.
+        """
+        await self.wait_until_ready()
+
     def get_guild_count(self) -> int:
         """
         Returns the bot guild count.
