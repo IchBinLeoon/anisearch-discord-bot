@@ -150,8 +150,9 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)
         embed.add_field(name='❯ Users', value=str(self.bot.get_user_count()), inline=True)
         embed.add_field(name='❯ Channels', value=str(self.bot.get_channel_count()), inline=True)
-        embed.add_field(name="❯ AniSearch's Uptime", value=str(timedelta(seconds=round(self.bot.get_uptime()))),
-                        inline=True)
+        embed.add_field(name='❯ Uptime', value=str(timedelta(seconds=round(self.bot.get_uptime()))), inline=True)
+        embed.add_field(name='❯ Shards', value=self.bot.shard_count, inline=True)
+        embed.add_field(name='❯ Latency', value=str(round(self.bot.latency, 5)), inline=True)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='github', aliases=['gh'], usage='github', ignore_extra=False)

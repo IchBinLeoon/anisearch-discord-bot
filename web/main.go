@@ -248,14 +248,7 @@ func formatUptime(uptime int) string {
 	m := math.Floor((t - h * 3600) / 60)
 	s := t - (h * 3600 + m * 60)
 
-	var hStr string
-	if h < 10 {hStr = fmt.Sprintf("0%d", int(h))} else {hStr = fmt.Sprintf("%d", int(h))}
-	var mStr string
-	if m < 10 {mStr = fmt.Sprintf("0%d", int(m))} else {mStr = fmt.Sprintf("%d", int(m))}
-	var sStr string
-	if s < 10 {sStr = fmt.Sprintf("0%d", int(s))} else {sStr = fmt.Sprintf("%d", int(s))}
-
-	return fmt.Sprintf("%s:%s:%s", hStr, mStr, sStr)
+	return fmt.Sprintf("%02.f:%02.f:%02.f", h, m, s)
 }
 
 func init() {
