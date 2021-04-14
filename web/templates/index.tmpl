@@ -1,163 +1,163 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="60">
-    <title>AniSearch Admin Panel</title>
-    <script>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="refresh" content="60">
+        <title>AniSearch Admin Panel</title>
+        <script>
 
-      function redirectLogs() {
-        window.location.href = "/logs";
-      }
+            function redirectLogs() {
+                window.location.href = "/logs";
+            }
 
-      function redirectShards() {
-        window.location.href = "/shards";
-      }
+            function redirectShards() {
+                window.location.href = "/shards";
+            }
 
-      function redirectGuilds() {
-              window.location.href = "/guilds";
-      }
+            function redirectGuilds() {
+                window.location.href = "/guilds";
+            }
 
-      function redirectUsers() {
-              window.location.href = "/users";
-      }
+            function redirectUsers() {
+                window.location.href = "/users";
+            }
 
-      let uptime = {{ .uptime }};
+            let uptime = {{ .uptime }};
 
-      function countUptime() {
-          let hour = Math.floor(uptime / 3600);
-          let minute = Math.floor((uptime - hour * 3600) / 60);
-          let seconds = uptime - (hour * 3600 + minute * 60);
-          if(hour < 10)
-              hour = "0" + hour;
-          if(minute < 10)
-              minute = "0" + minute;
-          if(seconds < 10)
-              seconds = "0" + seconds;
-          document.getElementById("uptime").innerHTML = hour + ":" + minute + ":" + seconds;
-          ++uptime;
-      }
+            function countUptime() {
+                let hour = Math.floor(uptime / 3600);
+                let minute = Math.floor((uptime - hour * 3600) / 60);
+                let seconds = uptime - (hour * 3600 + minute * 60);
+                if(hour < 10)
+                    hour = "0" + hour;
+                if(minute < 10)
+                    minute = "0" + minute;
+                if(seconds < 10)
+                    seconds = "0" + seconds;
+                document.getElementById("uptime").innerHTML = hour + ":" + minute + ":" + seconds;
+                ++uptime;
+            }
 
-      if (uptime != 0)
-          setInterval(countUptime, 1000);
+            if (uptime != 0)
+                setInterval(countUptime, 1000);
 
-    </script>
-    <style>
+        </script>
+        <style>
 
-      body {
-          margin: 0;
-          padding: 0;
-          background-color: #06090F;
-          font-family: Arial, sans-serif;
-          color: white;
-      }
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #06090F;
+                font-family: Arial, sans-serif;
+                color: white;
+            }
 
-      .header {
-          width: 1000px;
-          font-size: 75px;
-          margin: 50px 0 0 110px;
-      }
+            .header {
+                width: 1000px;
+                font-size: 75px;
+                margin: 50px 0 0 110px;
+            }
 
-      .box {
-          margin: 50px 0 0 100px;
-          box-sizing: content-box;
-          display: inline-block;
-          width: 300px;
-          height: 150px;
-          background-color: #0D1117;
-          border: 2px solid #30363D;
-          border-radius: 15px;
-          overflow: hidden;
-          padding: 20px 0 0 25px;
-      }
+            .box {
+                margin: 50px 0 0 100px;
+                box-sizing: content-box;
+                display: inline-block;
+                width: 300px;
+                height: 150px;
+                background-color: #0D1117;
+                border: 2px solid #30363D;
+                border-radius: 15px;
+                overflow: hidden;
+                padding: 20px 0 0 25px;
+            }
 
-      .box-status {
-          font-size: 40px;
-          padding: 0;
-          margin: 0;
-      }
+            .box-status {
+                font-size: 40px;
+                padding: 0;
+                margin: 0;
+            }
 
-      .box-headline {
-          font-size: 30px;
-          padding: 0;
-          margin: 0;
-      }
+            .box-headline {
+                font-size: 30px;
+                padding: 0;
+                margin: 0;
+            }
 
-      .box-value {
-          font-size: 50px;
-          padding: 0;
-          margin: 0;
-      }
+            .box-value {
+                font-size: 50px;
+                padding: 0;
+                margin: 0;
+            }
 
-      .button {
-          margin: 100px 0 0 100px;
-          box-sizing: content-box;
-          display: inline-block;
-          width: 313px;
-          height: 50px;
-          background-color: #0D1117;
-          border: 2px solid #30363D;
-          border-radius: 5px;
-          overflow: hidden;
-          cursor: pointer;
-          text-align: center;
-          font-size: 25px;
-          color: white;
-          transition: none
-      }
+            .button {
+                margin: 100px 0 0 100px;
+                box-sizing: content-box;
+                display: inline-block;
+                width: 313px;
+                height: 50px;
+                background-color: #0D1117;
+                border: 2px solid #30363D;
+                border-radius: 5px;
+                overflow: hidden;
+                cursor: pointer;
+                text-align: center;
+                font-size: 25px;
+                color: white;
+                transition: none
+            }
 
-      .button:hover {
-          background-color: #30363D;
-          border: 2px solid white;
-      }
+            .button:hover {
+                background-color: #30363D;
+                border: 2px solid white;
+            }
 
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      <a>AniSearch Admin Panel</a>
-    </div>
-    {{ if .ready }}
-    <div class="box" style="background-color: green; border: 2px solid green">
-      <p class="box-status">Online</p>
-    </div>
-    {{ else }}
-    <div class="box" style="background-color: red; border: 2px solid red">
-      <p class="box-status">Offline</p>
-    </div>
-    {{ end }}
-    <div class="box">
-      <p class="box-headline">Guilds</p>
-      <p class="box-value">{{ .guilds }}</p>
-    </div>
-    <div class="box">
-      <p class="box-headline">Users</p>
-      <p class="box-value">{{ .users }}</p>
-    </div>
-    <div class="box">
-      <p class="box-headline">Channels</p>
-      <p class="box-value">{{ .channels }}</p>
-    </div>
-    <div class="box">
-      <p class="box-headline">Uptime</p>
-      <p class="box-value" id="uptime">{{ .uptime | formatUptime }}</p>
-    </div>
-    <div class="box">
-      <p class="box-headline">Shards</p>
-      <p class="box-value">{{ .shards }}</p>
-    </div>
-    <div class="box">
-      <p class="box-headline">Latency</p>
-      <p class="box-value">{{ .latency }}</p>
-    </div>
-    <div class="box">
-      <p class="box-headline">Cogs</p>
-      <p class="box-value">{{ .cogs }}</p>
-    </div>
-    <button class="button" onclick="redirectLogs()">Logs</button>
-    <button class="button" onclick="redirectShards()">Shards</button>
-    <button class="button" onclick="redirectGuilds()">Guilds</button>
-    <button class="button" onclick="redirectUsers()">Users</button>
-  </body>
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <a>AniSearch Admin Panel</a>
+        </div>
+        {{ if .ready }}
+        <div class="box" style="background-color: green; border: 2px solid green">
+            <p class="box-status">Online</p>
+        </div>
+        {{ else }}
+        <div class="box" style="background-color: red; border: 2px solid red">
+            <p class="box-status">Offline</p>
+        </div>
+        {{ end }}
+        <div class="box">
+            <p class="box-headline">Guilds</p>
+            <p class="box-value">{{ .guilds }}</p>
+        </div>
+        <div class="box">
+            <p class="box-headline">Users</p>
+            <p class="box-value">{{ .users }}</p>
+        </div>
+        <div class="box">
+            <p class="box-headline">Channels</p>
+            <p class="box-value">{{ .channels }}</p>
+        </div>
+        <div class="box">
+            <p class="box-headline">Uptime</p>
+            <p class="box-value" id="uptime">{{ .uptime | formatUptime }}</p>
+        </div>
+        <div class="box">
+            <p class="box-headline">Shards</p>
+            <p class="box-value">{{ .shards }}</p>
+        </div>
+        <div class="box">
+            <p class="box-headline">Latency</p>
+            <p class="box-value">{{ .latency }}</p>
+        </div>
+        <div class="box">
+            <p class="box-headline">Cogs</p>
+            <p class="box-value">{{ .cogs }}</p>
+        </div>
+        <button class="button" onclick="redirectLogs()">Logs</button>
+        <button class="button" onclick="redirectShards()">Shards</button>
+        <button class="button" onclick="redirectGuilds()">Guilds</button>
+        <button class="button" onclick="redirectUsers()">Users</button>
+    </body>
 </html>

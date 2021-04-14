@@ -1,4 +1,4 @@
-module main
+module github.com/IchBinLeoon/anisearch-discord-bot/web
 
 go 1.16
 

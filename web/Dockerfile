@@ -6,4 +6,4 @@ COPY . .
 
 RUN go build .
 
-ENTRYPOINT [ "./main" ]
+ENTRYPOINT [ "./web" ]

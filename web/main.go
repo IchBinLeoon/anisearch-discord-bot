@@ -22,18 +22,19 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"html/template"
-	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
 	"os"
 	"strings"
+
+	t "github.com/IchBinLeoon/anisearch-discord-bot/web/types"
+	u "github.com/IchBinLeoon/anisearch-discord-bot/web/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var (
@@ -55,45 +56,18 @@ var (
 	connErr error
 )
 
-type Stats struct {
-	IsReady      bool    `json:"is_ready"`
-	GuildCount   int     `json:"guild_count"`
-	UserCount    int     `json:"user_count"`
-	ChannelCount int     `json:"channel_count"`
-	Uptime       float64 `json:"uptime"`
-	ShardCount   int     `json:"shard_count"`
-	Latency      float64 `json:"latency"`
-	CogCount     int     `json:"cog_count"`
-}
-
-type Logs struct {
-	Logs string `json:"logs"`
-}
-
-type Shard struct {
-	ID              int     `json:"id"`
-	ShardCount      int     `json:"shard_count"`
-	IsClosed        bool    `json:"is_closed"`
-	Latency         float64 `json:"latency"`
-	IsWsRatelimited bool    `json:"is_ws_ratelimited"`
-}
-
-type Shards struct {
-	Shards []Shard
-}
-
 func index(c *gin.Context) {
 	urlStr := fmt.Sprintf("http://%s:%s/api?type=stats", botApiHost, botApiPort)
 
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
 
-	data, err := request("GET", urlStr, headers, nil)
+	data, err := u.Request("GET", urlStr, headers, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
-	Data := Stats{}
+	Data := t.Stats{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
 		log.Println(err)
 	}
@@ -116,12 +90,12 @@ func logs(c *gin.Context) {
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
 
-	data, err := request("GET", urlStr, headers, nil)
+	data, err := u.Request("GET", urlStr, headers, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
-	Data := Logs{}
+	Data := t.Logs{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
 		log.Println(err)
 	}
@@ -135,12 +109,12 @@ func shards(c *gin.Context) {
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
 
-	data, err := request("GET", urlStr, headers, nil)
+	data, err := u.Request("GET", urlStr, headers, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
-	Data := Shards{}
+	Data := t.Shards{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
 		log.Println(err)
 	}
@@ -156,48 +130,8 @@ func shards(c *gin.Context) {
 	c.String(http.StatusOK, str)
 }
 
-func request(method string, url string, headers map[string]string, body io.Reader) (string, error) {
-	client := &http.Client{}
-
-	req, _ := http.NewRequest(method, url, body)
-
-	if headers != nil {
-		for key, value := range headers {
-			req.Header.Add(key, value)
-		}
-	}
-
-	res, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	data, err := ioutil.ReadAll(res.Body)
-	if err := res.Body.Close(); err != nil {
-		return "", err
-	}
-
-	return string(data), nil
-}
-
-type Guild struct {
-	gorm.Model
-
-	ID     int64
-	Prefix string
-}
-
-type User struct {
-	gorm.Model
-
-	ID          int64
-	Anilist     string
-	Myanimelist string
-	Kitsu       string
-}
-
 func guilds(c *gin.Context) {
-	var guilds []Guild
+	var guilds []t.Guild
 
 	db.Unscoped().Find(&guilds)
 
@@ -213,7 +147,7 @@ func guilds(c *gin.Context) {
 }
 
 func users(c *gin.Context) {
-	var users []User
+	var users []t.User
 
 	db.Unscoped().Find(&users)
 
@@ -239,16 +173,6 @@ func users(c *gin.Context) {
 	data := strings.Join(userStrList, "\n")
 
 	c.String(http.StatusOK, data)
-}
-
-func formatUptime(uptime int) string {
-	t := float64(uptime)
-
-	h := math.Floor(t / 3600)
-	m := math.Floor((t - h * 3600) / 60)
-	s := t - (h * 3600 + m * 60)
-
-	return fmt.Sprintf("%02.f:%02.f:%02.f", h, m, s)
 }
 
 func init() {
@@ -288,7 +212,7 @@ func main() {
 	router := gin.Default()
 
 	router.SetFuncMap(template.FuncMap{
-		"formatUptime": formatUptime,
+		"formatUptime": u.FormatUptime,
 	})
 
 	router.LoadHTMLGlob("templates/*")

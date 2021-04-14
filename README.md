@@ -302,8 +302,8 @@ The bot and the associated admin panel can be run either as a Docker containers 
     - Run the admin panel.
 
         ```
-        $ ./main # On macOS and Linux
-        $ main.exe # On Windows
+        $ ./web # On macOS and Linux
+        $ web.exe # On Windows
         ```
 
 
