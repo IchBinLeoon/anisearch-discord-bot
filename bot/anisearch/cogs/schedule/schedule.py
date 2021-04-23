@@ -165,8 +165,8 @@ class Schedule(commands.Cog, name='Schedule'):
                 for page, anime in enumerate(data):
                     try:
                         embed = await self.get_next_embed(anime, page + 1, len(data))
-                        if is_adult(anime.get('media')):
-                            if not ctx.channel.is_nsfw():
+                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                            if is_adult(anime.get('media')) and not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
@@ -203,8 +203,8 @@ class Schedule(commands.Cog, name='Schedule'):
                 for page, anime in enumerate(data):
                     try:
                         embed = await self.get_last_embed(anime, page + 1, len(data))
-                        if is_adult(anime.get('media')):
-                            if not ctx.channel.is_nsfw():
+                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                            if is_adult(anime.get('media')) and not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')

@@ -147,10 +147,10 @@ class AnimeThemesClient:
         Returns:
             dict: The data about the requested resources.
         """
-        q = query.replace(' ', '%20')
+        q = '%20'.join(query.split())
         if fields is None:
             fields = []
-        parameters = f'?q={q}&limit={limit}&fields={",".join(fields)}'
+        parameters = f'?q={q}&limit={limit}&fields={"%2C".join(fields)}'
         url = await self.get_url('search', parameters)
         data = await self._request(url=url)
         return data

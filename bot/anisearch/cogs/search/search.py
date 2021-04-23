@@ -104,8 +104,8 @@ class Search(commands.Cog, name='Search'):
                     elif type_ == AniListSearchType.STUDIO:
                         embed = await self.get_studio_embed(entry, page + 1, len(data))
 
-                    if is_adult(entry):
-                        if not ctx.channel.is_nsfw():
+                    if not isinstance(ctx.channel, discord.channel.DMChannel):
+                        if is_adult(entry) and not ctx.channel.is_nsfw():
                             embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                   description=f'Adult content. No NSFW channel.')
                             embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
@@ -174,8 +174,8 @@ class Search(commands.Cog, name='Search'):
             try:
                 embed = await self.get_media_embed(data.get('data')['Page']['media'][0])
 
-                if is_adult(data.get('data')['Page']['media'][0]):
-                    if not ctx.channel.is_nsfw():
+                if not isinstance(ctx.channel, discord.channel.DMChannel):
+                    if is_adult(data.get('data')['Page']['media'][0]) and not ctx.channel.is_nsfw():
                         embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                               description=f'Adult content. No NSFW channel.')
 
@@ -682,8 +682,8 @@ class Search(commands.Cog, name='Search'):
                 for page, entry in enumerate(data.get('search').get('anime')):
                     try:
                         embed = await self.get_themes_embed(entry, page + 1, len(data.get('search').get('anime')))
-                        if is_adult(entry.get('themes')[0]['entries'][0]):
-                            if not ctx.channel.is_nsfw():
+                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                            if is_adult(entry.get('themes')[0]['entries'][0]) and not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
@@ -722,8 +722,8 @@ class Search(commands.Cog, name='Search'):
                             (theme.upper() == 'ED1' and entry.get('slug') == 'ED'):
                         try:
                             embed = await self.get_theme_embed(anime_, entry)
-                            if is_adult(entry.get('entries')[0]):
-                                if not ctx.channel.is_nsfw():
+                            if not isinstance(ctx.channel, discord.channel.DMChannel):
+                                if is_adult(entry.get('entries')[0]) and not ctx.channel.is_nsfw():
                                     embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                           description=f'Adult content. No NSFW channel.')
                                     embed.set_footer(text=f'Provided by https://animethemes.moe/')
