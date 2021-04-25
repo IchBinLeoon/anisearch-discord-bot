@@ -318,12 +318,22 @@ Thanks to the people who made this discord bot possible.
 #### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)
 #### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)
 #### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)
+#### [beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/)
+#### [top-gg/python-sdk ](https://github.com/top-gg/python-sdk)
+#### [theskumar/python-dotenv](https://github.com/theskumar/python-dotenv)
+#### [giampaolo/psutil](https://github.com/giampaolo/psutil)
+#### [gin-gonic/gin](https://github.com/gin-gonic/gin)
+#### [joho/godotenv](https://github.com/joho/godotenv)
+#### [go-gorm/gorm](https://github.com/go-gorm/gorm)
+#### [go-gorm/postgres](https://github.com/go-gorm/postgres)
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)
 #### [jikan-me/jikan](https://github.com/jikan-me/jikan)
 #### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)
-#### [gin-gonic/gin](https://github.com/gin-gonic/gin)
+#### [SauceNAO](https://saucenao.com/)
+#### [AnimeNewsNetwork](https://www.animenewsnetwork.com/)
+#### [Crunchyroll](https://www.crunchyroll.com/)
 
 
 # 📝 License
