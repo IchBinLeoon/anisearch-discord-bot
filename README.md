@@ -10,6 +10,9 @@
   <a href="https://top.gg/bot/737236600878137363">
     <img src="https://top.gg/api/widget/status/737236600878137363.svg" alt="Status">
   </a>
+  <a href="https://discord.gg/Bv94yQYZM8">
+    <img src="https://img.shields.io/discord/835960108466176041?label=&logo=discord&logoColor=ffffff&color=7289DA&labelColor=7289DA&style=flat-square" alt="Discord">
+  </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/python->=&nbsp;3.8-blue?style=flat-square" alt="Python">
   </a>
@@ -22,12 +25,12 @@
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot">
     <img src="https://img.shields.io/github/repo-size/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Size">
   </a>
-  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/commits/main">
-    <img src="https://img.shields.io/github/last-commit/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Commit">
-  </a>
 </p>
 
 <p align="center">
+  <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/commits/main">
+    <img src="https://img.shields.io/github/last-commit/IchBinLeoon/anisearch-discord-bot?style=flat-square" alt="Commit">
+  </a>
   <a href="https://github.com/IchBinLeoon/anisearch-discord-bot/actions">
     <img src="https://img.shields.io/github/workflow/status/IchBinLeoon/anisearch-discord-bot/CodeQL?label=CodeQL&style=flat-square" alt="CodeQL">
   </a>
@@ -66,6 +69,8 @@ You can also:
 - View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com).  
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
+
+If there is any problem, or you would like to contact me, create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues), join the [support server](https://discord.gg/Bv94yQYZM8), or add me as a friend via Discord: `IchBinLeoon#9999`
 
 <br>
 

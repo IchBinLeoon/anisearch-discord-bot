@@ -38,6 +38,7 @@ CREATOR_ID = 223871059068321793
 BOT_ID = 737236600878137363
 DISCORD_INVITE = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
+SUPPORT_SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 
 ANISEARCH_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/anisearch-logo.png?raw=true'
 
