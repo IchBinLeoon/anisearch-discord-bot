@@ -676,7 +676,7 @@ class Search(commands.Cog, name='Search'):
         Searches for the openings and endings of the given anime and displays them.
         """
         async with ctx.channel.typing():
-            data = await self.bot.animethemes.search(anime, 5, ['anime'])
+            data = await self.bot.animethemes.search(anime, 5)
             if data.get('search').get('anime'):
                 embeds = []
                 for page, entry in enumerate(data.get('search').get('anime')):
@@ -711,7 +711,7 @@ class Search(commands.Cog, name='Search'):
         Displays a specific opening or ending of the given anime.
         """
         async with ctx.channel.typing():
-            data = await self.bot.animethemes.search(anime, 1, ['anime'])
+            data = await self.bot.animethemes.search(anime, 1)
             if data.get('search').get('anime'):
                 anime_ = data.get('search').get('anime')[0]
                 for entry in anime_.get('themes'):

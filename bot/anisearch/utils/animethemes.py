@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict
 
 import aiohttp
 
@@ -135,22 +135,20 @@ class AnimeThemesClient:
         request_url = f'{ANIMETHEMES_BASE_URL}/{endpoint}{parameters}'
         return request_url
 
-    async def search(self, query: str, limit: Optional[int] = 5, fields: Optional[List[str]] = None) -> Dict[str, Any]:
+    async def search(self, query: str, limit: Optional[int] = 5) -> Dict[str, Any]:
         """
         Returns relevant resources by search criteria.
 
         Args:
             query (str): The search query.
             limit (int, optional): The number of each resource to return (1-5).
-            fields (str, optional): The list of resources to include.
 
         Returns:
             dict: The data about the requested resources.
         """
         q = '%20'.join(query.split())
-        if fields is None:
-            fields = []
-        parameters = f'?q={q}&limit={limit}&fields={"%2C".join(fields)}'
+        parameters = f'?q={q}&limit={limit}&fields[search]=anime&include[anime]=' \
+                     f'themes.entries.videos%2Cthemes.song.artists%2Cimages'
         url = await self.get_url('search', parameters)
         data = await self._request(url=url)
         return data
