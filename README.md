@@ -70,8 +70,6 @@ You can also:
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
-If there is any problem, or you would like to contact me, create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues), join the [support server](https://discord.gg/Bv94yQYZM8), or add me as a friend via Discord: `IchBinLeoon#9999`
-
 <br>
 
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
@@ -194,6 +192,8 @@ First, please open [a new issue](https://github.com/IchBinLeoon/anisearch-discor
 After that, it's just fork, clone to your computer, and when you're done, open a pull request! 
 Most of the code should be commented, and once you're in, you should understand how everything works. 
 For info, the bot still contains a lot of code from a very early version that can be rewritten.
+
+You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask your questions or get support!
 
 # 🚀 Running AniSearch
 **Self-hosting isn't fully supported and I don't recommend you to self-host the bot unless you want to contribute to the code.**  
