@@ -70,8 +70,6 @@ You can also:
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
-If there is any problem, or you would like to contact me, create [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues), join the [support server](https://discord.gg/Bv94yQYZM8), or add me as a friend via Discord: `IchBinLeoon#9999`
-
 <br>
 
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
@@ -194,6 +192,8 @@ First, please open [a new issue](https://github.com/IchBinLeoon/anisearch-discor
 After that, it's just fork, clone to your computer, and when you're done, open a pull request! 
 Most of the code should be commented, and once you're in, you should understand how everything works. 
 For info, the bot still contains a lot of code from a very early version that can be rewritten.
+
+You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask your questions or get support!
 
 # 🚀 Running AniSearch
 **Self-hosting isn't fully supported and I don't recommend you to self-host the bot unless you want to contribute to the code.**  
@@ -318,12 +318,22 @@ Thanks to the people who made this discord bot possible.
 #### [Rapptz/discord-ext-menus](https://github.com/Rapptz/discord-ext-menus)
 #### [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp)
 #### [psycopg/psycopg2](https://github.com/psycopg/psycopg2)
+#### [beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/)
+#### [top-gg/python-sdk ](https://github.com/top-gg/python-sdk)
+#### [theskumar/python-dotenv](https://github.com/theskumar/python-dotenv)
+#### [giampaolo/psutil](https://github.com/giampaolo/psutil)
+#### [gin-gonic/gin](https://github.com/gin-gonic/gin)
+#### [joho/godotenv](https://github.com/joho/godotenv)
+#### [go-gorm/gorm](https://github.com/go-gorm/gorm)
+#### [go-gorm/postgres](https://github.com/go-gorm/postgres)
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)
 #### [jikan-me/jikan](https://github.com/jikan-me/jikan)
 #### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)
-#### [gin-gonic/gin](https://github.com/gin-gonic/gin)
+#### [SauceNAO](https://saucenao.com/)
+#### [AnimeNewsNetwork](https://www.animenewsnetwork.com/)
+#### [Crunchyroll](https://www.crunchyroll.com/)
 
 
 # 📝 License
