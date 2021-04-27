@@ -147,7 +147,7 @@ class AnimeThemesClient:
             dict: The data about the requested resources.
         """
         q = '%20'.join(query.split())
-        parameters = f'?q={q}&limit={limit}&fields[search]=anime&include[anime]=' \
+        parameters = f'?q={q}&limit={limit}&fields[search]=anime&include=' \
                      f'themes.entries.videos%2Cthemes.song.artists%2Cimages'
         url = await self.get_url('search', parameters)
         data = await self._request(url=url)
