@@ -27,6 +27,7 @@ import discord
 from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
+from discord.utils import get
 
 from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCENAO_API_KEY, BOT_API_HOST, \
     BOT_API_PORT, BOT_API_SECRET_KEY
@@ -34,7 +35,7 @@ from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.api import Server
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID
 from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
 from anisearch.utils.jikan import JikanClient
@@ -187,6 +188,20 @@ class AniSearchBot(AutoShardedBot):
     async def on_guild_join(self, guild: discord.Guild) -> None:
         log.info(f'Joined guild {guild.name} [{guild.id}].')
         self.db.insert_prefix(guild)
+        try:
+            user = await self.fetch_user(guild.owner_id)
+            await user.send(f'**Hey there! Thanks for using <@!{BOT_ID}>!**\n\n'
+                            f'__A few things to get started with the bot:__\n\n'
+                            f'• To display all commands use: `as!{get(self.commands, name="commands").usage}`\n\n'
+                            f'• To display information about a command use: '
+                            f'`as!{get(self.commands, name="help").usage}`\n\n'
+                            f'• To change the server prefix use: `as!{get(self.commands, name="setprefix").usage}`\n\n'
+                            f'• Do **not** include `<>`, `[]` or `|` when executing a command.\n\n'
+                            f'• In case of any problems, bugs, suggestions or if you just want to chat, '
+                            f'feel free to join the support server! https://discord.gg/Bv94yQYZM8\n\n'
+                            "Have fun with the bot!")
+        except Exception as e:
+            log.exception(e)
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         log.info(f'Left guild {guild.name} [{guild.id}].')
