@@ -66,7 +66,7 @@ You can also:
 - View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net) or [Kitsu](https://kitsu.io).
 - Search for the anime or the source of an image.
 - View the next airing, and the most recently aired anime episodes.
-- View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com).  
+- View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com) or the current trending anime or manga on AniList.
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
@@ -134,9 +134,9 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `removeprofiles:` Removes the set AniList, MyAnimeList and Kitsu profile.  
 
 ### Themes
-- `themes <anime>:` Searches for the openings and endings of the given anime and displays them.
+- `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
 
-- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
+- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.  
 
 ### Image
 - `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
