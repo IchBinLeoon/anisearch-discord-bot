@@ -30,7 +30,7 @@ from discord.ext.commands import Context
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANILIST_LOGO
-from anisearch.utils.enums import AniListSearchType, AniListMediaType
+from anisearch.utils.types import AniListSearchType, AniListMediaType
 from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
     format_manga_status
 from anisearch.utils.paginator import EmbedListMenu
@@ -49,14 +49,14 @@ class Search(commands.Cog, name='Search'):
         """
         self.bot = bot
 
-    async def anilist_search(self, ctx: Context, search: str, type_: AniListSearchType) -> Union[List[Embed], None]:
+    async def anilist_search(self, ctx: Context, search: str, type_: str) -> Union[List[Embed], None]:
         """
         Returns a list of Discord embeds with the retrieved anilist data about the searched entry.
 
         Args:
             ctx (Context): The context in which the command was invoked under.
             search (str): The entry to be searched for.
-            type_ (AniListSearchType): The type to be searched for (`ANIME`, `MANGA`, `CHARACTER`, `STAFF`, `STUDIO`).
+            type_ (str): The type to be searched for (`Anime`, `Manga`, `Character`, `Staff`, `Studio`).
 
         Returns:
             list (Embed): A list of discord embeds.
@@ -66,22 +66,22 @@ class Search(commands.Cog, name='Search'):
         data = None
 
         try:
-            if type_ == AniListSearchType.ANIME:
-                data = await self.bot.anilist.media(search=search, page=1, perPage=15, type=type_.value)
-            elif type_ == AniListSearchType.MANGA:
-                data = await self.bot.anilist.media(search=search, page=1, perPage=15, type=type_.value)
-            elif type_ == AniListSearchType.CHARACTER:
+            if type_ == AniListSearchType.Anime:
+                data = await self.bot.anilist.media(search=search, page=1, perPage=15, type=type_.upper())
+            elif type_ == AniListSearchType.Manga:
+                data = await self.bot.anilist.media(search=search, page=1, perPage=15, type=type_.upper())
+            elif type_ == AniListSearchType.Character:
                 data = await self.bot.anilist.character(search=search, page=1, perPage=15)
-            elif type_ == AniListSearchType.STAFF:
+            elif type_ == AniListSearchType.Staff:
                 data = await self.bot.anilist.staff(search=search, page=1, perPage=15)
-            elif type_ == AniListSearchType.STUDIO:
+            elif type_ == AniListSearchType.Studio:
                 data = await self.bot.anilist.studio(search=search, page=1, perPage=15)
 
         except Exception as e:
             log.exception(e)
 
             embed = discord.Embed(
-                title=f'An error occurred while searching for the {type_.value.lower()} `{search}`. Try again.',
+                title=f'An error occurred while searching for the {type_.lower()} `{search}`. Try again.',
                 color=ERROR_EMBED_COLOR)
             embeds.append(embed)
 
@@ -93,15 +93,15 @@ class Search(commands.Cog, name='Search'):
                 embed = None
 
                 try:
-                    if type_ == AniListSearchType.ANIME:
+                    if type_ == AniListSearchType.Anime:
                         embed = await self.get_media_embed(entry, page + 1, len(data))
-                    elif type_ == AniListSearchType.MANGA:
+                    elif type_ == AniListSearchType.Manga:
                         embed = await self.get_media_embed(entry, page + 1, len(data))
-                    elif type_ == AniListSearchType.CHARACTER:
+                    elif type_ == AniListSearchType.Character:
                         embed = await self.get_character_embed(entry, page + 1, len(data))
-                    elif type_ == AniListSearchType.STAFF:
+                    elif type_ == AniListSearchType.Staff:
                         embed = await self.get_staff_embed(entry, page + 1, len(data))
-                    elif type_ == AniListSearchType.STUDIO:
+                    elif type_ == AniListSearchType.Studio:
                         embed = await self.get_studio_embed(entry, page + 1, len(data))
 
                     if not isinstance(ctx.channel, discord.channel.DMChannel):
@@ -115,7 +115,7 @@ class Search(commands.Cog, name='Search'):
 
                     embed = discord.Embed(
                         title='Error', color=ERROR_EMBED_COLOR,
-                        description=f'An error occurred while loading the embed for the {type_.value.lower()}.')
+                        description=f'An error occurred while loading the embed for the {type_.lower()}.')
                     embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
 
                 embeds.append(embed)
@@ -123,7 +123,7 @@ class Search(commands.Cog, name='Search'):
             return embeds
         return None
 
-    async def anilist_random(self, ctx: Context, search: str, type_: AniListMediaType, format_in: List[str]) \
+    async def anilist_random(self, ctx: Context, search: str, type_: str, format_in: List[str]) \
             -> Union[Embed, None]:
         """
         Returns a Discord embed with the retrieved anilist data about a random media of a specified genre.
@@ -131,7 +131,7 @@ class Search(commands.Cog, name='Search'):
         Args:
             ctx (Context): The context in which the command was invoked under.
             search (str): The media genre to be searched for.
-            type_ (AniListMediaType): The media search type (`ANIME`, `MANGA`).
+            type_ (str): The media search type (`ANIME`, `MANGA`).
             format_in (list): The media format.
 
         Returns:
@@ -140,22 +140,22 @@ class Search(commands.Cog, name='Search'):
         """
         try:
 
-            data = await self.bot.anilist.genre(genre=search, page=1, perPage=1, type=type_.value,
+            data = await self.bot.anilist.genre(genre=search, page=1, perPage=1, type=type_,
                                                 format_in=format_in)
 
             if data.get('data')['Page']['media'] is not None and len(data.get('data')['Page']['media']) > 0:
                 page = random.randrange(1, data.get('data')['Page']['pageInfo']['lastPage'])
-                data = await self.bot.anilist.genre(genre=search, page=page, perPage=1, type=type_.value,
+                data = await self.bot.anilist.genre(genre=search, page=page, perPage=1, type=type_,
                                                     format_in=format_in)
 
             else:
 
-                data = await self.bot.anilist.tag(tag=search, page=1, perPage=1, type=type_.value,
+                data = await self.bot.anilist.tag(tag=search, page=1, perPage=1, type=type_,
                                                   format_in=format_in)
 
                 if data.get('data')['Page']['media'] is not None and len(data.get('data')['Page']['media']) > 0:
                     page = random.randrange(1, data.get('data')['Page']['pageInfo']['lastPage'])
-                    data = await self.bot.anilist.tag(tag=search, page=page, perPage=1, type=type_.value,
+                    data = await self.bot.anilist.tag(tag=search, page=page, perPage=1, type=type_,
                                                       format_in=format_in)
                 else:
                     return None
@@ -164,7 +164,7 @@ class Search(commands.Cog, name='Search'):
             log.exception(e)
 
             embed = discord.Embed(
-                title=f'An error occurred while searching for a {type_.value.lower()} with the genre `{search}`.',
+                title=f'An error occurred while searching for a {type_.lower()} with the genre `{search}`.',
                 color=ERROR_EMBED_COLOR)
 
             return embed
@@ -183,7 +183,7 @@ class Search(commands.Cog, name='Search'):
                 log.exception(e)
 
                 embed = discord.Embed(
-                    title=f'An error occurred while searching for a {type_.value.lower()} with the genre `{search}`.',
+                    title=f'An error occurred while searching for a {type_.lower()} with the genre `{search}`.',
                     color=ERROR_EMBED_COLOR)
 
             return embed
@@ -559,7 +559,7 @@ class Search(commands.Cog, name='Search'):
         status, episodes, description, and more!
         """
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(ctx, title, AniListSearchType.ANIME)
+            embeds = await self.anilist_search(ctx, title, AniListSearchType.Anime)
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
@@ -576,7 +576,7 @@ class Search(commands.Cog, name='Search'):
         status, chapters, description, and more!
         """
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(ctx, title, AniListSearchType.MANGA)
+            embeds = await self.anilist_search(ctx, title, AniListSearchType.Manga)
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
@@ -594,7 +594,7 @@ class Search(commands.Cog, name='Search'):
         description, synonyms, and appearances!
         """
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(ctx, name, AniListSearchType.CHARACTER)
+            embeds = await self.anilist_search(ctx, name, AniListSearchType.Character)
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
@@ -612,7 +612,7 @@ class Search(commands.Cog, name='Search'):
         staff roles, and character roles!
         """
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(ctx, name, AniListSearchType.STAFF)
+            embeds = await self.anilist_search(ctx, name, AniListSearchType.Staff)
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
@@ -630,7 +630,7 @@ class Search(commands.Cog, name='Search'):
         productions!
         """
         async with ctx.channel.typing():
-            embeds = await self.anilist_search(ctx, name, AniListSearchType.STUDIO)
+            embeds = await self.anilist_search(ctx, name, AniListSearchType.Studio)
             if embeds:
                 menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
@@ -647,17 +647,18 @@ class Search(commands.Cog, name='Search'):
         Displays a random anime or manga of the specified genre.
         """
         async with ctx.channel.typing():
-            if media.lower() == AniListMediaType.ANIME.value.lower():
-                embed = await self.anilist_random(ctx, genre, AniListMediaType.ANIME, ['TV', 'MOVIE', 'OVA', 'ONA',
-                                                                                       'TV_SHORT', 'MUSIC', 'SPECIAL'])
+            if media.lower() == AniListMediaType.Anime.lower():
+                embed = await self.anilist_random(ctx, genre, AniListMediaType.Anime.upper(),
+                                                  ['TV', 'MOVIE', 'OVA', 'ONA', 'TV_SHORT', 'MUSIC', 'SPECIAL'])
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
                     embed = discord.Embed(title=f'An anime with the genre `{genre}` could not be found.',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
-            elif media.lower() == AniListMediaType.MANGA.value.lower():
-                embed = await self.anilist_random(ctx, genre, AniListMediaType.MANGA, ['MANGA', 'ONE_SHOT', 'NOVEL'])
+            elif media.lower() == AniListMediaType.Manga.lower():
+                embed = await self.anilist_random(ctx, genre, AniListMediaType.Manga.upper(),
+                                                  ['MANGA', 'ONE_SHOT', 'NOVEL'])
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:

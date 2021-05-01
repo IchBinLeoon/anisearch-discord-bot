@@ -17,19 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from enum import Enum
+
+class AniListSearchType:
+    Anime = 'Anime'
+    Manga = 'Manga'
+    Character = 'Character'
+    Staff = 'Staff'
+    Studio = 'Studio'
 
 
-class AniListSearchType(Enum):
-    """AniListSearchType Enum."""
-    ANIME = 'ANIME'
-    MANGA = 'MANGA'
-    CHARACTER = 'CHARACTER'
-    STAFF = 'STAFF'
-    STUDIO = 'STUDIO'
-
-
-class AniListMediaType(Enum):
-    """AniListMediaType Enum."""
-    ANIME = 'ANIME'
-    MANGA = 'MANGA'
+class AniListMediaType:
+    Anime = 'Anime'
+    Manga = 'Manga'
