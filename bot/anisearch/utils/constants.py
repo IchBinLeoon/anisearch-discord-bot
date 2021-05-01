@@ -47,6 +47,3 @@ ANIMENEWSNETWORK_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/bl
 CRUNCHYROLL_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/Crunchyroll.jpg?raw=true'
 KITSU_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/Kitsu.jpg?raw=true'
 MYANIMELIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/MyAnimeList.jpg?raw=true'
-ANIMETHEMES_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/AnimeThemes.jpg?raw=true'
-TRACEMOE_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/TraceMoe.jpg?raw=true'
-SAUCENAO_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/SauceNAO.jpg?raw=true'

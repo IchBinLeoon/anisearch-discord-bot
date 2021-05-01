@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-__name__ = 'anisearch'
 __author__ = 'IchBinLeoon'
 __description__ = 'Anime Search Discord Bot'
 __url__ = 'https://github.com/IchBinLeoon/anisearch-discord-bot'

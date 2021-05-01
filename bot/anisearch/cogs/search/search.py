@@ -29,7 +29,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANILIST_LOGO, ANIMETHEMES_LOGO
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANILIST_LOGO
 from anisearch.utils.enums import AniListSearchType, AniListMediaType
 from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
     format_manga_status
@@ -483,7 +483,7 @@ class Search(commands.Cog, name='Search'):
         """
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR, title=data.get('name'))
 
-        embed.set_author(name='Themes', icon_url=ANIMETHEMES_LOGO)
+        embed.set_author(name='Themes')
 
         if data.get('images'):
             embed.set_thumbnail(url=data.get('images')[0]['link'])
@@ -504,7 +504,7 @@ class Search(commands.Cog, name='Search'):
             if theme.get('song')['artists']:
                 list_.append('**Artist:** ' + theme.get('song')['artists'][0]['name'])
 
-            link = f'[Link](http://animethemes.moe/video/{theme.get("entries")[0]["videos"][0]["basename"]})'
+            link = f'[Link](https://animethemes.moe/video/{theme.get("entries")[0]["videos"][0]["basename"]})'
             list_.append(link)
 
             embed.add_field(name=theme.get('slug'), value='\n'.join(list_), inline=False)
@@ -527,8 +527,7 @@ class Search(commands.Cog, name='Search'):
         """
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR, title=anime.get("name"))
 
-        embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '),
-                         icon_url=ANIMETHEMES_LOGO)
+        embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '))
 
         if anime.get('images'):
             embed.set_thumbnail(url=anime.get("images")[0]["link"])
@@ -737,7 +736,7 @@ class Search(commands.Cog, name='Search'):
                                 text=f'Provided by https://animethemes.moe/')
                         await ctx.channel.send(embed=embed)
                         return await ctx.channel.send(
-                            f'http://animethemes.moe/video/{entry.get("entries")[0]["videos"][0]["basename"]}')
+                            f'https://animethemes.moe/video/{entry.get("entries")[0]["videos"][0]["basename"]}')
                 embed = discord.Embed(
                     title=f'Cannot find `{theme.upper()}` for the anime `{anime}`.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)

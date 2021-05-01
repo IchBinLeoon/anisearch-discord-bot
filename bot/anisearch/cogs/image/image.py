@@ -28,7 +28,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, TRACEMOE_LOGO, SAUCENAO_LOGO
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class Image(commands.Cog, name='Image'):
         """
         embed = discord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
 
-        embed.set_author(name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%', icon_url=TRACEMOE_LOGO)
+        embed.set_author(name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%')
 
         if data.get('title_english') is None or data.get('title_english') == \
                 data.get('title_romaji'):
@@ -108,8 +108,7 @@ class Image(commands.Cog, name='Image'):
         """
         embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
 
-        embed.set_author(name=f'Similarity » {float(data.get("header").get("similarity")):0.2f}%',
-                         icon_url=SAUCENAO_LOGO)
+        embed.set_author(name=f'Similarity » {float(data.get("header").get("similarity")):0.2f}%')
 
         embed.set_image(url=data.get('header')['thumbnail'])
 

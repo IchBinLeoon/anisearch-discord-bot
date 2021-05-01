@@ -295,11 +295,7 @@ class AniSearchBot(AutoShardedBot):
 
         title = 'An unknown error occurred.'
 
-        if isinstance(error, discord.errors.Forbidden):
-            log.warning(error)
-            return await ctx.message.add_reaction(emoji='🔇')
-
-        elif isinstance(error, commands.CommandNotFound):
+        if isinstance(error, commands.CommandNotFound):
             title = 'Command not found.'
 
         elif isinstance(error, commands.CommandOnCooldown):
@@ -345,8 +341,15 @@ class AniSearchBot(AutoShardedBot):
             title = 'Cannot read message history.'
             ctx.command.reset_cooldown(ctx)
 
+        elif isinstance(error, discord.errors.Forbidden):
+            log.warning(error)
+            ctx.command.reset_cooldown(ctx)
+
         else:
             log.exception('An unknown exception occurred while executing a command.', exc_info=error)
+
+        if isinstance(error, discord.errors.Forbidden):
+            return await ctx.message.add_reaction(emoji='🔇')
 
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         return await ctx.channel.send(embed=embed)

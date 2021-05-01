@@ -38,26 +38,26 @@ import (
 )
 
 var (
-	host string
-	port string
-	mode string
-	botApiHost string
-	botApiPort string
+	host            string
+	port            string
+	mode            string
+	botApiHost      string
+	botApiPort      string
 	botApiSecretKey string
-	dbHost string
-	dbPort string
-	dbName string
-	dbUser string
-	dbPassword string
+	dbHost          string
+	dbPort          string
+	dbName          string
+	dbUser          string
+	dbPassword      string
 )
 
 var (
-	db *gorm.DB
+	db      *gorm.DB
 	connErr error
 )
 
 func index(c *gin.Context) {
-	urlStr := fmt.Sprintf("http://%s:%s/api?type=stats", botApiHost, botApiPort)
+	urlStr := fmt.Sprintf("http://%s:%s/api/info?type=stats", botApiHost, botApiPort)
 
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
@@ -72,20 +72,20 @@ func index(c *gin.Context) {
 		log.Println(err)
 	}
 
-	c.HTML(http.StatusOK, "index.tmpl", gin.H {
-		"ready": Data.IsReady,
-		"guilds": Data.GuildCount,
-		"users": Data.UserCount,
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"ready":    Data.IsReady,
+		"guilds":   Data.GuildCount,
+		"users":    Data.UserCount,
 		"channels": Data.ChannelCount,
-		"uptime": int(math.Round(Data.Uptime)),
-		"shards": Data.ShardCount,
-		"latency": fmt.Sprintf("%.5f", Data.Latency),
-		"cogs": Data.CogCount,
+		"uptime":   int(math.Round(Data.Uptime)),
+		"shards":   Data.ShardCount,
+		"latency":  fmt.Sprintf("%.5f", Data.Latency),
+		"cogs":     Data.CogCount,
 	})
 }
 
 func logs(c *gin.Context) {
-	urlStr := fmt.Sprintf("http://%s:%s/api?type=logs", botApiHost, botApiPort)
+	urlStr := fmt.Sprintf("http://%s:%s/api/info?type=logs", botApiHost, botApiPort)
 
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
@@ -104,7 +104,7 @@ func logs(c *gin.Context) {
 }
 
 func shards(c *gin.Context) {
-	urlStr := fmt.Sprintf("http://%s:%s/api?type=shards", botApiHost, botApiPort)
+	urlStr := fmt.Sprintf("http://%s:%s/api/info?type=shards", botApiHost, botApiPort)
 
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey

@@ -47,9 +47,9 @@ class Server:
         self.secret_key = secret_key
         self._server = None
 
-    async def handle(self, request: web_request.Request) -> web.Response:
+    async def handle_info(self, request: web_request.Request) -> web.Response:
         """
-        Handles the API requests.
+        Handles the API info route requests.
 
         Args:
             request (web_request.Request): The request.
@@ -122,6 +122,6 @@ class Server:
         logger.setLevel(logging.ERROR)
 
         self._server = web.Application()
-        self._server.router.add_route('GET', '/api', self.handle)
+        self._server.router.add_route('GET', '/api/info', self.handle_info)
 
         self.loop.run_until_complete(self._start())
