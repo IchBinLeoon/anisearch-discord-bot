@@ -113,7 +113,7 @@ class Help(commands.Cog, name='Help'):
                                                   f'Do **not** include `<>`, `[]` or `|` when executing the command.',
                                       colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name="AniSearch's commands", icon_url=ANISEARCH_LOGO)
-                embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 2}')
+                embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
                 embeds.append(embed)
                 page += 1
 

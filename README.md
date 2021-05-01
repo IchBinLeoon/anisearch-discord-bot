@@ -120,10 +120,6 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `random <anime|manga> <genre>:` Displays a random anime or manga of the specified genre.  
 
-- `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  
-
-- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
-
 ### Profile
 - `anilist [username|@member]:` Displays information about the given AniList profile such as anime stats, manga stats and favorites.  
 
@@ -136,6 +132,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `profiles [@member]:` Displays the set profiles of you, or the specified user.  
 
 - `removeprofiles:` Removes the set AniList, MyAnimeList and Kitsu profile.  
+
+### Themes
+- `themes <anime>:` Searches for the openings and endings of the given anime and displays them.
+
+- `theme <OP|ED> <anime>:` Displays a specific opening or ending of the given anime.
 
 ### Image
 - `trace <image-url|with image as attachment>:` Tries to find the anime the image is from through the image url or the image as attachment.  
