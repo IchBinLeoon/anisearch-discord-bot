@@ -242,6 +242,22 @@ class AniListClient:
             return data.get('data')['Page']['airingSchedules']
         return None
 
+    async def trending(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """
+        Gets a list of trending media entries.
+
+        Args:
+            variables (union): Variables and values that will be used in the query request.
+
+        Returns:
+            dict: Dictionary with the data about the requested trending media entries.
+            None: If no trending media entries were found.
+        """
+        data = await self._request(query=Query.trending(), **variables)
+        if data.get('data')['Page']['media']:
+            return data.get('data')['Page']['media']
+        return None
+
 
 class Query:
     """
@@ -716,3 +732,72 @@ class Query:
         }
         '''
         return SCHEDULE_QUERY
+
+    @classmethod
+    def trending(cls) -> str:
+        """
+        Gets the trending query.
+
+        Returns:
+            str: Query used for a trending request.
+        """
+        TRENDING_QUERY: str = '''
+        query ($page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort]) {
+          Page(page: $page, perPage: $perPage) {
+            media(type: $type, sort: $sort) {
+              idMal
+              title {
+                romaji
+                english
+              }
+              coverImage {
+                large
+                color
+              }
+              description
+              bannerImage
+              format
+              status
+              type
+              meanScore
+              startDate {
+                year
+                month
+                day
+              }
+              endDate {
+                year
+                month
+                day
+              }
+              duration
+              source
+              episodes
+              chapters
+              volumes
+              studios {
+                nodes {
+                  name
+                }
+              }
+              synonyms
+              genres
+              trailer {
+                id
+                site
+              }
+              externalLinks {
+                site
+                url
+              }
+              siteUrl
+              isAdult
+              nextAiringEpisode {
+                episode
+                timeUntilAiring
+              }
+            }
+          }
+        }
+        '''
+        return TRENDING_QUERY

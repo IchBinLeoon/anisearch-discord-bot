@@ -152,6 +152,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `crunchynews:` Displays the latest anime news from Crunchyroll.  
 
+- `trending <anime|manga>:` Displays the current trending anime or manga on AniList.  
+
 ### Help
 - `help [command]:` Shows help or displays information about a command.  
 

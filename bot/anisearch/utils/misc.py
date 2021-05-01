@@ -103,6 +103,11 @@ def get_command_example(ctx: Context, command: str) -> Union[str, None]:
         f'kitsu {ctx.author.name}'
     ]
 
+    trending = [
+        'anime',
+        'manga'
+    ]
+
     try:
         example = f'{command} {rnd.choice(locals()[command])}'
     except KeyError:

@@ -670,7 +670,7 @@ class Search(commands.Cog, name='Search'):
                 raise discord.ext.commands.BadArgument
 
     @commands.command(name='themes', usage='themes <anime>', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def themes(self, ctx: Context, *, anime: str):
         """
         Searches for the openings and endings of the given anime and displays them.
@@ -705,7 +705,7 @@ class Search(commands.Cog, name='Search'):
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='theme', usage='theme <OP|ED> <anime>', ignore_extra=False)
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def theme(self, ctx: Context, theme: str, *, anime: str):
         """
         Displays a specific opening or ending of the given anime.
