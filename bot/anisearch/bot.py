@@ -150,13 +150,17 @@ class AniSearchBot(AutoShardedBot):
         prefix = self.db.get_prefix(message)
         return when_mentioned_or(prefix, DEFAULT_PREFIX)(self, message)
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=60)
     async def set_status(self) -> None:
         """
         Sets the discord status of the bot every 30 seconds.
         """
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
                                    name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
+        await sleep(20)
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
+                                                             name=f'on {self.get_guild_count()} servers'),
+                                   status=discord.Status.online)
         await sleep(20)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
                                    status=discord.Status.online)
