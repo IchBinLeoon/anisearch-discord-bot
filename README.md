@@ -143,6 +143,10 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `source <image-url|with image as attachment>:` Tries to find the source of an image through the image url or the image as attachment.  
 
+- `waifu:` Posts a random image of a waifu.  
+
+- `neko:` Posts a random image of a catgirl.  
+
 ### Schedule
 - `next:` Displays the next airing anime episodes.  
 
@@ -325,6 +329,7 @@ Thanks to the people who made this discord bot possible.
 #### [top-gg/python-sdk ](https://github.com/top-gg/python-sdk)
 #### [theskumar/python-dotenv](https://github.com/theskumar/python-dotenv)
 #### [giampaolo/psutil](https://github.com/giampaolo/psutil)
+#### [IchBinLeoon/waifu-py](https://github.com/IchBinLeoon/waifu-py)
 #### [gin-gonic/gin](https://github.com/gin-gonic/gin)
 #### [joho/godotenv](https://github.com/joho/godotenv)
 #### [go-gorm/gorm](https://github.com/go-gorm/gorm)
@@ -332,6 +337,7 @@ Thanks to the people who made this discord bot possible.
 #### [AniList/ApiV2-GraphQL-Docs](https://github.com/AniList/ApiV2-GraphQL-Docs)
 #### [jikan-me/jikan](https://github.com/jikan-me/jikan)
 #### [hummingbird-me/api-docs](https://github.com/hummingbird-me/api-docs)
+#### [Waifu-pics/waifu-api](https://github.com/Waifu-pics/waifu-api)
 #### [AnimeThemes/animethemes-server](https://github.com/AnimeThemes/animethemes-server)
 #### [soruly/trace.moe](https://github.com/soruly/trace.moe)
 #### [SauceNAO](https://saucenao.com/)
