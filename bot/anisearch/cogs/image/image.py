@@ -264,10 +264,11 @@ class Image(commands.Cog, name='Image'):
         """
         Posts a random image of a waifu.
         """
-        url = await self.bot.waifu.sfw('waifu')
-        embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-        embed.set_image(url=url)
-        await ctx.channel.send(embed=embed)
+        async with ctx.channel.typing():
+            url = await self.bot.waifu.sfw('waifu')
+            embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
+            embed.set_image(url=url)
+            await ctx.channel.send(embed=embed)
 
     @commands.command(name='neko', aliases=['catgirl', 'meow', 'nya'], usage='neko', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -275,7 +276,8 @@ class Image(commands.Cog, name='Image'):
         """
         Posts a random image of a catgirl.
         """
-        url = await self.bot.waifu.sfw('neko')
-        embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-        embed.set_image(url=url)
-        await ctx.channel.send(embed=embed)
+        async with ctx.channel.typing():
+            url = await self.bot.waifu.sfw('neko')
+            embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
+            embed.set_image(url=url)
+            await ctx.channel.send(embed=embed)

@@ -66,7 +66,9 @@ You can also:
 - View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net) or [Kitsu](https://kitsu.io).
 - Search for the anime or the source of an image.
 - View the next airing, and the most recently aired anime episodes.
-- View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com) or the current trending anime or manga on AniList.
+- View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com).
+- View the current trending anime or manga on AniList.
+- Get pictures of waifus and catgirls.
 
 If you are interested in my bot, you can add it to your Discord server by clicking [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
 
