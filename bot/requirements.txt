@@ -4,6 +4,6 @@ aiohttp==3.7.4
 psycopg2==2.8.6
 beautifulsoup4==4.9.3
 dblpy==0.4.0
-python-dotenv==0.17.0
+python-dotenv==0.17.1
 psutil==5.8.0
 waifu-py==1.0.1
