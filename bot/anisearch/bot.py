@@ -220,7 +220,7 @@ class AniSearchBot(AutoShardedBot):
         self.db.delete_prefix(guild)
 
     async def on_autopost_success(self):
-        log.info(f'TopGG statistics posted. (Guilds: {self.topgg.get_guild_count()}, Shards: {self.shard_count})')
+        log.info(f'TopGG statistics posted. (Guilds: {self.topgg.guild_count}, Shards: {self.shard_count})')
 
     async def on_autopost_error(self, error: Exception):
         if isinstance(error, topgg.errors.UnauthorizedDetected):
@@ -239,7 +239,12 @@ class AniSearchBot(AutoShardedBot):
         """
         Returns the bot user count.
         """
-        users = len(self.users)
+        users = 0
+        for guild in self.guilds:
+            try:
+                users += guild.member_count
+            except Exception as e:
+                logging.warning(e)
         return users
 
     def get_channel_count(self) -> int:
