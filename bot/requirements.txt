@@ -3,7 +3,7 @@ git+git://github.com/Rapptz/discord-ext-menus
 aiohttp==3.7.4.post0
 psycopg2==2.8.6
 beautifulsoup4==4.9.3
-dblpy==0.4.0
+topggpy==1.0.1
 python-dotenv==0.17.1
 psutil==5.8.0
 waifu-py==1.0.1

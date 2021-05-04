@@ -22,7 +22,7 @@ import time
 from io import StringIO
 from asyncio import sleep
 
-import dbl
+import topgg
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus
@@ -103,8 +103,8 @@ class AniSearchBot(AutoShardedBot):
 
         self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
 
-        self.dblpy = dbl.DBLClient(self, BOT_TOPGG_TOKEN)
-        self.update_topgg_stats.start()
+        # Posts guild and shard count to Top.gg every 30 minutes.
+        self.topgg = topgg.DBLClient(self, BOT_TOPGG_TOKEN, autopost=True, post_shard_count=True)
 
         self.load_cogs()
         self.set_status.start()
@@ -150,16 +150,20 @@ class AniSearchBot(AutoShardedBot):
         prefix = self.db.get_prefix(message)
         return when_mentioned_or(prefix, DEFAULT_PREFIX)(self, message)
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=80)
     async def set_status(self) -> None:
         """
-        Sets the discord status of the bot every 30 seconds.
+        Sets the discord status of the bot every 80 seconds.
         """
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
                                    name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
         await sleep(20)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
                                                              name=f'on {self.get_guild_count()} servers'),
+                                   status=discord.Status.online)
+        await sleep(20)
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
+                                                             name=f'with {self.get_user_count()} users'),
                                    status=discord.Status.online)
         await sleep(20)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
@@ -215,25 +219,14 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'Left guild {guild.name} [{guild.id}].')
         self.db.delete_prefix(guild)
 
-    @tasks.loop(minutes=30)
-    async def update_topgg_stats(self):
-        """
-        Automatically updates the TopGG statistics every 30 minutes.
-        """
-        try:
-            await self.dblpy.post_guild_count(guild_count=self.get_guild_count(), shard_count=self.shard_count)
-            log.info(f'TopGG statistics posted. (Guilds: {self.get_guild_count()}, Shards: {self.shard_count})')
-        except dbl.UnauthorizedDetected as e:
-            log.warning(e)
-        except Exception as e:
-            log.exception(e)
+    async def on_autopost_success(self):
+        log.info(f'TopGG statistics posted. (Guilds: {self.topgg.get_guild_count()}, Shards: {self.shard_count})')
 
-    @update_topgg_stats.before_loop
-    async def update_topgg_stats_before(self) -> None:
-        """
-        Waits for the bot to be ready before starting the `update_topgg_stats` task.
-        """
-        await self.wait_until_ready()
+    async def on_autopost_error(self, error: Exception):
+        if isinstance(error, topgg.errors.UnauthorizedDetected):
+            log.warning(error)
+        else:
+            log.exception(error)
 
     def get_guild_count(self) -> int:
         """
@@ -246,12 +239,7 @@ class AniSearchBot(AutoShardedBot):
         """
         Returns the bot user count.
         """
-        users = 0
-        for guild in self.guilds:
-            try:
-                users += guild.member_count
-            except Exception as e:
-                logging.warning(e)
+        users = len(self.users)
         return users
 
     def get_channel_count(self) -> int:
