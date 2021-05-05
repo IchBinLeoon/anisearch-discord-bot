@@ -5,5 +5,3 @@ psycopg2==2.8.6
 beautifulsoup4==4.9.3
 topggpy==1.0.1
 python-dotenv==0.17.1
-psutil==5.8.0
-waifu-py==1.0.1

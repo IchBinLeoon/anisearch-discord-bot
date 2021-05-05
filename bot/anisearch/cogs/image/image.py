@@ -28,7 +28,8 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, WAIFUPICS_BASE_URL
+from anisearch.utils.http import get
 from anisearch.utils.paginator import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -265,9 +266,9 @@ class Image(commands.Cog, name='Image'):
         Posts a random image of a waifu.
         """
         async with ctx.channel.typing():
-            url = await self.bot.waifu.sfw('waifu')
+            data = await get(url=f'{WAIFUPICS_BASE_URL}/sfw/waifu', session=self.bot.session, res_method='json')
             embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-            embed.set_image(url=url)
+            embed.set_image(url=data.get('url'))
             await ctx.channel.send(embed=embed)
 
     @commands.command(name='neko', aliases=['catgirl', 'meow', 'nya'], usage='neko', ignore_extra=False)
@@ -277,7 +278,7 @@ class Image(commands.Cog, name='Image'):
         Posts a random image of a catgirl.
         """
         async with ctx.channel.typing():
-            url = await self.bot.waifu.sfw('neko')
+            data = await get(url=f'{WAIFUPICS_BASE_URL}/sfw/neko', session=self.bot.session, res_method='json')
             embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-            embed.set_image(url=url)
+            embed.set_image(url=data.get('url'))
             await ctx.channel.send(embed=embed)

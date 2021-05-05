@@ -28,7 +28,6 @@ from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 from discord.utils import get
-from waifu import WaifuAioClient
 
 from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCENAO_API_KEY, BOT_API_HOST, \
     BOT_API_PORT, BOT_API_SECRET_KEY
@@ -100,8 +99,6 @@ class AniSearchBot(AutoShardedBot):
         self.animenewsnetwork = AnimeNewsNetworkClient(session=ClientSession(loop=self.loop))
 
         self.crunchyroll = CrunchyrollClient(session=ClientSession(loop=self.loop))
-
-        self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
 
         # Posts guild and shard count to Top.gg every 30 minutes.
         self.topgg = topgg.DBLClient(self, BOT_TOPGG_TOKEN, autopost=True, post_shard_count=True)
@@ -283,9 +280,7 @@ class AniSearchBot(AutoShardedBot):
         await self.kitsu.close()
         await self.animenewsnetwork.close()
         await self.crunchyroll.close()
-        await self.waifu.close()
-        if self.session is not None:
-            await self.session.close()
+        await self.session.close()
         await super().close()
 
     async def on_command_error(self, ctx: Context, error: Exception) -> None:

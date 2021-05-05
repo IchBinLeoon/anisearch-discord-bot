@@ -27,6 +27,7 @@ TRACEMOE_BASE_URL = 'https://trace.moe/api'
 SAUCENAO_BASE_URL = 'https://saucenao.com/search.php'
 JIKAN_BASE_URL = 'https://api.jikan.moe/v3'
 KITSU_BASE_URL = 'https://kitsu.io/api/edge'
+WAIFUPICS_BASE_URL = 'https://api.waifu.pics'
 
 ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT = 'https://www.animenewsnetwork.com/newsroom/rss.xml'
 CRUNCHYROLL_NEWS_FEED_ENDPOINT = 'https://www.crunchyroll.com/newsrss?lang=enEN'
