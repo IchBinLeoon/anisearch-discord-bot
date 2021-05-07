@@ -61,8 +61,8 @@ async def check_update() -> None:
     Checks GitHub for a newer version of the bot.
     """
     async with aiohttp.ClientSession() as s:
-        async with s.get('https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main/anisearch/__init__'
-                         '.py') as r:
+        async with s.get('https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main/bot/anisearch/'
+                         '__init__.py') as r:
             if r.status == 200:
                 github_version = str(re.findall("__version__ = '(.*)'", await r.text())[0])
                 if github_version != anisearch.__version__:
