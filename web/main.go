@@ -137,8 +137,13 @@ func guilds(c *gin.Context) {
 
 	var guildStrList []string
 	for j, i := range guilds {
-		str := fmt.Sprintf("%d.\tID: %d | Prefix: %s", j, i.ID, i.Prefix)
-		guildStrList = append(guildStrList, str)
+		var info []string
+		info = append(info, fmt.Sprintf("%d.\tID: %d | Prefix: %s", j, i.ID, i.Prefix))
+		if i.Channel != 0 {
+			info = append(info, fmt.Sprintf("Channel: %d", i.Channel))
+		}
+		guildStr := strings.Join(info, " | ")
+		guildStrList = append(guildStrList, guildStr)
 	}
 
 	data := strings.Join(guildStrList, "\n")

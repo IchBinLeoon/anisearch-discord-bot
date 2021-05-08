@@ -306,7 +306,8 @@ The bot, the associated admin panel and Asuka, the episode notification service,
     - Change the working directory.
 
         ```
-        $ cd Asuka
+        $ ..
+        $ cd asuka
         ```   
 
     - Set up and activate a venv.
@@ -323,7 +324,7 @@ The bot, the associated admin panel and Asuka, the episode notification service,
         $ python -m pip install -r requirements.txt
         ```
 
-    - Run asuka.
+    - Run Asuka.
 
         ```
         $ python asuka.py
@@ -335,6 +336,7 @@ The bot, the associated admin panel and Asuka, the episode notification service,
     - Change the working directory.
 
         ```
+        $ ..
         $ cd web
         ```
 

@@ -51,8 +51,9 @@ type Shards struct {
 type Guild struct {
 	gorm.Model
 
-	ID     int64
-	Prefix string
+	ID      int64
+	Prefix  string
+	Channel int64
 }
 
 type User struct {
