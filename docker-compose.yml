@@ -22,6 +22,15 @@ services:
       - ${WEB_PORT}:${WEB_PORT}
     restart: unless-stopped
     container_name: anisearch-web
+  asuka:
+    build: ./asuka
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - bot
+    restart: unless-stopped
+    container_name: anisearch-asuka
   db:
     image: postgres:latest
     environment:

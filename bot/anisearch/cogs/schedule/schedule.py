@@ -221,3 +221,42 @@ class Schedule(commands.Cog, name='Schedule'):
                 embed = discord.Embed(
                     title=f'The most recently aired episodes could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
+
+    async def send_episode_notification(self, data: Dict[str, Any]) -> None:
+        """
+        Sends the episode notification embed.
+
+        Args:
+            data (dict): The data about the anime.
+        """
+        channel_count = 0
+        for guild in self.bot.guilds:
+            try:
+                channel_id = self.bot.db.get_channel(guild)
+                if channel_id is not None:
+                    channel = guild.get_channel(channel_id)
+                    if channel is not None:
+
+                        embed = discord.Embed(colour=DEFAULT_EMBED_COLOR, url=data.get('url'),
+                                              description=f'Episode **{data.get("episode")}** is out!')
+
+                        embed.set_author(name='Episode Notification', icon_url=ANILIST_LOGO)
+
+                        if data.get('english') is None or data.get('english') == data.get('romaji'):
+                            embed.title = data.get('romaji')
+                        else:
+                            embed.title = f'{data.get("romaji")} ({data.get("english")})'
+
+                        if data.get('image'):
+                            embed.set_image(url=data.get('image'))
+
+                        embed.set_footer(text=f'Provided by https://anilist.co/')
+
+                        await channel.send(embed=embed)
+
+                        channel_count += 1
+
+            except Exception as e:
+                log.exception(e)
+
+        log.info(f'Posted episode notification in {channel_count} channels.')

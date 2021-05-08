@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -65,3 +66,45 @@ class Settings(commands.Cog, name='Settings'):
                 embed = discord.Embed(title=f'{ctx.author} changed the prefix from `{prefix_old}` to `{prefix_new}`.',
                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
+
+    @commands.command(name='setchannel', aliases=['setc', 'sc'], usage='setchannel [ID]', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def setchannel(self, ctx: Context, channel_id: Optional[int]):
+        """
+        Sets the channel for the anime episode notifications. If no channel ID is specified, the current one is used.
+        Can only be used by a server administrator.
+        """
+        if channel_id is None:
+            channel_id = ctx.channel.id
+        if ctx.guild.get_channel(channel_id) is None:
+            embed = discord.Embed(title=f'The channel `{channel_id}` could not be found.', color=ERROR_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+            ctx.command.reset_cooldown(ctx)
+        else:
+            self.bot.db.set_channel(channel_id, ctx.guild)
+            channel = self.bot.db.get_channel(ctx.guild)
+            embed = discord.Embed(title=f'Set the notification channel to:', description=f'<#{channel}>',
+                                  color=DEFAULT_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+
+    @commands.command(name='removechannel', aliases=['rmchannel', 'rmc', 'rc'], usage='removechannel',
+                      ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def removechannel(self, ctx):
+        """
+        Removes the channel set for the anime episode notifications. Can only be used by a server administrator.
+        """
+        channel = self.bot.db.get_channel(ctx.guild)
+        if channel is None:
+            embed = discord.Embed(title='No notification channel set for the server.', color=ERROR_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+        else:
+            self.bot.db.set_channel(None, ctx.guild)
+            embed = discord.Embed(title='Removed the set notification channel.', color=DEFAULT_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+
+

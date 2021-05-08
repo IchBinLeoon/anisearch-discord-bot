@@ -61,9 +61,10 @@
 **AniSearch** is an easy-to-use Discord bot written in Python that allows you to search for anime, manga, characters, staff, studios and much more directly in Discord and displays the results as paginated embeds! 
 
 You can also:
+- View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net) or [Kitsu](https://kitsu.io).
+- Receive a notification when a new anime episode airs in Japan.
 - Search for a random anime or manga of a specific genre.
 - View the opening and ending themes of an anime.
-- View another user's profile with anime and manga stats from [AniList](https://anilist.co), [MyAnimeList](https://myanimelist.net) or [Kitsu](https://kitsu.io).
 - Search for the anime or the source of an image.
 - View the next airing, and the most recently aired anime episodes.
 - View the latest anime related news from [Anime News Network](https://www.animenewsnetwork.com) and [Crunchyroll](https://www.crunchyroll.com).
@@ -176,6 +177,10 @@ Can only be used by a server administrator.
 
 - `setprefix <prefix>:` Changes the current server prefix. Max 5 characters.  
 
+- `setchannel [ID]:` Sets the channel for the anime episode notifications. If no channel ID is specified, the current one is used. Can only be used by a server administrator.  
+
+- `removechannel:` Removes the channel set for the anime episode notifications. Can only be used by a server administrator.  
+
 ### Admin
 Can only be used by the bot owner.  
 
@@ -209,7 +214,7 @@ That's why I would prefer if you don't run an instance of my bot and recommend e
 Nevertheless, the installation steps are as follows:  
 
 ## Introduction
-The bot and the associated admin panel can be run either as a Docker containers or manually. The admin panel can be accessed via port 5000 by default.
+The bot, the associated admin panel and Asuka, the episode notification service, can be run either as a Docker containers or manually. The admin panel can be accessed via port 5000 by default.
 
 ### Requirements:
 - Either [Docker and Docker-Compose](https://www.docker.com/) or [Python](https://www.python.org/) 3.8+, [Go](https://golang.org/) 1.16+ and a [PostgreSQL](https://www.postgresql.org/) Database
@@ -260,15 +265,17 @@ The bot and the associated admin panel can be run either as a Docker containers 
 1. To be able to use the bot you need to set up a `PostgreSQL Database`. Make sure the tables are set up correctly as shown below to successfully connect to your database. Type the following in your `PSQL Tool`:
 
     ```sql
-    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5));
+    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5), channel bigint);
     CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255));
+    CREATE TABLE IF NOT EXISTS schedule (id bigint, time bigint, episode int, romaji VARCHAR (255), english VARCHAR (255), image VARCHAR (255), url VARCHAR (255));
     ```
 
 2. Edit `.env` and change `BOT_API_HOST` and `WEB_HOST` to localhost or to the IP address of the device the bot and admin panel are running on. Also change the credentials for the Postgres database to match yours.
 
-3. ### Bot
+3. ### Bot & Asuka
     - Make sure you have `Python 3.8` or higher.
 
+    #### Bot
     - Change the working directory.
 
         ```
@@ -294,8 +301,35 @@ The bot and the associated admin panel can be run either as a Docker containers 
         ```
         $ python -m anisearch
         ```
+      
+    #### Asuka
+    - Change the working directory.
 
-4. ### Admin Panel
+        ```
+        $ cd Asuka
+        ```   
+
+    - Set up and activate a venv.
+
+        ```
+        $ python3 -m venv venv
+        $ source venv/bin/activate # On macOS and Linux
+        $ .\venv\Scripts\activate # On Windows
+        ```
+
+    - Install the requirements.
+
+        ```
+        $ python -m pip install -r requirements.txt
+        ```
+
+    - Run asuka.
+
+        ```
+        $ python asuka.py
+        ```
+
+5. ### Admin Panel
     - Make sure you have `Go 1.16` or higher.
 
     - Change the working directory.

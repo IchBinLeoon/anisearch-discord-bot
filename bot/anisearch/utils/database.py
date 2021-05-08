@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
+from typing import Union
 
 import discord
 import psycopg2
@@ -169,7 +170,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def select_profile(self, site: str, id_: int) -> None:
+    def select_profile(self, site: str, id_: int) -> Union[str, None]:
         """
         Selects a profile of a user from the database.
 
@@ -212,5 +213,46 @@ class DataBase:
                 cur.execute('DELETE FROM users WHERE id = %s;', (id_,))
                 conn.commit()
                 log.info(f'Removed all profiles for user {id_}.')
+        finally:
+            self.pool.putconn(conn)
+
+    def set_channel(self, channel_id: int, guild: discord.Guild) -> None:
+        """
+        Sets the channel for the matching guild in the database.
+
+        Args:
+            channel_id (int): The ID of the discord channel.
+            guild (discord.Guild): A Discord guild.
+        """
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute('UPDATE guilds SET channel = %s WHERE id = %s;', (channel_id, guild.id,))
+                cur.execute('SELECT channel FROM guilds WHERE id = %s;', (guild.id,))
+                channel_id = cur.fetchone()[0]
+                conn.commit()
+                log.info(f'Set channel for guild {guild.name} [{guild.id}] to {channel_id}.')
+        finally:
+            self.pool.putconn(conn)
+
+    def get_channel(self, guild: discord.Guild) -> Union[int, None]:
+        """
+        Gets the channel for the current guild from the database.
+
+        Args:
+            guild (discord.Guild): A Discord guild.
+
+        Returns:
+            channel (int): Channel for the current guild.
+        """
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute('SELECT channel FROM guilds WHERE id = %s;', (guild.id,))
+                    channel = cur.fetchone()[0]
+                    return channel
+                except TypeError:
+                    return None
         finally:
             self.pool.putconn(conn)
