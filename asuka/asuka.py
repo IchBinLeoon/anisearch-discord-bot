@@ -94,13 +94,17 @@ class Asuka:
           }
         }
         '''
-        variables = {'page': 1, 'perPage': 50, 'notYetAired': True, 'sort': 'TIME'}
-        session = await self._session()
-        r = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
-        logging.info(f'{r.method} {r.url} {r.status} {r.reason}')
-        if r.status != 200:
+        try:
+            variables = {'page': 1, 'perPage': 50, 'notYetAired': True, 'sort': 'TIME'}
+            session = await self._session()
+            r = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
+            logging.info(f'{r.method} {r.url} {r.status} {r.reason}')
+            if r.status != 200:
+                return None
+            return await r.json()
+        except Exception as e:
+            logging.exception(e)
             return None
-        return await r.json()
 
     async def clear_table(self):
         conn = self.pool.getconn()
