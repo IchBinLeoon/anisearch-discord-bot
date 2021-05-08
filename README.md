@@ -177,9 +177,9 @@ Can only be used by a server administrator.
 
 - `setprefix <prefix>:` Changes the current server prefix. Max 5 characters.  
 
-- `setchannel [ID]:` Sets the channel for the anime episode notifications. If no channel ID is specified, the current one is used. Can only be used by a server administrator.  
+- `setchannel [ID]:` Sets the channel for the anime episode notifications. If no channel ID is specified, the current one is used.
 
-- `removechannel:` Removes the channel set for the anime episode notifications. Can only be used by a server administrator.  
+- `removechannel:` Removes the channel set for the anime episode notifications.
 
 ### Admin
 Can only be used by the bot owner.  
