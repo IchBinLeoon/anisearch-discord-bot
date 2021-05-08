@@ -8,3 +8,7 @@ updates:
     directory: "/web"
     schedule:
       interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "/asuka"
+    schedule:
+      interval: "daily"
