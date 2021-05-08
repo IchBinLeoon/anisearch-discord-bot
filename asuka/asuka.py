@@ -146,7 +146,7 @@ class Asuka:
             with conn.cursor() as cur:
                 cur.execute('SELECT * FROM schedule')
                 for row in cur:
-                    if row[1] < time.time():
+                    if row[1] <= time.time():
                         logging.info(f'New episode: {row[3]} [{row[0]}]')
                         payload = {
                             'id': row[0],
