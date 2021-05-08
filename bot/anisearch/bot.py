@@ -35,7 +35,7 @@ from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.api import Server
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID, SUPPORT_SERVER_INVITE
 from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
 from anisearch.utils.jikan import JikanClient
@@ -200,14 +200,16 @@ class AniSearchBot(AutoShardedBot):
         try:
             user = await self.fetch_user(guild.owner_id)
             await user.send(f'**Hey there! Thanks for using <@!{BOT_ID}>!**\n\n'
-                            f'__A few things to get started with the bot:__\n\n'
+                            f'A few things to get started with the bot:\n\n'
                             f'• To display all commands use: `as!{get(self.commands, name="commands").usage}`\n\n'
                             f'• To display information about a command use: '
                             f'`as!{get(self.commands, name="help").usage}`\n\n'
                             f'• To change the server prefix use: `as!{get(self.commands, name="setprefix").usage}`\n\n'
+                            f'• To set the channel for the anime episode notifications use: '
+                            f'`as!{get(self.commands, name="setchannel").usage}`\n\n'
                             f'• Do **not** include `<>`, `[]` or `|` when executing a command.\n\n'
                             f'• In case of any problems, bugs, suggestions or if you just want to chat, '
-                            f'feel free to join the support server! https://discord.gg/Bv94yQYZM8\n\n'
+                            f'feel free to join the support server! {SUPPORT_SERVER_INVITE}\n\n'
                             "Have fun with the bot!")
         except Exception as e:
             log.exception(e)

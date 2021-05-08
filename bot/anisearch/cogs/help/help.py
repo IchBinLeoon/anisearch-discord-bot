@@ -31,7 +31,7 @@ import anisearch
 from anisearch.bot import AniSearchBot
 from anisearch.config import BOT_OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
-    DISCORD_INVITE, WEBSITE, ANISEARCH_LOGO, GITHUB_REPO_API_ENDPOINT, SUPPORT_SERVER_INVITE
+    DISCORD_INVITE, WEBSITE, GITHUB_REPO_API_ENDPOINT, SUPPORT_SERVER_INVITE
 from anisearch.utils.http import get as get_request
 from anisearch.utils.paginator import EmbedListMenu
 from anisearch.utils.misc import get_command_example
@@ -67,14 +67,14 @@ class Help(commands.Cog, name='Help'):
                                               f'[Invite AniSearch!]({DISCORD_INVITE}) | '
                                               f'[Support Server]({SUPPORT_SERVER_INVITE}) | '
                                               f'[Website]({WEBSITE})')
-            embed.set_thumbnail(url=ANISEARCH_LOGO)
+            embed.set_thumbnail(url=self.bot.user.avatar_url)
             await ctx.send(embed=embed)
 
         else:
             if command := get(self.bot.commands, name=cmd.lower()) or \
                           find(lambda cmd_: cmd.lower() in cmd_.aliases, self.bot.commands):
                 embed = discord.Embed(title=f'Command » `{command}`', colour=DEFAULT_EMBED_COLOR)
-                embed.set_author(name='AniSearch Help', icon_url=ANISEARCH_LOGO)
+                embed.set_author(name='AniSearch Help', icon_url=self.bot.user.avatar_url)
                 embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
                 embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
                                 inline=False)
@@ -112,7 +112,7 @@ class Help(commands.Cog, name='Help'):
                                                   f'**{self.bot.get_cog(cog).qualified_name}**\n{cmds}\n'
                                                   f'Do **not** include `<>`, `[]` or `|` when executing the command.',
                                       colour=DEFAULT_EMBED_COLOR)
-                embed.set_author(name="AniSearch's commands", icon_url=ANISEARCH_LOGO)
+                embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
                 embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
                 embeds.append(embed)
                 page += 1
@@ -136,7 +136,7 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='❯ Invite', value=f'[Click me!]({DISCORD_INVITE})', inline=True)
         embed.add_field(name='❯ Support Server', value=f'[Click me!]({SUPPORT_SERVER_INVITE})', inline=True)
         embed.add_field(name='❯ Website', value=f'[Click me!]({WEBSITE})', inline=True)
-        embed.set_thumbnail(url=ANISEARCH_LOGO)
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='stats', usage='stats', ignore_extra=False)
@@ -147,7 +147,7 @@ class Help(commands.Cog, name='Help'):
         """
         embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
-        embed.set_author(name="AniSearch's statistics", icon_url=ANISEARCH_LOGO)
+        embed.set_author(name="AniSearch's statistics", icon_url=self.bot.user.avatar_url)
         embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)
         embed.add_field(name='❯ Users', value=str(self.bot.get_user_count()), inline=True)
         embed.add_field(name='❯ Channels', value=str(self.bot.get_channel_count()), inline=True)
@@ -181,5 +181,5 @@ class Help(commands.Cog, name='Help'):
             embed.add_field(name='❯ License', value=data.get('license').get('spdx_id'), inline=True)
             embed.add_field(name='❯ Updated', value=data.get('updated_at').replace('T', ' ').replace('Z', ' '),
                             inline=True)
-            embed.set_thumbnail(url=ANISEARCH_LOGO)
+            embed.set_thumbnail(url=self.bot.user.avatar_url)
             await ctx.channel.send(embed=embed)
