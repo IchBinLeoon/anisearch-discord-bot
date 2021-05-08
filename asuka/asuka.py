@@ -173,11 +173,9 @@ class Asuka:
     async def work(self):
         while True:
             await self.check()
-            await asyncio.sleep(1)
             data = await self.fetch_anilist()
             if data is not None:
                 await self.clear_table()
-                await asyncio.sleep(1)
                 await self.insert_table(data)
             await asyncio.sleep(TIME)
 
