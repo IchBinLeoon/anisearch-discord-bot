@@ -292,12 +292,15 @@ class AniSearchBot(AutoShardedBot):
 
         error = getattr(error, 'original', error)
 
+        if isinstance(error, commands.CommandNotFound):
+            return
+
+        if isinstance(error, discord.errors.Forbidden):
+            return await ctx.message.add_reaction(emoji='🔇')
+
         title = 'An unknown error occurred.'
 
-        if isinstance(error, commands.CommandNotFound):
-            title = 'Command not found.'
-
-        elif isinstance(error, commands.CommandOnCooldown):
+        if isinstance(error, commands.CommandOnCooldown):
             title = f'Command on cooldown for `{error.retry_after:.2f}s`.'
 
         elif isinstance(error, commands.TooManyArguments):
@@ -346,9 +349,6 @@ class AniSearchBot(AutoShardedBot):
 
         else:
             log.exception('An unknown exception occurred while executing a command.', exc_info=error)
-
-        if isinstance(error, discord.errors.Forbidden):
-            return await ctx.message.add_reaction(emoji='🔇')
 
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         return await ctx.channel.send(embed=embed)
