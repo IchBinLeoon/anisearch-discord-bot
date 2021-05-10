@@ -89,6 +89,7 @@ class Asuka:
                   large
                 }
                 siteUrl
+                isAdult
               }
             }
           }
@@ -122,15 +123,16 @@ class Asuka:
             with conn.cursor() as cur:
                 for entry in data.get('data')['Page']['airingSchedules']:
                     try:
-                        cur.execute('INSERT INTO schedule (id, time, episode, romaji, english, image, url) VALUES '
-                                    '(%s, %s,  %s, %s, %s, %s, %s)',
+                        cur.execute('INSERT INTO schedule (id, time, episode, romaji, english, image, url, nsfw) '
+                                    'VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                                     (entry.get('media')['id'],
                                      entry.get('airingAt'),
                                      entry.get('episode'),
                                      entry.get('media')['title']['romaji'],
                                      entry.get('media')['title']['english'],
                                      entry.get('media')['coverImage']['large'],
-                                     entry.get('media')['siteUrl']))
+                                     entry.get('media')['siteUrl'],
+                                     entry.get('media')['isAdult']))
                     except Exception as e:
                         logging.exception(e)
                 conn.commit()
@@ -154,7 +156,8 @@ class Asuka:
                             'romaji': row[3],
                             'english': row[4],
                             'image': row[5],
-                            'url': row[6]
+                            'url': row[6],
+                            'nsfw': row[7]
                         }
                         session = await self._session()
                         r = await session.post(f'http://{BOT_API_HOST}:{BOT_API_PORT}/api/schedule?type=notification',

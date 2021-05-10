@@ -237,22 +237,29 @@ class Schedule(commands.Cog, name='Schedule'):
                     channel = guild.get_channel(channel_id)
                     if channel is not None:
 
-                        embed = discord.Embed(colour=DEFAULT_EMBED_COLOR, url=data.get('url'),
-                                              description=f'Episode **{data.get("episode")}** is out!')
+                        if is_adult(data) and not channel.is_nsfw():
+                            embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                  description=f'Adult content. No NSFW channel.')
+                            await channel.send(embed=embed)
 
-                        embed.set_author(name='Episode Notification', icon_url=ANILIST_LOGO)
-
-                        if data.get('english') is None or data.get('english') == data.get('romaji'):
-                            embed.title = data.get('romaji')
                         else:
-                            embed.title = f'{data.get("romaji")} ({data.get("english")})'
 
-                        if data.get('image'):
-                            embed.set_image(url=data.get('image'))
+                            embed = discord.Embed(colour=DEFAULT_EMBED_COLOR, url=data.get('url'),
+                                                  description=f'Episode **{data.get("episode")}** is out!')
 
-                        embed.set_footer(text=f'Provided by https://anilist.co/')
+                            embed.set_author(name='Episode Notification', icon_url=ANILIST_LOGO)
 
-                        await channel.send(embed=embed)
+                            if data.get('english') is None or data.get('english') == data.get('romaji'):
+                                embed.title = data.get('romaji')
+                            else:
+                                embed.title = f'{data.get("romaji")} ({data.get("english")})'
+
+                            if data.get('image'):
+                                embed.set_image(url=data.get('image'))
+
+                            embed.set_footer(text=f'Provided by https://anilist.co/')
+
+                            await channel.send(embed=embed)
 
                         channel_count += 1
 
