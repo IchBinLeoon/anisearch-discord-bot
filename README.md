@@ -267,7 +267,7 @@ The bot, the associated admin panel and Asuka, the episode notification service,
     ```sql
     CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5), channel bigint);
     CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255));
-    CREATE TABLE IF NOT EXISTS schedule (id bigint, time bigint, episode int, romaji VARCHAR (255), english VARCHAR (255), image VARCHAR (255), url VARCHAR (255));
+    CREATE TABLE IF NOT EXISTS schedule (id bigint, time bigint, episode int, romaji VARCHAR (255), english VARCHAR (255), image VARCHAR (255), url VARCHAR (255), nsfw boolean);
     ```
 
 2. Edit `.env` and change `BOT_API_HOST` and `WEB_HOST` to localhost or to the IP address of the device the bot and admin panel are running on. Also change the credentials for the Postgres database to match yours.
