@@ -201,7 +201,6 @@ You have an idea or found a bug? Open [a new issue](https://github.com/IchBinLeo
 You want to write code and add new things or fix a bug? 
 First, please open [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) so we can discuss the changes you want to make. 
 After that, it's just fork, clone to your computer, and when you're done, open a pull request! 
-Most of the code should be commented, and once you're in, you should understand how everything works. 
 For info, the bot still contains a lot of code from a very early version that can be rewritten.
 
 You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask your questions or get support!
