@@ -27,16 +27,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_command_example(ctx: Context, command: str) -> Union[str, None]:
-    """
-    Returns an example of the specified command.
+    """Returns an example of the specified command."""
 
-    Args:
-        ctx (Context): The context in which the command was invoked under.
-        command (str): The specified command.
-
-    Returns:
-        str: The command example.
-    """
     anime = [
         'Sword Art Online',
         'Shingeki no Kyojin',

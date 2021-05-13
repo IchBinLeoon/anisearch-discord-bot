@@ -36,38 +36,25 @@ log = logging.getLogger(__name__)
 
 
 class Image(commands.Cog, name='Image'):
-    """
-    Image cog.
-    """
+    """Image cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `Image` cog.
-        """
         self.bot = bot
 
     @staticmethod
     async def get_trace_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """
-        Returns the `trace` embed.
-
-        Args:
-            data (dict): The data about the anime.
-            page (int): The current page.
-            pages (page): The number of all pages.
-
-        Returns:
-            Embed: A discord embed.
-        """
+        """Returns the trace embed."""
         embed = discord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
 
-        embed.set_author(name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%')
+        embed.set_author(
+            name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%')
 
         if data.get('title_english') is None or data.get('title_english') == \
                 data.get('title_romaji'):
             name = data.get('title_romaji')
         else:
-            name = '{} ({})'.format(data.get('title_romaji'), data.get('title_english'))
+            name = '{} ({})'.format(data.get('title_romaji'),
+                                    data.get('title_english'))
         embed.add_field(name='Anime', value=name, inline=False)
 
         image_url = f'https://trace.moe/thumbnail.php?anilist_id={data.get("anilist_id")}' \
@@ -80,7 +67,8 @@ class Image(commands.Cog, name='Image'):
                         if data.get("at") else data.get("episode"))
 
         if data.get('synonyms'):
-            embed.add_field(name='Synonyms', inline=False, value=', '.join([f'`{s}`' for s in data.get('synonyms')]))
+            embed.add_field(name='Synonyms', inline=False, value=', '.join(
+                [f'`{s}`' for s in data.get('synonyms')]))
 
         embed.add_field(name='Anilist', inline=False,
                         value=f'https://anilist.co/anime/{str(data.get("anilist_id"))}' if
@@ -90,37 +78,32 @@ class Image(commands.Cog, name='Image'):
                         value=f'https://myanimelist.net/anime/{str(data.get("mal_id"))}' if
                         data.get('mal_id') else 'N/A')
 
-        embed.set_footer(text=f'Provided by https://trace.moe/ • Page {page}/{pages}')
+        embed.set_footer(
+            text=f'Provided by https://trace.moe/ • Page {page}/{pages}')
 
         return embed
 
     @staticmethod
     async def get_source_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """
-        Returns the `source` embed.
-
-        Args:
-            data (dict): The data about the source.
-            page (int): The current page.
-            pages (page): The number of all pages.
-
-        Returns:
-            Embed: A discord embed.
-        """
+        """Returns the source embed."""
         embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
 
-        embed.set_author(name=f'Similarity » {float(data.get("header").get("similarity")):0.2f}%')
+        embed.set_author(
+            name=f'Similarity » {float(data.get("header").get("similarity")):0.2f}%')
 
         embed.set_image(url=data.get('header')['thumbnail'])
 
         if data.get('data').get('material'):
-            embed.add_field(name='Material', value=data.get('data')['material'], inline=False)
+            embed.add_field(name='Material', value=data.get(
+                'data')['material'], inline=False)
 
         if data.get('data').get('title'):
-            embed.add_field(name='Title', value=data.get('data')['title'], inline=False)
+            embed.add_field(name='Title', value=data.get(
+                'data')['title'], inline=False)
 
         if data.get('data').get('characters'):
-            embed.add_field(name='Characters', value=data.get('data')['characters'], inline=False)
+            embed.add_field(name='Characters', value=data.get(
+                'data')['characters'], inline=False)
 
         if data.get('data').get('creator'):
             embed.add_field(name='Creator', inline=False,
@@ -129,24 +112,31 @@ class Image(commands.Cog, name='Image'):
                             else data.get('data')['creator'])
 
         if data.get('data').get('author_name'):
-            embed.add_field(name='Author Name', value=data.get('data')['author_name'], inline=False)
+            embed.add_field(name='Author Name', value=data.get(
+                'data')['author_name'], inline=False)
 
         if data.get('data').get('author_url'):
-            embed.add_field(name='Author Url', value=data.get('data')['author_url'], inline=False)
+            embed.add_field(name='Author Url', value=data.get(
+                'data')['author_url'], inline=False)
 
         if data.get('data').get('eng_name'):
-            embed.add_field(name='English Name', value=data.get('data')['eng_name'], inline=False)
+            embed.add_field(name='English Name', value=data.get(
+                'data')['eng_name'], inline=False)
 
         if data.get('data').get('jp_name'):
-            embed.add_field(name='Japanese Name', value=data.get('data')['jp_name'], inline=False)
+            embed.add_field(name='Japanese Name', value=data.get(
+                'data')['jp_name'], inline=False)
 
         if data.get('data').get('source'):
-            embed.add_field(name='Source', value=data.get('data')['source'], inline=False)
+            embed.add_field(name='Source', value=data.get(
+                'data')['source'], inline=False)
 
         if data.get('data').get('ext_urls'):
-            embed.add_field(name="URL's", value='\n'.join(data.get('data')['ext_urls']), inline=False)
+            embed.add_field(name="URL's", value='\n'.join(
+                data.get('data')['ext_urls']), inline=False)
 
-        embed.set_footer(text=f'Provided by https://saucenao.com/ • Page {page}/{pages}')
+        embed.set_footer(
+            text=f'Provided by https://saucenao.com/ • Page {page}/{pages}')
 
         return embed
 
@@ -163,7 +153,8 @@ class Image(commands.Cog, name='Image'):
                 if ctx.message.attachments:
                     url = ctx.message.attachments[0].url
                 else:
-                    embed = discord.Embed(title='No image to look for the anime.', color=ERROR_EMBED_COLOR)
+                    embed = discord.Embed(
+                        title='No image to look for the anime.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
             else:
@@ -201,10 +192,12 @@ class Image(commands.Cog, name='Image'):
                                 embed.set_footer(
                                     text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data.get("docs"))}')
                             embeds.append(embed)
-                        menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                        menu = menus.MenuPages(source=EmbedListMenu(
+                            embeds), clear_reactions_after=True, timeout=30)
                         await menu.start(ctx)
                     else:
-                        embed = discord.Embed(title='No anime found.', color=ERROR_EMBED_COLOR)
+                        embed = discord.Embed(
+                            title='No anime found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)
 
     @commands.command(name='source', aliases=['sauce'], usage='source <image-url|with image as attachment>',
@@ -220,7 +213,8 @@ class Image(commands.Cog, name='Image'):
                 if ctx.message.attachments:
                     url = ctx.message.attachments[0].url
                 else:
-                    embed = discord.Embed(title='No image to look for the source.', color=ERROR_EMBED_COLOR)
+                    embed = discord.Embed(
+                        title='No image to look for the source.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
             else:
@@ -253,10 +247,12 @@ class Image(commands.Cog, name='Image'):
                                 embed.set_footer(
                                     text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
-                        menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                        menu = menus.MenuPages(source=EmbedListMenu(
+                            embeds), clear_reactions_after=True, timeout=30)
                         await menu.start(ctx)
                     else:
-                        embed = discord.Embed(title='No source found.', color=ERROR_EMBED_COLOR)
+                        embed = discord.Embed(
+                            title='No source found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)
 
     @commands.command(name='waifu', usage='waifu', ignore_extra=False)

@@ -26,8 +26,6 @@ log = logging.getLogger(__name__)
 
 
 def setup(bot: AniSearchBot):
-    """
-    Sets up the `Admin` cog.
-    """
+    """Sets up the Admin cog."""
     bot.add_cog(Admin(bot))
     log.info('Admin cog loaded.')

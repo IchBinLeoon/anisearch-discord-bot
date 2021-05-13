@@ -26,8 +26,6 @@ log = logging.getLogger(__name__)
 
 
 def setup(bot: AniSearchBot):
-    """
-    Sets up the `Schedule` cog.
-    """
+    """Sets up the Schedule cog."""
     bot.add_cog(Schedule(bot))
     log.info('Schedule cog loaded.')

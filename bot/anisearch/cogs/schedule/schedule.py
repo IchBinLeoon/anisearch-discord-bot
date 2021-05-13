@@ -36,37 +36,24 @@ log = logging.getLogger(__name__)
 
 
 class Schedule(commands.Cog, name='Schedule'):
-    """
-    Schedule cog.
-    """
+    """Schedule cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `Schedule` cog.
-        """
         self.bot = bot
 
     @staticmethod
     async def get_next_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """
-        Returns the `next` embed.
-
-        Args:
-            data (dict): The data about the next airing anime episode.
-            page (int): The current page.
-            pages (page): The number of all pages.
-
-        Returns:
-            Embed: A discord embed.
-        """
+        """Returns the next embed."""
         sites = []
         if data.get('media').get('siteUrl'):
             sites.append(f'[Anilist]({data.get("media").get("siteUrl")})')
         if data.get('media').get('idMal'):
-            sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{str(data.get("media").get("idMal"))})')
+            sites.append(
+                f'[MyAnimeList](https://myanimelist.net/anime/{str(data.get("media").get("idMal"))})')
         if data.get('media').get('trailer'):
             if data.get('media').get('trailer')['site'] == 'youtube':
-                sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("media").get("trailer")["id"]})')
+                sites.append(
+                    f'[Trailer](https://www.youtube.com/watch?v={data.get("media").get("trailer")["id"]})')
         if data.get('media').get('externalLinks'):
             for i in data.get('media').get('externalLinks'):
                 sites.append(f'[{i["site"]}]({i["url"]})')
@@ -91,36 +78,30 @@ class Schedule(commands.Cog, name='Schedule'):
         if data.get('media').get('coverImage').get('large'):
             embed.set_thumbnail(url=data.get('media')['coverImage']['large'])
 
-        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page}/{pages}')
+        embed.set_footer(
+            text=f'Provided by https://anilist.co/ • Page {page}/{pages}')
 
         return embed
 
     @staticmethod
     async def get_last_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """
-        Returns the `last` embed.
-
-        Args:
-            data (dict): The data about the recently aired anime episode.
-            page (int): The current page.
-            pages (page): The number of all pages.
-
-        Returns:
-            Embed: A discord embed.
-        """
+        """Returns the `last` embed."""
         sites = []
         if data.get('media').get('siteUrl'):
             sites.append(f'[Anilist]({data.get("media").get("siteUrl")})')
         if data.get('media').get('idMal'):
-            sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{str(data.get("media").get("idMal"))})')
+            sites.append(
+                f'[MyAnimeList](https://myanimelist.net/anime/{str(data.get("media").get("idMal"))})')
         if data.get('media').get('trailer'):
             if data.get('media').get('trailer')['site'] == 'youtube':
-                sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("media").get("trailer")["id"]})')
+                sites.append(
+                    f'[Trailer](https://www.youtube.com/watch?v={data.get("media").get("trailer")["id"]})')
         if data.get('media').get('externalLinks'):
             for i in data.get('media').get('externalLinks'):
                 sites.append(f'[{i["site"]}]({i["url"]})')
 
-        date = datetime.datetime.utcfromtimestamp(data.get("airingAt")).strftime("%B %d, %Y - %H:%M")
+        date = datetime.datetime.utcfromtimestamp(
+            data.get("airingAt")).strftime("%B %d, %Y - %H:%M")
 
         embed = discord.Embed(
             colour=DEFAULT_EMBED_COLOR,
@@ -141,7 +122,8 @@ class Schedule(commands.Cog, name='Schedule'):
         if data.get('media').get('coverImage').get('large'):
             embed.set_thumbnail(url=data.get('media')['coverImage']['large'])
 
-        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page}/{pages}')
+        embed.set_footer(
+            text=f'Provided by https://anilist.co/ • Page {page}/{pages}')
 
         return embed
 
@@ -169,18 +151,22 @@ class Schedule(commands.Cog, name='Schedule'):
                             if is_adult(anime.get('media')) and not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
-                                embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                                embed.set_footer(
+                                    text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the next airing episode.')
-                        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                        embed.set_footer(
+                            text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.MenuPages(source=EmbedListMenu(
+                    embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(title=f'The next airing episodes could not be found.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title=f'The next airing episodes could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='last', usage='last', ignore_extra=False)
@@ -207,15 +193,18 @@ class Schedule(commands.Cog, name='Schedule'):
                             if is_adult(anime.get('media')) and not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
-                                embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                                embed.set_footer(
+                                    text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the recently aired episode.')
-                        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                        embed.set_footer(
+                            text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.MenuPages(source=EmbedListMenu(
+                    embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
                 embed = discord.Embed(
@@ -223,12 +212,7 @@ class Schedule(commands.Cog, name='Schedule'):
                 await ctx.channel.send(embed=embed)
 
     async def send_episode_notification(self, data: Dict[str, Any]) -> None:
-        """
-        Sends the episode notification embed.
-
-        Args:
-            data (dict): The data about the anime.
-        """
+        """Sends the episode notification embed."""
         channel_count = 0
         for guild in self.bot.guilds:
             try:
@@ -247,7 +231,8 @@ class Schedule(commands.Cog, name='Schedule'):
                             embed = discord.Embed(colour=DEFAULT_EMBED_COLOR, url=data.get('url'),
                                                   description=f'Episode **{data.get("episode")}** is out!')
 
-                            embed.set_author(name='Episode Notification', icon_url=ANILIST_LOGO)
+                            embed.set_author(
+                                name='Episode Notification', icon_url=ANILIST_LOGO)
 
                             if data.get('english') is None or data.get('english') == data.get('romaji'):
                                 embed.title = data.get('romaji')
@@ -257,7 +242,8 @@ class Schedule(commands.Cog, name='Schedule'):
                             if data.get('image'):
                                 embed.set_image(url=data.get('image'))
 
-                            embed.set_footer(text=f'Provided by https://anilist.co/')
+                            embed.set_footer(
+                                text=f'Provided by https://anilist.co/')
 
                             await channel.send(embed=embed)
 

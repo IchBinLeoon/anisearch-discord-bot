@@ -38,29 +38,14 @@ log = logging.getLogger(__name__)
 
 
 class News(commands.Cog, name='News'):
-    """
-    News cog.
-    """
+    """News cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `News` cog.
-        """
         self.bot = bot
 
     @staticmethod
     async def get_aninews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """
-        Returns the `aninews` embed.
-
-        Args:
-            data (dict): The data about the anime news.
-            page (int): The current page.
-            pages (page): The number of all pages.
-
-        Returns:
-            Embed: A discord embed.
-        """
+        """Returns the aninews embed."""
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
                               description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
@@ -71,29 +56,22 @@ class News(commands.Cog, name='News'):
         embed.set_author(name=f'Anime News Network News | {data.get("date").replace("-0500", "EST")}'
                               f'{category if data.get("category") else ""}', icon_url=ANIMENEWSNETWORK_LOGO)
 
-        embed.set_footer(text=f'Provided by https://www.animenewsnetwork.com/ • Page {page}/{pages}')
+        embed.set_footer(
+            text=f'Provided by https://www.animenewsnetwork.com/ • Page {page}/{pages}')
 
         return embed
 
     @staticmethod
     async def get_crunchynews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """
-        Returns the `crunchynews` embed.
-
-        Args:
-            data (dict): The data about the anime news.
-            page (int): The current page.
-            pages (page): The number of all pages.
-
-        Returns:
-            Embed: A discord embed.
-        """
+        """Returns the crunchynews embed."""
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
                               description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
-        embed.set_author(name=f'Crunchyroll News | {data.get("date")}', icon_url=CRUNCHYROLL_LOGO)
+        embed.set_author(
+            name=f'Crunchyroll News | {data.get("date")}', icon_url=CRUNCHYROLL_LOGO)
 
-        embed.set_footer(text=f'Provided by https://www.crunchyroll.com/ • Page {page}/{pages}')
+        embed.set_footer(
+            text=f'Provided by https://www.crunchyroll.com/ • Page {page}/{pages}')
 
         return embed
 
@@ -125,10 +103,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://www.animenewsnetwork.com/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.MenuPages(source=EmbedListMenu(
+                    embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(title=f'The Anime News Network news could not be found.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title=f'The Anime News Network news could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='crunchynews', aliases=['crnews'], usage='crunchynews', ignore_extra=False)
@@ -158,10 +138,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://www.crunchyroll.com/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.MenuPages(source=EmbedListMenu(
+                    embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(title=f'The Crunchyroll news could not be found.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title=f'The Crunchyroll news could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='trending', aliases=['trend'], usage='trending <anime|manga>', ignore_extra=False)
@@ -194,16 +176,20 @@ class News(commands.Cog, name='News'):
                             if is_adult(entry) and not ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
-                                embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                                embed.set_footer(
+                                    text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                               description=f'An error occurred while loading the embed for the '
                                                           f'{type_.lower()}.')
-                        embed.set_footer(text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                        embed.set_footer(
+                            text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.MenuPages(source=EmbedListMenu(
+                    embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(title=f'No trending {type_.lower()} found.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title=f'No trending {type_.lower()} found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)

@@ -32,9 +32,7 @@ from anisearch.bot import AniSearchBot
 
 
 def main() -> None:
-    """
-    Main function.
-    """
+    """Main function."""
     log_stream = setup_logging()
     loop = asyncio.get_event_loop()
     loop.run_until_complete(check_update())
@@ -45,9 +43,7 @@ def main() -> None:
 
 
 def setup_logging() -> StringIO:
-    """
-    Sets up the logging.
-    """
+    """Sets up the logging."""
     log_stream = StringIO()
     console_handler = logging.StreamHandler(sys.stdout)
     log_handler = logging.StreamHandler(log_stream)
@@ -57,9 +53,7 @@ def setup_logging() -> StringIO:
 
 
 async def check_update() -> None:
-    """
-    Checks GitHub for a newer version of the bot.
-    """
+    """Checks GitHub for a newer version of the bot."""
     async with aiohttp.ClientSession() as s:
         async with s.get('https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main/bot/anisearch/'
                          '__init__.py') as r:
@@ -72,9 +66,7 @@ async def check_update() -> None:
 
 
 def start(log_stream: StringIO) -> None:
-    """
-    Starts the bot.
-    """
+    """Starts the bot."""
     try:
         bot = AniSearchBot(log_stream)
         bot.api.start()

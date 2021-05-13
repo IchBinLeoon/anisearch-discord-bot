@@ -31,14 +31,9 @@ log = logging.getLogger(__name__)
 
 
 class Admin(commands.Cog, name='Admin'):
-    """
-    Admin cog.
-    """
+    """Admin cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `Admin` cog.
-        """
         self.bot = bot
 
     @commands.command(name='status', usage='status', ignore_extra=False, hidden=True)
@@ -49,15 +44,19 @@ class Admin(commands.Cog, name='Admin'):
         Displays the current status of the bot. Can only be used by the bot owner.
         """
         embed = discord.Embed(title='❯ Bot Status', color=DEFAULT_EMBED_COLOR)
-        embed.add_field(name='Guilds', value=str(self.bot.get_guild_count()), inline=True)
-        embed.add_field(name='Users', value=str(self.bot.get_user_count()), inline=True)
-        embed.add_field(name='Channels', value=str(self.bot.get_channel_count()), inline=True)
+        embed.add_field(name='Guilds', value=str(
+            self.bot.get_guild_count()), inline=True)
+        embed.add_field(name='Users', value=str(
+            self.bot.get_user_count()), inline=True)
+        embed.add_field(name='Channels', value=str(
+            self.bot.get_channel_count()), inline=True)
         embed.add_field(name="AniSearch's Uptime", value=str(timedelta(seconds=round(self.bot.get_uptime()))),
                         inline=False)
         embed.add_field(
             name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(self.bot.cogs), inline=False)
         embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)
-        embed.add_field(name='Latency', value=str(round(self.bot.latency, 6)), inline=False)
+        embed.add_field(name='Latency', value=str(
+            round(self.bot.latency, 6)), inline=False)
         embed.add_field(
             name='SauceNAO Requests', inline=False,
             value=f'{str(self.bot.saucenao.long_remaining) if self.bot.saucenao.long_remaining else "N/A"} remaining')

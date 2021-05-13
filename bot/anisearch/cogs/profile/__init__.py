@@ -26,8 +26,6 @@ log = logging.getLogger(__name__)
 
 
 def setup(bot: AniSearchBot):
-    """
-    Sets up the `Profile` cog.
-    """
+    """Sets up the Profile cog."""
     bot.add_cog(Profile(bot))
     log.info('Profile cog loaded.')

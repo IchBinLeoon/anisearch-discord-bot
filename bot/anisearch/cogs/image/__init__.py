@@ -26,8 +26,6 @@ log = logging.getLogger(__name__)
 
 
 def setup(bot: AniSearchBot):
-    """
-    Sets up the `Image` cog.
-    """
+    """Sets up the Image cog."""
     bot.add_cog(Image(bot))
     log.info('Image cog loaded.')

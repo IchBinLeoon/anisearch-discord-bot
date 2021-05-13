@@ -34,25 +34,13 @@ log = logging.getLogger(__name__)
 
 
 class Profile(commands.Cog, name='Profile'):
-    """
-    Profile cog.
-    """
+    """Profile cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `Profile` cog.
-        """
         self.bot = bot
 
     async def set_profile(self, ctx: Context, site: str, username: str):
-        """
-        Checks if the profile exists on the specified site and inserts it into the database if it does.
-
-        Args:
-            ctx (Context): The context in which the command was invoked under.
-            site (str): The anime tracking site (`anilist`, `myanimelist`, `kitsu`).
-            username (str): The profile name.
-        """
+        """Checks if the profile exists on the specified site and inserts it into the database if it does."""
 
         data = None
 
@@ -67,7 +55,8 @@ class Profile(commands.Cog, name='Profile'):
         except Exception as e:
             log.exception(e)
 
-            site = site.replace("anilist", "AniList").replace("myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
+            site = site.replace("anilist", "AniList").replace(
+                "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
             embed = discord.Embed(
                 color=ERROR_EMBED_COLOR,
                 title=f'An error occurred while setting the {site} profile `{username}`.')
@@ -76,9 +65,11 @@ class Profile(commands.Cog, name='Profile'):
 
         if data is not None:
             if site == 'anilist':
-                self.bot.db.insert_profile('anilist', data.get('name'), ctx.author.id)
+                self.bot.db.insert_profile(
+                    'anilist', data.get('name'), ctx.author.id)
 
-                embed = discord.Embed(title=f'Set AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(
+                    title=f'Set AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
 
@@ -101,12 +92,14 @@ class Profile(commands.Cog, name='Profile'):
                 await ctx.channel.send(embed=embed)
 
             if site == 'myanimelist':
-                self.bot.db.insert_profile('myanimelist', data.get('username'), ctx.author.id)
+                self.bot.db.insert_profile(
+                    'myanimelist', data.get('username'), ctx.author.id)
 
                 embed = discord.Embed(title=f'Set MyAnimeList Profile `{data.get("username")}`',
                                       color=DEFAULT_EMBED_COLOR)
 
-                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+                embed.set_author(name='MyAnimeList Profile',
+                                 icon_url=MYANIMELIST_LOGO)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -129,7 +122,8 @@ class Profile(commands.Cog, name='Profile'):
             if site == 'kitsu':
                 user = data.get('data')[0]
 
-                self.bot.db.insert_profile('kitsu', user.get('attributes')['name'], ctx.author.id)
+                self.bot.db.insert_profile('kitsu', user.get(
+                    'attributes')['name'], ctx.author.id)
 
                 embed = discord.Embed(title=f'Set Kitsu Profile `{user.get("attributes")["name"]}`',
                                       color=DEFAULT_EMBED_COLOR)
@@ -137,7 +131,8 @@ class Profile(commands.Cog, name='Profile'):
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
                 if user.get('attributes')['avatar']:
-                    embed.set_thumbnail(url=user.get('attributes')['avatar']['original'])
+                    embed.set_thumbnail(url=user.get('attributes')[
+                                        'avatar']['original'])
 
                 anime_completed = 'N/A'
                 anime_episodes_watched = 'N/A'
@@ -189,22 +184,15 @@ class Profile(commands.Cog, name='Profile'):
                 await ctx.channel.send(embed=embed)
 
         else:
-            site = site.replace("anilist", "AniList").replace("myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
+            site = site.replace("anilist", "AniList").replace(
+                "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
             embed = discord.Embed(title=f'The {site} profile `{username}` could not be found.',
                                   color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
 
     async def get_anilist_profile(self, username: str) -> Union[List[discord.Embed], None]:
-        """
-        Returns a list of Discord embeds with the retrieved AniList data about the searched profile.
+        """Returns a list of Discord embeds with the retrieved AniList data about the searched profile."""
 
-        Args:
-            username (str): The profile name.
-
-        Returns:
-            list (Embed): A list of discord embeds.
-            None: If no profile was found.
-        """
         embeds = []
 
         try:
@@ -223,7 +211,8 @@ class Profile(commands.Cog, name='Profile'):
         if data is not None:
 
             try:
-                embed = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=data.get('name'), url=data.get(
+                    'siteUrl'), color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
 
@@ -256,7 +245,8 @@ class Profile(commands.Cog, name='Profile'):
                 embed.add_field(name='Manga List', value='https://anilist.co/user/%s/mangalist' % data.get('name'),
                                 inline=False)
 
-                embed.set_footer(text=f'Provided by https://anilist.co/ • Page 1/2')
+                embed.set_footer(
+                    text=f'Provided by https://anilist.co/ • Page 1/2')
 
                 embeds.append(embed)
 
@@ -267,11 +257,13 @@ class Profile(commands.Cog, name='Profile'):
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the AniList profile.')
-                embed.set_footer(text=f'Provided by https://anilist.co/ • Page 1/2')
+                embed.set_footer(
+                    text=f'Provided by https://anilist.co/ • Page 1/2')
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=DEFAULT_EMBED_COLOR)
+                embed = discord.Embed(title=data.get('name'), url=data.get(
+                    'siteUrl'), color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
 
@@ -281,7 +273,8 @@ class Profile(commands.Cog, name='Profile'):
                 if data.get('favourites')['anime']['nodes']:
                     fav_anime = []
                     for anime in data.get('favourites')['anime']['nodes']:
-                        fav_anime.append(f"[{anime.get('title')['romaji']}]({anime.get('siteUrl')})")
+                        fav_anime.append(
+                            f"[{anime.get('title')['romaji']}]({anime.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_anime):
                         total += len(fav)+3
@@ -289,14 +282,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_anime = fav_anime[0:i]
                             fav_anime[i-1] = fav_anime[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Anime', value=' | '.join(fav_anime), inline=False)
+                    embed.add_field(name='Favorite Anime',
+                                    value=' | '.join(fav_anime), inline=False)
                 else:
-                    embed.add_field(name='Favorite Anime', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Anime',
+                                    value='N/A', inline=False)
 
                 if data.get('favourites')['manga']['nodes']:
                     fav_manga = []
                     for manga in data.get('favourites')['manga']['nodes']:
-                        fav_manga.append(f"[{manga.get('title')['romaji']}]({manga.get('siteUrl')})")
+                        fav_manga.append(
+                            f"[{manga.get('title')['romaji']}]({manga.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_manga):
                         total += len(fav)+3
@@ -304,14 +300,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_manga = fav_manga[0:i]
                             fav_manga[i-1] = fav_manga[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Manga', value=' | '.join(fav_manga), inline=False)
+                    embed.add_field(name='Favorite Manga',
+                                    value=' | '.join(fav_manga), inline=False)
                 else:
-                    embed.add_field(name='Favorite Manga', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Manga',
+                                    value='N/A', inline=False)
 
                 if data.get('favourites')['characters']['nodes']:
                     fav_characters = []
                     for character in data.get('favourites')['characters']['nodes']:
-                        fav_characters.append(f"[{character.get('name')['full']}]({character.get('siteUrl')})")
+                        fav_characters.append(
+                            f"[{character.get('name')['full']}]({character.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_characters):
                         total += len(fav)+3
@@ -319,14 +318,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_characters = fav_characters[0:i]
                             fav_characters[i-1] = fav_characters[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Characters', value=' | '.join(fav_characters), inline=False)
+                    embed.add_field(name='Favorite Characters', value=' | '.join(
+                        fav_characters), inline=False)
                 else:
-                    embed.add_field(name='Favorite Characters', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Characters',
+                                    value='N/A', inline=False)
 
                 if data.get('favourites')['staff']['nodes']:
                     fav_staff = []
                     for staff in data.get('favourites')['staff']['nodes']:
-                        fav_staff.append(f"[{staff.get('name')['full']}]({staff.get('siteUrl')})")
+                        fav_staff.append(
+                            f"[{staff.get('name')['full']}]({staff.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_staff):
                         total += len(fav)+3
@@ -334,14 +336,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_staff = fav_staff[0:i]
                             fav_staff[i-1] = fav_staff[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Staff', value=' | '.join(fav_staff), inline=False)
+                    embed.add_field(name='Favorite Staff',
+                                    value=' | '.join(fav_staff), inline=False)
                 else:
-                    embed.add_field(name='Favorite Staff', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Staff',
+                                    value='N/A', inline=False)
 
                 if data.get('favourites')['studios']['nodes']:
                     fav_studio = []
                     for studio in data.get('favourites')['studios']['nodes']:
-                        fav_studio.append(f"[{studio.get('name')}]({studio.get('siteUrl')})")
+                        fav_studio.append(
+                            f"[{studio.get('name')}]({studio.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_studio):
                         total += len(fav)+3
@@ -349,11 +354,14 @@ class Profile(commands.Cog, name='Profile'):
                             fav_studio = fav_studio[0:i]
                             fav_studio[i-1] = fav_studio[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Studios', value=' | '.join(fav_studio), inline=False)
+                    embed.add_field(name='Favorite Studios',
+                                    value=' | '.join(fav_studio), inline=False)
                 else:
-                    embed.add_field(name='Favorite Studios', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Studios',
+                                    value='N/A', inline=False)
 
-                embed.set_footer(text=f'Provided by https://anilist.co/ • Page 2/2')
+                embed.set_footer(
+                    text=f'Provided by https://anilist.co/ • Page 2/2')
 
                 embeds.append(embed)
 
@@ -364,7 +372,8 @@ class Profile(commands.Cog, name='Profile'):
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the AniList profile.')
-                embed.set_footer(text=f'Provided by https://anilist.co/ • Page 2/2')
+                embed.set_footer(
+                    text=f'Provided by https://anilist.co/ • Page 2/2')
                 embeds.append(embed)
 
             return embeds
@@ -372,16 +381,8 @@ class Profile(commands.Cog, name='Profile'):
         return None
 
     async def get_myanimelist_profile(self, username: str) -> Union[List[discord.Embed], None]:
-        """
-        Returns a list of Discord embeds with the retrieved MyAnimeList data about the searched profile.
+        """Returns a list of Discord embeds with the retrieved MyAnimeList data about the searched profile."""
 
-        Args:
-            username (str): The profile name.
-
-        Returns:
-            list (Embed): A list of discord embeds.
-            None: If no profile was found.
-        """
         embeds = []
 
         try:
@@ -408,18 +409,21 @@ class Profile(commands.Cog, name='Profile'):
                 if data.get('gender'):
                     description.append(f'**Gender:** {data.get("gender")}')
                 if data.get('birthday'):
-                    birthday = data.get('birthday').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
+                    birthday = data.get('birthday').__str__().replace(
+                        'T00:00:00+00:00', ' ').replace('-', '/')
                     description.append(f'**Birthday:** {birthday}')
                 if data.get('location'):
                     description.append(f'**Location:** {data.get("location")}')
                 if data.get('joined'):
-                    joined = data.get('joined').__str__().replace('T00:00:00+00:00', ' ').replace('-', '/')
+                    joined = data.get('joined').__str__().replace(
+                        'T00:00:00+00:00', ' ').replace('-', '/')
                     description.append(f'**Joined:** {joined}')
 
                 embed = discord.Embed(title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR,
                                       description='\n'.join(description))
 
-                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+                embed.set_author(name='MyAnimeList Profile',
+                                 icon_url=MYANIMELIST_LOGO)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -462,7 +466,8 @@ class Profile(commands.Cog, name='Profile'):
                 embed.add_field(name='Manga List', inline=False,
                                 value='https://myanimelist.net/mangalist/{}'.format(data.get('username')))
 
-                embed.set_footer(text=f'Provided by https://myanimelist.net/ • Page 1/2')
+                embed.set_footer(
+                    text=f'Provided by https://myanimelist.net/ • Page 1/2')
 
                 embeds.append(embed)
 
@@ -473,14 +478,16 @@ class Profile(commands.Cog, name='Profile'):
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the MyAnimeList profile.')
-                embed.set_footer(text=f'Provided by https://myanimelist.net/ • Page 1/2')
+                embed.set_footer(
+                    text=f'Provided by https://myanimelist.net/ • Page 1/2')
                 embeds.append(embed)
 
             try:
                 embed = discord.Embed(title=data.get('username'),
                                       url=data.get('url'), color=DEFAULT_EMBED_COLOR)
 
-                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+                embed.set_author(name='MyAnimeList Profile',
+                                 icon_url=MYANIMELIST_LOGO)
 
                 if data.get('image_url'):
                     embed.set_thumbnail(url=data.get('image_url'))
@@ -488,7 +495,8 @@ class Profile(commands.Cog, name='Profile'):
                 if data.get('favorites')['anime']:
                     fav_anime = []
                     for anime in data.get('favorites')['anime']:
-                        fav_anime.append(f"[{anime.get('name')}]({anime.get('url')})")
+                        fav_anime.append(
+                            f"[{anime.get('name')}]({anime.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_anime):
                         total += len(fav)+3
@@ -496,14 +504,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_anime = fav_anime[0:i]
                             fav_anime[i-1] = fav_anime[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Anime', value=' | '.join(fav_anime), inline=False)
+                    embed.add_field(name='Favorite Anime',
+                                    value=' | '.join(fav_anime), inline=False)
                 else:
-                    embed.add_field(name='Favorite Anime', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Anime',
+                                    value='N/A', inline=False)
 
                 if data.get('favorites')['manga']:
                     fav_manga = []
                     for manga in data.get('favorites')['manga']:
-                        fav_manga.append(f"[{manga.get('name')}]({manga.get('url')})")
+                        fav_manga.append(
+                            f"[{manga.get('name')}]({manga.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_manga):
                         total += len(fav)+3
@@ -511,14 +522,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_manga = fav_manga[0:i]
                             fav_manga[i-1] = fav_manga[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Manga', value=' | '.join(fav_manga), inline=False)
+                    embed.add_field(name='Favorite Manga',
+                                    value=' | '.join(fav_manga), inline=False)
                 else:
-                    embed.add_field(name='Favorite Manga', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Manga',
+                                    value='N/A', inline=False)
 
                 if data.get('favorites')['characters']:
                     fav_characters = []
                     for character in data.get('favorites')['characters']:
-                        fav_characters.append(f"[{character.get('name')}]({character.get('url')})")
+                        fav_characters.append(
+                            f"[{character.get('name')}]({character.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_characters):
                         total += len(fav)+3
@@ -526,14 +540,17 @@ class Profile(commands.Cog, name='Profile'):
                             fav_characters = fav_characters[0:i]
                             fav_characters[i-1] = fav_characters[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite Characters', value=' | '.join(fav_characters), inline=False)
+                    embed.add_field(name='Favorite Characters', value=' | '.join(
+                        fav_characters), inline=False)
                 else:
-                    embed.add_field(name='Favorite Characters', value='N/A', inline=False)
+                    embed.add_field(name='Favorite Characters',
+                                    value='N/A', inline=False)
 
                 if data.get('favorites')['people']:
                     fav_people = []
                     for people in data.get('favorites')['people']:
-                        fav_people.append(f"[{people.get('name')}]({people.get('url')})")
+                        fav_people.append(
+                            f"[{people.get('name')}]({people.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_people):
                         total += len(fav)+3
@@ -541,11 +558,14 @@ class Profile(commands.Cog, name='Profile'):
                             fav_people = fav_people[0:i]
                             fav_people[i-1] = fav_people[i-1] + '...'
                             break
-                    embed.add_field(name='Favorite People', value=' | '.join(fav_people), inline=False)
+                    embed.add_field(name='Favorite People',
+                                    value=' | '.join(fav_people), inline=False)
                 else:
-                    embed.add_field(name='Favorite People', value='N/A', inline=False)
+                    embed.add_field(name='Favorite People',
+                                    value='N/A', inline=False)
 
-                embed.set_footer(text=f'Provided by https://myanimelist.net/ • Page 2/2')
+                embed.set_footer(
+                    text=f'Provided by https://myanimelist.net/ • Page 2/2')
 
                 embeds.append(embed)
 
@@ -556,7 +576,8 @@ class Profile(commands.Cog, name='Profile'):
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the MyAnimeList profile.')
-                embed.set_footer(text=f'Provided by https://myanimelist.net/ • Page 2/2')
+                embed.set_footer(
+                    text=f'Provided by https://myanimelist.net/ • Page 2/2')
                 embeds.append(embed)
 
             return embeds
@@ -564,16 +585,8 @@ class Profile(commands.Cog, name='Profile'):
         return None
 
     async def get_kitsu_profile(self, username: str) -> Union[List[discord.Embed], None]:
-        """
-        Returns a list of Discord embeds with the retrieved Kitsu data about the searched profile.
+        """Returns a list of Discord embeds with the retrieved Kitsu data about the searched profile."""
 
-        Args:
-            username (str): The profile name.
-
-        Returns:
-            list (Embed): A list of discord embeds.
-            None: If no profile was found.
-        """
         embeds = []
 
         try:
@@ -598,17 +611,21 @@ class Profile(commands.Cog, name='Profile'):
                         .replace('male', 'Male').replace('feMale', 'Female')
                     description.append(f'**Gender:** {gender}')
                 if data.get('data')[0].get('attributes').get('birthday'):
-                    birthday = data.get('data')[0].get('attributes').get('birthday')
+                    birthday = data.get('data')[0].get(
+                        'attributes').get('birthday')
                     description.append(f'**Birthday:** {birthday}')
                 if data.get('data')[0].get('attributes').get('location'):
-                    location = data.get('data')[0].get('attributes').get('location')
+                    location = data.get('data')[0].get(
+                        'attributes').get('location')
                     description.append(f'**Location:** {location}')
                 if data.get('data')[0].get('attributes').get('createdAt'):
-                    createdAt = data.get('data')[0].get('attributes').get('createdAt').split('T')
+                    createdAt = data.get('data')[0].get(
+                        'attributes').get('createdAt').split('T')
                     createdAt = createdAt[0]
                     description.append(f'**Created at:** {createdAt}')
                 if data.get('data')[0].get('attributes').get('updatedAt'):
-                    updatedAt = data.get('data')[0].get('attributes').get('updatedAt').split('T')
+                    updatedAt = data.get('data')[0].get(
+                        'attributes').get('updatedAt').split('T')
                     updatedAt = updatedAt[0]
                     description.append(f'**Updated at:** {updatedAt}')
 
@@ -619,10 +636,12 @@ class Profile(commands.Cog, name='Profile'):
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
                 if data.get('data')[0].get('attributes').get('avatar'):
-                    embed.set_thumbnail(url=data.get('data')[0]['attributes']['avatar']['original'])
+                    embed.set_thumbnail(url=data.get(
+                        'data')[0]['attributes']['avatar']['original'])
 
                 if data.get('data')[0].get('attributes').get('coverImage'):
-                    embed.set_image(url=data.get('data')[0]['attributes']['coverImage']['original'])
+                    embed.set_image(url=data.get('data')[
+                                    0]['attributes']['coverImage']['original'])
 
                 anime_days_watched = 'N/A'
                 anime_completed = 'N/A'
@@ -642,7 +661,8 @@ class Profile(commands.Cog, name='Profile'):
                                     try:
                                         anime_stats = x['attributes']['statsData']
                                         anime_days_watched = \
-                                            str(datetime.timedelta(seconds=anime_stats['time'])).split(',')
+                                            str(datetime.timedelta(
+                                                seconds=anime_stats['time'])).split(',')
                                         anime_days_watched = anime_days_watched[0]
                                         anime_completed = anime_stats['completed']
                                         anime_total_entries = anime_stats['media']
@@ -675,7 +695,8 @@ class Profile(commands.Cog, name='Profile'):
                                                           f'Total Entries: {manga_total_entries}',
                                 inline=True)
 
-                embed.set_footer(text=f'Provided by https://kitsu.io/ • Page 1/1')
+                embed.set_footer(
+                    text=f'Provided by https://kitsu.io/ • Page 1/1')
 
                 embeds.append(embed)
 
@@ -686,7 +707,8 @@ class Profile(commands.Cog, name='Profile'):
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the Kitsu profile.')
-                embed.set_footer(text=f'Provided by https://kitsu.io/ • Page 1/1')
+                embed.set_footer(
+                    text=f'Provided by https://kitsu.io/ • Page 1/1')
                 embeds.append(embed)
 
             return embeds
@@ -703,21 +725,24 @@ class Profile(commands.Cog, name='Profile'):
             if username is None:
                 username = self.bot.db.select_profile('anilist', ctx.author.id)
             elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
+                id_ = re.match(
+                    r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
                 username = self.bot.db.select_profile('anilist', int(id_))
             else:
                 username = username
             if username:
                 embeds = await self.get_anilist_profile(username)
                 if embeds:
-                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    menu = menus.MenuPages(source=EmbedListMenu(
+                        embeds), clear_reactions_after=True, timeout=30)
                     await menu.start(ctx)
                 else:
                     embed = discord.Embed(title=f'The AniList profile `{username}` could not be found.',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(title='No AniList profile set.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title='No AniList profile set.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
@@ -728,23 +753,27 @@ class Profile(commands.Cog, name='Profile'):
         """
         async with ctx.channel.typing():
             if username is None:
-                username = self.bot.db.select_profile('myanimelist', ctx.author.id)
+                username = self.bot.db.select_profile(
+                    'myanimelist', ctx.author.id)
             elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
+                id_ = re.match(
+                    r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
                 username = self.bot.db.select_profile('myanimelist', int(id_))
             else:
                 username = username
             if username:
                 embeds = await self.get_myanimelist_profile(username)
                 if embeds:
-                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    menu = menus.MenuPages(source=EmbedListMenu(
+                        embeds), clear_reactions_after=True, timeout=30)
                     await menu.start(ctx)
                 else:
                     embed = discord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(title='No MyAnimeList profile set.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title='No MyAnimeList profile set.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', ignore_extra=False)
@@ -757,21 +786,24 @@ class Profile(commands.Cog, name='Profile'):
             if username is None:
                 username = self.bot.db.select_profile('kitsu', ctx.author.id)
             elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
+                id_ = re.match(
+                    r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
                 username = self.bot.db.select_profile('kitsu', int(id_))
             else:
                 username = username
             if username:
                 embeds = await self.get_kitsu_profile(username)
                 if embeds:
-                    menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+                    menu = menus.MenuPages(source=EmbedListMenu(
+                        embeds), clear_reactions_after=True, timeout=30)
                     await menu.start(ctx)
                 else:
                     embed = discord.Embed(title=f'The Kitsu profile `{username}` could not be found.',
                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(title='No Kitsu profile set.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title='No Kitsu profile set.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='setprofile', aliases=['sp', 'setp'], usage='setprofile <al|mal|kitsu> <username>',
@@ -804,7 +836,8 @@ class Profile(commands.Cog, name='Profile'):
                     ctx.command.reset_cooldown(ctx)
                     raise discord.ext.commands.BadArgument
                 if user.startswith('<@') and user.endswith('>'):
-                    id_ = re.match(r'^<@(!)?(?P<id>\d{17,18})>', user).group('id')
+                    id_ = re.match(
+                        r'^<@(!)?(?P<id>\d{17,18})>', user).group('id')
                 else:
                     ctx.command.reset_cooldown(ctx)
                     raise discord.ext.commands.BadArgument
@@ -815,9 +848,12 @@ class Profile(commands.Cog, name='Profile'):
             kitsu = self.bot.db.select_profile('kitsu', id_)
             user = await self.bot.fetch_user(id_)
             embed = discord.Embed(title=user.name, color=DEFAULT_EMBED_COLOR)
-            embed.add_field(name='AniList', value=anilist if anilist else '*Not Set*', inline=False)
-            embed.add_field(name='MyAnimeList', value=myanimelist if myanimelist else '*Not Set*', inline=False)
-            embed.add_field(name='Kitsu', value=kitsu if kitsu else '*Not Set*', inline=False)
+            embed.add_field(
+                name='AniList', value=anilist if anilist else '*Not Set*', inline=False)
+            embed.add_field(
+                name='MyAnimeList', value=myanimelist if myanimelist else '*Not Set*', inline=False)
+            embed.add_field(
+                name='Kitsu', value=kitsu if kitsu else '*Not Set*', inline=False)
             await ctx.channel.send(embed=embed)
 
     @commands.command(name='removeprofiles', aliases=['rmp'], usage='removeprofiles', ignore_extra=False)
@@ -828,7 +864,8 @@ class Profile(commands.Cog, name='Profile'):
         """
         async with ctx.channel.typing():
             anilist = self.bot.db.select_profile('anilist', ctx.author.id)
-            myanimelist = self.bot.db.select_profile('myanimelist', ctx.author.id)
+            myanimelist = self.bot.db.select_profile(
+                'myanimelist', ctx.author.id)
             kitsu = self.bot.db.select_profile('kitsu', ctx.author.id)
             if anilist or myanimelist or kitsu:
                 self.bot.db.delete_user(ctx.author.id)
@@ -836,5 +873,6 @@ class Profile(commands.Cog, name='Profile'):
                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(title='You have no profile set.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title='You have no profile set.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)

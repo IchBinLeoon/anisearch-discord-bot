@@ -28,48 +28,20 @@ log = logging.getLogger(__name__)
 
 
 class KitsuException(Exception):
-    """
-    Base exception class for the Kitsu API wrapper.
-    """
+    """Base exception class for the Kitsu API wrapper."""
 
 
 class KitsuAPIError(KitsuException):
-    """
-    Exception due to an error response from the Kitsu API.
-    """
+    """Exception due to an error response from the Kitsu API."""
 
     def __init__(self, status: int) -> None:
-        """
-        Initializes the KitsuAPIError exception.
-
-        Args:
-            status (int): The status code.
-        """
         super().__init__(status)
 
 
-class KitsuError(KitsuException):
-    """
-    Exceptions that do not involve the API.
-    """
-
-
 class KitsuClient:
-    """
-    Asynchronous wrapper client for the Kitsu API.
-    This class is used to interact with the API.
-
-    Attributes:
-        session (aiohttp.ClientSession): An aiohttp session.
-    """
+    """Asynchronous wrapper client for the Kitsu API."""
 
     def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
-        """
-        Initializes the KitsuClient.
-
-        Args:
-            session (aiohttp.ClientSession, optional): An aiohttp session.
-        """
         self.session = session
 
     async def __aenter__(self):
@@ -79,36 +51,18 @@ class KitsuClient:
         await self.close()
 
     async def close(self) -> None:
-        """
-        Closes the aiohttp session.
-        """
+        """Closes the aiohttp session."""
         if self.session is not None:
             await self.session.close()
 
     async def _session(self) -> aiohttp.ClientSession:
-        """
-        Gets an aiohttp session by creating it if it does not already exist or the previous session is closed.
-
-        Returns:
-            aiohttp.ClientSession: An aiohttp session.
-        """
+        """Gets an aiohttp session by creating it if it does not already exist or the previous session is closed."""
         if self.session is None or self.session.closed:
             self.session = aiohttp.ClientSession()
         return self.session
 
     async def _request(self, url: str) -> Dict[str, Any]:
-        """
-        Makes a request to the Kitsu API.
-
-        Args:
-            url (str): The url used for the request.
-
-        Returns:
-            dict: Dictionary with the data from the response.
-
-        Raises:
-            KitsuAPIError: If the response contains an error.
-        """
+        """Makes a request to the Kitsu API."""
         session = await self._session()
         response = await session.get(url)
         if response.status == 200:
@@ -119,27 +73,12 @@ class KitsuClient:
 
     @staticmethod
     async def get_url(endpoint: str, parameters: str) -> str:
-        """
-        Creates the request url for the Kitsu endpoints.
-
-        Args:
-            endpoint (str): The API endpoint.
-            parameters (str): The query parameters.
-        """
+        """Creates the request url for the Kitsu endpoints."""
         request_url = f'{KITSU_BASE_URL}/{endpoint}{parameters}'
         return request_url
 
     async def user(self, username: str) -> Union[Dict[str, Any], None]:
-        """
-        Gets a user based on the given username.
-
-        Args:
-            username (str): The username of the searched user.
-
-        Returns:
-            dict: Dictionary with the data about the requested user.
-            None: If no user was found.
-        """
+        """Gets a user based on the given username."""
         parameters = f'?filter[name]={username}&include=stats,favorites'
         url = await self.get_url('users', parameters)
         data = await self._request(url=url)

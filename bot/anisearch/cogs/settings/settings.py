@@ -31,14 +31,9 @@ log = logging.getLogger(__name__)
 
 
 class Settings(commands.Cog, name='Settings'):
-    """
-    Settings cog.
-    """
+    """Settings cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `Settings` cog.
-        """
         self.bot = bot
 
     @commands.command(name='setprefix', usage='setprefix <prefix>', ignore_extra=False)
@@ -79,7 +74,8 @@ class Settings(commands.Cog, name='Settings'):
         if channel_id is None:
             channel_id = ctx.channel.id
         if ctx.guild.get_channel(channel_id) is None:
-            embed = discord.Embed(title=f'The channel `{channel_id}` could not be found.', color=ERROR_EMBED_COLOR)
+            embed = discord.Embed(
+                title=f'The channel `{channel_id}` could not be found.', color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
             ctx.command.reset_cooldown(ctx)
         else:
@@ -100,11 +96,11 @@ class Settings(commands.Cog, name='Settings'):
         """
         channel = self.bot.db.get_channel(ctx.guild)
         if channel is None:
-            embed = discord.Embed(title='No notification channel set for the server.', color=ERROR_EMBED_COLOR)
+            embed = discord.Embed(
+                title='No notification channel set for the server.', color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
         else:
             self.bot.db.set_channel(None, ctx.guild)
-            embed = discord.Embed(title='Removed the set notification channel.', color=DEFAULT_EMBED_COLOR)
+            embed = discord.Embed(
+                title='Removed the set notification channel.', color=DEFAULT_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
-
-

@@ -40,14 +40,9 @@ log = logging.getLogger(__name__)
 
 
 class Help(commands.Cog, name='Help'):
-    """
-    Help cog.
-    """
+    """Help cog."""
 
     def __init__(self, bot: AniSearchBot):
-        """
-        Initializes the `Help` cog.
-        """
         self.bot = bot
         self.bot.remove_command('help')
 
@@ -58,7 +53,8 @@ class Help(commands.Cog, name='Help'):
         Shows help or displays information about a command.
         """
         prefix = self.bot.db.get_prefix(ctx.message)
-        server_prefix = '' if isinstance(ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
+        server_prefix = '' if isinstance(
+            ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
 
         if cmd is None:
             embed = discord.Embed(title='AniSearch', color=DEFAULT_EMBED_COLOR,
@@ -72,21 +68,27 @@ class Help(commands.Cog, name='Help'):
 
         else:
             if command := get(self.bot.commands, name=cmd.lower()) or \
-                          find(lambda cmd_: cmd.lower() in cmd_.aliases, self.bot.commands):
-                embed = discord.Embed(title=f'Command » `{command}`', colour=DEFAULT_EMBED_COLOR)
-                embed.set_author(name='AniSearch Help', icon_url=self.bot.user.avatar_url)
-                embed.add_field(name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
+                    find(lambda cmd_: cmd.lower() in cmd_.aliases, self.bot.commands):
+                embed = discord.Embed(
+                    title=f'Command » `{command}`', colour=DEFAULT_EMBED_COLOR)
+                embed.set_author(name='AniSearch Help',
+                                 icon_url=self.bot.user.avatar_url)
+                embed.add_field(
+                    name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
                 embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
                                 inline=False)
                 if command.aliases:
                     embed.add_field(name='Aliases', inline=False,
                                     value=', '.join([f"`{a}`" for a in command.aliases]) if command.aliases else '-')
                 if example := get_command_example(ctx=ctx, command=str(command)):
-                    embed.add_field(name='Example', value=f'`{prefix}{example}`', inline=False)
-                embed.set_footer(text=f'<> - required, [] - optional, | - either/or')
+                    embed.add_field(
+                        name='Example', value=f'`{prefix}{example}`', inline=False)
+                embed.set_footer(
+                    text=f'<> - required, [] - optional, | - either/or')
                 await ctx.send(embed=embed)
             else:
-                embed = discord.Embed(title=f'The command `{cmd}` could not be found.', color=ERROR_EMBED_COLOR)
+                embed = discord.Embed(
+                    title=f'The command `{cmd}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='commands', aliases=['cmds'], usage='commands', ignore_extra=False)
@@ -96,12 +98,14 @@ class Help(commands.Cog, name='Help'):
         Displays all commands.
         """
         prefix = self.bot.db.get_prefix(ctx.message)
-        server_prefix = '' if isinstance(ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
+        server_prefix = '' if isinstance(
+            ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
         embeds, page = [], 1
 
         for cog in self.bot.cogs:
             if self.bot.get_cog(cog).qualified_name not in ['Admin']:
-                cmds = '\n'.join([f'• {prefix}{cmd.usage}' for cmd in self.bot.get_cog(cog).get_commands()])
+                cmds = '\n'.join(
+                    [f'• {prefix}{cmd.usage}' for cmd in self.bot.get_cog(cog).get_commands()])
 
                 cmds = ''.join(f'Can only be used by a server administrator.\n```\n{cmds}\n```'
                                if self.bot.get_cog(cog).qualified_name == 'Settings' else f'```\n{cmds}\n```')
@@ -112,12 +116,15 @@ class Help(commands.Cog, name='Help'):
                                                   f'**{self.bot.get_cog(cog).qualified_name}**\n{cmds}\n'
                                                   f'Do **not** include `<>`, `[]` or `|` when executing the command.',
                                       colour=DEFAULT_EMBED_COLOR)
-                embed.set_author(name="AniSearch's commands", icon_url=self.bot.user.avatar_url)
-                embed.set_footer(text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
+                embed.set_author(name="AniSearch's commands",
+                                 icon_url=self.bot.user.avatar_url)
+                embed.set_footer(
+                    text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
                 embeds.append(embed)
                 page += 1
 
-        menu = menus.MenuPages(source=EmbedListMenu(embeds), clear_reactions_after=True, timeout=30)
+        menu = menus.MenuPages(source=EmbedListMenu(
+            embeds), clear_reactions_after=True, timeout=30)
         await menu.start(ctx)
 
     @commands.command(name='about', usage='about', ignore_extra=False)
@@ -130,12 +137,18 @@ class Help(commands.Cog, name='Help'):
                               description=f'<@!{BOT_ID}> is an easy-to-use Discord bot written in Python '
                                           f'that allows you to search for anime, manga, characters, staff, studios '
                                           f'and much more directly in Discord!')
-        embed.add_field(name='❯ Creator', value=f'<@!{CREATOR_ID}>', inline=True)
-        embed.add_field(name='❯ Version', value=f'v{anisearch.__version__}', inline=True)
-        embed.add_field(name='❯ Commands', value=f'{DEFAULT_PREFIX}help', inline=True)
-        embed.add_field(name='❯ Invite', value=f'[Click me!]({DISCORD_INVITE})', inline=True)
-        embed.add_field(name='❯ Support Server', value=f'[Click me!]({SUPPORT_SERVER_INVITE})', inline=True)
-        embed.add_field(name='❯ Website', value=f'[Click me!]({WEBSITE})', inline=True)
+        embed.add_field(name='❯ Creator',
+                        value=f'<@!{CREATOR_ID}>', inline=True)
+        embed.add_field(name='❯ Version',
+                        value=f'v{anisearch.__version__}', inline=True)
+        embed.add_field(name='❯ Commands',
+                        value=f'{DEFAULT_PREFIX}help', inline=True)
+        embed.add_field(name='❯ Invite',
+                        value=f'[Click me!]({DISCORD_INVITE})', inline=True)
+        embed.add_field(name='❯ Support Server',
+                        value=f'[Click me!]({SUPPORT_SERVER_INVITE})', inline=True)
+        embed.add_field(name='❯ Website',
+                        value=f'[Click me!]({WEBSITE})', inline=True)
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         await ctx.channel.send(embed=embed)
 
@@ -147,13 +160,20 @@ class Help(commands.Cog, name='Help'):
         """
         embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
-        embed.set_author(name="AniSearch's statistics", icon_url=self.bot.user.avatar_url)
-        embed.add_field(name='❯ Guilds', value=str(self.bot.get_guild_count()), inline=True)
-        embed.add_field(name='❯ Users', value=str(self.bot.get_user_count()), inline=True)
-        embed.add_field(name='❯ Channels', value=str(self.bot.get_channel_count()), inline=True)
-        embed.add_field(name='❯ Uptime', value=str(timedelta(seconds=round(self.bot.get_uptime()))), inline=True)
-        embed.add_field(name='❯ Shards', value=self.bot.shard_count, inline=True)
-        embed.add_field(name='❯ Latency', value=str(round(self.bot.latency, 5)), inline=True)
+        embed.set_author(name="AniSearch's statistics",
+                         icon_url=self.bot.user.avatar_url)
+        embed.add_field(name='❯ Guilds', value=str(
+            self.bot.get_guild_count()), inline=True)
+        embed.add_field(name='❯ Users', value=str(
+            self.bot.get_user_count()), inline=True)
+        embed.add_field(name='❯ Channels', value=str(
+            self.bot.get_channel_count()), inline=True)
+        embed.add_field(name='❯ Uptime', value=str(
+            timedelta(seconds=round(self.bot.get_uptime()))), inline=True)
+        embed.add_field(name='❯ Shards',
+                        value=self.bot.shard_count, inline=True)
+        embed.add_field(name='❯ Latency', value=str(
+            round(self.bot.latency, 5)), inline=True)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='github', aliases=['gh'], usage='github', ignore_extra=False)
@@ -174,11 +194,16 @@ class Help(commands.Cog, name='Help'):
             embed = discord.Embed(title=data.get('full_name'), url=data.get('html_url'),
                                   description=data.get('description'), color=DEFAULT_EMBED_COLOR)
             embed.set_author(name='GitHub Repository')
-            embed.add_field(name='❯ Stargazers', value=data.get('stargazers_count'), inline=True)
-            embed.add_field(name='❯ Forks', value=data.get('forks_count'), inline=True)
-            embed.add_field(name='❯ Issues', value=data.get('open_issues_count'), inline=True)
-            embed.add_field(name='❯ Language', value=data.get('language'), inline=True)
-            embed.add_field(name='❯ License', value=data.get('license').get('spdx_id'), inline=True)
+            embed.add_field(name='❯ Stargazers', value=data.get(
+                'stargazers_count'), inline=True)
+            embed.add_field(name='❯ Forks', value=data.get(
+                'forks_count'), inline=True)
+            embed.add_field(name='❯ Issues', value=data.get(
+                'open_issues_count'), inline=True)
+            embed.add_field(name='❯ Language', value=data.get(
+                'language'), inline=True)
+            embed.add_field(name='❯ License', value=data.get(
+                'license').get('spdx_id'), inline=True)
             embed.add_field(name='❯ Updated', value=data.get('updated_at').replace('T', ' ').replace('Z', ' '),
                             inline=True)
             embed.set_thumbnail(url=self.bot.user.avatar_url)

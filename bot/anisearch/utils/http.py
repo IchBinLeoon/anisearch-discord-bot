@@ -26,48 +26,21 @@ logger = logging.getLogger(__name__)
 
 
 class RequestException(Exception):
-    """
-    Exception due to an request error.
-    """
+    """Exception due to an request error."""
 
     def __init__(self, status: int) -> None:
-        """
-        Initializes the RequestException exception.
-
-        Args:
-            status (int): The status code.
-        """
         super().__init__(status)
 
 
 class HTTPSession(ClientSession):
-    """
-    Abstract class for an aiohttp session.
-    """
+    """Abstract class for an aiohttp session."""
 
     def __init__(self, loop=None):
-        """
-        Initializes the HTTPSession.
-        """
         super().__init__(loop=loop)
 
 
 async def request(url: str, session: ClientSession, method: str, res_method: str, *args, **kwargs) -> Any:
-    """
-    Performs a request.
-
-    Args:
-        url (str): The request url.
-        session (ClientSession): An aiohttp session.
-        method (str): The request method.
-        res_method (str): The response method.
-
-    Returns:
-        Any: The data from the response.
-
-    Raises:
-        RequestException: If an error occurs during the request.
-    """
+    """Performs a request."""
     r = await getattr(session, method)(url, *args, **kwargs)
     if r.status != 200:
         raise RequestException(r.status)
@@ -75,30 +48,10 @@ async def request(url: str, session: ClientSession, method: str, res_method: str
 
 
 async def get(url: str, session: ClientSession, res_method: str, *args, **kwargs) -> request:
-    """
-    Performs an HTTP GET request.
-
-    Args:
-        url (str): The request url.
-        session (ClientSession): An aiohttp session.
-        res_method (str): The response method.
-
-    Returns:
-        request()
-    """
+    """Performs an HTTP GET request."""
     return await request(url, session, 'get', res_method, *args, **kwargs)
 
 
 async def post(url: str, session: ClientSession, res_method: str, *args, **kwargs) -> request:
-    """
-    Performs an HTTP POST request.
-
-    Args:
-        url (str): The request url.
-        session (ClientSession): An aiohttp session.
-        res_method (str): The response method.
-
-    Returns:
-        request()
-    """
+    """Performs an HTTP POST request."""
     return await request(url, session, 'post', res_method, *args, **kwargs)

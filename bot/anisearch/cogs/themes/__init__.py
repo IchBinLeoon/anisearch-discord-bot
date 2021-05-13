@@ -26,8 +26,6 @@ log = logging.getLogger(__name__)
 
 
 def setup(bot: AniSearchBot):
-    """
-    Sets up the `Themes` cog.
-    """
+    """Sets up the Themes cog."""
     bot.add_cog(Themes(bot))
     log.info('Themes cog loaded.')
