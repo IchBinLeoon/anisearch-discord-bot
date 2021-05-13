@@ -42,98 +42,98 @@ class AnilistAPIError(AnilistException):
 class AniListClient:
     """Asynchronous wrapper client for the AniList API."""
 
-       def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
-            self.session = session
+    def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
+        self.session = session
 
-        async def __aenter__(self):
-            return self
+    async def __aenter__(self):
+        return self
 
-        async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
-            await self.close()
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        await self.close()
 
-        async def close(self) -> None:
-            """Closes the aiohttp session."""
-            if self.session is not None:
-                await self.session.close()
+    async def close(self) -> None:
+        """Closes the aiohttp session."""
+        if self.session is not None:
+            await self.session.close()
 
-        async def _session(self) -> aiohttp.ClientSession:
-            """Gets an aiohttp session by creating it if it does not already exist or the previous session is closed."""
-            if self.session is None or self.session.closed:
-                self.session = aiohttp.ClientSession()
-            return self.session
+    async def _session(self) -> aiohttp.ClientSession:
+        """Gets an aiohttp session by creating it if it does not already exist or the previous session is closed."""
+        if self.session is None or self.session.closed:
+            self.session = aiohttp.ClientSession()
+        return self.session
 
-        async def _request(self, query: str, **variables: Union[str, Any]) -> Dict[str, Any]:
-            """Makes a request to the AniList API."""
-            session = await self._session()
-            response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
-            data = await response.json()
-            if data.get('errors'):
-                raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],
-                                      data.get('errors')[0].get('locations'))
+    async def _request(self, query: str, **variables: Union[str, Any]) -> Dict[str, Any]:
+        """Makes a request to the AniList API."""
+        session = await self._session()
+        response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
+        data = await response.json()
+        if data.get('errors'):
+            raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],
+                                  data.get('errors')[0].get('locations'))
+        return data
+
+    async def media(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
+        """Gets a list of media entries based on the given search variables."""
+        data = await self._request(query=Query.media(), **variables)
+        if data.get('data')['Page']['media']:
+            return data.get('data')['Page']['media']
+        return None
+
+    async def character(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
+        """Gets a list of characters based on the given search variables."""
+        data = await self._request(query=Query.character(), **variables)
+        if data.get('data')['Page']['characters']:
+            return data.get('data')['Page']['characters']
+        return None
+
+    async def staff(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
+        """Gets a list of staff entries based on the given search variables."""
+        data = await self._request(query=Query.staff(), **variables)
+        if data.get('data')['Page']['staff']:
+            return data.get('data')['Page']['staff']
+        return None
+
+    async def studio(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
+        """Gets a list of studios based on the given search variables."""
+        data = await self._request(query=Query.studio(), **variables)
+        if data.get('data')['Page']['studios']:
+            return data.get('data')['Page']['studios']
+        return None
+
+    async def genre(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """Gets a dictionary with media entries based on the given genre."""
+        data = await self._request(query=Query.genre(), **variables)
+        if data:
             return data
+        return None
 
-        async def media(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-            """Gets a list of media entries based on the given search variables."""
-            data = await self._request(query=Query.media(), **variables)
-            if data.get('data')['Page']['media']:
-                return data.get('data')['Page']['media']
-            return None
+    async def tag(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """Gets a dictionary with media entries based on the given tag."""
+        data = await self._request(query=Query.tag(), **variables)
+        if data:
+            return data
+        return None
 
-        async def character(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-            """Gets a list of characters based on the given search variables."""
-            data = await self._request(query=Query.character(), **variables)
-            if data.get('data')['Page']['characters']:
-                return data.get('data')['Page']['characters']
-            return None
+    async def user(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """Gets a user based on the given search variables."""
+        data = await self._request(query=Query.user(), **variables)
+        if data.get('data')['Page']['users']:
+            return data.get('data')['Page']['users'][0]
+        return None
 
-        async def staff(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-            """Gets a list of staff entries based on the given search variables."""
-            data = await self._request(query=Query.staff(), **variables)
-            if data.get('data')['Page']['staff']:
-                return data.get('data')['Page']['staff']
-            return None
+    async def schedule(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """Gets a airing schedule based on the given search variables."""
+        data = await self._request(query=Query.schedule(), **variables)
+        if data.get('data')['Page']['airingSchedules']:
+            return data.get('data')['Page']['airingSchedules']
+        return None
 
-        async def studio(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-            """Gets a list of studios based on the given search variables."""
-            data = await self._request(query=Query.studio(), **variables)
-            if data.get('data')['Page']['studios']:
-                return data.get('data')['Page']['studios']
-            return None
-
-        async def genre(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-            """Gets a dictionary with media entries based on the given genre."""
-            data = await self._request(query=Query.genre(), **variables)
-            if data:
-                return data
-            return None
-
-        async def tag(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-            """Gets a dictionary with media entries based on the given tag."""
-            data = await self._request(query=Query.tag(), **variables)
-            if data:
-                return data
-            return None
-
-        async def user(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-            """Gets a user based on the given search variables."""
-            data = await self._request(query=Query.user(), **variables)
-            if data.get('data')['Page']['users']:
-                return data.get('data')['Page']['users'][0]
-            return None
-
-        async def schedule(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-            """Gets a airing schedule based on the given search variables."""
-            data = await self._request(query=Query.schedule(), **variables)
-            if data.get('data')['Page']['airingSchedules']:
-                return data.get('data')['Page']['airingSchedules']
-            return None
-
-        async def trending(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-            """Gets a list of trending media entries."""
-            data = await self._request(query=Query.trending(), **variables)
-            if data.get('data')['Page']['media']:
-                return data.get('data')['Page']['media']
-            return None
+    async def trending(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
+        """Gets a list of trending media entries."""
+        data = await self._request(query=Query.trending(), **variables)
+        if data.get('data')['Page']['media']:
+            return data.get('data')['Page']['media']
+        return None
 
 
 class Query:
