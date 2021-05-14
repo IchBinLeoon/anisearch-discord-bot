@@ -32,13 +32,6 @@ class RequestException(Exception):
         super().__init__(status)
 
 
-class HTTPSession(ClientSession):
-    """Abstract class for an aiohttp session."""
-
-    def __init__(self, loop=None):
-        super().__init__(loop=loop)
-
-
 async def request(url: str, session: ClientSession, method: str, res_method: str, *args, **kwargs) -> Any:
     """Performs a request."""
     r = await getattr(session, method)(url, *args, **kwargs)
