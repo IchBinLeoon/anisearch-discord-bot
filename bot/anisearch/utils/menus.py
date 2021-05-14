@@ -27,8 +27,8 @@ log = logging.getLogger(__name__)
 class EmbedListMenu(menus.ListPageSource):
     """Paginated embed menu."""
 
-    def __init__(self, data):
-        super().__init__(data, per_page=1)
+    def __init__(self, embeds):
+        super().__init__(embeds, per_page=1)
 
     async def format_page(self, menu, embeds):
         return embeds

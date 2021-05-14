@@ -28,7 +28,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, ANILIST_LOGO
-from anisearch.utils.paginator import EmbedListMenu
+from anisearch.utils.menus import EmbedListMenu
 
 log = logging.getLogger(__name__)
 

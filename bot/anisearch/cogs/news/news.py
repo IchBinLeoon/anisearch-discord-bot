@@ -31,7 +31,7 @@ from anisearch.cogs.search import Search
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, CRUNCHYROLL_LOGO, ANIMENEWSNETWORK_LOGO
 from anisearch.utils.formatters import clean_html
-from anisearch.utils.paginator import EmbedListMenu
+from anisearch.utils.menus import EmbedListMenu
 from anisearch.utils.types import AniListMediaType
 
 log = logging.getLogger(__name__)

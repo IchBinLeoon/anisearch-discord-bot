@@ -33,7 +33,7 @@ from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, AN
 from anisearch.utils.types import AniListSearchType, AniListMediaType
 from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
     format_manga_status
-from anisearch.utils.paginator import EmbedListMenu
+from anisearch.utils.menus import EmbedListMenu
 
 log = logging.getLogger(__name__)
 

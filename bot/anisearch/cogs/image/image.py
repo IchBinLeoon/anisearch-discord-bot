@@ -30,7 +30,7 @@ from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, WAIFUPICS_BASE_URL
 from anisearch.utils.http import get
-from anisearch.utils.paginator import EmbedListMenu
+from anisearch.utils.menus import EmbedListMenu
 
 log = logging.getLogger(__name__)
 

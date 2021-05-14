@@ -33,7 +33,7 @@ from anisearch.config import BOT_OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
     DISCORD_INVITE, WEBSITE, GITHUB_REPO_API_ENDPOINT, SUPPORT_SERVER_INVITE
 from anisearch.utils.http import get as get_request
-from anisearch.utils.paginator import EmbedListMenu
+from anisearch.utils.menus import EmbedListMenu
 from anisearch.utils.misc import get_command_example
 
 log = logging.getLogger(__name__)
