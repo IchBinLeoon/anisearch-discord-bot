@@ -117,7 +117,7 @@ class Themes(commands.Cog, name='Themes'):
         Searches for the openings and endings of the given anime and displays them.
         """
         async with ctx.channel.typing():
-            data = await self.bot.animethemes.search(anime, 5)
+            data = await self.bot.animethemes.search(anime, 15)
             if data.get('search').get('anime'):
                 embeds = []
                 for page, entry in enumerate(data.get('search').get('anime')):
