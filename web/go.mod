@@ -3,7 +3,7 @@ module github.com/IchBinLeoon/anisearch-discord-bot/web
 go 1.16
 
 require (
-	github.com/gin-gonic/gin v1.7.1
+	github.com/gin-gonic/gin v1.7.2
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.6.0 // indirect
 	gorm.io/driver/postgres v1.1.0
