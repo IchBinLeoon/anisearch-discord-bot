@@ -249,6 +249,9 @@ class Schedule(commands.Cog, name='Schedule'):
 
                         channel_count += 1
 
+            except discord.errors.Forbidden as e:
+                log.warning(e)
+
             except Exception as e:
                 log.exception(e)
 

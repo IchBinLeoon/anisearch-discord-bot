@@ -43,7 +43,7 @@
 </p>
 
 <p align="center">
-  <a href="#-AniSearch-v16">AniSearch 🔍</a>
+  <a href="#-AniSearch">AniSearch 🔍</a>
   •
   <a href="#-Commands">Commands ✨</a>
   •
