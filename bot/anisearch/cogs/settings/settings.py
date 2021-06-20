@@ -18,11 +18,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-from typing import Optional
+import re
+from typing import Optional, Union
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import Context
+from discord.ext.commands import Context, BadArgument
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX
@@ -62,20 +63,26 @@ class Settings(commands.Cog, name='Settings'):
                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='setchannel', aliases=['setc', 'sc'], usage='setchannel [ID]', ignore_extra=False)
+    @commands.command(name='setchannel', aliases=['setc', 'sc'], usage='setchannel [#channel|ID]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
-    async def setchannel(self, ctx: Context, channel_id: Optional[int]):
+    async def setchannel(self, ctx: Context, channel_id: Optional[Union[int, str]]):
         """
-        Sets the channel for the anime episode notifications. If no channel ID is specified, the current one is used.
+        Sets the channel for the anime episode notifications. If no channel is specified, the current one is used.
         Can only be used by a server administrator.
         """
         if channel_id is None:
             channel_id = ctx.channel.id
+        if isinstance(channel_id, str):
+            if channel_id.startswith('<') and channel_id.endswith('>'):
+                id_ = re.match(r'^<(#)?(?P<id>\d{18})>', channel_id).group('id')
+                channel_id = int(id_)
+            else:
+                raise BadArgument
         if ctx.guild.get_channel(channel_id) is None:
             embed = discord.Embed(
-                title=f'The channel `{channel_id}` could not be found.', color=ERROR_EMBED_COLOR)
+                title=f'The channel could not be found.', color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
             ctx.command.reset_cooldown(ctx)
         else:
