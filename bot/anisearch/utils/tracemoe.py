@@ -125,8 +125,8 @@ class TraceMoeClient:
 
     async def search(self, url: str) -> Union[Dict[str, Any], None]:
         """Searches an anime by image."""
-        url = f'{TRACEMOE_BASE_URL}/search?url={url}'
+        url = f'{TRACEMOE_BASE_URL}/search?anilistInfo&url={url}'
         data = await self._request(url)
-        if data.get('docs'):
-            return data.get('docs')
+        if data.get('result'):
+            return data.get('result')
         return None

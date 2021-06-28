@@ -49,34 +49,31 @@ class Image(commands.Cog, name='Image'):
         embed.set_author(
             name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%')
 
-        if data.get('title_english') is None or data.get('title_english') == \
-                data.get('title_romaji'):
-            name = data.get('title_romaji')
+        if data.get('anilist').get('title').get('english') is None or \
+                data.get('anilist').get('title').get('english') == data.get('anilist').get('title').get('romaji'):
+            name = data.get('anilist').get('title').get('romaji')
         else:
-            name = '{} ({})'.format(data.get('title_romaji'),
-                                    data.get('title_english'))
+            name = '{} ({})'.format(data.get('anilist').get('title').get('romaji'),
+                                    data.get('anilist').get('title').get('english'))
         embed.add_field(name='Anime', value=name, inline=False)
 
-        image_url = f'https://trace.moe/thumbnail.php?anilist_id={data.get("anilist_id")}' \
-                    f'&file={data.get("filename")}&t={data.get("at")}' \
-                    f'&token={data.get("tokenthumb")}'.replace(' ', '%20')
-        embed.set_image(url=image_url)
+        embed.set_image(url=data.get('image'))
 
         embed.add_field(name='Episode', inline=False,
-                        value=f'{data.get("episode")} ({str(timedelta(seconds=round(data.get("at"))))})'
-                        if data.get("at") else data.get("episode"))
+                        value=f'{data.get("episode")} ({str(timedelta(seconds=round(data.get("from"))))} - '
+                              f'{str(timedelta(seconds=round(data.get("to"))))})')
 
-        if data.get('synonyms'):
+        if data.get('anilist').get('synonyms'):
             embed.add_field(name='Synonyms', inline=False, value=', '.join(
-                [f'`{s}`' for s in data.get('synonyms')]))
+                [f'`{s}`' for s in data.get('anilist').get('synonyms')]))
 
         embed.add_field(name='Anilist', inline=False,
-                        value=f'https://anilist.co/anime/{str(data.get("anilist_id"))}' if
-                        data.get('anilist_id') else 'N/A')
+                        value=f'https://anilist.co/anime/{str(data.get("anilist").get("id"))}' if
+                        data.get("anilist").get("id") else 'N/A')
 
         embed.add_field(name='MyAnimeList', inline=False,
-                        value=f'https://myanimelist.net/anime/{str(data.get("mal_id"))}' if
-                        data.get('mal_id') else 'N/A')
+                        value=f'https://myanimelist.net/anime/{str(data.get("anilist").get("idMal"))}' if
+                        data.get("anilist").get("idMal") else 'N/A')
 
         embed.set_footer(
             text=f'Provided by https://trace.moe/ • Page {page}/{pages}')
@@ -171,7 +168,8 @@ class Image(commands.Cog, name='Image'):
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(
-                            title=f'An error occurred while searching for the anime or the link is invalid.',
+                            title=f'An error occurred while searching for the anime, the link is invalid or '
+                                  f'the search queue is full.',
                             color=ERROR_EMBED_COLOR)
                         return await ctx.channel.send(embed=embed)
                     if data:
@@ -180,7 +178,7 @@ class Image(commands.Cog, name='Image'):
                             try:
                                 embed = await self.get_trace_embed(anime, page + 1, len(data))
                                 if not isinstance(ctx.channel, discord.channel.DMChannel):
-                                    if is_adult(anime) and not ctx.channel.is_nsfw():
+                                    if is_adult(anime.get('anilist')) and not ctx.channel.is_nsfw():
                                         embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                               description=f'Adult content. No NSFW channel.')
                                         embed.set_footer(
@@ -190,7 +188,7 @@ class Image(commands.Cog, name='Image'):
                                 embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
-                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data.get("docs"))}')
+                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
                         menu = menus.MenuPages(source=EmbedListMenu(
                             embeds), clear_reactions_after=True, timeout=30)

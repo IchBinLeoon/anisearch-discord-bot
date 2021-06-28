@@ -23,7 +23,7 @@ ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 GITHUB_REPO_API_ENDPOINT = 'https://api.github.com/repos/IchBinLeoon/anisearch-discord-bot'
 
 ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
-TRACEMOE_BASE_URL = 'https://trace.moe/api'
+TRACEMOE_BASE_URL = 'https://api.trace.moe'
 SAUCENAO_BASE_URL = 'https://saucenao.com/search.php'
 JIKAN_BASE_URL = 'https://api.jikan.moe/v3'
 KITSU_BASE_URL = 'https://kitsu.io/api/edge'
