@@ -95,6 +95,13 @@ def get_command_example(ctx: Context, command: str) -> Union[str, None]:
         f'kitsu {ctx.author.name}'
     ]
 
+    removeprofile = [
+        'al',
+        'mal',
+        'kitsu',
+        'all'
+    ]
+
     trending = [
         'anime',
         'manga'

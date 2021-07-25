@@ -172,7 +172,7 @@ class DataBase:
             with conn.cursor() as cur:
                 cur.execute('DELETE FROM users WHERE id = %s;', (id_,))
                 conn.commit()
-                log.info(f'Removed all profiles for user {id_}.')
+                log.info(f'Removed user {id_}.')
         finally:
             self.pool.putconn(conn)
 

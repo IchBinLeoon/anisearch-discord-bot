@@ -133,7 +133,7 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `profiles [@member]:` Displays the added profiles of you, or the specified user.  
 
-- `purge:` Removes the added AniList, MyAnimeList and Kitsu profile.  
+- `removeprofile <al|mal|kitsu|all>:` Removes the added AniList, MyAnimeList or Kitsu profile.
 
 ### Themes
 - `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  

@@ -806,7 +806,7 @@ class Profile(commands.Cog, name='Profile'):
                     title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='addprofile', usage='addprofile <al|mal|kitsu> <username>', ignore_extra=False)
+    @commands.command(name='addprofile', aliases=['addp'], usage='addprofile <al|mal|kitsu> <username>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def addprofile(self, ctx: Context, site: str, username: str):
         """
@@ -846,7 +846,8 @@ class Profile(commands.Cog, name='Profile'):
             myanimelist = self.bot.db.select_profile('myanimelist', id_)
             kitsu = self.bot.db.select_profile('kitsu', id_)
             user = await self.bot.fetch_user(id_)
-            embed = discord.Embed(title=user.name, color=DEFAULT_EMBED_COLOR)
+            embed = discord.Embed(title=user, color=DEFAULT_EMBED_COLOR)
+            embed.set_thumbnail(url=user.avatar_url)
             embed.add_field(
                 name='AniList', value=anilist if anilist else '*Not added*', inline=False)
             embed.add_field(
@@ -855,23 +856,49 @@ class Profile(commands.Cog, name='Profile'):
                 name='Kitsu', value=kitsu if kitsu else '*Not added*', inline=False)
             await ctx.channel.send(embed=embed)
 
-    @commands.command(name='purge', aliases=['clear'], usage='purge', ignore_extra=False)
+    @commands.command(name='removeprofile', aliases=['rmp'], usage='removeprofile <al|mal|kitsu|all>',
+                      ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def purge(self, ctx: Context):
+    async def removeprofile(self, ctx: Context, site: str,):
         """
-        Removes the added AniList, MyAnimeList and Kitsu profile.
+        Removes the added AniList, MyAnimeList or Kitsu profile.
         """
         async with ctx.channel.typing():
-            anilist = self.bot.db.select_profile('anilist', ctx.author.id)
-            myanimelist = self.bot.db.select_profile(
-                'myanimelist', ctx.author.id)
-            kitsu = self.bot.db.select_profile('kitsu', ctx.author.id)
-            if anilist or myanimelist or kitsu:
+            if site.lower() == 'anilist' or site.lower() == 'al':
+                anilist = self.bot.db.select_profile('anilist', ctx.author.id)
+                if anilist is None:
+                    embed = discord.Embed(title='No AniList profile added.', color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+                    ctx.command.reset_cooldown(ctx)
+                else:
+                    self.bot.db.insert_profile('anilist', None, ctx.author.id)
+                    embed = discord.Embed(title='Removed the added AniList profile.', color=DEFAULT_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+            elif site.lower() == 'myanimelist' or site.lower() == 'mal':
+                myanimelist = self.bot.db.select_profile('myanimelist', ctx.author.id)
+                if myanimelist is None:
+                    embed = discord.Embed(title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+                    ctx.command.reset_cooldown(ctx)
+                else:
+                    self.bot.db.insert_profile('myanimelist', None, ctx.author.id)
+                    embed = discord.Embed(title='Removed the added MyAnimeList profile.', color=DEFAULT_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+            elif site.lower() == 'kitsu':
+                kitsu = self.bot.db.select_profile('kitsu', ctx.author.id)
+                if kitsu is None:
+                    embed = discord.Embed(title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+                    ctx.command.reset_cooldown(ctx)
+                else:
+                    self.bot.db.insert_profile('kitsu', None, ctx.author.id)
+                    embed = discord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+            elif site.lower() == 'all':
                 self.bot.db.delete_user(ctx.author.id)
-                embed = discord.Embed(title='Removed the added AniList, MyAnimeList and Kitsu profile.',
+                embed = discord.Embed(title=f'Removed the user {ctx.author} from the database.',
                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
-                    title='You have no profile added.', color=ERROR_EMBED_COLOR)
-                await ctx.channel.send(embed=embed)
+                ctx.command.reset_cooldown(ctx)
+                raise discord.ext.commands.BadArgument
