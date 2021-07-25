@@ -179,7 +179,9 @@ Can only be used by a server administrator.
 
 - `set <prefix|channel|role> <prefix|#channel|@role>:` Sets the server prefix, the channel for anime episode notifications, or the role for notification mentions.  
 
-- `remove <channel|role>:` Removes the set channel or role.
+- `remove <channel|role>:` Removes the set channel or role.  
+
+- `info:` Displays the set prefix, the set channel and the set role.
 
 ### Admin
 Can only be used by the bot owner.  

@@ -141,3 +141,24 @@ class Settings(commands.Cog, name='Settings'):
             ctx.command.reset_cooldown(ctx)
             raise discord.ext.commands.BadArgument
 
+    @commands.command(name='info', usage='info', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def info(self, ctx: Context):
+        """
+        Displays the set prefix, the set channel and the set role. Can only be used by a server administrator.
+        """
+        prefix = self.bot.db.get_prefix(ctx.message)
+        channel = self.bot.db.get_channel(ctx.guild)
+        role = self.bot.db.get_role(ctx.guild)
+        embed = discord.Embed(title=ctx.guild.name, color=DEFAULT_EMBED_COLOR)
+        embed.set_thumbnail(url=ctx.guild.icon_url)
+        embed.add_field(
+            name='Prefix', value=prefix, inline=False)
+        embed.add_field(
+            name='Channel', value=f'<#{channel}>' if channel else '*Not set*', inline=False)
+        embed.add_field(
+            name='Role', value=f'<@&{role}>' if role else '*Not set*', inline=False)
+        await ctx.channel.send(embed=embed)
+
