@@ -221,10 +221,6 @@ class Schedule(commands.Cog, name='Schedule'):
                     channel = guild.get_channel(channel_id)
                     if channel is not None:
 
-                        role_id = self.bot.db.get_role(guild)
-                        if role_id is not None:
-                            await channel.send(f'<@&{role_id}>')
-
                         if is_adult(data) and not channel.is_nsfw():
                             embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                   description=f'Adult content. No NSFW channel.')
@@ -250,6 +246,10 @@ class Schedule(commands.Cog, name='Schedule'):
                                 text=f'Provided by https://anilist.co/')
 
                             await channel.send(embed=embed)
+
+                        role_id = self.bot.db.get_role(guild)
+                        if role_id is not None:
+                            await channel.send(f'<@&{role_id}>')
 
                         channel_count += 1
 
