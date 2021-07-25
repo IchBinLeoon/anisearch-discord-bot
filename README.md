@@ -129,11 +129,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `kitsu [username|@member]:` Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!  
 
-- `setprofile <al|mal|kitsu> <username>:` Sets an AniList, MyAnimeList or Kitsu profile.  
+- `addprofile <al|mal|kitsu> <username>:` Adds an AniList, MyAnimeList or Kitsu profile.  
 
-- `profiles [@member]:` Displays the set profiles of you, or the specified user.  
+- `profiles [@member]:` Displays the added profiles of you, or the specified user.  
 
-- `removeprofiles:` Removes the set AniList, MyAnimeList and Kitsu profile.  
+- `purge:` Removes the added AniList, MyAnimeList and Kitsu profile.  
 
 ### Themes
 - `themes <anime>:` Searches for the openings and endings of the given anime and displays them.  

@@ -69,7 +69,7 @@ class Profile(commands.Cog, name='Profile'):
                     'anilist', data.get('name'), ctx.author.id)
 
                 embed = discord.Embed(
-                    title=f'Set AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
+                    title=f'Added AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
 
@@ -95,7 +95,7 @@ class Profile(commands.Cog, name='Profile'):
                 self.bot.db.insert_profile(
                     'myanimelist', data.get('username'), ctx.author.id)
 
-                embed = discord.Embed(title=f'Set MyAnimeList Profile `{data.get("username")}`',
+                embed = discord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`',
                                       color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='MyAnimeList Profile',
@@ -125,7 +125,7 @@ class Profile(commands.Cog, name='Profile'):
                 self.bot.db.insert_profile('kitsu', user.get(
                     'attributes')['name'], ctx.author.id)
 
-                embed = discord.Embed(title=f'Set Kitsu Profile `{user.get("attributes")["name"]}`',
+                embed = discord.Embed(title=f'Added Kitsu Profile `{user.get("attributes")["name"]}`',
                                       color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
@@ -742,7 +742,7 @@ class Profile(commands.Cog, name='Profile'):
                     await ctx.channel.send(embed=embed)
             else:
                 embed = discord.Embed(
-                    title='No AniList profile set.', color=ERROR_EMBED_COLOR)
+                    title='No AniList profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
@@ -773,7 +773,7 @@ class Profile(commands.Cog, name='Profile'):
                     await ctx.channel.send(embed=embed)
             else:
                 embed = discord.Embed(
-                    title='No MyAnimeList profile set.', color=ERROR_EMBED_COLOR)
+                    title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
     @commands.command(name='kitsu', usage='kitsu [username|@member]', ignore_extra=False)
@@ -803,14 +803,14 @@ class Profile(commands.Cog, name='Profile'):
                     await ctx.channel.send(embed=embed)
             else:
                 embed = discord.Embed(
-                    title='No Kitsu profile set.', color=ERROR_EMBED_COLOR)
+                    title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='setprofile', usage='setprofile <al|mal|kitsu> <username>', ignore_extra=False)
+    @commands.command(name='addprofile', usage='addprofile <al|mal|kitsu> <username>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def setprofile(self, ctx: Context, site: str, username: str):
+    async def addprofile(self, ctx: Context, site: str, username: str):
         """
-        Sets an AniList, MyAnimeList or Kitsu profile.
+        Adds an AniList, MyAnimeList or Kitsu profile.
         """
         async with ctx.channel.typing():
             if site.lower() == 'anilist' or site.lower() == 'al':
@@ -827,7 +827,7 @@ class Profile(commands.Cog, name='Profile'):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def profiles(self, ctx: Context, user: Optional[str] = None):
         """
-        Displays the set profiles of you, or the specified user.
+        Displays the added profiles of you, or the specified user.
         """
         async with ctx.channel.typing():
             if user:
@@ -848,18 +848,18 @@ class Profile(commands.Cog, name='Profile'):
             user = await self.bot.fetch_user(id_)
             embed = discord.Embed(title=user.name, color=DEFAULT_EMBED_COLOR)
             embed.add_field(
-                name='AniList', value=anilist if anilist else '*Not Set*', inline=False)
+                name='AniList', value=anilist if anilist else '*Not added*', inline=False)
             embed.add_field(
-                name='MyAnimeList', value=myanimelist if myanimelist else '*Not Set*', inline=False)
+                name='MyAnimeList', value=myanimelist if myanimelist else '*Not added*', inline=False)
             embed.add_field(
-                name='Kitsu', value=kitsu if kitsu else '*Not Set*', inline=False)
+                name='Kitsu', value=kitsu if kitsu else '*Not added*', inline=False)
             await ctx.channel.send(embed=embed)
 
-    @commands.command(name='removeprofiles', usage='removeprofiles', ignore_extra=False)
+    @commands.command(name='purge', aliases=['clear'], usage='purge', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def removeprofiles(self, ctx: Context):
+    async def purge(self, ctx: Context):
         """
-        Removes the set AniList, MyAnimeList and Kitsu profile.
+        Removes the added AniList, MyAnimeList and Kitsu profile.
         """
         async with ctx.channel.typing():
             anilist = self.bot.db.select_profile('anilist', ctx.author.id)
@@ -868,10 +868,10 @@ class Profile(commands.Cog, name='Profile'):
             kitsu = self.bot.db.select_profile('kitsu', ctx.author.id)
             if anilist or myanimelist or kitsu:
                 self.bot.db.delete_user(ctx.author.id)
-                embed = discord.Embed(title='Removed the set AniList, MyAnimeList and Kitsu profile.',
+                embed = discord.Embed(title='Removed the added AniList, MyAnimeList and Kitsu profile.',
                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
                 embed = discord.Embed(
-                    title='You have no profile set.', color=ERROR_EMBED_COLOR)
+                    title='You have no profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
