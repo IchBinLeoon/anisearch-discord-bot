@@ -46,7 +46,7 @@ class Help(commands.Cog, name='Help'):
         self.bot = bot
         self.bot.remove_command('help')
 
-    @commands.command(name='help', aliases=['h'], usage='help [command]', ignore_extra=False)
+    @commands.command(name='help', usage='help [command]', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def help(self, ctx: Context, cmd: Optional[str]):
         """
@@ -208,3 +208,11 @@ class Help(commands.Cog, name='Help'):
                             inline=True)
             embed.set_thumbnail(url=self.bot.user.avatar_url)
             await ctx.channel.send(embed=embed)
+
+    @commands.command(name='ping', aliases=['latency'], usage='ping', ignore_extra=False)
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def ping(self, ctx: Context):
+        """Checks the latency of the bot."""
+        embed = discord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
+                              color=DEFAULT_EMBED_COLOR)
+        await ctx.channel.send(embed=embed)

@@ -172,6 +172,8 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `github:` Displays information about the GitHub repository.  
 
+- `ping:` Checks the latency of the bot.
+
 ### Settings
 Can only be used by a server administrator.
 

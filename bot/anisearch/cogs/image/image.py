@@ -137,8 +137,7 @@ class Image(commands.Cog, name='Image'):
 
         return embed
 
-    @commands.command(name='trace', aliases=['t'], usage='trace <image-url|with image as attachment>',
-                      ignore_extra=False)
+    @commands.command(name='trace', usage='trace <image-url|with image as attachment>', ignore_extra=False)
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def trace(self, ctx: Context, trace: Optional[str] = None):
         """

@@ -776,7 +776,7 @@ class Profile(commands.Cog, name='Profile'):
                     title='No MyAnimeList profile set.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='kitsu', aliases=['k', 'kit'], usage='kitsu [username|@member]', ignore_extra=False)
+    @commands.command(name='kitsu', usage='kitsu [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def kitsu(self, ctx: Context, username: Optional[str] = None):
         """
@@ -806,8 +806,7 @@ class Profile(commands.Cog, name='Profile'):
                     title='No Kitsu profile set.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='setprofile', aliases=['sp', 'setp'], usage='setprofile <al|mal|kitsu> <username>',
-                      ignore_extra=False)
+    @commands.command(name='setprofile', usage='setprofile <al|mal|kitsu> <username>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def setprofile(self, ctx: Context, site: str, username: str):
         """
@@ -856,7 +855,7 @@ class Profile(commands.Cog, name='Profile'):
                 name='Kitsu', value=kitsu if kitsu else '*Not Set*', inline=False)
             await ctx.channel.send(embed=embed)
 
-    @commands.command(name='removeprofiles', aliases=['rmp'], usage='removeprofiles', ignore_extra=False)
+    @commands.command(name='removeprofiles', usage='removeprofiles', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def removeprofiles(self, ctx: Context):
         """

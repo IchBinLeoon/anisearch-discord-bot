@@ -55,8 +55,8 @@ func FormatUptime(uptime int) string {
 	t := float64(uptime)
 
 	h := math.Floor(t / 3600)
-	m := math.Floor((t - h * 3600) / 60)
-	s := t - (h * 3600 + m * 60)
+	m := math.Floor((t - h*3600) / 60)
+	s := t - (h*3600 + m*60)
 
 	return fmt.Sprintf("%02.f:%02.f:%02.f", h, m, s)
 }

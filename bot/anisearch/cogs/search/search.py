@@ -429,7 +429,7 @@ class Search(commands.Cog, name='Search'):
 
         return embed
 
-    @commands.command(name='anime', aliases=['a', 'ani'], usage='anime <title>', ignore_extra=False)
+    @commands.command(name='anime', aliases=['ani'], usage='anime <title>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def anime(self, ctx: Context, *, title: str):
         """
@@ -447,7 +447,7 @@ class Search(commands.Cog, name='Search'):
                     title=f'The anime `{title}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='manga', aliases=['m'], usage='manga <title>', ignore_extra=False)
+    @commands.command(name='manga', usage='manga <title>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def manga(self, ctx: Context, *, title: str):
         """
@@ -466,7 +466,7 @@ class Search(commands.Cog, name='Search'):
                     color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='character', aliases=['c', 'char'], usage='character <name>', ignore_extra=False)
+    @commands.command(name='character', aliases=['char'], usage='character <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def character(self, ctx: Context, *, name: str):
         """
@@ -523,7 +523,7 @@ class Search(commands.Cog, name='Search'):
                     color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='random', aliases=['r'], usage='random <anime|manga> <genre>', ignore_extra=False)
+    @commands.command(name='random', usage='random <anime|manga> <genre>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def random(self, ctx: Context, media: str, *, genre: str):
         """

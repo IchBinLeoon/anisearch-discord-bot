@@ -63,7 +63,7 @@ class Settings(commands.Cog, name='Settings'):
                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='setchannel', aliases=['setc', 'sc'], usage='setchannel [#channel|ID]', ignore_extra=False)
+    @commands.command(name='setchannel', usage='setchannel [#channel|ID]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
@@ -92,8 +92,7 @@ class Settings(commands.Cog, name='Settings'):
                                   color=DEFAULT_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
 
-    @commands.command(name='removechannel', aliases=['rmchannel', 'rmc', 'rc'], usage='removechannel',
-                      ignore_extra=False)
+    @commands.command(name='removechannel', usage='removechannel', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
