@@ -177,11 +177,9 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 ### Settings
 Can only be used by a server administrator.
 
-- `setprefix <prefix>:` Changes the current server prefix. Max 5 characters.  
+- `set <prefix|channel|role> <prefix|#channel|@role>:` Sets the server prefix, the channel for anime episode notifications, or the role for notification mentions.  
 
-- `setchannel [#channel|ID]:` Sets the channel for the anime episode notifications. If no channel is specified, the current one is used.
-
-- `removechannel:` Removes the channel set for the anime episode notifications.
+- `remove <channel|role>:` Removes the set channel or role.
 
 ### Admin
 Can only be used by the bot owner.  
@@ -266,7 +264,7 @@ The bot, the associated admin panel and Asuka, the episode notification service,
 1. To be able to use the bot you need to set up a `PostgreSQL Database`. Make sure the tables are set up correctly as shown below to successfully connect to your database. Type the following in your `PSQL Tool`:
 
     ```sql
-    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5), channel bigint);
+    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5), channel bigint, role bigint);
     CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255));
     CREATE TABLE IF NOT EXISTS schedule (id bigint, time bigint, episode int, romaji VARCHAR (255), english VARCHAR (255), image VARCHAR (255), url VARCHAR (255), nsfw boolean);
     ```

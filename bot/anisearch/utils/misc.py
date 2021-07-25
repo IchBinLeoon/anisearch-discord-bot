@@ -89,7 +89,7 @@ def get_command_example(ctx: Context, command: str) -> Union[str, None]:
         'ED2 Kaguya-sama',
     ]
 
-    setprofile = [
+    addprofile = [
         f'al {ctx.author.name}',
         f'mal {ctx.author.name}',
         f'kitsu {ctx.author.name}'
@@ -98,6 +98,12 @@ def get_command_example(ctx: Context, command: str) -> Union[str, None]:
     trending = [
         'anime',
         'manga'
+    ]
+
+    set = [
+        'prefix ?',
+        'channel #notifications',
+        'role @Notifications'
     ]
 
     try:

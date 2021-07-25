@@ -142,6 +142,9 @@ func guilds(c *gin.Context) {
 		if i.Channel != 0 {
 			info = append(info, fmt.Sprintf("Channel: %d", i.Channel))
 		}
+		if i.Role != 0 {
+			info = append(info, fmt.Sprintf("Role: %d", i.Role))
+		}
 		guildStr := strings.Join(info, " | ")
 		guildStrList = append(guildStrList, guildStr)
 	}

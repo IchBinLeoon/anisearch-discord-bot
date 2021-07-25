@@ -54,6 +54,7 @@ type Guild struct {
 	ID      int64
 	Prefix  string
 	Channel int64
+	Role    int64
 }
 
 type User struct {

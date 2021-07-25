@@ -206,3 +206,34 @@ class DataBase:
                     return None
         finally:
             self.pool.putconn(conn)
+
+    def set_role(self, role_id: int, guild: discord.Guild) -> None:
+        """Sets the role for the matching guild in the database."""
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    'UPDATE guilds SET role = %s WHERE id = %s;', (role_id, guild.id,))
+                cur.execute(
+                    'SELECT role FROM guilds WHERE id = %s;', (guild.id,))
+                role_id = cur.fetchone()[0]
+                conn.commit()
+                log.info(
+                    f'Set role for guild {guild.name} [{guild.id}] to {role_id}.')
+        finally:
+            self.pool.putconn(conn)
+
+    def get_role(self, guild: discord.Guild) -> Union[int, None]:
+        """Gets the role for the current guild from the database."""
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute(
+                        'SELECT role FROM guilds WHERE id = %s;', (guild.id,))
+                    role = cur.fetchone()[0]
+                    return role
+                except TypeError:
+                    return None
+        finally:
+            self.pool.putconn(conn)
