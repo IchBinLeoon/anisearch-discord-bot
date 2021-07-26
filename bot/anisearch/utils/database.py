@@ -137,7 +137,7 @@ class DataBase:
                     cur.execute('INSERT INTO users (id, kitsu) SELECT %s, %s WHERE NOT EXISTS '
                                 '(SELECT 1 FROM users WHERE id = %s);', (id_, username, id_,))
                 conn.commit()
-                log.info(f'Added {site} profile for user {id_} to {username}.')
+                log.info(f'Set {site} profile for user {id_} to {username}.')
         finally:
             self.pool.putconn(conn)
 
