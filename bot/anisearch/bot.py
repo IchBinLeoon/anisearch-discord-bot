@@ -114,7 +114,7 @@ class AniSearchBot(AutoShardedBot):
                 pass
             except Exception as e:
                 log.exception(e)
-        log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded.')
+        log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded')
 
     def unload_cogs(self) -> None:
         """Unloads all cogs."""
@@ -126,7 +126,7 @@ class AniSearchBot(AutoShardedBot):
             except Exception as e:
                 log.exception(e)
         log.info(
-            f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded.')
+            f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded')
 
     async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
         """Gets the command prefix of the bot for the current guild."""
@@ -158,29 +158,29 @@ class AniSearchBot(AutoShardedBot):
         await self.wait_until_ready()
 
     async def on_shard_ready(self, shard_id: int) -> None:
-        log.info(f'Shard ID {shard_id} is ready.')
+        log.info(f'Shard ID {shard_id} is ready')
 
     async def on_shard_connect(self, shard_id: int) -> None:
-        log.info(f'Shard ID {shard_id} connected to Discord.')
+        log.info(f'Shard ID {shard_id} connected to Discord')
 
     async def on_shard_disconnect(self, shard_id: int) -> None:
-        log.info(f'Shard ID {shard_id} disconnected from Discord.')
+        log.info(f'Shard ID {shard_id} disconnected from Discord')
 
     async def on_shard_resumed(self, shard_id: int) -> None:
-        log.info(f'Shard ID {shard_id} resumed to Discord.')
+        log.info(f'Shard ID {shard_id} resumed to Discord')
 
     async def on_api_ready(self, host: str, port: int):
-        log.info(f'Api is ready. Listening and serving HTTP on {host}:{port}.')
+        log.info(f'Api is ready: Listening and serving HTTP on {host}:{port}')
 
     async def on_command(self, ctx: Context) -> None:
         if isinstance(ctx.channel, discord.channel.DMChannel):
-            log.info(f'[{ctx.author.id}] {ctx.author} » {ctx.message.content}')
+            log.info(f'User {ctx.author.id} executed command: {ctx.message.content}')
         else:
             log.info(
-                f'[{ctx.author.id}] {ctx.author} - [{ctx.guild.id}] {ctx.guild.name} » {ctx.message.content}')
+                f'(Guild {ctx.guild.id}) User {ctx.author.id} executed command: {ctx.message.content}')
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
-        log.info(f'Joined guild {guild.name} [{guild.id}].')
+        log.info(f'Bot joined guild {guild.id}')
         self.db.insert_prefix(guild)
         try:
             user = await self.fetch_user(guild.owner_id)
@@ -201,12 +201,12 @@ class AniSearchBot(AutoShardedBot):
             log.exception(e)
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
-        log.info(f'Left guild {guild.name} [{guild.id}].')
+        log.info(f'Bot left guild {guild.id}')
         self.db.delete_prefix(guild)
 
     async def on_autopost_success(self):
         log.info(
-            f'TopGG statistics posted. (Guilds: {self.topgg.guild_count}, Shards: {self.shard_count})')
+            f'TopGG statistics posted (Guilds: {self.topgg.guild_count}, Shards: {self.shard_count})')
 
     async def on_autopost_error(self, error: Exception):
         if isinstance(error, topgg.errors.UnauthorizedDetected):
@@ -324,7 +324,7 @@ class AniSearchBot(AutoShardedBot):
 
         else:
             log.exception(
-                'An unknown exception occurred while executing a command.', exc_info=error)
+                'An unknown exception occurred while executing a command:', exc_info=error)
 
         embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
         return await ctx.channel.send(embed=embed)

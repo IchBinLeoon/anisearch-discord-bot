@@ -68,7 +68,7 @@ class DataBase:
                         'SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
                     prefix = cur.fetchone()[0]
                     log.info(
-                        f'Inserted prefix for guild {message.guild.name} [{message.guild.id}].')
+                        f'Inserted prefix for guild {message.guild.id}')
                     return prefix
         finally:
             self.pool.putconn(conn)
@@ -84,7 +84,7 @@ class DataBase:
                             '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id,))
                 conn.commit()
                 log.info(
-                    f'Inserted prefix for guild {guild.name} [{guild.id}].')
+                    f'Inserted prefix for guild {guild.id}')
         finally:
             self.pool.putconn(conn)
 
@@ -96,7 +96,7 @@ class DataBase:
                 cur.execute('DELETE FROM guilds WHERE id = %s;', (guild.id,))
                 conn.commit()
                 log.info(
-                    f'Deleted prefix for guild {guild.name} [{guild.id}].')
+                    f'Deleted prefix for guild {guild.id}')
         finally:
             self.pool.putconn(conn)
 
@@ -112,7 +112,7 @@ class DataBase:
                 prefix = cur.fetchone()[0]
                 conn.commit()
                 log.info(
-                    f'Changed prefix for guild {message.guild.name} [{message.guild.id}] to {prefix}.')
+                    f'Changed prefix for guild {message.guild.id} to {prefix}')
         finally:
             self.pool.putconn(conn)
 
@@ -137,7 +137,7 @@ class DataBase:
                     cur.execute('INSERT INTO users (id, kitsu) SELECT %s, %s WHERE NOT EXISTS '
                                 '(SELECT 1 FROM users WHERE id = %s);', (id_, username, id_,))
                 conn.commit()
-                log.info(f'Set {site} profile for user {id_} to {username}.')
+                log.info(f'Set {site} profile for user {id_} to {username}')
         finally:
             self.pool.putconn(conn)
 
@@ -172,7 +172,7 @@ class DataBase:
             with conn.cursor() as cur:
                 cur.execute('DELETE FROM users WHERE id = %s;', (id_,))
                 conn.commit()
-                log.info(f'Removed user {id_}.')
+                log.info(f'Removed user {id_}')
         finally:
             self.pool.putconn(conn)
 
@@ -188,7 +188,7 @@ class DataBase:
                 channel_id = cur.fetchone()[0]
                 conn.commit()
                 log.info(
-                    f'Set channel for guild {guild.name} [{guild.id}] to {channel_id}.')
+                    f'Set channel for guild {guild.id} to {channel_id}')
         finally:
             self.pool.putconn(conn)
 
@@ -219,7 +219,7 @@ class DataBase:
                 role_id = cur.fetchone()[0]
                 conn.commit()
                 log.info(
-                    f'Set role for guild {guild.name} [{guild.id}] to {role_id}.')
+                    f'Set role for guild {guild.id} to {role_id}')
         finally:
             self.pool.putconn(conn)
 

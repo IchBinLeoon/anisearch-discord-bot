@@ -28,4 +28,4 @@ log = logging.getLogger(__name__)
 def setup(bot: AniSearchBot):
     """Sets up the Help cog."""
     bot.add_cog(Help(bot))
-    log.info('Help cog loaded.')
+    log.info('Help cog loaded')
