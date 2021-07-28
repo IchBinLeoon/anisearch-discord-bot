@@ -61,8 +61,8 @@ async def check_update() -> None:
                 github_version = str(re.findall("__version__ = '(.*)'", await r.text())[0])
                 if github_version != anisearch.__version__:
                     logging.info(
-                        f'Update available! You are running version {anisearch.__version__}. Version {github_version} '
-                        f'is available at https://github.com/IchBinLeoon/anisearch-discord-bot.')
+                        f'Update available! You are running version {anisearch.__version__} - Version {github_version} '
+                        f'is available at https://github.com/IchBinLeoon/anisearch-discord-bot')
 
 
 def start(log_stream: StringIO) -> None:
