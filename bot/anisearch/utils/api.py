@@ -108,7 +108,7 @@ class Server:
                         cog = self.bot.get_cog('Schedule')
                         if cog is None:
                             log.warning(
-                                'Schedule cog has not been loaded. Cannot send episode notification.')
+                                'Schedule cog has not been loaded: Cannot send episode notification')
                         else:
                             await cog.send_episode_notification(data)
                     except Exception as e:

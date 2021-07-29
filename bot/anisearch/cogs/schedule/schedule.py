@@ -259,4 +259,4 @@ class Schedule(commands.Cog, name='Schedule'):
             except Exception as e:
                 log.exception(e)
 
-        log.info(f'Posted episode notification in {channel_count} channels.')
+        log.info(f'Posted episode notification in {channel_count} channels')
