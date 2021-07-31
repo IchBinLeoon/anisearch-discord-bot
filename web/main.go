@@ -213,7 +213,7 @@ func main() {
 	if connErr != nil {
 		log.Fatal(connErr)
 	} else {
-		log.Println(fmt.Sprintf(`Connected to database "%s" on %s:%s`, dbName, dbHost, dbPort))
+		log.Println(fmt.Sprintf("Connected to database '%s' on %s:%s", dbName, dbHost, dbPort))
 	}
 
 	gin.SetMode(mode)
