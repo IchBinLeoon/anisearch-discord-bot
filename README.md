@@ -196,6 +196,8 @@ Can only be used by the bot owner.
 
 - `reloadall:` Reloads all cogs.  
 
+`sysinfo:` Displays information about the system on which the bot is currently running.
+
 
 # 🤝 Contribute
 You have an idea or found a bug? Open [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
@@ -364,6 +366,7 @@ Thanks to the people who made this discord bot possible.
 #### [beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/)
 #### [top-gg/python-sdk ](https://github.com/top-gg/python-sdk)
 #### [theskumar/python-dotenv](https://github.com/theskumar/python-dotenv)
+#### [giampaolo/psutil](https://github.com/giampaolo/psutil)
 #### [gin-gonic/gin](https://github.com/gin-gonic/gin)
 #### [joho/godotenv](https://github.com/joho/godotenv)
 #### [go-gorm/gorm](https://github.com/go-gorm/gorm)
