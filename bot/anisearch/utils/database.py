@@ -165,6 +165,17 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
+    def check_user(self, id_: int) -> None:
+        """Checks if a user exists in the database."""
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute('SELECT EXISTS(SELECT 1 FROM users WHERE id = %s);', (id_,))
+                user = cur.fetchone()[0]
+                return user
+        finally:
+            self.pool.putconn(conn)
+
     def delete_user(self, id_: int) -> None:
         """Deletes a user from the database."""
         conn = self.pool.getconn()

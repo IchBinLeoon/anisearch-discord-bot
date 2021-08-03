@@ -895,10 +895,15 @@ class Profile(commands.Cog, name='Profile'):
                     embed = discord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             elif site.lower() == 'all':
-                self.bot.db.delete_user(ctx.author.id)
-                embed = discord.Embed(title=f'Removed the user {ctx.author} from the database.',
-                                      color=DEFAULT_EMBED_COLOR)
-                await ctx.channel.send(embed=embed)
+                if not self.bot.db.check_user(ctx.author.id):
+                    embed = discord.Embed(title=f'The user {ctx.author} does not exist in the database.',
+                                          color=ERROR_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
+                else:
+                    self.bot.db.delete_user(ctx.author.id)
+                    embed = discord.Embed(title=f'Removed the user {ctx.author} from the database.',
+                                          color=DEFAULT_EMBED_COLOR)
+                    await ctx.channel.send(embed=embed)
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise discord.ext.commands.BadArgument

@@ -196,7 +196,7 @@ Can only be used by the bot owner.
 
 - `reloadall:` Reloads all cogs.  
 
-`sysinfo:` Displays information about the system on which the bot is currently running.
+- `sysinfo:` Displays information about the system on which the bot is currently running.
 
 
 # 🤝 Contribute
