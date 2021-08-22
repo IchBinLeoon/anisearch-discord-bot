@@ -85,7 +85,7 @@ class AnimeThemesClient:
         """Returns relevant resources by search criteria."""
         q = '%20'.join(query.split())
         parameters = f'?q={q}&limit={limit}&fields[search]=anime&include=' \
-                     f'themes.entries.videos%2Cthemes.song.artists%2Cimages'
+                     f'animethemes.animethemeentries.videos%2Canimethemes.song.artists%2Cimages'
         url = await self.get_url('search', parameters)
         data = await self._request(url=url)
         return data

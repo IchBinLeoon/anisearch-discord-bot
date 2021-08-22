@@ -55,7 +55,7 @@ class Themes(commands.Cog, name='Themes'):
                                             data.get('resources')])
 
         count = 1
-        for theme in data.get('themes'):
+        for theme in data.get('animethemes'):
             if count >= 15:
                 embed.add_field(name=theme.get('slug'),
                                 value='...', inline=False)
@@ -68,7 +68,8 @@ class Themes(commands.Cog, name='Themes'):
                 list_.append('**Artist:** ' + theme.get('song')
                              ['artists'][0]['name'])
 
-            link = f'[Link](https://animethemes.moe/video/{theme.get("entries")[0]["videos"][0]["basename"]})'
+            link = f'[Link](https://animethemes.moe/video/' \
+                   f'{theme.get("animethemeentries")[0]["videos"][0]["basename"]})'
             list_.append(link)
 
             embed.add_field(name=theme.get('slug'),
@@ -124,7 +125,8 @@ class Themes(commands.Cog, name='Themes'):
                     try:
                         embed = await self.get_themes_embed(entry, page + 1, len(data.get('search').get('anime')))
                         if not isinstance(ctx.channel, discord.channel.DMChannel):
-                            if is_adult(entry.get('themes')[0]['entries'][0]) and not ctx.channel.is_nsfw():
+                            if is_adult(entry.get('animethemes')[0]['animethemeentries'][0]) and not \
+                                    ctx.channel.is_nsfw():
                                 embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
@@ -157,7 +159,7 @@ class Themes(commands.Cog, name='Themes'):
             data = await self.bot.animethemes.search(anime, 1)
             if data.get('search').get('anime'):
                 anime_ = data.get('search').get('anime')[0]
-                for entry in anime_.get('themes'):
+                for entry in anime_.get('animethemes'):
                     if theme.upper() == entry.get('slug') or \
                             (theme.upper() == 'OP' and entry.get('slug') == 'OP1') or \
                             (theme.upper() == 'ED' and entry.get('slug') == 'ED1') or \
@@ -166,7 +168,7 @@ class Themes(commands.Cog, name='Themes'):
                         try:
                             embed = await self.get_theme_embed(anime_, entry)
                             if not isinstance(ctx.channel, discord.channel.DMChannel):
-                                if is_adult(entry.get('entries')[0]) and not ctx.channel.is_nsfw():
+                                if is_adult(entry.get('animethemeentries')[0]) and not ctx.channel.is_nsfw():
                                     embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                           description=f'Adult content. No NSFW channel.')
                                     embed.set_footer(
@@ -181,7 +183,8 @@ class Themes(commands.Cog, name='Themes'):
                                 text=f'Provided by https://animethemes.moe/')
                         await ctx.channel.send(embed=embed)
                         return await ctx.channel.send(
-                            f'https://animethemes.moe/video/{entry.get("entries")[0]["videos"][0]["basename"]}')
+                            f'https://animethemes.moe/video/'
+                            f'{entry.get("animethemeentries")[0]["videos"][0]["basename"]}')
                 embed = discord.Embed(
                     title=f'Cannot find `{theme.upper()}` for the anime `{anime}`.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)

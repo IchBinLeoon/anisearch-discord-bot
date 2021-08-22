@@ -197,6 +197,8 @@ class AniSearchBot(AutoShardedBot):
                             f'• In case of any problems, bugs, suggestions or if you just want to chat, '
                             f'feel free to join the support server! {SUPPORT_SERVER_INVITE}\n\n'
                             "Have fun with the bot!")
+        except discord.errors.Forbidden:
+            pass
         except Exception as e:
             log.exception(e)
 
