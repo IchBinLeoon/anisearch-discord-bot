@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Optional, Any, Dict, Union
+from urllib.parse import quote
 
 import aiohttp
 
@@ -79,7 +80,8 @@ class KitsuClient:
 
     async def user(self, username: str) -> Union[Dict[str, Any], None]:
         """Gets a user based on the given username."""
-        parameters = f'?filter[name]={username}&include=stats,favorites'
+        q = quote(username)
+        parameters = f'?filter[name]={q}&include=stats,favorites'
         url = await self.get_url('users', parameters)
         data = await self._request(url=url)
         if data.get('data'):

@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Optional, Any, Dict, Union
+from urllib.parse import quote
 
 import aiohttp
 
@@ -81,7 +82,7 @@ class SauceNAOClient:
     async def search(self, url: str) -> Union[Dict[str, Any], None]:
         """Looks up the source of an image by url."""
         url = f'{SAUCENAO_BASE_URL}?db={str(self.db)}&output_type={str(self.output_type)}&numres={str(self.numres)}' \
-              f'&api_key={str(self.api_key)}&url={url}'
+              f'&api_key={str(self.api_key)}&url={quote(url)}'
         data = await self._request(url)
         if data.get('results'):
             return data.get('results')

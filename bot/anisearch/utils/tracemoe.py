@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Optional, Any, Dict, Union
+from urllib.parse import quote
 
 import aiohttp
 
@@ -125,7 +126,7 @@ class TraceMoeClient:
 
     async def search(self, url: str) -> Union[Dict[str, Any], None]:
         """Searches an anime by image."""
-        url = f'{TRACEMOE_BASE_URL}/search?anilistInfo&url={url}'
+        url = f'{TRACEMOE_BASE_URL}/search?anilistInfo&url={quote(url)}'
         data = await self._request(url)
         if data.get('result'):
             return data.get('result')

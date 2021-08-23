@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Optional, Any, Dict, Union
+from urllib.parse import quote
 
 import aiohttp
 
@@ -82,7 +83,7 @@ class JikanClient:
 
     async def user(self, username: str) -> Union[Dict[str, Any], None]:
         """Gets a user based on the given username."""
-        parameters = username
+        parameters = quote(username)
         url = await self.get_url('user', parameters)
         data = await self._request(url=url)
         if data:

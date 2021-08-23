@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Optional, Any, Dict
+from urllib.parse import quote
 
 import aiohttp
 
@@ -83,9 +84,9 @@ class AnimeThemesClient:
 
     async def search(self, query: str, limit: Optional[int] = 5) -> Dict[str, Any]:
         """Returns relevant resources by search criteria."""
-        q = '%20'.join(query.split())
+        q = quote(query)
         parameters = f'?q={q}&limit={limit}&fields[search]=anime&include=' \
-                     f'animethemes.animethemeentries.videos%2Canimethemes.song.artists%2Cimages'
+                     f'animethemes.animethemeentries.videos,animethemes.song.artists,images'
         url = await self.get_url('search', parameters)
         data = await self._request(url=url)
         return data
