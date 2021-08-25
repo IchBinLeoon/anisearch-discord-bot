@@ -28,8 +28,7 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, WAIFUPICS_BASE_URL
-from anisearch.utils.http import get
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
 from anisearch.utils.menus import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -171,24 +170,23 @@ class Image(commands.Cog, name='Image'):
                                   f'the search queue is full.',
                             color=ERROR_EMBED_COLOR)
                         return await ctx.channel.send(embed=embed)
-                    if len(data.get('result')) > 0:
+                    if len(data) > 0:
                         embeds = []
-                        for page, anime in enumerate(data.get('result')):
+                        for page, anime in enumerate(data):
                             try:
-                                embed = await self.get_trace_embed(anime, page + 1, len(data.get('result')))
+                                embed = await self.get_trace_embed(anime, page + 1, len(data))
                                 if not isinstance(ctx.channel, discord.channel.DMChannel):
                                     if is_adult(anime.get('anilist')) and not ctx.channel.is_nsfw():
                                         embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                               description=f'Adult content. No NSFW channel.')
                                         embed.set_footer(
-                                            text=f'Provided by https://trace.moe/ • Page {page + 1}/'
-                                                 f'{len(data.get("result"))}')
+                                            text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             except Exception as e:
                                 log.exception(e)
                                 embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
-                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data.get("result"))}')
+                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
                         menu = menus.MenuPages(source=EmbedListMenu(
                             embeds), clear_reactions_after=True, timeout=30)
