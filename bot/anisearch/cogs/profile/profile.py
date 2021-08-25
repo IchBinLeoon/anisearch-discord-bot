@@ -48,7 +48,7 @@ class Profile(commands.Cog, name='Profile'):
             if site == 'anilist':
                 data = await self.bot.anilist.user(name=username, page=1, perPage=1)
             if site == 'myanimelist':
-                data = await self.bot.myanimelist.user(username=username)
+                data = await self.bot.jikan.user(username=username)
             if site == 'kitsu':
                 data = await self.bot.kitsu.user(username=username)
 
@@ -386,7 +386,7 @@ class Profile(commands.Cog, name='Profile'):
         embeds = []
 
         try:
-            data = await self.bot.myanimelist.user(username=username)
+            data = await self.bot.jikan.user(username=username)
 
         except Exception as e:
             log.exception(e)

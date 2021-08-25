@@ -278,13 +278,6 @@ The bot, the associated admin panel and Asuka, the episode notification service,
 3. ### Bot & Asuka
     - Make sure you have `Python 3.8` or higher.
 
-    #### Bot
-    - Change the working directory.
-
-        ```
-        $ cd bot
-        ```   
-
     - Set up and activate a venv.
 
         ```
@@ -296,42 +289,23 @@ The bot, the associated admin panel and Asuka, the episode notification service,
     - Install the requirements.
 
         ```
-        $ python -m pip install -r requirements.txt
+        $ python -m pip install -r bot/requirements.txt
+        $ python -m pip install -r asuka/requirements.txt
         ```
 
     - Run the bot.
 
         ```
+        $ cd bot
         $ python -m anisearch
-        ```
-      
-    #### Asuka
-    - Change the working directory.
-
-        ```
-        $ ..
-        $ cd asuka
-        ```   
-
-    - Set up and activate a venv.
-
-        ```
-        $ python3 -m venv venv
-        $ source venv/bin/activate # On macOS and Linux
-        $ .\venv\Scripts\activate # On Windows
-        ```
-
-    - Install the requirements.
-
-        ```
-        $ python -m pip install -r requirements.txt
         ```
 
     - Run Asuka.
 
-        ```
-        $ python asuka.py
-        ```
+      ```
+      $ cd asuka
+      $ python asuka.py
+      ```
 
 5. ### Admin Panel
     - Make sure you have `Go 1.16` or higher.
@@ -367,6 +341,9 @@ Thanks to the people who made this discord bot possible.
 #### [top-gg/python-sdk ](https://github.com/top-gg/python-sdk)
 #### [theskumar/python-dotenv](https://github.com/theskumar/python-dotenv)
 #### [giampaolo/psutil](https://github.com/giampaolo/psutil)
+#### [abhinavk99/jikanpy](https://github.com/abhinavk99/jikanpy)
+#### [IchBinLeoon/tracemoe-py](https://github.com/IchBinLeoon/tracemoe-py)
+#### [IchBinLeoon/waifu-py](https://github.com/IchBinLeoon/waifu-py)
 #### [gin-gonic/gin](https://github.com/gin-gonic/gin)
 #### [joho/godotenv](https://github.com/joho/godotenv)
 #### [go-gorm/gorm](https://github.com/go-gorm/gorm)

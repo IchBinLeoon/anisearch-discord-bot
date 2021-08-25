@@ -186,14 +186,20 @@ class Search(commands.Cog, name='Search'):
             embed.set_image(url=data.get('bannerImage'))
 
         stats = []
-        type_ = f'Type: {format_media_type(data.get("format")) if data.get("format") else "N/A"}'
+        try:
+            type_ = f'Type: {format_media_type(data.get("format")) if data.get("format") else "N/A"}'
+        except KeyError:
+            type_ = f'Type: N/A'
         stats.append(type_)
 
-        status = 'N/A'
-        if data.get('type') == 'ANIME':
-            status = f'Status: {format_anime_status(data.get("status"))}'
-        elif data.get('type') == 'MANGA':
-            status = f'Status: {format_manga_status(data.get("status"))}'
+        status = 'Status: N/A'
+        try:
+            if data.get('type') == 'ANIME':
+                status = f'Status: {format_anime_status(data.get("status"))}'
+            elif data.get('type') == 'MANGA':
+                status = f'Status: {format_manga_status(data.get("status"))}'
+        except KeyError:
+            pass
         stats.append(status)
 
         score = f'Score: {str(data.get("meanScore")) if data.get("meanScore") else "N/A"}'

@@ -28,6 +28,9 @@ from aiohttp import ClientSession
 from discord.ext import commands, tasks, menus
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 from discord.utils import get
+from jikanpy import AioJikan
+from tracemoe import TraceMoe
+from waifu import WaifuAioClient
 
 from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCENAO_API_KEY, BOT_API_HOST, \
     BOT_API_PORT, BOT_API_SECRET_KEY
@@ -38,10 +41,8 @@ from anisearch.utils.api import Server
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID, SUPPORT_SERVER_INVITE
 from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
-from anisearch.utils.jikan import JikanClient
 from anisearch.utils.kitsu import KitsuClient
 from anisearch.utils.saucenao import SauceNAOClient
-from anisearch.utils.tracemoe import TraceMoeClient
 
 log = logging.getLogger(__name__)
 
@@ -83,12 +84,12 @@ class AniSearchBot(AutoShardedBot):
         self.animethemes = AnimeThemesClient(session=ClientSession(loop=self.loop),
                                              headers={'User-Agent': 'AniSearch Discord Bot'})
 
-        self.tracemoe = TraceMoeClient(session=ClientSession(loop=self.loop))
+        self.tracemoe = TraceMoe(session=ClientSession(loop=self.loop))
 
         self.saucenao = SauceNAOClient(api_key=BOT_SAUCENAO_API_KEY, db=999, output_type=2, numres=10,
                                        session=ClientSession(loop=self.loop))
 
-        self.myanimelist = JikanClient(session=ClientSession(loop=self.loop))
+        self.jikan = AioJikan(session=ClientSession(loop=self.loop))
 
         self.kitsu = KitsuClient(session=ClientSession(loop=self.loop))
 
@@ -97,6 +98,8 @@ class AniSearchBot(AutoShardedBot):
 
         self.crunchyroll = CrunchyrollClient(
             session=ClientSession(loop=self.loop))
+
+        self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
 
         # Posts guild and shard count to Top.gg every 30 minutes.
         self.topgg = topgg.DBLClient(
@@ -255,7 +258,7 @@ class AniSearchBot(AutoShardedBot):
         await self.animethemes.close()
         await self.tracemoe.close()
         await self.saucenao.close()
-        await self.myanimelist.close()
+        await self.jikan.close()
         await self.kitsu.close()
         await self.animenewsnetwork.close()
         await self.crunchyroll.close()

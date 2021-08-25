@@ -163,7 +163,7 @@ class Image(commands.Cog, name='Image'):
                     ctx.command.reset_cooldown(ctx)
                 else:
                     try:
-                        data = await self.bot.tracemoe.search(url)
+                        data = await self.bot.tracemoe.search(url, anilist_info=True)
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(
@@ -171,23 +171,24 @@ class Image(commands.Cog, name='Image'):
                                   f'the search queue is full.',
                             color=ERROR_EMBED_COLOR)
                         return await ctx.channel.send(embed=embed)
-                    if data:
+                    if len(data.get('result')) > 0:
                         embeds = []
-                        for page, anime in enumerate(data):
+                        for page, anime in enumerate(data.get('result')):
                             try:
-                                embed = await self.get_trace_embed(anime, page + 1, len(data))
+                                embed = await self.get_trace_embed(anime, page + 1, len(data.get('result')))
                                 if not isinstance(ctx.channel, discord.channel.DMChannel):
                                     if is_adult(anime.get('anilist')) and not ctx.channel.is_nsfw():
                                         embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                               description=f'Adult content. No NSFW channel.')
                                         embed.set_footer(
-                                            text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
+                                            text=f'Provided by https://trace.moe/ • Page {page + 1}/'
+                                                 f'{len(data.get("result"))}')
                             except Exception as e:
                                 log.exception(e)
                                 embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
-                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
+                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data.get("result"))}')
                             embeds.append(embed)
                         menu = menus.MenuPages(source=EmbedListMenu(
                             embeds), clear_reactions_after=True, timeout=30)
@@ -259,9 +260,10 @@ class Image(commands.Cog, name='Image'):
         Posts a random image of a waifu.
         """
         async with ctx.channel.typing():
-            data = await get(url=f'{WAIFUPICS_BASE_URL}/sfw/waifu', session=self.bot.session, res_method='json')
+            data = await self.bot.waifu.sfw('waifu')
             embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-            embed.set_image(url=data.get('url'))
+            embed.set_image(url=data)
+            embed.set_footer(text='Provided by https://waifu.pics/')
             await ctx.channel.send(embed=embed)
 
     @commands.command(name='neko', aliases=['catgirl', 'meow', 'nya'], usage='neko', ignore_extra=False)
@@ -271,7 +273,8 @@ class Image(commands.Cog, name='Image'):
         Posts a random image of a catgirl.
         """
         async with ctx.channel.typing():
-            data = await get(url=f'{WAIFUPICS_BASE_URL}/sfw/neko', session=self.bot.session, res_method='json')
+            data = await self.bot.waifu.sfw('neko')
             embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
-            embed.set_image(url=data.get('url'))
+            embed.set_image(url=data)
+            embed.set_footer(text='Provided by https://waifu.pics/')
             await ctx.channel.send(embed=embed)
