@@ -212,7 +212,9 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='ping', aliases=['latency'], usage='ping', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ping(self, ctx: Context):
-        """Checks the latency of the bot."""
+        """
+        Checks the latency of the bot.
+        """
         embed = discord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
                               color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
