@@ -29,8 +29,6 @@ import (
 	"os"
 	"strings"
 
-	t "github.com/IchBinLeoon/anisearch-discord-bot/web/types"
-	u "github.com/IchBinLeoon/anisearch-discord-bot/web/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -62,12 +60,12 @@ func index(c *gin.Context) {
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
 
-	data, err := u.Request("GET", urlStr, headers, nil)
+	data, err := Request("GET", urlStr, headers, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
-	Data := t.Stats{}
+	Data := Stats{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
 		log.Println(err)
 	}
@@ -90,12 +88,12 @@ func logs(c *gin.Context) {
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
 
-	data, err := u.Request("GET", urlStr, headers, nil)
+	data, err := Request("GET", urlStr, headers, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
-	Data := t.Logs{}
+	Data := Logs{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
 		log.Println(err)
 	}
@@ -109,12 +107,12 @@ func shards(c *gin.Context) {
 	headers := make(map[string]string)
 	headers["Authentication"] = botApiSecretKey
 
-	data, err := u.Request("GET", urlStr, headers, nil)
+	data, err := Request("GET", urlStr, headers, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
-	Data := t.Shards{}
+	Data := Shards{}
 	if err := json.Unmarshal([]byte(data), &Data); err != nil {
 		log.Println(err)
 	}
@@ -131,7 +129,7 @@ func shards(c *gin.Context) {
 }
 
 func guilds(c *gin.Context) {
-	var guilds []t.Guild
+	var guilds []Guild
 
 	db.Unscoped().Find(&guilds)
 
@@ -155,7 +153,7 @@ func guilds(c *gin.Context) {
 }
 
 func users(c *gin.Context) {
-	var users []t.User
+	var users []User
 
 	db.Unscoped().Find(&users)
 
@@ -220,7 +218,7 @@ func main() {
 	router := gin.Default()
 
 	router.SetFuncMap(template.FuncMap{
-		"formatUptime": u.FormatUptime,
+		"formatUptime": FormatUptime,
 	})
 
 	router.LoadHTMLGlob("templates/*")
