@@ -61,7 +61,6 @@ class Asuka:
         self.session = None
 
     async def _session(self):
-        """Gets an aiohttp session by creating it if it does not already exist."""
         if self.session is None or self.session.closed:
             self.session = aiohttp.ClientSession()
         return self.session
@@ -70,12 +69,10 @@ class Asuka:
         await self.close()
 
     async def close(self):
-        """Closes the aiohttp session."""
         if self.session is not None:
             await self.session.close()
 
     async def fetch_anilist(self):
-        """Gets the next airing anime episodes from the AniList API."""
         query = '''
         query ($page: Int, $perPage: Int, $notYetAired: Boolean, $sort: [AiringSort]) {
           Page(page: $page, perPage: $perPage) {
@@ -112,7 +109,6 @@ class Asuka:
             return None
 
     async def clear_table(self):
-        """Deletes all entries from the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -123,7 +119,6 @@ class Asuka:
             self.pool.putconn(conn)
 
     async def insert_table(self, data):
-        """Inserts the new entries into the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -147,7 +142,6 @@ class Asuka:
             self.pool.putconn(conn)
 
     async def check(self):
-        """Checks if an episode has been aired."""
         logging.info('Checking database entries')
         new_episodes = []
         conn = self.pool.getconn()
@@ -183,7 +177,6 @@ class Asuka:
             self.pool.putconn(conn)
 
     async def work(self):
-        """Starts Asuka's task loop."""
         while True:
             await self.check()
             data = await self.fetch_anilist()
@@ -193,7 +186,6 @@ class Asuka:
             await asyncio.sleep(TIME)
 
     def run(self):
-        """Runs Asuka."""
         logging.info('Starting Asuka')
         loop = self.loop
         loop.set_exception_handler(handle_exception)

@@ -70,7 +70,7 @@ func index(c *gin.Context) {
 		log.Println(err)
 	}
 
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
 		"ready":    Data.IsReady,
 		"guilds":   Data.GuildCount,
 		"users":    Data.UserCount,

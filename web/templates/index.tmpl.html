@@ -18,7 +18,7 @@
             function redirectUsers() {
                 window.location.href = "/users";
             }
-            let uptime = {{ .uptime }};
+            let uptime = {{ .uptime }}
             function countUptime() {
                 let hour = Math.floor(uptime / 3600);
                 let minute = Math.floor((uptime - hour * 3600) / 60);
@@ -29,7 +29,7 @@
                 document.getElementById("uptime").innerHTML = hour + ":" + minute + ":" + seconds;
                 ++uptime;
             }
-            if (uptime != 0) setInterval(countUptime, 1000);
+            if (uptime !== 0) setInterval(countUptime, 1000);
         </script>
         <style>
             body {
