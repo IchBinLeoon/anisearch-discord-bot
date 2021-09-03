@@ -37,7 +37,6 @@ from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCE
     BOT_API_PORT, BOT_API_SECRET_KEY
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
-from anisearch.utils.animethemes import AnimeThemesClient
 from anisearch.utils.api import Server
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID, SUPPORT_SERVER_INVITE
 from anisearch.utils.crunchyroll import CrunchyrollClient
@@ -79,9 +78,6 @@ class AniSearchBot(AutoShardedBot):
             BOT_API_PORT), secret_key=BOT_API_SECRET_KEY)
 
         self.anilist = AniListClient(session=ClientSession(loop=self.loop))
-
-        self.animethemes = AnimeThemesClient(session=ClientSession(loop=self.loop),
-                                             headers={'User-Agent': 'AniSearch Discord Bot'})
 
         self.tracemoe = TraceMoe(session=ClientSession(loop=self.loop))
 
@@ -240,7 +236,6 @@ class AniSearchBot(AutoShardedBot):
         self.unload_cogs()
         self.db.close()
         await self.anilist.close()
-        await self.animethemes.close()
         await self.tracemoe.close()
         await self.jikan.close()
         await self.animenewsnetwork.close()

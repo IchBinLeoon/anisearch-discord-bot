@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Dict, Any
+from urllib.parse import urljoin, quote
 
 import discord
 from discord import Embed
@@ -27,7 +28,8 @@ from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANIMETHEMES_BASE_URL
+from anisearch.utils.http import get
 from anisearch.utils.menus import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -113,7 +115,14 @@ class Themes(commands.Cog, name='Themes'):
     async def themes(self, ctx: Context, *, anime: str):
         """Searches for the openings and endings of the given anime and displays them."""
         async with ctx.channel.typing():
-            data = await self.bot.animethemes.search(anime, 15)
+            params = {
+                'q': quote(anime),
+                'limit': 15,
+                'fields[search]': 'anime',
+                'include': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
+            }
+            data = await get(url=urljoin(ANIMETHEMES_BASE_URL, 'search'), session=self.bot.session,
+                             res_method='json', params=params, headers={'User-Agent': 'AniSearch Discord Bot'})
             if data.get('search').get('anime'):
                 embeds = []
                 for page, entry in enumerate(data.get('search').get('anime')):
@@ -149,7 +158,14 @@ class Themes(commands.Cog, name='Themes'):
     async def theme(self, ctx: Context, theme: str, *, anime: str):
         """Displays a specific opening or ending of the given anime."""
         async with ctx.channel.typing():
-            data = await self.bot.animethemes.search(anime, 1)
+            params = {
+                'q': quote(anime),
+                'limit': 15,
+                'fields[search]': 'anime',
+                'include': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
+            }
+            data = await get(url=urljoin(ANIMETHEMES_BASE_URL, 'search'), session=self.bot.session,
+                             res_method='json', params=params, headers={'User-Agent': 'AniSearch Discord Bot'})
             if data.get('search').get('anime'):
                 anime_ = data.get('search').get('anime')[0]
                 for entry in anime_.get('animethemes'):
