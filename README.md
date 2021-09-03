@@ -344,6 +344,7 @@ Thanks to the people who made this discord bot possible.
 #### [abhinavk99/jikanpy](https://github.com/abhinavk99/jikanpy)
 #### [IchBinLeoon/tracemoe-py](https://github.com/IchBinLeoon/tracemoe-py)
 #### [IchBinLeoon/waifu-py](https://github.com/IchBinLeoon/waifu-py)
+#### [FujiMakoto/pysaucenao](https://github.com/FujiMakoto/pysaucenao)
 #### [gin-gonic/gin](https://github.com/gin-gonic/gin)
 #### [joho/godotenv](https://github.com/joho/godotenv)
 #### [go-gorm/gorm](https://github.com/go-gorm/gorm)

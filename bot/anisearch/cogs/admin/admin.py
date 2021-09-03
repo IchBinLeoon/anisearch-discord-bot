@@ -50,16 +50,13 @@ class Admin(commands.Cog, name='Admin'):
             self.bot.get_user_count()), inline=True)
         embed.add_field(name='Channels', value=str(
             self.bot.get_channel_count()), inline=True)
-        embed.add_field(name="AniSearch's Uptime", value=str(timedelta(seconds=round(self.bot.get_uptime()))),
-                        inline=False)
-        embed.add_field(
-            name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(self.bot.cogs), inline=False)
+        embed.add_field(name='Uptime', value=str(timedelta(seconds=round(self.bot.get_uptime()))),
+                        inline=True)
         embed.add_field(name='Shards', value=self.bot.shard_count, inline=True)
         embed.add_field(name='Latency', value=str(
-            round(self.bot.latency, 6)), inline=False)
+            round(self.bot.latency, 6)), inline=True)
         embed.add_field(
-            name='SauceNAO Requests', inline=False,
-            value=f'{str(self.bot.saucenao.long_remaining) if self.bot.saucenao.long_remaining else "N/A"} remaining')
+            name=f'Cogs ({len(self.bot.cogs)}/{len(initial_extensions)})', value=', '.join(self.bot.cogs), inline=False)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='load', usage='load <cog>', ignore_extra=False, hidden=True)

@@ -29,6 +29,7 @@ from discord.ext import commands, tasks, menus
 from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 from discord.utils import get
 from jikanpy import AioJikan
+from pysaucenao import SauceNao
 from tracemoe import TraceMoe
 from waifu import WaifuAioClient
 
@@ -42,7 +43,6 @@ from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID,
 from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
 from anisearch.utils.kitsu import KitsuClient
-from anisearch.utils.saucenao import SauceNAOClient
 
 log = logging.getLogger(__name__)
 
@@ -86,8 +86,8 @@ class AniSearchBot(AutoShardedBot):
 
         self.tracemoe = TraceMoe(session=ClientSession(loop=self.loop))
 
-        self.saucenao = SauceNAOClient(api_key=BOT_SAUCENAO_API_KEY, db=999, output_type=2, numres=10,
-                                       session=ClientSession(loop=self.loop))
+        self.saucenao = SauceNao(api_key=BOT_SAUCENAO_API_KEY, db=999, loop=self.loop,
+                                 results_limit=10, min_similarity=0)
 
         self.jikan = AioJikan(session=ClientSession(loop=self.loop))
 
@@ -245,7 +245,6 @@ class AniSearchBot(AutoShardedBot):
         await self.anilist.close()
         await self.animethemes.close()
         await self.tracemoe.close()
-        await self.saucenao.close()
         await self.jikan.close()
         await self.kitsu.close()
         await self.animenewsnetwork.close()

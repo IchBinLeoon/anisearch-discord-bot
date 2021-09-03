@@ -25,6 +25,7 @@ import discord
 from discord import Embed
 from discord.ext import commands, menus
 from discord.ext.commands import Context
+from pysaucenao import GenericSource
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
@@ -78,55 +79,26 @@ class Image(commands.Cog, name='Image'):
         return embed
 
     @staticmethod
-    async def get_source_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
+    async def get_source_embed(data: GenericSource, page: int, pages: int) -> Embed:
         embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
 
         embed.set_author(
-            name=f'Similarity » {float(data.get("header").get("similarity")):0.2f}%')
+            name=f'Similarity » {float(data.similarity):0.2f}%')
 
-        embed.set_image(url=data.get('header')['thumbnail'])
+        embed.set_image(url=data.thumbnail)
 
-        if data.get('data').get('material'):
-            embed.add_field(name='Material', value=data.get(
-                'data')['material'], inline=False)
+        if data.author_name:
+            if data.author_url:
+                name = f'[{data.author_name}]({data.author_url})'
+            else:
+                name = data.author_name
+            embed.add_field(name='Author', value=name, inline=False)
 
-        if data.get('data').get('title'):
-            embed.add_field(name='Title', value=data.get(
-                'data')['title'], inline=False)
+        if data.title:
+            embed.add_field(name='Title', value=data.title, inline=False)
 
-        if data.get('data').get('characters'):
-            embed.add_field(name='Characters', value=data.get(
-                'data')['characters'], inline=False)
-
-        if data.get('data').get('creator'):
-            embed.add_field(name='Creator', inline=False,
-                            value=', '.join(data.get('data')['creator']) if
-                            isinstance(data.get('data')['creator'], list)
-                            else data.get('data')['creator'])
-
-        if data.get('data').get('author_name'):
-            embed.add_field(name='Author Name', value=data.get(
-                'data')['author_name'], inline=False)
-
-        if data.get('data').get('author_url'):
-            embed.add_field(name='Author Url', value=data.get(
-                'data')['author_url'], inline=False)
-
-        if data.get('data').get('eng_name'):
-            embed.add_field(name='English Name', value=data.get(
-                'data')['eng_name'], inline=False)
-
-        if data.get('data').get('jp_name'):
-            embed.add_field(name='Japanese Name', value=data.get(
-                'data')['jp_name'], inline=False)
-
-        if data.get('data').get('source'):
-            embed.add_field(name='Source', value=data.get(
-                'data')['source'], inline=False)
-
-        if data.get('data').get('ext_urls'):
-            embed.add_field(name="URL's", value='\n'.join(
-                data.get('data')['ext_urls']), inline=False)
+        if data.urls:
+            embed.add_field(name="URL's" if len(data.urls) > 1 else 'URL', value='\n'.join(data.urls), inline=False)
 
         embed.set_footer(
             text=f'Provided by https://saucenao.com/ • Page {page}/{pages}')
@@ -216,7 +188,7 @@ class Image(commands.Cog, name='Image'):
                     ctx.command.reset_cooldown(ctx)
                 else:
                     try:
-                        data = await self.bot.saucenao.search(url)
+                        data = await self.bot.saucenao.from_url(url)
                     except Exception as e:
                         log.exception(e)
                         embed = discord.Embed(

@@ -9,3 +9,4 @@ psutil==5.8.0
 jikanpy==4.3.2
 tracemoe-py==1.0.2
 waifu-py==1.0.3
+pysaucenao==1.6.1
