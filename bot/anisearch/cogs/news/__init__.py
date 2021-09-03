@@ -26,6 +26,5 @@ log = logging.getLogger(__name__)
 
 
 def setup(bot: AniSearchBot):
-    """Sets up the News cog."""
     bot.add_cog(News(bot))
     log.info('News cog loaded')

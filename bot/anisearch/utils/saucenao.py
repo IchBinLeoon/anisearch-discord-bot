@@ -29,18 +29,16 @@ log = logging.getLogger(__name__)
 
 
 class SauceNAOException(Exception):
-    """Base exception class for the SauceNAO API wrapper."""
+    pass
 
 
 class SauceNAOAPIError(SauceNAOException):
-    """Exception due to an error response from the SauceNAO API."""
 
     def __init__(self, status: int) -> None:
         super().__init__(status)
 
 
 class SauceNAOClient:
-    """Asynchronous wrapper client for the SauceNAO API."""
 
     def __init__(self, api_key: str, db: int, output_type: int, numres: int,
                  session: Optional[aiohttp.ClientSession] = None) -> None:
@@ -58,18 +56,15 @@ class SauceNAOClient:
         await self.close()
 
     async def close(self) -> None:
-        """Closes the aiohttp session."""
         if self.session is not None:
             await self.session.close()
 
     async def _session(self) -> aiohttp.ClientSession:
-        """Gets an aiohttp session by creating it if it does not already exist or the previous session is closed."""
         if self.session is None or self.session.closed:
             self.session = aiohttp.ClientSession()
         return self.session
 
     async def _request(self, url: str) -> Dict[str, Any]:
-        """Makes a request to the SauceNAO API."""
         session = await self._session()
         response = await session.get(url)
         if response.status == 200:
@@ -80,7 +75,6 @@ class SauceNAOClient:
         return data
 
     async def search(self, url: str) -> Union[Dict[str, Any], None]:
-        """Looks up the source of an image by url."""
         url = f'{SAUCENAO_BASE_URL}?db={str(self.db)}&output_type={str(self.output_type)}&numres={str(self.numres)}' \
               f'&api_key={str(self.api_key)}&url={quote(url)}'
         data = await self._request(url)

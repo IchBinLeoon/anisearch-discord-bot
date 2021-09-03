@@ -38,14 +38,12 @@ log = logging.getLogger(__name__)
 
 
 class News(commands.Cog, name='News'):
-    """News cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
     @staticmethod
     async def get_aninews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the aninews embed."""
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
                               description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
@@ -63,7 +61,6 @@ class News(commands.Cog, name='News'):
 
     @staticmethod
     async def get_crunchynews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the crunchynews embed."""
         embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
                               description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
@@ -78,9 +75,7 @@ class News(commands.Cog, name='News'):
     @commands.command(name='aninews', usage='aninews', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def aninews(self, ctx: Context):
-        """
-        Displays the latest anime news from Anime News Network.
-        """
+        """Displays the latest anime news from Anime News Network."""
         async with ctx.channel.typing():
             try:
                 data = await self.bot.animenewsnetwork.news(count=15)
@@ -114,9 +109,7 @@ class News(commands.Cog, name='News'):
     @commands.command(name='crunchynews', aliases=['crnews'], usage='crunchynews', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def crunchynews(self, ctx: Context):
-        """
-        Displays the latest anime news from Crunchyroll.
-        """
+        """Displays the latest anime news from Crunchyroll."""
         async with ctx.channel.typing():
             try:
                 data = await self.bot.crunchyroll.news(count=15)
@@ -149,9 +142,7 @@ class News(commands.Cog, name='News'):
     @commands.command(name='trending', aliases=['trend'], usage='trending <anime|manga>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def trending(self, ctx: Context, media: str):
-        """
-        Displays the current trending anime or manga on AniList.
-        """
+        """Displays the current trending anime or manga on AniList."""
         async with ctx.channel.typing():
             if media.lower() == AniListMediaType.Anime.lower():
                 type_ = AniListMediaType.Anime.upper()

@@ -26,7 +26,6 @@ log = logging.getLogger(__name__)
 
 
 class Server:
-    """The API server."""
 
     def __init__(self, bot, host: str, port: int, secret_key: str) -> None:
         self.bot = bot
@@ -37,7 +36,6 @@ class Server:
         self._server = None
 
     async def handle_info(self, request: web_request.Request) -> web.Response:
-        """Handles the API info route requests."""
         if not request.headers or request.headers.get('Authentication') != self.secret_key:
             status = 403
             response = {'error': '403 Forbidden', 'code': status}
@@ -88,7 +86,6 @@ class Server:
         return web.Response(text=json.dumps(response), status=status)
 
     async def handle_schedule(self, request: web_request.Request) -> web.Response:
-        """Handles the API schedule route requests."""
         if not request.headers or request.headers.get('Authentication') != self.secret_key:
             status = 403
             response = {'error': '403 Forbidden', 'code': status}
@@ -124,7 +121,6 @@ class Server:
         return web.Response(text=json.dumps(response), status=status)
 
     async def _start(self) -> None:
-        """Starts the API server."""
         runner = web.AppRunner(self._server)
         await runner.setup()
 
@@ -134,7 +130,6 @@ class Server:
         self.bot.dispatch('api_ready', self.host, self.port)
 
     def start(self) -> None:
-        """Starts the API server."""
         logger = logging.getLogger('aiohttp.access')
         logger.setLevel(logging.ERROR)
 

@@ -29,18 +29,15 @@ log = logging.getLogger(__name__)
 
 
 class KitsuException(Exception):
-    """Base exception class for the Kitsu API wrapper."""
+    pass
 
 
 class KitsuAPIError(KitsuException):
-    """Exception due to an error response from the Kitsu API."""
-
     def __init__(self, status: int) -> None:
         super().__init__(status)
 
 
 class KitsuClient:
-    """Asynchronous wrapper client for the Kitsu API."""
 
     def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
         self.session = session
@@ -52,18 +49,15 @@ class KitsuClient:
         await self.close()
 
     async def close(self) -> None:
-        """Closes the aiohttp session."""
         if self.session is not None:
             await self.session.close()
 
     async def _session(self) -> aiohttp.ClientSession:
-        """Gets an aiohttp session by creating it if it does not already exist or the previous session is closed."""
         if self.session is None or self.session.closed:
             self.session = aiohttp.ClientSession()
         return self.session
 
     async def _request(self, url: str) -> Dict[str, Any]:
-        """Makes a request to the Kitsu API."""
         session = await self._session()
         response = await session.get(url)
         if response.status == 200:
@@ -74,12 +68,10 @@ class KitsuClient:
 
     @staticmethod
     async def get_url(endpoint: str, parameters: str) -> str:
-        """Creates the request url for the Kitsu endpoints."""
         request_url = f'{KITSU_BASE_URL}/{endpoint}{parameters}'
         return request_url
 
     async def user(self, username: str) -> Union[Dict[str, Any], None]:
-        """Gets a user based on the given username."""
         q = quote(username)
         parameters = f'?filter[name]={q}&include=stats,favorites'
         url = await self.get_url('users', parameters)

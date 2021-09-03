@@ -31,7 +31,6 @@ log = logging.getLogger(__name__)
 
 
 class DataBase:
-    """Class for interacting with the Postgres database."""
 
     def __init__(self) -> None:
         self.pool = psycopg2.pool.SimpleConnectionPool(5, 20, host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER,
@@ -39,17 +38,14 @@ class DataBase:
 
     @staticmethod
     def _connect():
-        """Creates a connection with the Postgres database."""
         conn = psycopg2.connect(
             host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD)
         return conn
 
     def close(self) -> None:
-        """Closes all connections handled by the pool."""
         self.pool.closeall()
 
     def get_prefix(self, message: discord.Message) -> str:
-        """Gets the prefix for the current guild from the database."""
         if isinstance(message.channel, discord.channel.DMChannel):
             return DEFAULT_PREFIX
         conn = self.pool.getconn()
@@ -74,7 +70,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def insert_prefix(self, guild: discord.Guild) -> None:
-        """Inserts a new guild and the default prefix into the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -89,7 +84,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def delete_prefix(self, guild: discord.Guild) -> None:
-        """Deletes a guild from the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -101,7 +95,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def update_prefix(self, message: discord.Message, prefix: str) -> None:
-        """Updates the prefix from a guild in the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -117,7 +110,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def insert_profile(self, site: str, username: str, id_: int) -> None:
-        """Inserts a profile of a user into the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -142,7 +134,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def select_profile(self, site: str, id_: int) -> Union[str, None]:
-        """Selects a profile of a user from the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -166,7 +157,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def check_user(self, id_: int) -> None:
-        """Checks if a user exists in the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -177,7 +167,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def delete_user(self, id_: int) -> None:
-        """Deletes a user from the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -188,7 +177,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def set_channel(self, channel_id: int, guild: discord.Guild) -> None:
-        """Sets the channel for the matching guild in the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -204,7 +192,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def get_channel(self, guild: discord.Guild) -> Union[int, None]:
-        """Gets the channel for the current guild from the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -219,7 +206,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def set_role(self, role_id: int, guild: discord.Guild) -> None:
-        """Sets the role for the matching guild in the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -235,7 +221,6 @@ class DataBase:
             self.pool.putconn(conn)
 
     def get_role(self, guild: discord.Guild) -> Union[int, None]:
-        """Gets the role for the current guild from the database."""
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:

@@ -32,7 +32,6 @@ log = logging.getLogger(__name__)
 
 
 class Settings(commands.Cog, name='Settings'):
-    """Settings cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
@@ -112,9 +111,7 @@ class Settings(commands.Cog, name='Settings'):
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def remove(self, ctx: Context, type_: str):
-        """
-        Removes the set channel or role. Can only be used by a server administrator.
-        """
+        """Removes the set channel or role. Can only be used by a server administrator."""
         if type_.lower() == 'channel':
             channel = self.bot.db.get_channel(ctx.guild)
             if channel is None:
@@ -146,9 +143,7 @@ class Settings(commands.Cog, name='Settings'):
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def info(self, ctx: Context):
-        """
-        Displays the set prefix, the set channel and the set role. Can only be used by a server administrator.
-        """
+        """Displays the set prefix, the set channel and the set role. Can only be used by a server administrator."""
         prefix = self.bot.db.get_prefix(ctx.message)
         channel = self.bot.db.get_channel(ctx.guild)
         role = self.bot.db.get_role(ctx.guild)

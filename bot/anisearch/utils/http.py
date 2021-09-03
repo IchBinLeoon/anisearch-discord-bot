@@ -26,14 +26,12 @@ logger = logging.getLogger(__name__)
 
 
 class RequestException(Exception):
-    """Exception due to an request error."""
 
     def __init__(self, status: int) -> None:
         super().__init__(status)
 
 
 async def request(url: str, session: ClientSession, method: str, res_method: str, *args, **kwargs) -> Any:
-    """Performs a request."""
     r = await getattr(session, method)(url, *args, **kwargs)
     if r.status != 200:
         raise RequestException(r.status)
@@ -41,10 +39,8 @@ async def request(url: str, session: ClientSession, method: str, res_method: str
 
 
 async def get(url: str, session: ClientSession, res_method: str, *args, **kwargs) -> request:
-    """Performs an HTTP GET request."""
     return await request(url, session, 'get', res_method, *args, **kwargs)
 
 
 async def post(url: str, session: ClientSession, res_method: str, *args, **kwargs) -> request:
-    """Performs an HTTP POST request."""
     return await request(url, session, 'post', res_method, *args, **kwargs)

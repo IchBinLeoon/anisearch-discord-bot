@@ -21,7 +21,6 @@ log = logging.getLogger(__name__)
 
 
 def format_media_type(media_type: str) -> str:
-    """Formats the anilist media type."""
     MediaType = {
         'TV': 'TV',
         'MOVIE': 'Movie',
@@ -38,7 +37,6 @@ def format_media_type(media_type: str) -> str:
 
 
 def format_anime_status(media_status: str) -> str:
-    """Formats the anilist anime status."""
     AnimeStatus = {
         'FINISHED': 'Finished',
         'RELEASING': 'Currently Airing',
@@ -49,7 +47,6 @@ def format_anime_status(media_status: str) -> str:
 
 
 def format_manga_status(media_status: str) -> str:
-    """Formats the anilist manga status."""
     MangaStatus = {
         'FINISHED': 'Finished',
         'RELEASING': 'Publishing',
@@ -60,18 +57,14 @@ def format_manga_status(media_status: str) -> str:
 
 
 def clean_html(raw_text) -> str:
-    """Removes the html tags from a text."""
     clean = re.compile('<.*?>')
     clean_text = re.sub(clean, '', raw_text)
     return clean_text
 
 
 def format_description(description: str, length: int) -> str:
-    """Formats the anilist description."""
     description = clean_html(description)
-    # Remove markdown
     description = description.replace('**', '').replace('__', '')
-    # Replace spoiler tags
     description = description.replace('~!', '||').replace('!~', '||')
     if len(description) > length:
         description = description[0:length]
@@ -83,7 +76,6 @@ def format_description(description: str, length: int) -> str:
 
 
 def format_date(day: int, month: int, year: int) -> str:
-    """Formats the anilist date."""
     month = datetime.date(1900, month, 1).strftime('%B')
     date = f'{month} {str(day)}, {year}'
     return date

@@ -34,7 +34,6 @@ log = logging.getLogger(__name__)
 
 
 class Admin(commands.Cog, name='Admin'):
-    """Admin cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
@@ -43,9 +42,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def status(self, ctx: Context):
-        """
-        Displays the current status of the bot. Can only be used by the bot owner.
-        """
+        """Displays the current status of the bot. Can only be used by the bot owner."""
         embed = discord.Embed(title='❯ Bot Status', color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Guilds', value=str(
             self.bot.get_guild_count()), inline=True)
@@ -69,9 +66,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def load(self, ctx: Context, extension: str):
-        """
-        Loads a cog. Can only be used by the bot owner.
-        """
+        """Loads a cog. Can only be used by the bot owner."""
         try:
             self.bot.load_extension(f'anisearch.cogs.{extension.lower()}')
             title = f'Loaded cog `{extension.capitalize()}`.'
@@ -93,9 +88,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def unload(self, ctx: Context, extension: str):
-        """
-        Unloads a cog. Can only be used by the bot owner.
-        """
+        """Unloads a cog. Can only be used by the bot owner."""
         try:
             self.bot.unload_extension(f'anisearch.cogs.{extension.lower()}')
             title = f'Unloaded cog `{extension.capitalize()}`.'
@@ -117,9 +110,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def reload(self, ctx: Context, extension: str):
-        """
-        Reloads a cog. Can only be used by the bot owner.
-        """
+        """Reloads a cog. Can only be used by the bot owner."""
         try:
             self.bot.reload_extension(f'anisearch.cogs.{extension.lower()}')
             title = f'Reloaded cog `{extension.capitalize()}`.'
@@ -141,9 +132,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def reloadall(self, ctx: Context):
-        """
-        Reloads all cogs. Can only be used by the bot owner.
-        """
+        """Reloads all cogs. Can only be used by the bot owner."""
         try:
             for extension in initial_extensions:
                 try:
@@ -163,9 +152,8 @@ class Admin(commands.Cog, name='Admin'):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_owner()
     async def sysinfo(self, ctx: Context):
-        """
-        Displays information about the system on which the bot is currently running. Can only be used by the bot owner.
-        """
+        """Displays information about the system on which the bot is currently running.
+        Can only be used by the bot owner."""
         embed = discord.Embed(title='❯ System Info', color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Platform', value=platform.platform(), inline=False)
         boot_time = datetime.fromtimestamp(psutil.boot_time()).strftime("%m/%d/%Y %H:%M:%S")

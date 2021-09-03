@@ -24,7 +24,6 @@ log = logging.getLogger(__name__)
 
 
 def is_adult(data: Dict[str, Any]) -> bool:
-    """Checks if the media is intended only for 18+ adult audiences."""
     if data.get('isAdult') is True:
         return True
     if data.get('is_adult') is True:

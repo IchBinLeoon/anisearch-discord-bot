@@ -34,13 +34,11 @@ log = logging.getLogger(__name__)
 
 
 class Profile(commands.Cog, name='Profile'):
-    """Profile cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
     async def set_profile(self, ctx: Context, site: str, username: str):
-        """Checks if the profile exists on the specified site and inserts it into the database if it does."""
 
         data = None
 
@@ -191,7 +189,6 @@ class Profile(commands.Cog, name='Profile'):
             await ctx.channel.send(embed=embed)
 
     async def get_anilist_profile(self, username: str) -> Union[List[discord.Embed], None]:
-        """Returns a list of Discord embeds with the retrieved AniList data about the searched profile."""
 
         embeds = []
 
@@ -381,7 +378,6 @@ class Profile(commands.Cog, name='Profile'):
         return None
 
     async def get_myanimelist_profile(self, username: str) -> Union[List[discord.Embed], None]:
-        """Returns a list of Discord embeds with the retrieved MyAnimeList data about the searched profile."""
 
         embeds = []
 
@@ -585,7 +581,6 @@ class Profile(commands.Cog, name='Profile'):
         return None
 
     async def get_kitsu_profile(self, username: str) -> Union[List[discord.Embed], None]:
-        """Returns a list of Discord embeds with the retrieved Kitsu data about the searched profile."""
 
         embeds = []
 
@@ -718,9 +713,7 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='anilist', aliases=['al'], usage='anilist [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def anilist(self, ctx: Context, username: Optional[str] = None):
-        """
-        Displays information about the given AniList profile such as anime stats, manga stats and favorites.
-        """
+        """Displays information about the given AniList profile such as anime stats, manga stats and favorites."""
         async with ctx.channel.typing():
             if username is None:
                 username = self.bot.db.select_profile('anilist', ctx.author.id)
@@ -748,9 +741,7 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def myanimelist(self, ctx: Context, username: Optional[str] = None):
-        """
-        Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites.
-        """
+        """Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites."""
         async with ctx.channel.typing():
             if username is None:
                 username = self.bot.db.select_profile(
@@ -779,9 +770,7 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='kitsu', usage='kitsu [username|@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def kitsu(self, ctx: Context, username: Optional[str] = None):
-        """
-        Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!
-        """
+        """Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!"""
         async with ctx.channel.typing():
             if username is None:
                 username = self.bot.db.select_profile('kitsu', ctx.author.id)
@@ -809,9 +798,7 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='addprofile', aliases=['addp'], usage='addprofile <al|mal|kitsu> <username>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def addprofile(self, ctx: Context, site: str, username: str):
-        """
-        Adds an AniList, MyAnimeList or Kitsu profile.
-        """
+        """Adds an AniList, MyAnimeList or Kitsu profile."""
         async with ctx.channel.typing():
             if site.lower() == 'anilist' or site.lower() == 'al':
                 await self.set_profile(ctx, 'anilist', username)
@@ -826,9 +813,7 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='profiles', usage='profiles [@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def profiles(self, ctx: Context, user: Optional[str] = None):
-        """
-        Displays the added profiles of you, or the specified user.
-        """
+        """Displays the added profiles of you, or the specified user."""
         async with ctx.channel.typing():
             if user:
                 if user.startswith('<@&') and user.endswith('>'):
@@ -860,9 +845,7 @@ class Profile(commands.Cog, name='Profile'):
                       ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def removeprofile(self, ctx: Context, site: str,):
-        """
-        Removes the added AniList, MyAnimeList or Kitsu profile.
-        """
+        """Removes the added AniList, MyAnimeList or Kitsu profile."""
         async with ctx.channel.typing():
             if site.lower() == 'anilist' or site.lower() == 'al':
                 anilist = self.bot.db.select_profile('anilist', ctx.author.id)

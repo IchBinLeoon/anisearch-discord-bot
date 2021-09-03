@@ -40,7 +40,6 @@ log = logging.getLogger(__name__)
 
 
 class Help(commands.Cog, name='Help'):
-    """Help cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
@@ -49,9 +48,7 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='help', usage='help [command]', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def help(self, ctx: Context, cmd: Optional[str]):
-        """
-        Shows help or displays information about a command.
-        """
+        """Shows help or displays information about a command."""
         prefix = self.bot.db.get_prefix(ctx.message)
         server_prefix = '' if isinstance(
             ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
@@ -94,9 +91,7 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='commands', aliases=['cmds'], usage='commands', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def commands_(self, ctx: Context):
-        """
-        Displays all commands.
-        """
+        """Displays all commands."""
         prefix = self.bot.db.get_prefix(ctx.message)
         server_prefix = '' if isinstance(
             ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
@@ -130,9 +125,7 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='about', usage='about', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def about(self, ctx: Context):
-        """
-        Displays information about the bot.
-        """
+        """Displays information about the bot."""
         embed = discord.Embed(title='About AniSearch', color=DEFAULT_EMBED_COLOR,
                               description=f'<@!{BOT_ID}> is an easy-to-use Discord bot written in Python '
                                           f'that allows you to search for anime, manga, characters, staff, studios '
@@ -155,9 +148,7 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='stats', usage='stats', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def stats(self, ctx: Context):
-        """
-        Displays statistics about the bot.
-        """
+        """Displays statistics about the bot."""
         embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
                               color=DEFAULT_EMBED_COLOR)
         embed.set_author(name="AniSearch's statistics",
@@ -179,9 +170,7 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='github', aliases=['gh'], usage='github', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def github(self, ctx: Context):
-        """
-        Displays information about the GitHub repository.
-        """
+        """Displays information about the GitHub repository."""
         data = None
         try:
             data = await get_request(url=GITHUB_REPO_API_ENDPOINT, session=self.bot.session, res_method='json')
@@ -212,9 +201,7 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name='ping', aliases=['latency'], usage='ping', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ping(self, ctx: Context):
-        """
-        Checks the latency of the bot.
-        """
+        """Checks the latency of the bot."""
         embed = discord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
                               color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)

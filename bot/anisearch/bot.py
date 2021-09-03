@@ -101,7 +101,6 @@ class AniSearchBot(AutoShardedBot):
 
         self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
 
-        # Posts guild and shard count to Top.gg every 30 minutes.
         self.topgg = topgg.DBLClient(
             self, BOT_TOPGG_TOKEN, autopost=True, post_shard_count=True)
 
@@ -109,7 +108,6 @@ class AniSearchBot(AutoShardedBot):
         self.set_status.start()
 
     def load_cogs(self) -> None:
-        """Loads all cogs."""
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
@@ -120,7 +118,6 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded')
 
     def unload_cogs(self) -> None:
-        """Unloads all cogs."""
         for extension in initial_extensions:
             try:
                 self.unload_extension(extension)
@@ -132,7 +129,6 @@ class AniSearchBot(AutoShardedBot):
             f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded')
 
     async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
-        """Gets the command prefix of the bot for the current guild."""
         if isinstance(message.channel, discord.channel.DMChannel):
             return when_mentioned_or(DEFAULT_PREFIX)(self, message)
         prefix = self.db.get_prefix(message)
@@ -140,7 +136,6 @@ class AniSearchBot(AutoShardedBot):
 
     @tasks.loop(seconds=80)
     async def set_status(self) -> None:
-        """Sets the discord status of the bot every 80 seconds."""
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
                                    name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
         await sleep(20)
@@ -157,7 +152,6 @@ class AniSearchBot(AutoShardedBot):
 
     @set_status.before_loop
     async def set_status_before(self) -> None:
-        """Waits for the bot to be ready before starting the `set_status` task."""
         await self.wait_until_ready()
 
     async def on_shard_ready(self, shard_id: int) -> None:
@@ -220,12 +214,10 @@ class AniSearchBot(AutoShardedBot):
             log.exception(error)
 
     def get_guild_count(self) -> int:
-        """Returns the bot guild count."""
         guilds = len(self.guilds)
         return guilds
 
     def get_user_count(self) -> int:
-        """Returns the bot user count."""
         users = 0
         for guild in self.guilds:
             try:
@@ -235,23 +227,19 @@ class AniSearchBot(AutoShardedBot):
         return users
 
     def get_channel_count(self) -> int:
-        """Returns the bot channel count."""
         channels = 0
         for guild in self.guilds:
             channels += len(guild.channels)
         return channels
 
     def get_uptime(self) -> float:
-        """Returns the bot uptime."""
         uptime = time.time() - self.start_time
         return uptime
 
     def run(self):
-        """Runs the bot."""
         super().run(BOT_TOKEN)
 
     async def close(self):
-        """Closes the discord connection, the database pool connections and the aiohttp sessions."""
         self.unload_cogs()
         self.db.close()
         await self.anilist.close()

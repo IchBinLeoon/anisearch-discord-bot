@@ -34,14 +34,12 @@ log = logging.getLogger(__name__)
 
 
 class Themes(commands.Cog, name='Themes'):
-    """Themes cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
     @staticmethod
     async def get_themes_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the themes embed."""
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR,
                               title=data.get('name'))
 
@@ -82,7 +80,6 @@ class Themes(commands.Cog, name='Themes'):
 
     @staticmethod
     async def get_theme_embed(anime: Dict[str, Any], data: Dict[str, Any]) -> Embed:
-        """Returns the theme embed."""
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR,
                               title=anime.get("name"))
 
@@ -114,9 +111,7 @@ class Themes(commands.Cog, name='Themes'):
     @commands.command(name='themes', usage='themes <anime>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def themes(self, ctx: Context, *, anime: str):
-        """
-        Searches for the openings and endings of the given anime and displays them.
-        """
+        """Searches for the openings and endings of the given anime and displays them."""
         async with ctx.channel.typing():
             data = await self.bot.animethemes.search(anime, 15)
             if data.get('search').get('anime'):
@@ -152,9 +147,7 @@ class Themes(commands.Cog, name='Themes'):
     @commands.command(name='theme', usage='theme <OP|ED> <anime>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def theme(self, ctx: Context, theme: str, *, anime: str):
-        """
-        Displays a specific opening or ending of the given anime.
-        """
+        """Displays a specific opening or ending of the given anime."""
         async with ctx.channel.typing():
             data = await self.bot.animethemes.search(anime, 1)
             if data.get('search').get('anime'):

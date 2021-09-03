@@ -29,18 +29,16 @@ log = logging.getLogger(__name__)
 
 
 class AnimeThemesException(Exception):
-    """Base exception class for the AnimeThemes API wrapper."""
+    pass
 
 
 class AnimeThemesAPIError(AnimeThemesException):
-    """Exception due to an error response from the AnimeThemes API."""
 
     def __init__(self, msg: str, status: int) -> None:
         super().__init__(msg + ' - Status: ' + str(status))
 
 
 class AnimeThemesClient:
-    """Asynchronous wrapper client for the AnimeThemes API."""
 
     def __init__(self, session: Optional[aiohttp.ClientSession] = None, headers: Dict[str, Any] = None) -> None:
         self.session = session
@@ -56,18 +54,15 @@ class AnimeThemesClient:
         await self.close()
 
     async def close(self) -> None:
-        """Closes the aiohttp session."""
         if self.session is not None:
             await self.session.close()
 
     async def _session(self) -> aiohttp.ClientSession:
-        """Gets an aiohttp session by creating it if it does not already exist or the previous session is closed."""
         if self.session is None or self.session.closed:
             self.session = aiohttp.ClientSession()
         return self.session
 
     async def _request(self, url: str) -> Dict[str, Any]:
-        """Makes a request to the AnimeThemes API."""
         session = await self._session()
         response = await session.get(url=url, headers=self.headers)
         data = await response.json()
@@ -78,12 +73,10 @@ class AnimeThemesClient:
 
     @staticmethod
     async def get_url(endpoint: str, parameters: str) -> str:
-        """Creates the request url for the animethemes endpoints."""
         request_url = f'{ANIMETHEMES_BASE_URL}/{endpoint}{parameters}'
         return request_url
 
     async def search(self, query: str, limit: Optional[int] = 5) -> Dict[str, Any]:
-        """Returns relevant resources by search criteria."""
         q = quote(query)
         parameters = f'?q={q}&limit={limit}&fields[search]=anime&include=' \
                      f'animethemes.animethemeentries.videos,animethemes.song.artists,images'

@@ -35,14 +35,12 @@ log = logging.getLogger(__name__)
 
 
 class Image(commands.Cog, name='Image'):
-    """Image cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
     @staticmethod
     async def get_trace_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the trace embed."""
         embed = discord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
 
         embed.set_author(
@@ -81,7 +79,6 @@ class Image(commands.Cog, name='Image'):
 
     @staticmethod
     async def get_source_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the source embed."""
         embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
 
         embed.set_author(
@@ -139,9 +136,7 @@ class Image(commands.Cog, name='Image'):
     @commands.command(name='trace', usage='trace <image-url|with image as attachment>', ignore_extra=False)
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def trace(self, ctx: Context, trace: Optional[str] = None):
-        """
-        Tries to find the anime the image is from through the image url or the image as attachment.
-        """
+        """Tries to find the anime the image is from through the image url or the image as attachment."""
         async with ctx.channel.typing():
             url = None
             if trace is None:
@@ -200,9 +195,7 @@ class Image(commands.Cog, name='Image'):
                       ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def source(self, ctx: Context, source: Optional[str] = None):
-        """
-        Tries to find the source of an image through the image url or the image as attachment.
-        """
+        """Tries to find the source of an image through the image url or the image as attachment."""
         async with ctx.channel.typing():
             url = None
             if source is None:
@@ -254,9 +247,7 @@ class Image(commands.Cog, name='Image'):
     @commands.command(name='waifu', usage='waifu', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def waifu(self, ctx: Context):
-        """
-        Posts a random image of a waifu.
-        """
+        """Posts a random image of a waifu."""
         async with ctx.channel.typing():
             data = await self.bot.waifu.sfw('waifu')
             embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
@@ -267,9 +258,7 @@ class Image(commands.Cog, name='Image'):
     @commands.command(name='neko', aliases=['catgirl', 'meow', 'nya'], usage='neko', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def neko(self, ctx: Context):
-        """
-        Posts a random image of a catgirl.
-        """
+        """Posts a random image of a catgirl."""
         async with ctx.channel.typing():
             data = await self.bot.waifu.sfw('neko')
             embed = discord.Embed(color=DEFAULT_EMBED_COLOR)

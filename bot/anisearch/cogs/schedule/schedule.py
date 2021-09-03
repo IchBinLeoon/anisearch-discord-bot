@@ -36,14 +36,12 @@ log = logging.getLogger(__name__)
 
 
 class Schedule(commands.Cog, name='Schedule'):
-    """Schedule cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
     @staticmethod
     async def get_next_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the next embed."""
         sites = []
         if data.get('media').get('siteUrl'):
             sites.append(f'[Anilist]({data.get("media").get("siteUrl")})')
@@ -85,7 +83,6 @@ class Schedule(commands.Cog, name='Schedule'):
 
     @staticmethod
     async def get_last_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the `last` embed."""
         sites = []
         if data.get('media').get('siteUrl'):
             sites.append(f'[Anilist]({data.get("media").get("siteUrl")})')
@@ -130,9 +127,7 @@ class Schedule(commands.Cog, name='Schedule'):
     @commands.command(name='next', usage='next', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def next(self, ctx: Context):
-        """
-        Displays the next airing anime episodes.
-        """
+        """Displays the next airing anime episodes."""
         async with ctx.channel.typing():
             try:
                 data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=True, sort='TIME')
@@ -172,9 +167,7 @@ class Schedule(commands.Cog, name='Schedule'):
     @commands.command(name='last', usage='last', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def last(self, ctx: Context):
-        """
-        Displays the most recently aired anime episodes.
-        """
+        """Displays the most recently aired anime episodes."""
         async with ctx.channel.typing():
             try:
                 data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=False, sort='TIME_DESC')
@@ -212,7 +205,6 @@ class Schedule(commands.Cog, name='Schedule'):
                 await ctx.channel.send(embed=embed)
 
     async def send_episode_notification(self, data: Dict[str, Any]) -> None:
-        """Sends the episode notification embed."""
         channel_count = 0
         for guild in self.bot.guilds:
             try:

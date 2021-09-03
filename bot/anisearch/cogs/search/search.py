@@ -39,13 +39,11 @@ log = logging.getLogger(__name__)
 
 
 class Search(commands.Cog, name='Search'):
-    """Search cog."""
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
     async def anilist_search(self, ctx: Context, search: str, type_: str) -> Union[List[Embed], None]:
-        """Returns a list of Discord embeds with the retrieved anilist data about the searched entry."""
         embeds = []
         data = None
 
@@ -110,7 +108,6 @@ class Search(commands.Cog, name='Search'):
         return None
 
     async def anilist_random(self, ctx: Context, search: str, type_: str, format_in: List[str]) -> Union[Embed, None]:
-        """Returns a Discord embed with the retrieved anilist data about a random media of a specified genre."""
         try:
 
             data = await self.bot.anilist.genre(genre=search, page=1, perPage=1, type=type_,
@@ -167,7 +164,6 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_media_embed(data: Dict[str, Any], page: Optional[int] = None, pages: Optional[int] = None) -> Embed:
-        """Returns the media embed."""
         embed = discord.Embed(description=format_description(data.get('description'), 400)
                               if data.get('description') else 'N/A',
                               colour=int('0x' + data.get('coverImage')
@@ -302,7 +298,6 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_character_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the character embed."""
         embed = discord.Embed(
             color=DEFAULT_EMBED_COLOR,
             description=format_description(data.get('description'), 1000) if data.get('description') else 'N/A')
@@ -346,7 +341,6 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_staff_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the staff embed."""
         embed = discord.Embed(
             color=DEFAULT_EMBED_COLOR,
             description=format_description(data.get('description'), 1000) if data.get('description') else 'N/A')
@@ -399,7 +393,6 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_studio_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        """Returns the studio embed."""
         embed = discord.Embed(color=DEFAULT_EMBED_COLOR,
                               title=data.get('name'))
 
@@ -438,10 +431,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='anime', aliases=['a', 'ani'], usage='anime <title>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def anime(self, ctx: Context, *, title: str):
-        """
-        Searches for an anime with the given title and displays information about the search results such as type,
-        status, episodes, description, and more!
-        """
+        """Searches for an anime with the given title and displays information about the search results such as type,
+        status, episodes, description, and more!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, AniListSearchType.Anime)
             if embeds:
@@ -456,10 +447,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='manga', aliases=['m'], usage='manga <title>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def manga(self, ctx: Context, *, title: str):
-        """
-        Searches for a manga with the given title and displays information about the search results such as type,
-        status, chapters, description, and more!
-        """
+        """Searches for a manga with the given title and displays information about the search results such as type,
+        status, chapters, description, and more!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, AniListSearchType.Manga)
             if embeds:
@@ -475,10 +464,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='character', aliases=['char'], usage='character <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def character(self, ctx: Context, *, name: str):
-        """
-        Searches for a character with the given name and displays information about the search results such as
-        description, synonyms, and appearances!
-        """
+        """Searches for a character with the given name and displays information about the search results such as
+        description, synonyms, and appearances!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Character)
             if embeds:
@@ -494,10 +481,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='staff', usage='staff <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def staff(self, ctx: Context, *, name: str):
-        """
-        Searches for a staff with the given name and displays information about the search results such as description,
-        staff roles, and character roles!
-        """
+        """Searches for a staff with the given name and displays information about the search results such as description,
+        staff roles, and character roles!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Staff)
             if embeds:
@@ -513,10 +498,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='studio', usage='studio <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def studio(self, ctx: Context, *, name: str):
-        """
-        Searches for a studio with the given name and displays information about the search results such as the studio
-        productions!
-        """
+        """Searches for a studio with the given name and displays information about the search results such as the studio
+        productions!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Studio)
             if embeds:
@@ -532,9 +515,7 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='random', usage='random <anime|manga> <genre>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def random(self, ctx: Context, media: str, *, genre: str):
-        """
-        Displays a random anime or manga of the specified genre.
-        """
+        """Displays a random anime or manga of the specified genre."""
         async with ctx.channel.typing():
             if media.lower() == AniListMediaType.Anime.lower():
                 embed = await self.anilist_random(ctx, genre, AniListMediaType.Anime.upper(),
