@@ -23,7 +23,7 @@ ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 GITHUB_REPO_API_ENDPOINT = 'https://api.github.com/repos/IchBinLeoon/anisearch-discord-bot'
 
 ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api'
-KITSU_BASE_URL = 'https://kitsu.io/api/edge'
+KITSU_BASE_URL = 'https://kitsu.io/api/edge/'
 
 ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT = 'https://www.animenewsnetwork.com/newsroom/rss.xml'
 CRUNCHYROLL_NEWS_FEED_ENDPOINT = 'https://www.crunchyroll.com/newsrss?lang=enEN'

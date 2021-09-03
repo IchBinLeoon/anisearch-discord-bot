@@ -21,13 +21,16 @@ import datetime
 import logging
 import re
 from typing import Optional, Union, List
+from urllib.parse import urljoin, quote
 
 import discord
 from discord.ext import commands, menus
 from discord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, ANILIST_LOGO
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, \
+    ANILIST_LOGO, KITSU_BASE_URL
+from anisearch.utils.http import get
 from anisearch.utils.menus import EmbedListMenu
 
 log = logging.getLogger(__name__)
@@ -48,7 +51,14 @@ class Profile(commands.Cog, name='Profile'):
             if site == 'myanimelist':
                 data = await self.bot.jikan.user(username=username)
             if site == 'kitsu':
-                data = await self.bot.kitsu.user(username=username)
+                params = {
+                    'filter[name]': quote(username),
+                    'include': 'stats,favorites'
+                }
+                data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
+                                 res_method='json', params=params)
+                if not data.get('data'):
+                    data = None
 
         except Exception as e:
             log.exception(e)
@@ -585,7 +595,14 @@ class Profile(commands.Cog, name='Profile'):
         embeds = []
 
         try:
-            data = await self.bot.kitsu.user(username=username)
+            params = {
+                'filter[name]': quote(username),
+                'include': 'stats,favorites'
+            }
+            data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
+                             res_method='json', params=params)
+            if not data.get('data'):
+                data = None
 
         except Exception as e:
             log.exception(e)

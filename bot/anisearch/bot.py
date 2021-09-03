@@ -42,7 +42,6 @@ from anisearch.utils.api import Server
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID, SUPPORT_SERVER_INVITE
 from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
-from anisearch.utils.kitsu import KitsuClient
 
 log = logging.getLogger(__name__)
 
@@ -90,8 +89,6 @@ class AniSearchBot(AutoShardedBot):
                                  results_limit=10, min_similarity=0)
 
         self.jikan = AioJikan(session=ClientSession(loop=self.loop))
-
-        self.kitsu = KitsuClient(session=ClientSession(loop=self.loop))
 
         self.animenewsnetwork = AnimeNewsNetworkClient(
             session=ClientSession(loop=self.loop))
@@ -246,7 +243,6 @@ class AniSearchBot(AutoShardedBot):
         await self.animethemes.close()
         await self.tracemoe.close()
         await self.jikan.close()
-        await self.kitsu.close()
         await self.animenewsnetwork.close()
         await self.crunchyroll.close()
         await self.session.close()

@@ -481,8 +481,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='staff', usage='staff <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def staff(self, ctx: Context, *, name: str):
-        """Searches for a staff with the given name and displays information about the search results such as description,
-        staff roles, and character roles!"""
+        """Searches for a staff with the given name and displays information about the search results such as
+        description, staff roles, and character roles!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Staff)
             if embeds:
@@ -498,8 +498,8 @@ class Search(commands.Cog, name='Search'):
     @commands.command(name='studio', usage='studio <name>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def studio(self, ctx: Context, *, name: str):
-        """Searches for a studio with the given name and displays information about the search results such as the studio
-        productions!"""
+        """Searches for a studio with the given name and displays information about the search results such as the
+        studio productions!"""
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Studio)
             if embeds:

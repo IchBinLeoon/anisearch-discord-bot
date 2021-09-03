@@ -20,21 +20,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 from typing import Any
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ContentTypeError
 
 logger = logging.getLogger(__name__)
 
 
 class RequestException(Exception):
 
-    def __init__(self, status: int) -> None:
-        super().__init__(status)
+    def __init__(self, status: int, reason: str, error: str) -> None:
+        super().__init__(f'{status} {reason}: {error}')
 
 
 async def request(url: str, session: ClientSession, method: str, res_method: str, *args, **kwargs) -> Any:
     r = await getattr(session, method)(url, *args, **kwargs)
     if r.status != 200:
-        raise RequestException(r.status)
+        try:
+            error = await r.json()
+        except ContentTypeError:
+            error = await r.text()
+        raise RequestException(r.status, r.reason, str(error))
     return await getattr(r, res_method)()
 
 
