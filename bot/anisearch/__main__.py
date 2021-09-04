@@ -29,10 +29,12 @@ import discord
 
 import anisearch
 from anisearch.bot import AniSearchBot
+from anisearch.config import BOT_LEVEL
 
 
 def main() -> None:
-    log_stream = setup_logging()
+    logging_level = logging.getLevelName(BOT_LEVEL)
+    log_stream = setup_logging(logging_level)
     loop = asyncio.get_event_loop()
     loop.run_until_complete(check_update())
     logging.info(f'Starting AniSearch Bot v{anisearch.__version__}')
@@ -41,11 +43,11 @@ def main() -> None:
     start(log_stream)
 
 
-def setup_logging() -> StringIO:
+def setup_logging(logging_level: int) -> StringIO:
     log_stream = StringIO()
     console_handler = logging.StreamHandler(sys.stdout)
     log_handler = logging.StreamHandler(log_stream)
-    logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s %(name)s » %(message)s',
+    logging.basicConfig(level=logging_level, format='[%(asctime)s] %(levelname)s %(name)s » %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S', handlers=[console_handler, log_handler])
     return log_stream
 

@@ -22,6 +22,8 @@ import logging
 
 from aiohttp import web, web_request
 
+from anisearch.config import BOT_LEVEL
+
 log = logging.getLogger(__name__)
 
 
@@ -130,8 +132,9 @@ class Server:
         self.bot.dispatch('api_ready', self.host, self.port)
 
     def start(self) -> None:
-        logger = logging.getLogger('aiohttp.access')
-        logger.setLevel(logging.ERROR)
+        if not logging.getLevelName(BOT_LEVEL) is logging.DEBUG:
+            logger = logging.getLogger('aiohttp.access')
+            logger.setLevel(logging.ERROR)
 
         self._server = web.Application()
         self._server.router.add_route('GET', '/api/info', self.handle_info)

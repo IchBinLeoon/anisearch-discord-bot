@@ -33,6 +33,7 @@ class RequestException(Exception):
 
 async def request(url: str, session: ClientSession, method: str, res_method: str, *args, **kwargs) -> Any:
     r = await getattr(session, method)(url, *args, **kwargs)
+    logger.debug(f'{r.method} {r.url} {r.status} {r.reason}')
     if r.status != 200:
         try:
             error = await r.json()
