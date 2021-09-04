@@ -53,7 +53,7 @@ class Profile(commands.Cog, name='Profile'):
             if site == 'kitsu':
                 params = {
                     'filter[name]': username,
-                    'include': 'stats,favorites'
+                    'include': 'stats'
                 }
                 data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
                                  res_method='json', params=params)
@@ -246,10 +246,10 @@ class Profile(commands.Cog, name='Profile'):
                           f'Chapters Read: {data.get("statistics")["manga"]["chaptersRead"]}\n'
                           f'Volumes Read: {data.get("statistics")["manga"]["volumesRead"]}')
 
-                embed.add_field(name='Anime List', value='https://anilist.co/user/%s/animelist' % data.get('name'),
+                embed.add_field(name='Anime List', value=f'https://anilist.co/user/{data.get("name")}/animelist',
                                 inline=False)
 
-                embed.add_field(name='Manga List', value='https://anilist.co/user/%s/mangalist' % data.get('name'),
+                embed.add_field(name='Manga List', value=f'https://anilist.co/user/{data.get("name")}/mangalist',
                                 inline=False)
 
                 embed.set_footer(
@@ -467,10 +467,10 @@ class Profile(commands.Cog, name='Profile'):
                           f'Volumes Read: {data.get("manga_stats")["volumes_read"]}')
 
                 embed.add_field(name='Anime List', inline=False,
-                                value='https://myanimelist.net/animelist/{}'.format(data.get('username')))
+                                value=f'https://myanimelist.net/animelist/{data.get("username")}')
 
                 embed.add_field(name='Manga List', inline=False,
-                                value='https://myanimelist.net/mangalist/{}'.format(data.get('username')))
+                                value=f'https://myanimelist.net/mangalist/{data.get("username")}')
 
                 embed.set_footer(
                     text=f'Provided by https://myanimelist.net/ • Page 1/2')
@@ -597,7 +597,7 @@ class Profile(commands.Cog, name='Profile'):
         try:
             params = {
                 'filter[name]': username,
-                'include': 'stats,favorites'
+                'include': 'stats,favorites.item'
             }
             data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
                              res_method='json', params=params)
@@ -707,8 +707,16 @@ class Profile(commands.Cog, name='Profile'):
                                                           f'Total Entries: {manga_total_entries}',
                                 inline=True)
 
+                embed.add_field(name='Anime List', inline=False,
+                                value=f'https://kitsu.io/users/{data.get("data")[0]["attributes"]["name"]}'
+                                      f'/library?media=anime')
+
+                embed.add_field(name='Manga List', inline=False,
+                                value=f'https://kitsu.io/users/{data.get("data")[0]["attributes"]["name"]}'
+                                      f'/library?media=manga')
+
                 embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Page 1/1')
+                    text=f'Provided by https://kitsu.io/ • Page 1/2')
 
                 embeds.append(embed)
 
@@ -720,7 +728,86 @@ class Profile(commands.Cog, name='Profile'):
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the Kitsu profile.')
                 embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Page 1/1')
+                    text=f'Provided by https://kitsu.io/ • Page 1/2')
+                embeds.append(embed)
+
+            try:
+                embed = discord.Embed(title=data.get('data')[0]['attributes']['name'],
+                                      url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
+                                      color=DEFAULT_EMBED_COLOR)
+
+                embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+
+                fav_anime = []
+                fav_manga = []
+                fav_characters = []
+                for i in data.get('included'):
+                    if i.get('type') == 'anime':
+                        fav_anime.append(f'[{i.get("attributes").get("titles").get("en_jp")}]'
+                                         f'(https://kitsu.io/anime/{i.get("attributes").get("slug")})')
+                    if i.get('type') == 'manga':
+                        fav_manga.append(f'[{i.get("attributes").get("titles").get("en_jp")}]'
+                                         f'(https://kitsu.io/manga/{i.get("attributes").get("slug")})')
+                    if i.get('type') == 'characters':
+                        fav_characters.append(f'[{i.get("attributes").get("names").get("en")}]'
+                                              f'(https://myanimelist.net/character/{i.get("attributes").get("malId")})')
+
+                if len(fav_anime) > 0:
+                    total = 0
+                    for i, fav in enumerate(fav_anime):
+                        total += len(fav)+3
+                        if total >= 1024:
+                            fav_anime = fav_anime[0:i]
+                            fav_anime[i-1] = fav_anime[i-1] + '...'
+                            break
+                    embed.add_field(name='Favorite Anime',
+                                    value=' | '.join(fav_anime), inline=False)
+                else:
+                    embed.add_field(name='Favorite Anime',
+                                    value='N/A', inline=False)
+
+                if len(fav_manga) > 0:
+                    total = 0
+                    for i, fav in enumerate(fav_manga):
+                        total += len(fav)+3
+                        if total >= 1024:
+                            fav_manga = fav_manga[0:i]
+                            fav_manga[i-1] = fav_manga[i-1] + '...'
+                            break
+                    embed.add_field(name='Favorite Manga',
+                                    value=' | '.join(fav_manga), inline=False)
+                else:
+                    embed.add_field(name='Favorite Manga',
+                                    value='N/A', inline=False)
+
+                if len(fav_characters) > 0:
+                    total = 0
+                    for i, fav in enumerate(fav_characters):
+                        total += len(fav)+3
+                        if total >= 1024:
+                            fav_characters = fav_characters[0:i]
+                            fav_characters[i-1] = fav_characters[i-1] + '...'
+                            break
+                    embed.add_field(name='Favorite Characters', value=' | '.join(
+                        fav_characters), inline=False)
+                else:
+                    embed.add_field(name='Favorite Characters',
+                                    value='N/A', inline=False)
+
+                embed.set_footer(
+                    text=f'Provided by https://kitsu.io/ • Page 2/2')
+
+                embeds.append(embed)
+
+            except Exception as e:
+                log.exception(e)
+
+                embed = discord.Embed(
+                    title='Error',
+                    color=ERROR_EMBED_COLOR,
+                    description='An error occurred while loading the embed for the Kitsu profile.')
+                embed.set_footer(
+                    text=f'Provided by https://kitsu.io/ • Page 2/2')
                 embeds.append(embed)
 
             return embeds
