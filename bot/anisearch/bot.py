@@ -36,10 +36,8 @@ from waifu import WaifuAioClient
 from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCENAO_API_KEY, BOT_API_HOST, \
     BOT_API_PORT, BOT_API_SECRET_KEY
 from anisearch.utils.anilist import AniListClient
-from anisearch.utils.animenewsnetwork import AnimeNewsNetworkClient
 from anisearch.utils.api import Server
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID, SUPPORT_SERVER_INVITE
-from anisearch.utils.crunchyroll import CrunchyrollClient
 from anisearch.utils.database import DataBase
 
 log = logging.getLogger(__name__)
@@ -85,12 +83,6 @@ class AniSearchBot(AutoShardedBot):
                                  results_limit=10, min_similarity=0)
 
         self.jikan = AioJikan(session=ClientSession(loop=self.loop))
-
-        self.animenewsnetwork = AnimeNewsNetworkClient(
-            session=ClientSession(loop=self.loop))
-
-        self.crunchyroll = CrunchyrollClient(
-            session=ClientSession(loop=self.loop))
 
         self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
 
@@ -238,8 +230,8 @@ class AniSearchBot(AutoShardedBot):
         await self.anilist.close()
         await self.tracemoe.close()
         await self.jikan.close()
-        await self.animenewsnetwork.close()
-        await self.crunchyroll.close()
+        await self.waifu.close()
+        await self.topgg.close()
         await self.session.close()
         await super().close()
 

@@ -19,9 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import html
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Union, List
 
 import discord
+from bs4 import BeautifulSoup
 from discord import Embed
 from discord.ext import commands, menus
 from discord.ext.commands import Context
@@ -29,8 +30,10 @@ from discord.ext.commands import Context
 from anisearch.bot import AniSearchBot
 from anisearch.cogs.search import Search
 from anisearch.utils.checks import is_adult
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, CRUNCHYROLL_LOGO, ANIMENEWSNETWORK_LOGO
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, CRUNCHYROLL_LOGO, ANIMENEWSNETWORK_LOGO, \
+    ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT, CRUNCHYROLL_NEWS_FEED_ENDPOINT
 from anisearch.utils.formatters import clean_html
+from anisearch.utils.http import get
 from anisearch.utils.menus import EmbedListMenu
 from anisearch.utils.types import AniListMediaType
 
@@ -41,6 +44,46 @@ class News(commands.Cog, name='News'):
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
+
+    async def scrape_animenewsnetwork(self, count: int) -> Union[List[Dict[str, Any]], None]:
+        text = await get(ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT, self.bot.session, res_method='text')
+        soup = BeautifulSoup(text, 'html.parser')
+        items = soup.find_all('item')
+        if items:
+            data = []
+            for item in items:
+                if len(data) >= count:
+                    break
+                feed = {
+                    'title': item.find('title').text,
+                    'link': item.find('guid').text,
+                    'description': item.find('description').text,
+                    'category': item.find('category').text if item.find('category') else None,
+                    'date': item.find('pubdate').text
+                }
+                data.append(feed)
+            return data
+        return None
+
+    async def scrape_crunchyroll(self, count: int) -> Union[List[Dict[str, Any]], None]:
+        text = await get(CRUNCHYROLL_NEWS_FEED_ENDPOINT, self.bot.session, res_method='text')
+        soup = BeautifulSoup(text, 'html.parser')
+        items = soup.find_all('item')
+        if items:
+            data = []
+            for item in items:
+                if len(data) >= count:
+                    break
+                feed = {
+                    'title': item.find('title').text,
+                    'author': item.find('author').text,
+                    'description': item.find('description').text,
+                    'date': item.find('pubdate').text,
+                    'link': item.find('guid').text
+                }
+                data.append(feed)
+            return data
+        return None
 
     @staticmethod
     async def get_aninews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
@@ -78,7 +121,7 @@ class News(commands.Cog, name='News'):
         """Displays the latest anime news from Anime News Network."""
         async with ctx.channel.typing():
             try:
-                data = await self.bot.animenewsnetwork.news(count=15)
+                data = await self.scrape_animenewsnetwork(15)
             except Exception as e:
                 log.exception(e)
                 embed = discord.Embed(
@@ -112,7 +155,7 @@ class News(commands.Cog, name='News'):
         """Displays the latest anime news from Crunchyroll."""
         async with ctx.channel.typing():
             try:
-                data = await self.bot.crunchyroll.news(count=15)
+                data = await self.scrape_crunchyroll(15)
             except Exception as e:
                 log.exception(e)
                 embed = discord.Embed(title=f'An error occurred while searching for the Crunchyroll news. Try again.',
