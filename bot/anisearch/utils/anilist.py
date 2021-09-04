@@ -61,6 +61,7 @@ class AniListClient:
     async def _request(self, query: str, **variables: Union[str, Any]) -> Dict[str, Any]:
         session = await self._session()
         response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
+        log.debug(f'{response.method} {response.url} {response.status} {response.reason}')
         data = await response.json()
         if data.get('errors'):
             raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],
