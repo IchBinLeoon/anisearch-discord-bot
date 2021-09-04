@@ -116,7 +116,7 @@ class Themes(commands.Cog, name='Themes'):
         """Searches for the openings and endings of the given anime and displays them."""
         async with ctx.channel.typing():
             params = {
-                'q': quote(anime),
+                'q': anime,
                 'limit': 15,
                 'fields[search]': 'anime',
                 'include': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
@@ -159,7 +159,7 @@ class Themes(commands.Cog, name='Themes'):
         """Displays a specific opening or ending of the given anime."""
         async with ctx.channel.typing():
             params = {
-                'q': quote(anime),
+                'q': anime,
                 'limit': 15,
                 'fields[search]': 'anime',
                 'include': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'

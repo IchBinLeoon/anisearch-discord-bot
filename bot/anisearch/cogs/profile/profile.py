@@ -52,7 +52,7 @@ class Profile(commands.Cog, name='Profile'):
                 data = await self.bot.jikan.user(username=username)
             if site == 'kitsu':
                 params = {
-                    'filter[name]': quote(username),
+                    'filter[name]': username,
                     'include': 'stats,favorites'
                 }
                 data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
@@ -596,7 +596,7 @@ class Profile(commands.Cog, name='Profile'):
 
         try:
             params = {
-                'filter[name]': quote(username),
+                'filter[name]': username,
                 'include': 'stats,favorites'
             }
             data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
