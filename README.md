@@ -154,6 +154,12 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `last:` Displays the most recently aired anime episodes.  
 
+- `watchlist:` View the anime watchlist of the server. If no anime has been added to the watchlist, the server will receive a notification for every new episode.  
+
+- `watch <AniListID>:` Add an anime you want to receive episode notifications from to the server watchlist by AniList ID. Can only be used by a server administrator.
+
+- `unwatch <AniListID>:` Remove an anime from to the server watchlist by AniList ID. Can only be used by a server administrator.
+
 ### News
 - `aninews:` Displays the latest anime news from Anime News Network.  
 
@@ -268,7 +274,7 @@ The bot, the associated admin panel and Asuka, the episode notification service,
 1. To be able to use the bot you need to set up a `PostgreSQL Database`. Make sure the tables are set up correctly as shown below to successfully connect to your database. Type the following in your `PSQL Tool`:
 
     ```sql
-    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5), channel bigint, role bigint);
+    CREATE TABLE IF NOT EXISTS guilds (id bigint, prefix VARCHAR (5), channel bigint, role bigint, watchlist integer[] DEFAULT '{}');
     CREATE TABLE IF NOT EXISTS users (id bigint, anilist VARCHAR (255), myanimelist VARCHAR (255), kitsu VARCHAR (255));
     CREATE TABLE IF NOT EXISTS schedule (id bigint, time bigint, episode int, romaji VARCHAR (255), english VARCHAR (255), image VARCHAR (255), url VARCHAR (255), nsfw boolean);
     ```

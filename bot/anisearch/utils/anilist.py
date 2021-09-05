@@ -122,6 +122,12 @@ class AniListClient:
             return data.get('data')['Page']['media']
         return None
 
+    async def watchlist(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
+        data = await self._request(query=Query.watchlist(), **variables)
+        if data.get('data')['Page']['media']:
+            return data.get('data')['Page']['media']
+        return None
+
 
 class Query:
 
@@ -608,3 +614,20 @@ class Query:
         }
         '''
         return TRENDING_QUERY
+
+    @classmethod
+    def watchlist(cls) -> str:
+        WATCHLIST_QUERY: str = '''
+        query ($page: Int, $perPage: Int, $id_in: [Int] = [1, 20665], $type: MediaType = ANIME) {
+          Page(page: $page, perPage: $perPage) {
+            media(id_in: $id_in, type: $type) {
+              id
+              title {
+                romaji
+              }
+              siteUrl
+            }
+          }
+        }
+        '''
+        return WATCHLIST_QUERY

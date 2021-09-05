@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-from typing import Union
+from typing import Union, List
 
 import discord
 import psycopg2
@@ -231,5 +231,37 @@ class DataBase:
                     return role
                 except TypeError:
                     return None
+        finally:
+            self.pool.putconn(conn)
+
+    def add_watchlist(self, anime_id: int, guild_id: int):
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE guilds SET watchlist = array_cat(watchlist, '{%s}') WHERE id = %s;",
+                            (anime_id, guild_id,))
+                conn.commit()
+                log.info(f'Added `{anime_id}` to the server watchlist of guild {guild_id}')
+        finally:
+            self.pool.putconn(conn)
+
+    def remove_watchlist(self, anime_id: int, guild_id: int):
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE guilds SET watchlist = array_remove(watchlist, %s) WHERE id = %s;",
+                            (anime_id, guild_id,))
+                conn.commit()
+                log.info(f'Removed {anime_id} from the server watchlist of guild {guild_id}')
+        finally:
+            self.pool.putconn(conn)
+
+    def get_watchlist(self, guild_id: int) -> List[int]:
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute('SELECT watchlist FROM guilds WHERE id = %s;', (guild_id,))
+                id_list = cur.fetchone()[0]
+                return id_list
         finally:
             self.pool.putconn(conn)
