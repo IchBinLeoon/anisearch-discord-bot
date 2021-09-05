@@ -101,6 +101,16 @@ def get_command_example(ctx: Context, command: str) -> Union[str, None]:
         'all'
     ]
 
+    watch = [
+        '132456',
+        '107717'
+    ]
+
+    unwatch = [
+        '116742',
+        '235'
+    ]
+
     trending = [
         'anime',
         'manga'

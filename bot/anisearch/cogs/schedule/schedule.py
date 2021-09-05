@@ -205,10 +205,11 @@ class Schedule(commands.Cog, name='Schedule'):
                     title=f'The most recently aired episodes could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='watchlist', usage='watchlist', ignore_extra=False)
+    @commands.command(name='watchlist', aliases=['wl'], usage='watchlist', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.guild_only()
     async def watchlist(self, ctx: Context):
-        """View the anime watchlist of the server. If no anime has been added to the watchlist, the server will
+        """Displays the anime watchlist of the server. If no anime has been added to the watchlist, the server will
         receive a notification for every new episode."""
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if len(watchlist) > 0:
@@ -232,15 +233,17 @@ class Schedule(commands.Cog, name='Schedule'):
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def watch(self, ctx: Context, anilist_id: int):
-        """Add an anime you want to receive episode notifications from to the server watchlist by
+        """Adds an anime you want to receive episode notifications from to the server watchlist by
         AniList ID. Can only be used by a server administrator."""
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if len(watchlist) + 1 > 50:
+            ctx.command.reset_cooldown(ctx)
             embed = discord.Embed(
                 title=f'The watchlist cannot be longer than 50 entries.',
                 color=ERROR_EMBED_COLOR)
             return await ctx.channel.send(embed=embed)
         if anilist_id in watchlist:
+            ctx.command.reset_cooldown(ctx)
             embed = discord.Embed(
                 title=f'The ID `{anilist_id}` is already on the server watchlist.',
                 color=ERROR_EMBED_COLOR)
@@ -264,10 +267,11 @@ class Schedule(commands.Cog, name='Schedule'):
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def unwatch(self, ctx: Context, anilist_id: int):
-        """Remove an anime from to the server watchlist by AniList ID.
+        """Removes an anime from to the server watchlist by AniList ID.
         Can only be used by a server administrator."""
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if anilist_id not in watchlist:
+            ctx.command.reset_cooldown(ctx)
             embed = discord.Embed(
                 title=f'The ID `{anilist_id}` is not on the server watchlist.',
                 color=ERROR_EMBED_COLOR)
