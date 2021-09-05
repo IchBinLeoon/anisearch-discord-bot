@@ -102,8 +102,7 @@ class Help(commands.Cog, name='Help'):
                 cmds = '\n'.join(
                     [f'• {prefix}{cmd.usage}' for cmd in self.bot.get_cog(cog).get_commands()])
 
-                cmds = ''.join(f'Can only be used by a server administrator.\n```\n{cmds}\n```'
-                               if self.bot.get_cog(cog).qualified_name == 'Settings' else f'```\n{cmds}\n```')
+                cmds = ''.join(f'```\n{cmds}\n```')
 
                 embed = discord.Embed(description=f'To view information about a specified command use: '
                                                   f'`{prefix}help [command]`\n{server_prefix}\n'

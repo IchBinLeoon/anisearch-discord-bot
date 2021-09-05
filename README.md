@@ -156,9 +156,9 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 
 - `watchlist:` Displays the anime watchlist of the server. If no anime has been added to the watchlist, the server will receive a notification for every new episode.  
 
-- `watch <AniListID>:` Adds an anime you want to receive episode notifications from to the server watchlist by AniList ID. Can only be used by a server administrator.
+- `watch <aniList-id>:` Adds an anime you want to receive episode notifications from to the server watchlist by AniList ID. Can only be used by a server administrator.
 
-- `unwatch <AniListID>:` Removes an anime from to the server watchlist by AniList ID. Can only be used by a server administrator.
+- `unwatch <aniList-id>:` Removes an anime from to the server watchlist by AniList ID. Can only be used by a server administrator.
 
 ### News
 - `aninews:` Displays the latest anime news from Anime News Network.  
@@ -181,13 +181,11 @@ Do __not__ include `<>`, `[]` or `|` when executing the command.
 - `ping:` Checks the latency of the bot.
 
 ### Settings
-Can only be used by a server administrator.
+- `set <prefix|channel|role> <prefix|#channel|@role>:` Sets the server prefix, the channel for anime episode notifications, or the role for notification mentions. Can only be used by a server administrator.  
 
-- `set <prefix|channel|role> <prefix|#channel|@role>:` Sets the server prefix, the channel for anime episode notifications, or the role for notification mentions.  
+- `remove <channel|role>:` Removes the set channel or role. Can only be used by a server administrator.  
 
-- `remove <channel|role>:` Removes the set channel or role.  
-
-- `info:` Displays the set prefix, the set channel and the set role.
+- `info:` Displays the set prefix, the set channel and the set role. Can only be used by a server administrator.
 
 ### Admin
 Can only be used by the bot owner.  

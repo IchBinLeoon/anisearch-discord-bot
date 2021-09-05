@@ -228,7 +228,7 @@ class Schedule(commands.Cog, name='Schedule'):
         embed = discord.Embed(title='Watchlist', description=description, color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
 
-    @commands.command(name='watch', aliases=['w'], usage="watch <AniListID>", ignore_extra=False)
+    @commands.command(name='watch', aliases=['w'], usage="watch <aniList-id>", ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
@@ -262,7 +262,7 @@ class Schedule(commands.Cog, name='Schedule'):
                     title=f'An anime with the ID `{anilist_id}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='unwatch', aliases=['uw'], usage="unwatch <AniListID>", ignore_extra=False)
+    @commands.command(name='unwatch', aliases=['uw'], usage="unwatch <aniList-id>", ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
