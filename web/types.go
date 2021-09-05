@@ -19,7 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 package main
 
-import "gorm.io/gorm"
+import (
+	"github.com/lib/pq"
+	"gorm.io/gorm"
+)
 
 type Stats struct {
 	IsReady      bool    `json:"is_ready"`
@@ -51,10 +54,11 @@ type Shards struct {
 type Guild struct {
 	gorm.Model
 
-	ID      int64
-	Prefix  string
-	Channel int64
-	Role    int64
+	ID        int64
+	Prefix    string
+	Channel   int64
+	Role      int64
+	Watchlist pq.Int64Array `gorm:"type:integer[]"`
 }
 
 type User struct {

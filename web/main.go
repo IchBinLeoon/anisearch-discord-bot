@@ -143,6 +143,9 @@ func guilds(c *gin.Context) {
 		if i.Role != 0 {
 			info = append(info, fmt.Sprintf("Role: %d", i.Role))
 		}
+		if len(i.Watchlist) > 0 {
+			info = append(info, fmt.Sprintf("Watchlist: %v", i.Watchlist))
+		}
 		guildStr := strings.Join(info, " | ")
 		guildStrList = append(guildStrList, guildStr)
 	}
