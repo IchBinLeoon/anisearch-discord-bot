@@ -241,7 +241,7 @@ class DataBase:
                 cur.execute("UPDATE guilds SET watchlist = array_cat(watchlist, '{%s}') WHERE id = %s;",
                             (anime_id, guild_id,))
                 conn.commit()
-                log.info(f'Added `{anime_id}` to the server watchlist of guild {guild_id}')
+                log.info(f'Added {anime_id} to the server watchlist of guild {guild_id}')
         finally:
             self.pool.putconn(conn)
 
