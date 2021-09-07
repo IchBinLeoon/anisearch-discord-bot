@@ -37,10 +37,8 @@ DISCORD_INVITE = 'https://discord.com/oauth2/authorize?client_id=737236600878137
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 SUPPORT_SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 
-ANISEARCH_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/anisearch-logo.png?raw=true'
-
-ANILIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/AniList.jpg?raw=true'
-ANIMENEWSNETWORK_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/AnimeNewsNetwork.jpg?raw=true'
-CRUNCHYROLL_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/Crunchyroll.jpg?raw=true'
-KITSU_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/Kitsu.jpg?raw=true'
-MYANIMELIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/assets/logos/MyAnimeList.jpg?raw=true'
+ANILIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/.github/assets/logos/AniList.jpg?raw=true'
+ANIMENEWSNETWORK_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/.github/assets/logos/AnimeNewsNetwork.jpg?raw=true'
+CRUNCHYROLL_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/.github/assets/logos/Crunchyroll.jpg?raw=true'
+KITSU_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/.github/assets/logos/Kitsu.jpg?raw=true'
+MYANIMELIST_LOGO = 'https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/.github/assets/logos/MyAnimeList.jpg?raw=true'
