@@ -1,3 +1,0 @@
-# Bot
-
-AniSearch Discord Bot
