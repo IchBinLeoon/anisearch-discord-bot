@@ -126,9 +126,8 @@ class Help(commands.Cog, name='Help'):
     async def about(self, ctx: Context):
         """Displays information about the bot."""
         embed = discord.Embed(title='About AniSearch', color=DEFAULT_EMBED_COLOR,
-                              description=f'<@!{BOT_ID}> is an easy-to-use Discord bot written in Python '
-                                          f'that allows you to search for anime, manga, characters, staff, studios '
-                                          f'and much more directly in Discord!')
+                              description=f'<@!{BOT_ID}> is an easy-to-use bot that allows you to look up information '
+                                          f'about anime, manga and much more directly in Discord!')
         embed.add_field(name='❯ Creator',
                         value=f'<@!{CREATOR_ID}>', inline=True)
         embed.add_field(name='❯ Version',

@@ -18,7 +18,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 __author__ = 'IchBinLeoon'
-__description__ = 'Anime Search Discord Bot'
-__url__ = 'https://github.com/IchBinLeoon/anisearch-discord-bot'
-__license__ = 'GPL-v3.0'
 __version__ = '1.7.1'
