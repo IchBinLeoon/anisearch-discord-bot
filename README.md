@@ -52,7 +52,7 @@ Nevertheless, the installation steps are as follows:
     BOT_SAUCENAO_API_KEY=
     ```
 
-7. Build the images and run the bot, admin panel and database.
+7. Build the images and run the bot, notification service, admin panel and database.
     ```
     $ docker-compose up --build
     ```
