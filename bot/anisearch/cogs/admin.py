@@ -182,3 +182,12 @@ class Admin(commands.Cog, name='Admin'):
                               f'Packets received: {psutil.net_io_counters()[3]}\n'
                               f'Packets dropped: {psutil.net_io_counters()[6]}')
         await ctx.channel.send(embed=embed)
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Admin(bot))
+    log.info('Admin cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Admin cog unloaded')

@@ -203,3 +203,12 @@ class Help(commands.Cog, name='Help'):
         embed = discord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
                               color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Help(bot))
+    log.info('Help cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Help cog unloaded')

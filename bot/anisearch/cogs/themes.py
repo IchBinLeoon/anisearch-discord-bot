@@ -201,3 +201,12 @@ class Themes(commands.Cog, name='Themes'):
                 embed = discord.Embed(
                     title=f'No theme for the anime `{anime}` found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Themes(bot))
+    log.info('Themes cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Themes cog unloaded')

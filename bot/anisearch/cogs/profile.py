@@ -994,3 +994,12 @@ class Profile(commands.Cog, name='Profile'):
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise discord.ext.commands.BadArgument
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Profile(bot))
+    log.info('Profile cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Profile cog unloaded')

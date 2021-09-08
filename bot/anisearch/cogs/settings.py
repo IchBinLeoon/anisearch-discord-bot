@@ -157,3 +157,11 @@ class Settings(commands.Cog, name='Settings'):
             name='Role', value=f'<@&{role}>' if role else '*Not set*', inline=False)
         await ctx.channel.send(embed=embed)
 
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Settings(bot))
+    log.info('Settings cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Settings cog unloaded')

@@ -333,3 +333,12 @@ class Schedule(commands.Cog, name='Schedule'):
                 log.exception(e)
 
         log.info(f'Posted episode notification in {channel_count} channels')
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Schedule(bot))
+    log.info('Schedule cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Schedule cog unloaded')

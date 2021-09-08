@@ -237,3 +237,12 @@ class Image(commands.Cog, name='Image'):
             embed.set_image(url=data)
             embed.set_footer(text='Provided by https://waifu.pics/')
             await ctx.channel.send(embed=embed)
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Image(bot))
+    log.info('Image cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Image cog unloaded')

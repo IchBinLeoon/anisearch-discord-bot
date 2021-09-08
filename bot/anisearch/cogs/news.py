@@ -227,3 +227,12 @@ class News(commands.Cog, name='News'):
                 embed = discord.Embed(
                     title=f'No trending {type_.lower()} found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(News(bot))
+    log.info('News cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('News cog unloaded')

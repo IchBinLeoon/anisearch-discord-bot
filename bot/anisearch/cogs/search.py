@@ -538,3 +538,12 @@ class Search(commands.Cog, name='Search'):
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise discord.ext.commands.BadArgument
+
+
+def setup(bot: AniSearchBot):
+    bot.add_cog(Search(bot))
+    log.info('Search cog loaded')
+
+
+def teardown(bot: AniSearchBot):
+    log.info('Search cog unloaded')
