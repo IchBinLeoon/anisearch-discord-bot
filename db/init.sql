@@ -14,12 +14,12 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS schedule (
-    id bigint,
-    time bigint,
-    episode int,
-    romaji text,
+    id bigint NOT NULL,
+    time bigint NOT NULL,
+    episode int NOT NULL,
+    romaji text NOT NULL,
     english text,
-    image text,
-    url text,
-    nsfw boolean
+    image text NOT NULL,
+    url text NOT NULL,
+    nsfw boolean NOT NULL
 );
