@@ -8,7 +8,7 @@ services:
     depends_on:
       - db
     ports:
-      - ${BOT_API_PORT}:${BOT_API_PORT}
+      - '8765:8765'
     restart: unless-stopped
     container_name: anisearch-bot
   web:
@@ -19,7 +19,7 @@ services:
       - db
       - bot
     ports:
-      - ${WEB_PORT}:${WEB_PORT}
+      - '5000:5000'
     restart: unless-stopped
     container_name: anisearch-web
   asuka:
@@ -34,11 +34,11 @@ services:
   db:
     image: postgres:latest
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: anisearch
+      POSTGRES_USER: anisearch
+      POSTGRES_PASSWORD: anisearch
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - '5432:5432'
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db/pgdata:/var/lib/postgresql/data
