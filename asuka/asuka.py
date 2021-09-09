@@ -25,9 +25,6 @@ import time
 import aiohttp
 import psycopg2
 import psycopg2.pool
-from dotenv import load_dotenv
-
-load_dotenv()
 
 BOT_API_HOST = os.getenv('BOT_API_HOST')
 BOT_API_PORT = os.getenv('BOT_API_PORT')

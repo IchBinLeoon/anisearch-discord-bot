@@ -30,7 +30,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -185,12 +184,6 @@ func users(c *gin.Context) {
 }
 
 func init() {
-	if _, err := os.Stat("../.env"); err == nil {
-		if err := godotenv.Load("../.env"); err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	host = os.Getenv("WEB_HOST")
 	port = os.Getenv("WEB_PORT")
 	mode = os.Getenv("WEB_MODE")

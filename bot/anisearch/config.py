@@ -19,10 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import os
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 BOT_OWNER_ID = os.getenv('BOT_OWNER_ID')
 BOT_SAUCENAO_API_KEY = os.getenv('BOT_SAUCENAO_API_KEY')
