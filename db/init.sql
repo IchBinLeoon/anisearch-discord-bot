@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS guilds (
     id bigint NOT NULL,
-    prefix varchar(5) NOT NULL,
+    prefix varchar(5) NOT NULL DEFAULT 'as!',
     channel bigint,
     role bigint,
     watchlist integer[] NOT NULL DEFAULT '{}'

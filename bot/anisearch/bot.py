@@ -163,7 +163,7 @@ class AniSearchBot(AutoShardedBot):
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         log.info(f'Bot joined guild {guild.id}')
-        self.db.insert_prefix(guild)
+        self.db.insert_guild(guild)
         try:
             user = await self.fetch_user(guild.owner_id)
             await user.send(f'**Hey there! Thanks for using <@!{BOT_ID}>!**\n\n'
@@ -186,7 +186,7 @@ class AniSearchBot(AutoShardedBot):
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         log.info(f'Bot left guild {guild.id}')
-        self.db.delete_prefix(guild)
+        self.db.delete_guild(guild)
 
     async def on_autopost_success(self):
         log.info(

@@ -57,40 +57,40 @@ class DataBase:
                     prefix = cur.fetchone()[0]
                     return prefix
                 except TypeError:
-                    cur.execute('INSERT INTO guilds (id, prefix) VALUES (%s, %s)',
-                                (message.guild.id, DEFAULT_PREFIX))
+                    cur.execute('INSERT INTO guilds (id) VALUES (%s)',
+                                (message.guild.id,))
                     conn.commit()
                     cur.execute(
                         'SELECT prefix FROM guilds WHERE id = %s;', (message.guild.id,))
                     prefix = cur.fetchone()[0]
                     log.info(
-                        f'Inserted prefix for guild {message.guild.id}')
+                        f'Inserted guild {message.guild.id}')
                     return prefix
         finally:
             self.pool.putconn(conn)
 
-    def insert_prefix(self, guild: discord.Guild) -> None:
+    def insert_guild(self, guild: discord.Guild) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
                 cur.execute(
                     'UPDATE guilds SET prefix = %s WHERE id = %s;', (DEFAULT_PREFIX, guild.id,))
-                cur.execute('INSERT INTO guilds (id, prefix) SELECT %s, %s WHERE NOT EXISTS '
-                            '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, DEFAULT_PREFIX, guild.id,))
+                cur.execute('INSERT INTO guilds (id) SELECT %s WHERE NOT EXISTS '
+                            '(SELECT 1 FROM guilds WHERE id = %s);', (guild.id, guild.id,))
                 conn.commit()
                 log.info(
-                    f'Inserted prefix for guild {guild.id}')
+                    f'Inserted guild {guild.id}')
         finally:
             self.pool.putconn(conn)
 
-    def delete_prefix(self, guild: discord.Guild) -> None:
+    def delete_guild(self, guild: discord.Guild) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
                 cur.execute('DELETE FROM guilds WHERE id = %s;', (guild.id,))
                 conn.commit()
                 log.info(
-                    f'Deleted prefix for guild {guild.id}')
+                    f'Deleted guild {guild.id}')
         finally:
             self.pool.putconn(conn)
 
