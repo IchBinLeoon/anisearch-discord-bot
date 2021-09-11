@@ -41,7 +41,7 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(m
 
 ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 
-TIME = 600
+INTERVAL = int(os.getenv('ASUKA_INTERVAL'))
 
 
 def handle_exception(loop, context):
@@ -180,7 +180,7 @@ class Asuka:
             if data is not None:
                 await self.clear_table()
                 await self.insert_table(data)
-            await asyncio.sleep(TIME)
+            await asyncio.sleep(INTERVAL)
 
     def run(self):
         logging.info('Starting Asuka')
