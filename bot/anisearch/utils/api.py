@@ -83,43 +83,35 @@ class Server:
             except Exception as e:
                 log.exception(e)
                 status = 500
-                response = {
-                    'error': '500 Internal Server Error', 'code': status}
+                response = {'error': '500 Internal Server Error', 'code': status}
         return web.Response(text=json.dumps(response), status=status)
 
-    async def handle_schedule(self, request: web_request.Request) -> web.Response:
+    async def handle_notification(self, request: web_request.Request) -> web.Response:
         if not request.headers or request.headers.get('Authentication') != self.secret_key:
             status = 403
             response = {'error': '403 Forbidden', 'code': status}
         else:
             try:
                 q = request.query
-                if q.get('type') == 'notification':
+                if q.get('type') == 'episode':
                     status = 200
                     response = {
-                        'status': 200,
-                        'reason': 'OK'
+                        'status': status,
                     }
                     data = await request.json()
-                    log.info(
-                        f'New episode notification: {data.get("romaji")} [{data.get("id")}]')
-                    try:
-                        cog = self.bot.get_cog('Schedule')
-                        if cog is None:
-                            log.warning(
-                                'Schedule cog has not been loaded: Cannot send episode notification')
-                        else:
-                            await cog.send_episode_notification(data)
-                    except Exception as e:
-                        log.exception(e)
+                    log.info(f'New episode notification: {data.get("romaji")} [{data.get("id")}]')
+                    cog = self.bot.get_cog('Schedule')
+                    if cog is None:
+                        log.warning('Schedule cog has not been loaded: Cannot send episode notification')
+                    else:
+                        await cog.send_episode_notification(data)
                 else:
                     status = 400
                     response = {'error': '400 Bad Request', 'code': status}
             except Exception as e:
                 log.exception(e)
                 status = 500
-                response = {
-                    'error': '500 Internal Server Error', 'code': status}
+                response = {'error': '500 Internal Server Error', 'code': status}
         return web.Response(text=json.dumps(response), status=status)
 
     async def _start(self) -> None:
@@ -137,8 +129,8 @@ class Server:
             logger.setLevel(logging.ERROR)
 
         self._server = web.Application()
+
         self._server.router.add_route('GET', '/api/info', self.handle_info)
-        self._server.router.add_route(
-            'POST', '/api/schedule', self.handle_schedule)
+        self._server.router.add_route('POST', '/api/notification', self.handle_notification)
 
         self.loop.run_until_complete(self._start())

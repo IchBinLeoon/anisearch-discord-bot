@@ -158,7 +158,7 @@ class Asuka:
                             'nsfw': row[7]
                         }
                         session = await self._session()
-                        r = await session.post(f'http://{BOT_API_HOST}:{BOT_API_PORT}/api/schedule?type=notification',
+                        r = await session.post(f'http://{BOT_API_HOST}:{BOT_API_PORT}/api/notification?type=episode',
                                                headers={'Authentication': BOT_API_SECRET_KEY}, json=payload)
                         logging.info(
                             f'{r.method} {r.url} {r.status} {r.reason}')
