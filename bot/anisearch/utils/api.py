@@ -100,9 +100,9 @@ class Server:
                     }
                     data = await request.json()
                     log.info(f'New episode notification: {data.get("romaji")} [{data.get("id")}]')
-                    cog = self.bot.get_cog('Schedule')
+                    cog = self.bot.get_cog('Notification')
                     if cog is None:
-                        log.warning('Schedule cog has not been loaded: Cannot send episode notification')
+                        log.warning('Notification cog has not been loaded: Cannot send episode notification')
                     else:
                         await cog.send_episode_notification(data)
                 else:

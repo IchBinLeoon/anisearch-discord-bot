@@ -32,7 +32,7 @@ from anisearch.utils.types import AniListMediaType
 log = logging.getLogger(__name__)
 
 
-class Schedule(commands.Cog, name='Schedule'):
+class Notification(commands.Cog, name='Notification'):
 
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
@@ -168,9 +168,9 @@ class Schedule(commands.Cog, name='Schedule'):
 
 
 def setup(bot: AniSearchBot):
-    bot.add_cog(Schedule(bot))
-    log.info('Schedule cog loaded')
+    bot.add_cog(Notification(bot))
+    log.info('Notification cog loaded')
 
 
 def teardown(bot: AniSearchBot):
-    log.info('Schedule cog unloaded')
+    log.info('Notification cog unloaded')
