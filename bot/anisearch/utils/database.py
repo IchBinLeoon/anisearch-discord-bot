@@ -265,3 +265,12 @@ class DataBase:
                 return id_list
         finally:
             self.pool.putconn(conn)
+
+    def clear_watchlist(self, guild_id: int):
+        conn = self.pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE guilds SET watchlist = '{}' WHERE id = %s;", (guild_id,))
+                conn.commit()
+        finally:
+            self.pool.putconn(conn)

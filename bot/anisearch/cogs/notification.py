@@ -60,7 +60,7 @@ class Notification(commands.Cog, name='Notification'):
         embed = discord.Embed(title='Watchlist', description=description, color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
 
-    @commands.command(name='watch', aliases=['w'], usage="watch <anilist-id>", ignore_extra=False)
+    @commands.command(name='watch', aliases=['w'], usage='watch <anilist-id>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
@@ -94,13 +94,12 @@ class Notification(commands.Cog, name='Notification'):
                     title=f'An anime with the ID `{anilist_id}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='unwatch', aliases=['uw'], usage="unwatch <anilist-id>", ignore_extra=False)
+    @commands.command(name='unwatch', aliases=['uw'], usage='unwatch <anilist-id>', ignore_extra=False)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def unwatch(self, ctx: Context, anilist_id: int):
-        """Removes an anime from to the server watchlist by AniList ID.
-        Can only be used by a server administrator."""
+        """Removes an anime from the server watchlist by AniList ID. Can only be used by a server administrator."""
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if anilist_id not in watchlist:
             ctx.command.reset_cooldown(ctx)
@@ -112,6 +111,26 @@ class Notification(commands.Cog, name='Notification'):
             self.bot.db.remove_watchlist(anilist_id, ctx.guild.id)
             embed = discord.Embed(
                 title=f'Removed ID `{anilist_id}` from the server watchlist.',
+                color=DEFAULT_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+
+    @commands.command(name='clearlist', aliases=['cl'], usage='clearlist', ignore_extra=False)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def clearlist(self, ctx: Context):
+        """Removes all anime from the server watchlist. Can only be used by a server administrator."""
+        watchlist = self.bot.db.get_watchlist(ctx.guild.id)
+        if len(watchlist) < 1:
+            ctx.command.reset_cooldown(ctx)
+            embed = discord.Embed(
+                title='No anime added to the watchlist.',
+                color=ERROR_EMBED_COLOR)
+            await ctx.channel.send(embed=embed)
+        else:
+            self.bot.db.clear_watchlist(ctx.guild.id)
+            embed = discord.Embed(
+                title='Removed all anime from the server watchlist.',
                 color=DEFAULT_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
 
