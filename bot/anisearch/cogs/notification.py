@@ -42,8 +42,10 @@ class Notification(commands.Cog, name='Notification'):
     @commands.guild_only()
     async def watchlist(self, ctx: Context):
         """Displays the anime watchlist of the server. If no anime has been added to the watchlist, the server will
-        receive a notification for every new episode."""
+        receive a notification for every new episode, provided the channel has been set."""
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
+        channel = self.bot.db.get_channel(ctx.guild)
+        role = self.bot.db.get_role(ctx.guild)
         if len(watchlist) > 0:
             data = await self.bot.anilist.watchlist(id_in=watchlist, page=1, perPage=50,
                                                     type=AniListMediaType.Anime.upper())
@@ -56,8 +58,10 @@ class Notification(commands.Cog, name='Notification'):
             description = '\n'.join(entries)
         else:
             description = '_No anime added to the watchlist. The server will receive a notification for every ' \
-                          'new episode._'
+                          'new episode, provided the channel has been set._'
         embed = discord.Embed(title='Watchlist', description=description, color=DEFAULT_EMBED_COLOR)
+        embed.add_field(name='Channel', value=f'<#{channel}>' if channel else '*Not set*', inline=False)
+        embed.add_field(name='Role', value=f'<@&{role}>' if role else '*Not set*', inline=False)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='watch', aliases=['w'], usage='watch <anilist-id>', ignore_extra=False)
@@ -133,6 +137,89 @@ class Notification(commands.Cog, name='Notification'):
                 title='Removed all anime from the server watchlist.',
                 color=DEFAULT_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
+
+    @commands.command(name='set', usage='set <channel|role> <#channel|@role>', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def set(self, ctx: Context, type_: str, value: str):
+        """Sets the channel for anime episode notifications, or the role for notification mentions.
+        Can only be used by a server administrator."""
+        if type_.lower() == 'channel':
+            if value.startswith('<#'):
+                channel_id = value.replace('<#', '').replace('>', '')
+            else:
+                channel_id = value
+            try:
+                channel_id = int(channel_id)
+            except ValueError:
+                channel_id = None
+            if ctx.guild.get_channel(channel_id) is None:
+                embed = discord.Embed(
+                    title=f'The channel could not be found.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+                ctx.command.reset_cooldown(ctx)
+            else:
+                self.bot.db.set_channel(channel_id, ctx.guild)
+                channel = self.bot.db.get_channel(ctx.guild)
+                embed = discord.Embed(title=f'Set the notification channel to:', description=f'<#{channel}>',
+                                      color=DEFAULT_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+        elif type_.lower() == 'role':
+            if value.startswith('<@&'):
+                role_id = value.replace('<@&', '').replace('>', '')
+            else:
+                role_id = value
+            try:
+                role_id = int(role_id)
+            except ValueError:
+                role_id = None
+            if ctx.guild.get_role(role_id) is None:
+                embed = discord.Embed(
+                    title=f'The role could not be found.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+                ctx.command.reset_cooldown(ctx)
+            else:
+                self.bot.db.set_role(role_id, ctx.guild)
+                role = self.bot.db.get_role(ctx.guild)
+                embed = discord.Embed(title=f'Set the notification role to:', description=f'<@&{role}>',
+                                      color=DEFAULT_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+        else:
+            ctx.command.reset_cooldown(ctx)
+            raise discord.ext.commands.BadArgument
+
+    @commands.command(name='remove', aliases=['rm'], usage='remove <channel|role>', ignore_extra=False)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def remove(self, ctx: Context, type_: str):
+        """Removes the set channel or role. Can only be used by a server administrator."""
+        if type_.lower() == 'channel':
+            channel = self.bot.db.get_channel(ctx.guild)
+            if channel is None:
+                embed = discord.Embed(
+                    title='No notification channel set for the server.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+            else:
+                self.bot.db.set_channel(None, ctx.guild)
+                embed = discord.Embed(
+                    title='Removed the set notification channel.', color=DEFAULT_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+        elif type_.lower() == 'role':
+            role = self.bot.db.get_role(ctx.guild)
+            if role is None:
+                embed = discord.Embed(
+                    title='No notification role set for the server.', color=ERROR_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+            else:
+                self.bot.db.set_role(None, ctx.guild)
+                embed = discord.Embed(
+                    title='Removed the set notification role.', color=DEFAULT_EMBED_COLOR)
+                await ctx.channel.send(embed=embed)
+        else:
+            ctx.command.reset_cooldown(ctx)
+            raise discord.ext.commands.BadArgument
 
     async def send_episode_notification(self, data: Dict[str, Any]) -> None:
         channel_count = 0

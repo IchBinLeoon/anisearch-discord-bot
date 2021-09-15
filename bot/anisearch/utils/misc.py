@@ -117,9 +117,13 @@ def get_command_example(ctx: Context, command: str) -> Union[str, None]:
     ]
 
     set = [
-        'prefix ?',
         'channel #notifications',
         'role @Notifications'
+    ]
+
+    setprefix = [
+        '?',
+        '!'
     ]
 
     try:
