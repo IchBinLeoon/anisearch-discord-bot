@@ -40,7 +40,11 @@ async def request(url: str, session: ClientSession, method: str, res_method: str
         except ContentTypeError:
             error = await r.text()
         raise RequestException(r.status, r.reason, str(error))
-    return await getattr(r, res_method)()
+    try:
+        data = await getattr(r, res_method)()
+    except UnicodeDecodeError:
+        data = await getattr(r, res_method)(encoding='utf-8')
+    return data
 
 
 async def get(url: str, session: ClientSession, res_method: str, *args, **kwargs) -> request:
