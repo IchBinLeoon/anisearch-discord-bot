@@ -7,16 +7,16 @@
         <title>AniSearch Admin Panel</title>
         <script>
             function redirectLogs() {
-                window.location.href = "/logs";
+                window.location.href = window.location.pathname + "logs"
             }
             function redirectShards() {
-                window.location.href = "/shards";
+                window.location.href = window.location.pathname + "shards";
             }
             function redirectGuilds() {
-                window.location.href = "/guilds";
+                window.location.href = window.location.pathname + "guilds";
             }
             function redirectUsers() {
-                window.location.href = "/users";
+                window.location.href = window.location.pathname + "users";
             }
             let uptime = {{ .uptime }}
             function countUptime() {
