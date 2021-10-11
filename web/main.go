@@ -192,11 +192,11 @@ func init() {
 	botApiPort = os.Getenv("BOT_API_PORT")
 	botApiSecretKey = os.Getenv("BOT_API_SECRET_KEY")
 
-	dbHost = os.Getenv("DB_HOST")
-	dbPort = os.Getenv("DB_PORT")
-	dbName = os.Getenv("DB_NAME")
-	dbUser = os.Getenv("DB_USER")
-	dbPassword = os.Getenv("DB_PASSWORD")
+	dbHost = os.Getenv("POSTGRES_HOST")
+	dbPort = os.Getenv("POSTGRES_PORT")
+	dbName = os.Getenv("POSTGRES_DB")
+	dbUser = os.Getenv("POSTGRES_USER")
+	dbPassword = os.Getenv("POSTGRES_PASSWORD")
 }
 
 func main() {
