@@ -17,6 +17,15 @@ You want to write code and add new things or fix a bug? Just fork, clone to your
 
 You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask your questions or get support!
 
+# Structure
+| Codebase             | Description                 |
+| -------------------- | --------------------------- |
+| [bot](bot)           | Discord Bot                 |
+| [web](web)           | Admin Panel                 |
+| [asuka](asuka)       | Episode Notification Service |
+| [db](db)             | PostgreSQL Database         |
+| [gh-pages](gh-pages) | GitHub Pages Website        |
+
 # Running
 **I would prefer if you don't run an instance of my bot unless you want to contribute to the code.** 
 
@@ -52,7 +61,7 @@ Nevertheless, the installation steps are as follows:
     BOT_SAUCENAO_API_KEY=
     ```
 
-7. Build the images and run the bot, notification service, admin panel and database.
+7. Build the images and run the discord bot, episode notification service, admin panel and postgresql database.
     ```
     $ docker-compose up --build
     ```
