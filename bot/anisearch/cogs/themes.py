@@ -119,7 +119,7 @@ class Themes(commands.Cog, name='Themes'):
                 'q': anime,
                 'limit': 15,
                 'fields[search]': 'anime',
-                'include': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
+                'include[anime]': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
             }
             data = await get(url=urljoin(ANIMETHEMES_BASE_URL, 'search'), session=self.bot.session,
                              res_method='json', params=params, headers={'User-Agent': 'AniSearch Discord Bot'})
@@ -160,9 +160,9 @@ class Themes(commands.Cog, name='Themes'):
         async with ctx.channel.typing():
             params = {
                 'q': anime,
-                'limit': 15,
+                'limit': 1,
                 'fields[search]': 'anime',
-                'include': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
+                'include[anime]': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
             }
             data = await get(url=urljoin(ANIMETHEMES_BASE_URL, 'search'), session=self.bot.session,
                              res_method='json', params=params, headers={'User-Agent': 'AniSearch Discord Bot'})
