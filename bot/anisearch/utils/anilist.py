@@ -187,6 +187,7 @@ class Query:
               nextAiringEpisode {
                 episode
                 timeUntilAiring
+                airingAt
               }
             }
           }

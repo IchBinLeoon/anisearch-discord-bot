@@ -210,12 +210,9 @@ class Search(commands.Cog, name='Search'):
                         aired_episodes = str(
                             data.get('nextAiringEpisode')['episode'] - 1)
                         next_episode_time = 'N/A'
-                        if data.get('nextAiringEpisode')['timeUntilAiring']:
-                            seconds = data.get('nextAiringEpisode')[
-                                'timeUntilAiring']
-                            next_episode_time = str(
-                                datetime.timedelta(seconds=seconds))
-                        embed.add_field(name='Aired Episodes', value=f'{aired_episodes} (Next in {next_episode_time})',
+                        if data.get('nextAiringEpisode')['airingAt']:
+                            next_episode_time = f'<t:{data.get("nextAiringEpisode")["airingAt"]}:R>'
+                        embed.add_field(name='Aired Episodes', value=f'{aired_episodes} (Next {next_episode_time})',
                                         inline=True)
                 except TypeError:
                     embed.add_field(name='Episodes', value=data.get('episodes') if data.get('episodes') else 'N/A',
