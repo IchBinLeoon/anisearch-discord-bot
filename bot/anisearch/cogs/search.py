@@ -314,7 +314,7 @@ class Search(commands.Cog, name='Search'):
         if data.get('siteUrl'):
             embed.url = data.get('siteUrl')
 
-        if data.get('name')['alternative'] != ['']:
+        if len(data.get('name')['alternative']) > 0:
             embed.add_field(name='Synonyms', inline=False,
                             value=', '.join([f'`{a}`' for a in data.get('name')['alternative']]))
 
