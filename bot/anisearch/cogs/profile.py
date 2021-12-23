@@ -21,11 +21,11 @@ import datetime
 import logging
 import re
 from typing import Optional, Union, List
-from urllib.parse import urljoin, quote
+from urllib.parse import urljoin
 
-import discord
-from discord.ext import commands, menus
-from discord.ext.commands import Context
+import nextcord
+from nextcord.ext import commands, menus
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, \
@@ -65,7 +65,7 @@ class Profile(commands.Cog, name='Profile'):
 
             site = site.replace("anilist", "AniList").replace(
                 "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 color=ERROR_EMBED_COLOR,
                 title=f'An error occurred while setting the {site} profile `{username}`.')
 
@@ -76,7 +76,7 @@ class Profile(commands.Cog, name='Profile'):
                 self.bot.db.insert_profile(
                     'anilist', data.get('name'), ctx.author.id)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'Added AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
@@ -103,8 +103,8 @@ class Profile(commands.Cog, name='Profile'):
                 self.bot.db.insert_profile(
                     'myanimelist', data.get('username'), ctx.author.id)
 
-                embed = discord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`',
-                                      color=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`',
+                                       color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='MyAnimeList Profile',
                                  icon_url=MYANIMELIST_LOGO)
@@ -133,14 +133,14 @@ class Profile(commands.Cog, name='Profile'):
                 self.bot.db.insert_profile('kitsu', user.get(
                     'attributes')['name'], ctx.author.id)
 
-                embed = discord.Embed(title=f'Added Kitsu Profile `{user.get("attributes")["name"]}`',
-                                      color=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(title=f'Added Kitsu Profile `{user.get("attributes")["name"]}`',
+                                       color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
                 if user.get('attributes')['avatar']:
                     embed.set_thumbnail(url=user.get('attributes')[
-                                        'avatar']['original'])
+                        'avatar']['original'])
 
                 anime_completed = 'N/A'
                 anime_episodes_watched = 'N/A'
@@ -194,11 +194,11 @@ class Profile(commands.Cog, name='Profile'):
         else:
             site = site.replace("anilist", "AniList").replace(
                 "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
-            embed = discord.Embed(title=f'The {site} profile `{username}` could not be found.',
-                                  color=ERROR_EMBED_COLOR)
+            embed = nextcord.Embed(title=f'The {site} profile `{username}` could not be found.',
+                                   color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
 
-    async def get_anilist_profile(self, username: str) -> Union[List[discord.Embed], None]:
+    async def get_anilist_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
 
         embeds = []
 
@@ -208,7 +208,7 @@ class Profile(commands.Cog, name='Profile'):
         except Exception as e:
             log.exception(e)
 
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'An error occurred while searching the AniList profile `{username}`. Try again.',
                 color=ERROR_EMBED_COLOR)
             embeds.append(embed)
@@ -218,7 +218,7 @@ class Profile(commands.Cog, name='Profile'):
         if data is not None:
 
             try:
-                embed = discord.Embed(title=data.get('name'), url=data.get(
+                embed = nextcord.Embed(title=data.get('name'), url=data.get(
                     'siteUrl'), color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
@@ -260,7 +260,7 @@ class Profile(commands.Cog, name='Profile'):
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the AniList profile.')
@@ -269,7 +269,7 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=data.get('name'), url=data.get(
+                embed = nextcord.Embed(title=data.get('name'), url=data.get(
                     'siteUrl'), color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
@@ -284,10 +284,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{anime.get('title')['romaji']}]({anime.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_anime):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_anime = fav_anime[0:i]
-                            fav_anime[i-1] = fav_anime[i-1] + '...'
+                            fav_anime[i - 1] = fav_anime[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Anime',
                                     value=' | '.join(fav_anime), inline=False)
@@ -302,10 +302,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{manga.get('title')['romaji']}]({manga.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_manga):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_manga = fav_manga[0:i]
-                            fav_manga[i-1] = fav_manga[i-1] + '...'
+                            fav_manga[i - 1] = fav_manga[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Manga',
                                     value=' | '.join(fav_manga), inline=False)
@@ -320,10 +320,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{character.get('name')['full']}]({character.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_characters):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_characters = fav_characters[0:i]
-                            fav_characters[i-1] = fav_characters[i-1] + '...'
+                            fav_characters[i - 1] = fav_characters[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Characters', value=' | '.join(
                         fav_characters), inline=False)
@@ -338,10 +338,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{staff.get('name')['full']}]({staff.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_staff):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_staff = fav_staff[0:i]
-                            fav_staff[i-1] = fav_staff[i-1] + '...'
+                            fav_staff[i - 1] = fav_staff[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Staff',
                                     value=' | '.join(fav_staff), inline=False)
@@ -356,10 +356,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{studio.get('name')}]({studio.get('siteUrl')})")
                     total = 0
                     for i, fav in enumerate(fav_studio):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_studio = fav_studio[0:i]
-                            fav_studio[i-1] = fav_studio[i-1] + '...'
+                            fav_studio[i - 1] = fav_studio[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Studios',
                                     value=' | '.join(fav_studio), inline=False)
@@ -375,7 +375,7 @@ class Profile(commands.Cog, name='Profile'):
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the AniList profile.')
@@ -387,7 +387,7 @@ class Profile(commands.Cog, name='Profile'):
 
         return None
 
-    async def get_myanimelist_profile(self, username: str) -> Union[List[discord.Embed], None]:
+    async def get_myanimelist_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
 
         embeds = []
 
@@ -397,7 +397,7 @@ class Profile(commands.Cog, name='Profile'):
         except Exception as e:
             log.exception(e)
 
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'An error occurred while searching the MyAnimeList profile `{username}`. Try again.',
                 color=ERROR_EMBED_COLOR)
             embeds.append(embed)
@@ -425,8 +425,8 @@ class Profile(commands.Cog, name='Profile'):
                         'T00:00:00+00:00', ' ').replace('-', '/')
                     description.append(f'**Joined:** {joined}')
 
-                embed = discord.Embed(title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR,
-                                      description='\n'.join(description))
+                embed = nextcord.Embed(title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR,
+                                       description='\n'.join(description))
 
                 embed.set_author(name='MyAnimeList Profile',
                                  icon_url=MYANIMELIST_LOGO)
@@ -480,7 +480,7 @@ class Profile(commands.Cog, name='Profile'):
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the MyAnimeList profile.')
@@ -489,8 +489,8 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=data.get('username'),
-                                      url=data.get('url'), color=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(title=data.get('username'),
+                                       url=data.get('url'), color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='MyAnimeList Profile',
                                  icon_url=MYANIMELIST_LOGO)
@@ -505,10 +505,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{anime.get('name')}]({anime.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_anime):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_anime = fav_anime[0:i]
-                            fav_anime[i-1] = fav_anime[i-1] + '...'
+                            fav_anime[i - 1] = fav_anime[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Anime',
                                     value=' | '.join(fav_anime), inline=False)
@@ -523,10 +523,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{manga.get('name')}]({manga.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_manga):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_manga = fav_manga[0:i]
-                            fav_manga[i-1] = fav_manga[i-1] + '...'
+                            fav_manga[i - 1] = fav_manga[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Manga',
                                     value=' | '.join(fav_manga), inline=False)
@@ -541,10 +541,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{character.get('name')}]({character.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_characters):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_characters = fav_characters[0:i]
-                            fav_characters[i-1] = fav_characters[i-1] + '...'
+                            fav_characters[i - 1] = fav_characters[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Characters', value=' | '.join(
                         fav_characters), inline=False)
@@ -559,10 +559,10 @@ class Profile(commands.Cog, name='Profile'):
                             f"[{people.get('name')}]({people.get('url')})")
                     total = 0
                     for i, fav in enumerate(fav_people):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_people = fav_people[0:i]
-                            fav_people[i-1] = fav_people[i-1] + '...'
+                            fav_people[i - 1] = fav_people[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite People',
                                     value=' | '.join(fav_people), inline=False)
@@ -578,7 +578,7 @@ class Profile(commands.Cog, name='Profile'):
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the MyAnimeList profile.')
@@ -590,7 +590,7 @@ class Profile(commands.Cog, name='Profile'):
 
         return None
 
-    async def get_kitsu_profile(self, username: str) -> Union[List[discord.Embed], None]:
+    async def get_kitsu_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
 
         embeds = []
 
@@ -607,7 +607,7 @@ class Profile(commands.Cog, name='Profile'):
         except Exception as e:
             log.exception(e)
 
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'An error occurred while searching the Kitsu profile `{username}`. Try again.',
                 color=ERROR_EMBED_COLOR)
             embeds.append(embed)
@@ -631,19 +631,17 @@ class Profile(commands.Cog, name='Profile'):
                         'attributes').get('location')
                     description.append(f'**Location:** {location}')
                 if data.get('data')[0].get('attributes').get('createdAt'):
-                    createdAt = data.get('data')[0].get(
-                        'attributes').get('createdAt').split('T')
-                    createdAt = createdAt[0]
-                    description.append(f'**Created at:** {createdAt}')
+                    created_at = data.get('data')[0].get(
+                        'attributes').get('createdAt').split('T')[0]
+                    description.append(f'**Created at:** {created_at}')
                 if data.get('data')[0].get('attributes').get('updatedAt'):
-                    updatedAt = data.get('data')[0].get(
-                        'attributes').get('updatedAt').split('T')
-                    updatedAt = updatedAt[0]
-                    description.append(f'**Updated at:** {updatedAt}')
+                    updated_at = data.get('data')[0].get(
+                        'attributes').get('updatedAt').split('T')[0]
+                    description.append(f'**Updated at:** {updated_at}')
 
-                embed = discord.Embed(title=data.get('data')[0]['attributes']['name'],
-                                      url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
-                                      color=DEFAULT_EMBED_COLOR, description='\n'.join(description))
+                embed = nextcord.Embed(title=data.get('data')[0]['attributes']['name'],
+                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
+                                       color=DEFAULT_EMBED_COLOR, description='\n'.join(description))
 
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
@@ -653,7 +651,7 @@ class Profile(commands.Cog, name='Profile'):
 
                 if data.get('data')[0].get('attributes').get('coverImage'):
                     embed.set_image(url=data.get('data')[
-                                    0]['attributes']['coverImage']['original'])
+                        0]['attributes']['coverImage']['original'])
 
                 anime_days_watched = 'N/A'
                 anime_completed = 'N/A'
@@ -723,7 +721,7 @@ class Profile(commands.Cog, name='Profile'):
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the Kitsu profile.')
@@ -732,9 +730,9 @@ class Profile(commands.Cog, name='Profile'):
                 embeds.append(embed)
 
             try:
-                embed = discord.Embed(title=data.get('data')[0]['attributes']['name'],
-                                      url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
-                                      color=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(title=data.get('data')[0]['attributes']['name'],
+                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
+                                       color=DEFAULT_EMBED_COLOR)
 
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
 
@@ -755,10 +753,10 @@ class Profile(commands.Cog, name='Profile'):
                 if len(fav_anime) > 0:
                     total = 0
                     for i, fav in enumerate(fav_anime):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_anime = fav_anime[0:i]
-                            fav_anime[i-1] = fav_anime[i-1] + '...'
+                            fav_anime[i - 1] = fav_anime[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Anime',
                                     value=' | '.join(fav_anime), inline=False)
@@ -769,10 +767,10 @@ class Profile(commands.Cog, name='Profile'):
                 if len(fav_manga) > 0:
                     total = 0
                     for i, fav in enumerate(fav_manga):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_manga = fav_manga[0:i]
-                            fav_manga[i-1] = fav_manga[i-1] + '...'
+                            fav_manga[i - 1] = fav_manga[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Manga',
                                     value=' | '.join(fav_manga), inline=False)
@@ -783,10 +781,10 @@ class Profile(commands.Cog, name='Profile'):
                 if len(fav_characters) > 0:
                     total = 0
                     for i, fav in enumerate(fav_characters):
-                        total += len(fav)+3
+                        total += len(fav) + 3
                         if total >= 1024:
                             fav_characters = fav_characters[0:i]
-                            fav_characters[i-1] = fav_characters[i-1] + '...'
+                            fav_characters[i - 1] = fav_characters[i - 1] + '...'
                             break
                     embed.add_field(name='Favorite Characters', value=' | '.join(
                         fav_characters), inline=False)
@@ -802,7 +800,7 @@ class Profile(commands.Cog, name='Profile'):
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Error',
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the Kitsu profile.')
@@ -834,11 +832,11 @@ class Profile(commands.Cog, name='Profile'):
                         embeds), clear_reactions_after=True, timeout=30)
                     await menu.start(ctx)
                 else:
-                    embed = discord.Embed(title=f'The AniList profile `{username}` could not be found.',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'The AniList profile `{username}` could not be found.',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='No AniList profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -863,11 +861,11 @@ class Profile(commands.Cog, name='Profile'):
                         embeds), clear_reactions_after=True, timeout=30)
                     await menu.start(ctx)
                 else:
-                    embed = discord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -891,15 +889,16 @@ class Profile(commands.Cog, name='Profile'):
                         embeds), clear_reactions_after=True, timeout=30)
                     await menu.start(ctx)
                 else:
-                    embed = discord.Embed(title=f'The Kitsu profile `{username}` could not be found.',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'The Kitsu profile `{username}` could not be found.',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
-    @commands.command(name='addprofile', aliases=['addp'], usage='addprofile <al|mal|kitsu> <username>', ignore_extra=False)
+    @commands.command(name='addprofile', aliases=['addp'], usage='addprofile <al|mal|kitsu> <username>',
+                      ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def addprofile(self, ctx: Context, site: str, username: str):
         """Adds an AniList, MyAnimeList or Kitsu profile."""
@@ -912,7 +911,7 @@ class Profile(commands.Cog, name='Profile'):
                 await self.set_profile(ctx, 'kitsu', username)
             else:
                 ctx.command.reset_cooldown(ctx)
-                raise discord.ext.commands.BadArgument
+                raise nextcord.ext.commands.BadArgument
 
     @commands.command(name='profiles', usage='profiles [@member]', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -922,21 +921,21 @@ class Profile(commands.Cog, name='Profile'):
             if user:
                 if user.startswith('<@&') and user.endswith('>'):
                     ctx.command.reset_cooldown(ctx)
-                    raise discord.ext.commands.BadArgument
+                    raise nextcord.ext.commands.BadArgument
                 if user.startswith('<@') and user.endswith('>'):
                     id_ = re.match(
                         r'^<@(!)?(?P<id>\d{17,18})>', user).group('id')
                 else:
                     ctx.command.reset_cooldown(ctx)
-                    raise discord.ext.commands.BadArgument
+                    raise nextcord.ext.commands.BadArgument
             else:
                 id_ = ctx.author.id
             anilist = self.bot.db.select_profile('anilist', id_)
             myanimelist = self.bot.db.select_profile('myanimelist', id_)
             kitsu = self.bot.db.select_profile('kitsu', id_)
             user = await self.bot.fetch_user(id_)
-            embed = discord.Embed(title=user, color=DEFAULT_EMBED_COLOR)
-            embed.set_thumbnail(url=user.avatar_url)
+            embed = nextcord.Embed(title=user, color=DEFAULT_EMBED_COLOR)
+            embed.set_thumbnail(url=user.display_avatar.url)
             embed.add_field(
                 name='AniList', value=anilist if anilist else '*Not added*', inline=False)
             embed.add_field(
@@ -948,52 +947,52 @@ class Profile(commands.Cog, name='Profile'):
     @commands.command(name='removeprofile', aliases=['rmp'], usage='removeprofile <al|mal|kitsu|all>',
                       ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def removeprofile(self, ctx: Context, site: str,):
+    async def removeprofile(self, ctx: Context, site: str, ):
         """Removes the added AniList, MyAnimeList or Kitsu profile."""
         async with ctx.channel.typing():
             if site.lower() == 'anilist' or site.lower() == 'al':
                 anilist = self.bot.db.select_profile('anilist', ctx.author.id)
                 if anilist is None:
-                    embed = discord.Embed(title='No AniList profile added.', color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title='No AniList profile added.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
                 else:
                     self.bot.db.insert_profile('anilist', None, ctx.author.id)
-                    embed = discord.Embed(title='Removed the added AniList profile.', color=DEFAULT_EMBED_COLOR)
+                    embed = nextcord.Embed(title='Removed the added AniList profile.', color=DEFAULT_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             elif site.lower() == 'myanimelist' or site.lower() == 'mal':
                 myanimelist = self.bot.db.select_profile('myanimelist', ctx.author.id)
                 if myanimelist is None:
-                    embed = discord.Embed(title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
                 else:
                     self.bot.db.insert_profile('myanimelist', None, ctx.author.id)
-                    embed = discord.Embed(title='Removed the added MyAnimeList profile.', color=DEFAULT_EMBED_COLOR)
+                    embed = nextcord.Embed(title='Removed the added MyAnimeList profile.', color=DEFAULT_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             elif site.lower() == 'kitsu':
                 kitsu = self.bot.db.select_profile('kitsu', ctx.author.id)
                 if kitsu is None:
-                    embed = discord.Embed(title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
                 else:
                     self.bot.db.insert_profile('kitsu', None, ctx.author.id)
-                    embed = discord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
+                    embed = nextcord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             elif site.lower() == 'all':
                 if not self.bot.db.check_user(ctx.author.id):
-                    embed = discord.Embed(title=f'The user {ctx.author} does not exist in the database.',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'The user {ctx.author} does not exist in the database.',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                 else:
                     self.bot.db.delete_user(ctx.author.id)
-                    embed = discord.Embed(title=f'Removed the user {ctx.author} from the database.',
-                                          color=DEFAULT_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'Removed the user {ctx.author} from the database.',
+                                           color=DEFAULT_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
                 ctx.command.reset_cooldown(ctx)
-                raise discord.ext.commands.BadArgument
+                raise nextcord.ext.commands.BadArgument
 
 
 def setup(bot: AniSearchBot):

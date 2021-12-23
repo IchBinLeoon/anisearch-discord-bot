@@ -20,9 +20,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 from typing import Dict, Any
 
-import discord
-from discord.ext import commands
-from discord.ext.commands import Context
+import nextcord
+from nextcord.ext import commands
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
@@ -59,7 +59,7 @@ class Notification(commands.Cog, name='Notification'):
         else:
             description = '_No anime added to the watchlist. The server will receive a notification for every ' \
                           'new episode, provided the channel has been set._'
-        embed = discord.Embed(title='Watchlist', description=description, color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(title='Watchlist', description=description, color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Channel', value=f'<#{channel}>' if channel else '*Not set*', inline=False)
         embed.add_field(name='Role', value=f'<@&{role}>' if role else '*Not set*', inline=False)
         await ctx.channel.send(embed=embed)
@@ -74,13 +74,13 @@ class Notification(commands.Cog, name='Notification'):
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if len(watchlist) + 1 > 50:
             ctx.command.reset_cooldown(ctx)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'The watchlist cannot be longer than 50 entries.',
                 color=ERROR_EMBED_COLOR)
             return await ctx.channel.send(embed=embed)
         if anilist_id in watchlist:
             ctx.command.reset_cooldown(ctx)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'The ID `{anilist_id}` is already on the server watchlist.',
                 color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
@@ -89,12 +89,12 @@ class Notification(commands.Cog, name='Notification'):
                                                     type=AniListMediaType.Anime.upper())
             if data is not None:
                 self.bot.db.add_watchlist(data[0].get('id'), ctx.guild.id)
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'Added `{data[0].get("title").get("romaji")}` to the server watchlist.',
                     color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'An anime with the ID `{anilist_id}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -107,13 +107,13 @@ class Notification(commands.Cog, name='Notification'):
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if anilist_id not in watchlist:
             ctx.command.reset_cooldown(ctx)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'The ID `{anilist_id}` is not on the server watchlist.',
                 color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
         else:
             self.bot.db.remove_watchlist(anilist_id, ctx.guild.id)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'Removed ID `{anilist_id}` from the server watchlist.',
                 color=DEFAULT_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
@@ -127,13 +127,13 @@ class Notification(commands.Cog, name='Notification'):
         watchlist = self.bot.db.get_watchlist(ctx.guild.id)
         if len(watchlist) < 1:
             ctx.command.reset_cooldown(ctx)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title='No anime added to the watchlist.',
                 color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
         else:
             self.bot.db.clear_watchlist(ctx.guild.id)
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title='Removed all anime from the server watchlist.',
                 color=DEFAULT_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
@@ -155,15 +155,15 @@ class Notification(commands.Cog, name='Notification'):
             except ValueError:
                 channel_id = None
             if ctx.guild.get_channel(channel_id) is None:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The channel could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
                 ctx.command.reset_cooldown(ctx)
             else:
                 self.bot.db.set_channel(channel_id, ctx.guild)
                 channel = self.bot.db.get_channel(ctx.guild)
-                embed = discord.Embed(title=f'Set the notification channel to:', description=f'<#{channel}>',
-                                      color=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(title=f'Set the notification channel to:', description=f'<#{channel}>',
+                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
         elif type_.lower() == 'role':
             if value.startswith('<@&'):
@@ -175,19 +175,19 @@ class Notification(commands.Cog, name='Notification'):
             except ValueError:
                 role_id = None
             if ctx.guild.get_role(role_id) is None:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The role could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
                 ctx.command.reset_cooldown(ctx)
             else:
                 self.bot.db.set_role(role_id, ctx.guild)
                 role = self.bot.db.get_role(ctx.guild)
-                embed = discord.Embed(title=f'Set the notification role to:', description=f'<@&{role}>',
-                                      color=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(title=f'Set the notification role to:', description=f'<@&{role}>',
+                                       color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
         else:
             ctx.command.reset_cooldown(ctx)
-            raise discord.ext.commands.BadArgument
+            raise nextcord.ext.commands.BadArgument
 
     @commands.command(name='remove', aliases=['rm'], usage='remove <channel|role>', ignore_extra=False)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -198,28 +198,28 @@ class Notification(commands.Cog, name='Notification'):
         if type_.lower() == 'channel':
             channel = self.bot.db.get_channel(ctx.guild)
             if channel is None:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='No notification channel set for the server.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
                 self.bot.db.set_channel(None, ctx.guild)
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Removed the set notification channel.', color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
         elif type_.lower() == 'role':
             role = self.bot.db.get_role(ctx.guild)
             if role is None:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='No notification role set for the server.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
                 self.bot.db.set_role(None, ctx.guild)
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title='Removed the set notification role.', color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
         else:
             ctx.command.reset_cooldown(ctx)
-            raise discord.ext.commands.BadArgument
+            raise nextcord.ext.commands.BadArgument
 
     async def send_episode_notification(self, data: Dict[str, Any]) -> None:
         channel_count = 0
@@ -233,14 +233,14 @@ class Notification(commands.Cog, name='Notification'):
                         if len(watchlist) == 0 or data.get('id') in watchlist:
 
                             if is_adult(data) and not channel.is_nsfw():
-                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                      description=f'Adult content. No NSFW channel.')
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
                                 await channel.send(embed=embed)
 
                             else:
 
-                                embed = discord.Embed(colour=DEFAULT_EMBED_COLOR, url=data.get('url'),
-                                                      description=f'Episode **{data.get("episode")}** is out!')
+                                embed = nextcord.Embed(colour=DEFAULT_EMBED_COLOR, url=data.get('url'),
+                                                       description=f'Episode **{data.get("episode")}** is out!')
 
                                 embed.set_author(
                                     name='Episode Notification', icon_url=ANILIST_LOGO)
@@ -264,7 +264,7 @@ class Notification(commands.Cog, name='Notification'):
 
                             channel_count += 1
 
-            except discord.errors.Forbidden as e:
+            except nextcord.errors.Forbidden as e:
                 log.warning(e)
 
             except Exception as e:

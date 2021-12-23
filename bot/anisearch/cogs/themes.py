@@ -19,12 +19,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 from typing import Dict, Any
-from urllib.parse import urljoin, quote
+from urllib.parse import urljoin
 
-import discord
-from discord import Embed
-from discord.ext import commands, menus
-from discord.ext.commands import Context
+import nextcord
+from nextcord import Embed
+from nextcord.ext import commands, menus
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
@@ -42,8 +42,8 @@ class Themes(commands.Cog, name='Themes'):
 
     @staticmethod
     async def get_themes_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(color=DEFAULT_EMBED_COLOR,
-                              title=data.get('name'))
+        embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR,
+                               title=data.get('name'))
 
         embed.set_author(name='Themes')
 
@@ -65,8 +65,7 @@ class Themes(commands.Cog, name='Themes'):
             list_ = ['**Title:** ' + theme.get('song')['title']]
 
             if theme.get('song')['artists']:
-                list_.append('**Artist:** ' + theme.get('song')
-                             ['artists'][0]['name'])
+                list_.append('**Artist:** ' + theme.get('song')['artists'][0]['name'])
 
             link = f'[Link](https://animethemes.moe/video/' \
                    f'{theme.get("animethemeentries")[0]["videos"][0]["basename"]})'
@@ -82,8 +81,8 @@ class Themes(commands.Cog, name='Themes'):
 
     @staticmethod
     async def get_theme_embed(anime: Dict[str, Any], data: Dict[str, Any]) -> Embed:
-        embed = discord.Embed(color=DEFAULT_EMBED_COLOR,
-                              title=anime.get("name"))
+        embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR,
+                               title=anime.get("name"))
 
         embed.set_author(name=data.get('slug').replace(
             'OP', 'Opening ').replace('ED', 'Ending '))
@@ -128,17 +127,17 @@ class Themes(commands.Cog, name='Themes'):
                 for page, entry in enumerate(data.get('search').get('anime')):
                     try:
                         embed = await self.get_themes_embed(entry, page + 1, len(data.get('search').get('anime')))
-                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                        if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                             if is_adult(entry.get('animethemes')[0]['animethemeentries'][0]) and not \
                                     ctx.channel.is_nsfw():
-                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                      description=f'Adult content. No NSFW channel.')
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
                                     text=f'Provided by https://animethemes.moe/ • Page {page + 1}/'
                                          f'{len(data.get("search").get("anime"))}')
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the anime.')
                         embed.set_footer(
@@ -149,7 +148,7 @@ class Themes(commands.Cog, name='Themes'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'No themes for the anime `{anime}` found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -176,16 +175,16 @@ class Themes(commands.Cog, name='Themes'):
                             (theme.upper() == 'ED1' and entry.get('slug') == 'ED'):
                         try:
                             embed = await self.get_theme_embed(anime_, entry)
-                            if not isinstance(ctx.channel, discord.channel.DMChannel):
+                            if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                                 if is_adult(entry.get('animethemeentries')[0]) and not ctx.channel.is_nsfw():
-                                    embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                          description=f'Adult content. No NSFW channel.')
+                                    embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                           description=f'Adult content. No NSFW channel.')
                                     embed.set_footer(
                                         text=f'Provided by https://animethemes.moe/')
                                     return await ctx.channel.send(embed=embed)
                         except Exception as e:
                             log.exception(e)
-                            embed = discord.Embed(
+                            embed = nextcord.Embed(
                                 title='Error', color=ERROR_EMBED_COLOR,
                                 description=f'An error occurred while loading the embed for the theme.')
                             embed.set_footer(
@@ -194,11 +193,11 @@ class Themes(commands.Cog, name='Themes'):
                         return await ctx.channel.send(
                             f'https://animethemes.moe/video/'
                             f'{entry.get("animethemeentries")[0]["videos"][0]["basename"]}')
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'Cannot find `{theme.upper()}` for the anime `{anime}`.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'No theme for the anime `{anime}` found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 

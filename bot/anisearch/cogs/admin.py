@@ -22,10 +22,10 @@ import platform
 import socket
 from datetime import timedelta, datetime
 
-import discord
+import nextcord
 import psutil
-from discord.ext import commands
-from discord.ext.commands import Context
+from nextcord.ext import commands
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot, initial_extensions
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR
@@ -43,7 +43,7 @@ class Admin(commands.Cog, name='Admin'):
     @commands.is_owner()
     async def status(self, ctx: Context):
         """Displays the current status of the bot. Can only be used by the bot owner."""
-        embed = discord.Embed(title='❯ Bot Status', color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(title='❯ Bot Status', color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Guilds', value=str(
             self.bot.get_guild_count()), inline=True)
         embed.add_field(name='Users', value=str(
@@ -68,17 +68,17 @@ class Admin(commands.Cog, name='Admin'):
             self.bot.load_extension(f'anisearch.cogs.{extension.lower()}')
             title = f'Loaded cog `{extension.capitalize()}`.'
             color = DEFAULT_EMBED_COLOR
-        except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+        except nextcord.ext.commands.errors.ExtensionAlreadyLoaded:
             title = f'Cog `{extension.capitalize()}` is already loaded.'
             color = ERROR_EMBED_COLOR
-        except discord.ext.commands.errors.ExtensionNotFound:
+        except nextcord.ext.commands.errors.ExtensionNotFound:
             title = f'Cog `{extension.capitalize()}` could not be found.'
             color = ERROR_EMBED_COLOR
         except Exception as e:
             log.info(e)
             title = f'An error occurred while loading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
-        embed = discord.Embed(title=title, color=color)
+        embed = nextcord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='unload', usage='unload <cog>', ignore_extra=False, hidden=True)
@@ -90,17 +90,17 @@ class Admin(commands.Cog, name='Admin'):
             self.bot.unload_extension(f'anisearch.cogs.{extension.lower()}')
             title = f'Unloaded cog `{extension.capitalize()}`.'
             color = DEFAULT_EMBED_COLOR
-        except discord.ext.commands.errors.ExtensionNotLoaded:
+        except nextcord.ext.commands.errors.ExtensionNotLoaded:
             title = f'Cog `{extension.capitalize()}` has not been loaded.'
             color = ERROR_EMBED_COLOR
-        except discord.ext.commands.errors.ExtensionNotFound:
+        except nextcord.ext.commands.errors.ExtensionNotFound:
             title = f'Cog `{extension.capitalize()}` could not be found.'
             color = ERROR_EMBED_COLOR
         except Exception as e:
             log.info(e)
             title = f'An error occurred while unloading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
-        embed = discord.Embed(title=title, color=color)
+        embed = nextcord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='reload', usage='reload <cog>', brief='5s', ignore_extra=False, hidden=True)
@@ -112,17 +112,17 @@ class Admin(commands.Cog, name='Admin'):
             self.bot.reload_extension(f'anisearch.cogs.{extension.lower()}')
             title = f'Reloaded cog `{extension.capitalize()}`.'
             color = DEFAULT_EMBED_COLOR
-        except discord.ext.commands.errors.ExtensionNotLoaded:
+        except nextcord.ext.commands.errors.ExtensionNotLoaded:
             title = f'Cog `{extension.capitalize()}` has not been loaded.'
             color = ERROR_EMBED_COLOR
-        except discord.ext.commands.errors.ExtensionNotFound:
+        except nextcord.ext.commands.errors.ExtensionNotFound:
             title = f'Cog `{extension.capitalize()}` could not be found.'
             color = ERROR_EMBED_COLOR
         except Exception as e:
             log.info(e)
             title = f'An error occurred while reloading the cog `{extension.capitalize()}`.'
             color = ERROR_EMBED_COLOR
-        embed = discord.Embed(title=title, color=color)
+        embed = nextcord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='reloadall', usage='reloadall', brief='5s', ignore_extra=False, hidden=True)
@@ -134,7 +134,7 @@ class Admin(commands.Cog, name='Admin'):
             for extension in initial_extensions:
                 try:
                     self.bot.reload_extension(extension)
-                except discord.ext.commands.errors.ExtensionNotLoaded:
+                except nextcord.ext.commands.errors.ExtensionNotLoaded:
                     self.bot.load_extension(extension)
             title = f'Reloaded all cogs.'
             color = DEFAULT_EMBED_COLOR
@@ -142,7 +142,7 @@ class Admin(commands.Cog, name='Admin'):
             log.info(e)
             title = f'An error occurred while reloading all cogs.'
             color = ERROR_EMBED_COLOR
-        embed = discord.Embed(title=title, color=color)
+        embed = nextcord.Embed(title=title, color=color)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='sysinfo', aliases=['system', 'sys'], usage='sysinfo', ignore_extra=False, hidden=True)
@@ -151,7 +151,7 @@ class Admin(commands.Cog, name='Admin'):
     async def sysinfo(self, ctx: Context):
         """Displays information about the system on which the bot is currently running.
         Can only be used by the bot owner."""
-        embed = discord.Embed(title='❯ System Info', color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(title='❯ System Info', color=DEFAULT_EMBED_COLOR)
         embed.add_field(name='Platform', value=platform.platform(), inline=False)
         boot_time = datetime.fromtimestamp(psutil.boot_time()).strftime("%m/%d/%Y %H:%M:%S")
         embed.add_field(name='Boot Time', value=boot_time, inline=False)

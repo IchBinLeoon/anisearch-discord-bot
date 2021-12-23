@@ -17,15 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import datetime
 import logging
 import random
 from typing import Union, List, Dict, Any, Optional
 
-import discord
-from discord import Embed
-from discord.ext import commands, menus
-from discord.ext.commands import Context
+import nextcord
+from nextcord import Embed
+from nextcord.ext import commands, menus
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
@@ -62,7 +61,7 @@ class Search(commands.Cog, name='Search'):
         except Exception as e:
             log.exception(e)
 
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'An error occurred while searching for the {type_.lower()} `{search}`. Try again.',
                 color=ERROR_EMBED_COLOR)
             embeds.append(embed)
@@ -86,17 +85,17 @@ class Search(commands.Cog, name='Search'):
                     elif type_ == AniListSearchType.Studio:
                         embed = await self.get_studio_embed(entry, page + 1, len(data))
 
-                    if not isinstance(ctx.channel, discord.channel.DMChannel):
+                    if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                         if is_adult(entry) and not ctx.channel.is_nsfw():
-                            embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                  description=f'Adult content. No NSFW channel.')
+                            embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                   description=f'Adult content. No NSFW channel.')
                             embed.set_footer(
                                 text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
 
                 except Exception as e:
                     log.exception(e)
 
-                    embed = discord.Embed(
+                    embed = nextcord.Embed(
                         title='Error', color=ERROR_EMBED_COLOR,
                         description=f'An error occurred while loading the embed for the {type_.lower()}.')
                     embed.set_footer(
@@ -135,7 +134,7 @@ class Search(commands.Cog, name='Search'):
         except Exception as e:
             log.exception(e)
 
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title=f'An error occurred while searching for a {type_.lower()} with the genre `{search}`.',
                 color=ERROR_EMBED_COLOR)
 
@@ -146,15 +145,15 @@ class Search(commands.Cog, name='Search'):
             try:
                 embed = await self.get_media_embed(data.get('data')['Page']['media'][0])
 
-                if not isinstance(ctx.channel, discord.channel.DMChannel):
+                if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                     if is_adult(data.get('data')['Page']['media'][0]) and not ctx.channel.is_nsfw():
-                        embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                              description=f'Adult content. No NSFW channel.')
+                        embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                               description=f'Adult content. No NSFW channel.')
 
             except Exception as e:
                 log.exception(e)
 
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'An error occurred while searching for a {type_.lower()} with the genre `{search}`.',
                     color=ERROR_EMBED_COLOR)
 
@@ -164,11 +163,11 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_media_embed(data: Dict[str, Any], page: Optional[int] = None, pages: Optional[int] = None) -> Embed:
-        embed = discord.Embed(description=format_description(data.get('description'), 400)
-                              if data.get('description') else 'N/A',
-                              colour=int('0x' + data.get('coverImage')
-                                         ['color'].replace('#', ''), 0)
-                              if data.get('coverImage')['color'] else DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(description=format_description(data.get('description'), 400)
+                               if data.get('description') else 'N/A',
+                               colour=int('0x' + data.get('coverImage')
+                               ['color'].replace('#', ''), 0)
+                               if data.get('coverImage')['color'] else DEFAULT_EMBED_COLOR)
 
         if data.get('title')['english'] is None or data.get('title')['english'] == data.get('title')['romaji']:
             embed.title = data.get('title')['romaji']
@@ -295,7 +294,7 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_character_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             color=DEFAULT_EMBED_COLOR,
             description=format_description(data.get('description'), 1000) if data.get('description') else 'N/A')
 
@@ -338,7 +337,7 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_staff_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             color=DEFAULT_EMBED_COLOR,
             description=format_description(data.get('description'), 1000) if data.get('description') else 'N/A')
 
@@ -390,8 +389,8 @@ class Search(commands.Cog, name='Search'):
 
     @staticmethod
     async def get_studio_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(color=DEFAULT_EMBED_COLOR,
-                              title=data.get('name'))
+        embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR,
+                               title=data.get('name'))
 
         embed.set_author(name='Studio', icon_url=ANILIST_LOGO)
 
@@ -401,7 +400,7 @@ class Search(commands.Cog, name='Search'):
         if data.get('media')['nodes']:
             if data.get('media')['nodes'][0]['coverImage']['large']:
                 embed.set_thumbnail(url=data.get('media')[
-                                    'nodes'][0]['coverImage']['large'])
+                    'nodes'][0]['coverImage']['large'])
 
         if data.get('isAnimationStudio') is True:
             embed.description = '**Animation Studio**'
@@ -437,7 +436,7 @@ class Search(commands.Cog, name='Search'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The anime `{title}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -453,7 +452,7 @@ class Search(commands.Cog, name='Search'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The manga `{title}` could not be found.',
                     color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
@@ -470,7 +469,7 @@ class Search(commands.Cog, name='Search'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The character `{name}` could not be found.',
                     color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
@@ -487,7 +486,7 @@ class Search(commands.Cog, name='Search'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The staff `{name}` could not be found.',
                     color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
@@ -504,7 +503,7 @@ class Search(commands.Cog, name='Search'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The studio `{name}` could not be found.',
                     color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
@@ -520,8 +519,8 @@ class Search(commands.Cog, name='Search'):
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
-                    embed = discord.Embed(title=f'An anime with the genre `{genre}` could not be found.',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'An anime with the genre `{genre}` could not be found.',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             elif media.lower() == AniListMediaType.Manga.lower():
                 embed = await self.anilist_random(ctx, genre, AniListMediaType.Manga.upper(),
@@ -529,12 +528,12 @@ class Search(commands.Cog, name='Search'):
                 if embed:
                     await ctx.channel.send(embed=embed)
                 else:
-                    embed = discord.Embed(title=f'A manga with the genre `{genre}` could not be found.',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title=f'A manga with the genre `{genre}` could not be found.',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
             else:
                 ctx.command.reset_cooldown(ctx)
-                raise discord.ext.commands.BadArgument
+                raise nextcord.ext.commands.BadArgument
 
 
 def setup(bot: AniSearchBot):

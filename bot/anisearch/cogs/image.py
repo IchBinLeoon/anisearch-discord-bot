@@ -21,10 +21,10 @@ import logging
 from datetime import timedelta
 from typing import Optional, Dict, Any
 
-import discord
-from discord import Embed
-from discord.ext import commands, menus
-from discord.ext.commands import Context
+import nextcord
+from nextcord import Embed
+from nextcord.ext import commands, menus
+from nextcord.ext.commands import Context
 from pysaucenao import GenericSource
 
 from anisearch.bot import AniSearchBot
@@ -42,7 +42,7 @@ class Image(commands.Cog, name='Image'):
 
     @staticmethod
     async def get_trace_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(title='Trace', color=DEFAULT_EMBED_COLOR)
 
         embed.set_author(
             name=f'Similarity » {(data.get("similarity")) * 100:0.2f}%')
@@ -80,7 +80,7 @@ class Image(commands.Cog, name='Image'):
 
     @staticmethod
     async def get_source_embed(data: GenericSource, page: int, pages: int) -> Embed:
-        embed = discord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(title='Source', color=DEFAULT_EMBED_COLOR)
 
         embed.set_author(
             name=f'Similarity » {float(data.similarity):0.2f}%')
@@ -115,7 +115,7 @@ class Image(commands.Cog, name='Image'):
                 if ctx.message.attachments:
                     url = ctx.message.attachments[0].url
                 else:
-                    embed = discord.Embed(
+                    embed = nextcord.Embed(
                         title='No image to look for the anime.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
@@ -123,8 +123,8 @@ class Image(commands.Cog, name='Image'):
                 url = trace
             if url:
                 if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
-                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
                 else:
@@ -132,7 +132,7 @@ class Image(commands.Cog, name='Image'):
                         data = await self.bot.tracemoe.search(url, anilist_info=True)
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title=f'An error occurred while searching for the anime, the link is invalid or '
                                   f'the search queue is full.',
                             color=ERROR_EMBED_COLOR)
@@ -142,16 +142,16 @@ class Image(commands.Cog, name='Image'):
                         for page, anime in enumerate(data):
                             try:
                                 embed = await self.get_trace_embed(anime, page + 1, len(data))
-                                if not isinstance(ctx.channel, discord.channel.DMChannel):
+                                if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                                     if is_adult(anime.get('anilist')) and not ctx.channel.is_nsfw():
-                                        embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                              description=f'Adult content. No NSFW channel.')
+                                        embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                               description=f'Adult content. No NSFW channel.')
                                         embed.set_footer(
                                             text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             except Exception as e:
                                 log.exception(e)
-                                embed = discord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
-                                                      description='An error occurred while loading the embed.')
+                                embed = nextcord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
+                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
                                     text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
@@ -159,7 +159,7 @@ class Image(commands.Cog, name='Image'):
                             embeds), clear_reactions_after=True, timeout=30)
                         await menu.start(ctx)
                     else:
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='No anime found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)
 
@@ -174,7 +174,7 @@ class Image(commands.Cog, name='Image'):
                 if ctx.message.attachments:
                     url = ctx.message.attachments[0].url
                 else:
-                    embed = discord.Embed(
+                    embed = nextcord.Embed(
                         title='No image to look for the source.', color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
@@ -182,8 +182,8 @@ class Image(commands.Cog, name='Image'):
                 url = source
             if url:
                 if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
-                    embed = discord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
-                                          color=ERROR_EMBED_COLOR)
+                    embed = nextcord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
+                                           color=ERROR_EMBED_COLOR)
                     await ctx.channel.send(embed=embed)
                     ctx.command.reset_cooldown(ctx)
                 else:
@@ -191,7 +191,7 @@ class Image(commands.Cog, name='Image'):
                         data = await self.bot.saucenao.from_url(url)
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title=f'An error occurred while looking for the source, the link is invalid, or the '
                                   f'daily limit has been reached.',
                             color=ERROR_EMBED_COLOR)
@@ -203,8 +203,8 @@ class Image(commands.Cog, name='Image'):
                                 embed = await self.get_source_embed(entry, page + 1, len(data))
                             except Exception as e:
                                 log.exception(e)
-                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                      description='An error occurred while loading the embed.')
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description='An error occurred while loading the embed.')
                                 embed.set_footer(
                                     text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
@@ -212,7 +212,7 @@ class Image(commands.Cog, name='Image'):
                             embeds), clear_reactions_after=True, timeout=30)
                         await menu.start(ctx)
                     else:
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='No source found.', color=ERROR_EMBED_COLOR)
                         await ctx.channel.send(embed=embed)
 
@@ -222,7 +222,7 @@ class Image(commands.Cog, name='Image'):
         """Posts a random image of a waifu."""
         async with ctx.channel.typing():
             data = await self.bot.waifu.sfw('waifu')
-            embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
+            embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR)
             embed.set_image(url=data)
             embed.set_footer(text='Provided by https://waifu.pics/')
             await ctx.channel.send(embed=embed)
@@ -233,7 +233,7 @@ class Image(commands.Cog, name='Image'):
         """Posts a random image of a catgirl."""
         async with ctx.channel.typing():
             data = await self.bot.waifu.sfw('neko')
-            embed = discord.Embed(color=DEFAULT_EMBED_COLOR)
+            embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR)
             embed.set_image(url=data)
             embed.set_footer(text='Provided by https://waifu.pics/')
             await ctx.channel.send(embed=embed)

@@ -18,12 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import logging
-import re
-from typing import Optional, Union
 
-import discord
-from discord.ext import commands
-from discord.ext.commands import Context, BadArgument
+import nextcord
+from nextcord.ext import commands
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX
@@ -43,7 +41,7 @@ class Settings(commands.Cog, name='Settings'):
     async def setprefix(self, ctx: Context, prefix: str):
         """Changes the server prefix. Can only be used by a server administrator."""
         if len(prefix) > 5:
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title='The prefix cannot be longer than 5 characters.', color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
             ctx.command.reset_cooldown(ctx)
@@ -52,11 +50,11 @@ class Settings(commands.Cog, name='Settings'):
             self.bot.db.update_prefix(ctx.message, prefix)
             prefix_new = self.bot.db.get_prefix(ctx.message)
             if prefix_new == DEFAULT_PREFIX:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'{ctx.author} reset the prefix.', color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'{ctx.author} changed the prefix from `{prefix_old}` to `{prefix_new}`.',
                     color=DEFAULT_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)

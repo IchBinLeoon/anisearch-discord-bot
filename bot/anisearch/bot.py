@@ -22,12 +22,11 @@ import time
 from io import StringIO
 from asyncio import sleep
 
-import topgg
-import discord
+import nextcord
 from aiohttp import ClientSession
-from discord.ext import commands, tasks, menus
-from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
-from discord.utils import get
+from nextcord.ext import commands, tasks, menus
+from nextcord.ext.commands import AutoShardedBot, Context, when_mentioned_or
+from nextcord.utils import get
 from jikanpy import AioJikan
 from pysaucenao import SauceNao
 from tracemoe import TraceMoe
@@ -58,7 +57,7 @@ initial_extensions = [
 class AniSearchBot(AutoShardedBot):
 
     def __init__(self, log_stream: StringIO) -> None:
-        intents = discord.Intents(
+        intents = nextcord.Intents(
             messages=True,
             guilds=True,
             reactions=True
@@ -86,9 +85,6 @@ class AniSearchBot(AutoShardedBot):
 
         self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
 
-        self.topgg = topgg.DBLClient(
-            self, BOT_TOPGG_TOKEN, autopost=True, post_shard_count=True)
-
         self.load_cogs()
         self.set_status.start()
 
@@ -96,7 +92,7 @@ class AniSearchBot(AutoShardedBot):
         for extension in initial_extensions:
             try:
                 self.load_extension(extension)
-            except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+            except nextcord.ext.commands.errors.ExtensionAlreadyLoaded:
                 pass
             except Exception as e:
                 log.exception(e)
@@ -106,34 +102,35 @@ class AniSearchBot(AutoShardedBot):
         for extension in initial_extensions:
             try:
                 self.unload_extension(extension)
-            except discord.ext.commands.errors.ExtensionNotLoaded:
+            except nextcord.ext.commands.errors.ExtensionNotLoaded:
                 pass
             except Exception as e:
                 log.exception(e)
         log.info(
             f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded')
 
-    async def get_prefix(self, message: discord.Message) -> when_mentioned_or():
-        if isinstance(message.channel, discord.channel.DMChannel):
+    async def get_prefix(self, message: nextcord.Message) -> list[str]:
+        if isinstance(message.channel, nextcord.channel.DMChannel):
             return when_mentioned_or(DEFAULT_PREFIX)(self, message)
         prefix = self.db.get_prefix(message)
         return when_mentioned_or(prefix, DEFAULT_PREFIX)(self, message)
 
     @tasks.loop(seconds=80)
     async def set_status(self) -> None:
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,
-                                   name=f'{DEFAULT_PREFIX}help'), status=discord.Status.online)
+        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening,
+                                                              name=f'{DEFAULT_PREFIX}help'),
+                                   status=nextcord.Status.online)
         await sleep(20)
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
-                                                             name=f'on {self.get_guild_count()} servers'),
-                                   status=discord.Status.online)
+        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.playing,
+                                                              name=f'on {self.get_guild_count()} servers'),
+                                   status=nextcord.Status.online)
         await sleep(20)
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
-                                                             name=f'with {self.get_user_count()} users'),
-                                   status=discord.Status.online)
+        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.playing,
+                                                              name=f'with {self.get_user_count()} users'),
+                                   status=nextcord.Status.online)
         await sleep(20)
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'),
-                                   status=discord.Status.online)
+        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name='Anime'),
+                                   status=nextcord.Status.online)
 
     @set_status.before_loop
     async def set_status_before(self) -> None:
@@ -155,13 +152,13 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'Api is ready: Listening and serving HTTP on {host}:{port}')
 
     async def on_command(self, ctx: Context) -> None:
-        if isinstance(ctx.channel, discord.channel.DMChannel):
+        if isinstance(ctx.channel, nextcord.channel.DMChannel):
             log.info(f'User {ctx.author.id} executed command: {ctx.message.content}')
         else:
             log.info(
                 f'(Guild {ctx.guild.id}) User {ctx.author.id} executed command: {ctx.message.content}')
 
-    async def on_guild_join(self, guild: discord.Guild) -> None:
+    async def on_guild_join(self, guild: nextcord.Guild) -> None:
         log.info(f'Bot joined guild {guild.id}')
         self.db.insert_guild(guild)
         try:
@@ -176,24 +173,14 @@ class AniSearchBot(AutoShardedBot):
                             f'• In case of any problems, bugs, suggestions or if you just want to chat, '
                             f'feel free to join the support server! {SUPPORT_SERVER_INVITE}\n\n'
                             "Have fun with the bot!")
-        except discord.errors.Forbidden:
+        except nextcord.errors.Forbidden:
             pass
         except Exception as e:
             log.exception(e)
 
-    async def on_guild_remove(self, guild: discord.Guild) -> None:
+    async def on_guild_remove(self, guild: nextcord.Guild) -> None:
         log.info(f'Bot left guild {guild.id}')
         self.db.delete_guild(guild)
-
-    async def on_autopost_success(self):
-        log.info(
-            f'TopGG statistics posted (Guilds: {self.topgg.guild_count}, Shards: {self.shard_count})')
-
-    async def on_autopost_error(self, error: Exception):
-        if isinstance(error, topgg.errors.UnauthorizedDetected):
-            log.warning(error)
-        else:
-            log.exception(error)
 
     def get_guild_count(self) -> int:
         guilds = len(self.guilds)
@@ -228,11 +215,10 @@ class AniSearchBot(AutoShardedBot):
         await self.tracemoe.close()
         await self.jikan.close()
         await self.waifu.close()
-        await self.topgg.close()
         await self.session.close()
         await super().close()
 
-    async def on_command_error(self, ctx: Context, error: Exception) -> None:
+    async def on_command_error(self, ctx: Context, error: Exception) -> nextcord.Message | None:
 
         if hasattr(ctx.command, 'on_error'):
             return
@@ -242,7 +228,7 @@ class AniSearchBot(AutoShardedBot):
         if isinstance(error, commands.CommandNotFound):
             return
 
-        if isinstance(error, discord.errors.Forbidden):
+        if isinstance(error, nextcord.errors.Forbidden):
             return await ctx.message.add_reaction(emoji='🔇')
 
         title = 'An unknown error occurred.'
@@ -290,7 +276,7 @@ class AniSearchBot(AutoShardedBot):
             title = 'Cannot read message history.'
             ctx.command.reset_cooldown(ctx)
 
-        elif isinstance(error, discord.errors.Forbidden):
+        elif isinstance(error, nextcord.errors.Forbidden):
             log.warning(error)
             ctx.command.reset_cooldown(ctx)
 
@@ -298,5 +284,5 @@ class AniSearchBot(AutoShardedBot):
             log.exception(
                 'An unknown exception occurred while executing a command:', exc_info=error)
 
-        embed = discord.Embed(title=title, color=ERROR_EMBED_COLOR)
+        embed = nextcord.Embed(title=title, color=ERROR_EMBED_COLOR)
         return await ctx.channel.send(embed=embed)

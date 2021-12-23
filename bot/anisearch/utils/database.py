@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import logging
 from typing import Union, List
 
-import discord
+import nextcord
 import psycopg2
 import psycopg2.pool
 
@@ -45,8 +45,8 @@ class DataBase:
     def close(self) -> None:
         self.pool.closeall()
 
-    def get_prefix(self, message: discord.Message) -> str:
-        if isinstance(message.channel, discord.channel.DMChannel):
+    def get_prefix(self, message: nextcord.Message) -> str:
+        if isinstance(message.channel, nextcord.channel.DMChannel):
             return DEFAULT_PREFIX
         conn = self.pool.getconn()
         try:
@@ -69,7 +69,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def insert_guild(self, guild: discord.Guild) -> None:
+    def insert_guild(self, guild: nextcord.Guild) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -83,7 +83,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def delete_guild(self, guild: discord.Guild) -> None:
+    def delete_guild(self, guild: nextcord.Guild) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -94,7 +94,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def update_prefix(self, message: discord.Message, prefix: str) -> None:
+    def update_prefix(self, message: nextcord.Message, prefix: str) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -176,7 +176,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def set_channel(self, channel_id: int, guild: discord.Guild) -> None:
+    def set_channel(self, channel_id: int, guild: nextcord.Guild) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -191,7 +191,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def get_channel(self, guild: discord.Guild) -> Union[int, None]:
+    def get_channel(self, guild: nextcord.Guild) -> Union[int, None]:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -205,7 +205,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def set_role(self, role_id: int, guild: discord.Guild) -> None:
+    def set_role(self, role_id: int, guild: nextcord.Guild) -> None:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -220,7 +220,7 @@ class DataBase:
         finally:
             self.pool.putconn(conn)
 
-    def get_role(self, guild: discord.Guild) -> Union[int, None]:
+    def get_role(self, guild: nextcord.Guild) -> Union[int, None]:
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:

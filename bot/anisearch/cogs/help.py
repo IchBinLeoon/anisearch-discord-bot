@@ -21,11 +21,11 @@ import logging
 from datetime import timedelta
 from typing import Optional
 
-import discord
-from discord.channel import DMChannel
-from discord.ext import commands, menus
-from discord.ext.commands import Context
-from discord.utils import get, find
+import nextcord
+from nextcord.channel import DMChannel
+from nextcord.ext import commands, menus
+from nextcord.ext.commands import Context
+from nextcord.utils import get, find
 
 import anisearch
 from anisearch.bot import AniSearchBot
@@ -54,22 +54,22 @@ class Help(commands.Cog, name='Help'):
             ctx.channel, DMChannel) else f'Current server prefix: `{prefix}`\n'
 
         if cmd is None:
-            embed = discord.Embed(title='AniSearch', color=DEFAULT_EMBED_COLOR,
-                                  description=f'{server_prefix}\n**Command help:**\n`{prefix}help [command]`\n\n'
-                                              f'**Command list:**\n`{prefix}commands`\n\n**Links:**\n'
-                                              f'[Invite AniSearch!]({DISCORD_INVITE}) | '
-                                              f'[Support Server]({SUPPORT_SERVER_INVITE}) | '
-                                              f'[Website]({WEBSITE})')
-            embed.set_thumbnail(url=self.bot.user.avatar_url)
+            embed = nextcord.Embed(title='AniSearch', color=DEFAULT_EMBED_COLOR,
+                                   description=f'{server_prefix}\n**Command help:**\n`{prefix}help [command]`\n\n'
+                                               f'**Command list:**\n`{prefix}commands`\n\n**Links:**\n'
+                                               f'[Invite AniSearch!]({DISCORD_INVITE}) | '
+                                               f'[Support Server]({SUPPORT_SERVER_INVITE}) | '
+                                               f'[Website]({WEBSITE})')
+            embed.set_thumbnail(url=self.bot.user.display_avatar.url)
             await ctx.send(embed=embed)
 
         else:
             if command := get(self.bot.commands, name=cmd.lower()) or \
-                    find(lambda cmd_: cmd.lower() in cmd_.aliases, self.bot.commands):
-                embed = discord.Embed(
+                          find(lambda cmd_: cmd.lower() in cmd_.aliases, self.bot.commands):
+                embed = nextcord.Embed(
                     title=f'Command » `{command}`', colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name='AniSearch Help',
-                                 icon_url=self.bot.user.avatar_url)
+                                 icon_url=self.bot.user.display_avatar.url)
                 embed.add_field(
                     name='Usage', value=f'`{prefix}{command.usage}`', inline=False)
                 embed.add_field(name='Description', value=command.help.replace('\n', ' ').replace('\r', ''),
@@ -84,7 +84,7 @@ class Help(commands.Cog, name='Help'):
                     text=f'<> - required, [] - optional, | - either/or')
                 await ctx.send(embed=embed)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The command `{cmd}` could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -104,14 +104,14 @@ class Help(commands.Cog, name='Help'):
 
                 cmds = ''.join(f'```\n{cmds}\n```')
 
-                embed = discord.Embed(description=f'To view information about a specified command use: '
-                                                  f'`{prefix}help [command]`\n{server_prefix}\n'
-                                                  f'`<>` - required, `[]` - optional, `|` - either/or\n\n'
-                                                  f'**{self.bot.get_cog(cog).qualified_name}**\n{cmds}\n'
-                                                  f'Do **not** include `<>`, `[]` or `|` when executing the command.',
-                                      colour=DEFAULT_EMBED_COLOR)
+                embed = nextcord.Embed(description=f'To view information about a specified command use: '
+                                                   f'`{prefix}help [command]`\n{server_prefix}\n'
+                                                   f'`<>` - required, `[]` - optional, `|` - either/or\n\n'
+                                                   f'**{self.bot.get_cog(cog).qualified_name}**\n{cmds}\n'
+                                                   f'Do **not** include `<>`, `[]` or `|` when executing the command.',
+                                       colour=DEFAULT_EMBED_COLOR)
                 embed.set_author(name="AniSearch's commands",
-                                 icon_url=self.bot.user.avatar_url)
+                                 icon_url=self.bot.user.display_avatar.url)
                 embed.set_footer(
                     text=f'Commands • Page {page}/{len(self.bot.cogs) - 1}')
                 embeds.append(embed)
@@ -125,9 +125,9 @@ class Help(commands.Cog, name='Help'):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def about(self, ctx: Context):
         """Displays information about the bot."""
-        embed = discord.Embed(title='About AniSearch', color=DEFAULT_EMBED_COLOR,
-                              description=f'<@!{BOT_ID}> is an easy-to-use bot that allows you to look up information '
-                                          f'about anime, manga and much more directly in Discord!')
+        embed = nextcord.Embed(title='About AniSearch', color=DEFAULT_EMBED_COLOR,
+                               description=f'<@!{BOT_ID}> is an easy-to-use bot that allows you to look up information '
+                                           f'about anime, manga and much more directly in Discord!')
         embed.add_field(name='❯ Creator',
                         value=f'<@!{CREATOR_ID}>', inline=True)
         embed.add_field(name='❯ Version',
@@ -140,17 +140,17 @@ class Help(commands.Cog, name='Help'):
                         value=f'[Click me!]({SUPPORT_SERVER_INVITE})', inline=True)
         embed.add_field(name='❯ Website',
                         value=f'[Click me!]({WEBSITE})', inline=True)
-        embed.set_thumbnail(url=self.bot.user.avatar_url)
+        embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         await ctx.channel.send(embed=embed)
 
     @commands.command(name='stats', usage='stats', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def stats(self, ctx: Context):
         """Displays statistics about the bot."""
-        embed = discord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
-                              color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
+                               color=DEFAULT_EMBED_COLOR)
         embed.set_author(name="AniSearch's statistics",
-                         icon_url=self.bot.user.avatar_url)
+                         icon_url=self.bot.user.display_avatar.url)
         embed.add_field(name='❯ Guilds', value=str(
             self.bot.get_guild_count()), inline=True)
         embed.add_field(name='❯ Users', value=str(
@@ -174,12 +174,12 @@ class Help(commands.Cog, name='Help'):
             data = await get_request(url=GITHUB_REPO_API_ENDPOINT, session=self.bot.session, res_method='json')
         except Exception as e:
             log.exception(e)
-            embed = discord.Embed(title='An error occurred while retrieving data from the GitHub repository.',
-                                  color=ERROR_EMBED_COLOR)
+            embed = nextcord.Embed(title='An error occurred while retrieving data from the GitHub repository.',
+                                   color=ERROR_EMBED_COLOR)
             await ctx.channel.send(embed=embed)
         if data:
-            embed = discord.Embed(title=data.get('full_name'), url=data.get('html_url'),
-                                  description=data.get('description'), color=DEFAULT_EMBED_COLOR)
+            embed = nextcord.Embed(title=data.get('full_name'), url=data.get('html_url'),
+                                   description=data.get('description'), color=DEFAULT_EMBED_COLOR)
             embed.set_author(name='GitHub Repository')
             embed.add_field(name='❯ Stargazers', value=data.get(
                 'stargazers_count'), inline=True)
@@ -193,15 +193,15 @@ class Help(commands.Cog, name='Help'):
                 'license').get('spdx_id'), inline=True)
             embed.add_field(name='❯ Updated', value=data.get('updated_at').replace('T', ' ').replace('Z', ' '),
                             inline=True)
-            embed.set_thumbnail(url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url=self.bot.user.display_avatar.url)
             await ctx.channel.send(embed=embed)
 
     @commands.command(name='ping', aliases=['latency'], usage='ping', ignore_extra=False)
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ping(self, ctx: Context):
         """Checks the latency of the bot."""
-        embed = discord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
-                              color=DEFAULT_EMBED_COLOR)
+        embed = nextcord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
+                               color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
 
 

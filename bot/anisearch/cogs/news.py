@@ -22,11 +22,11 @@ import html
 import logging
 from typing import Dict, Any, Union, List
 
-import discord
+import nextcord
 from bs4 import BeautifulSoup
-from discord import Embed
-from discord.ext import commands, menus
-from discord.ext.commands import Context
+from nextcord import Embed
+from nextcord.ext import commands, menus
+from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.cogs.search import Search
@@ -62,7 +62,7 @@ class News(commands.Cog, name='News'):
             for i in data.get('media').get('externalLinks'):
                 sites.append(f'[{i["site"]}]({i["url"]})')
 
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             colour=DEFAULT_EMBED_COLOR,
             description=f'Episode **{data.get("episode")}** airing in '
                         f'**{str(datetime.timedelta(seconds=data.get("timeUntilAiring")))}**.\n\n**Type:** '
@@ -106,7 +106,7 @@ class News(commands.Cog, name='News'):
         date = datetime.datetime.utcfromtimestamp(
             data.get("airingAt")).strftime("%B %d, %Y - %H:%M")
 
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             colour=DEFAULT_EMBED_COLOR,
             description=f'Episode **{data.get("episode")}** aired at **{str(date)}** UTC.\n\n**Type:** '
                         f'{format_media_type(data.get("media")["format"]) if data.get("media")["format"] else "N/A"}'
@@ -172,8 +172,8 @@ class News(commands.Cog, name='News'):
 
     @staticmethod
     async def get_aninews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
-                              description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
+        embed = nextcord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
+                               description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
         category = None
         if data.get('category'):
@@ -189,8 +189,8 @@ class News(commands.Cog, name='News'):
 
     @staticmethod
     async def get_crunchynews_embed(data: Dict[str, Any], page: int, pages: int) -> Embed:
-        embed = discord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
-                              description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
+        embed = nextcord.Embed(title=data.get('title'), url=data.get('link'), color=DEFAULT_EMBED_COLOR,
+                               description=f'```{html.unescape(clean_html(data.get("description"))).rstrip()}```')
 
         embed.set_author(
             name=f'Crunchyroll News | {data.get("date")}', icon_url=CRUNCHYROLL_LOGO)
@@ -209,7 +209,7 @@ class News(commands.Cog, name='News'):
                 data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=True, sort='TIME')
             except Exception as e:
                 log.exception(e)
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'An error occurred while searching for the next airing episodes. Try again.',
                     color=ERROR_EMBED_COLOR)
                 return await ctx.channel.send(embed=embed)
@@ -218,15 +218,15 @@ class News(commands.Cog, name='News'):
                 for page, anime in enumerate(data):
                     try:
                         embed = await self.get_next_embed(anime, page + 1, len(data))
-                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                        if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                             if is_adult(anime.get('media')) and not ctx.channel.is_nsfw():
-                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                      description=f'Adult content. No NSFW channel.')
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
                                     text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the next airing episode.')
                         embed.set_footer(
@@ -236,7 +236,7 @@ class News(commands.Cog, name='News'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The next airing episodes could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -249,7 +249,7 @@ class News(commands.Cog, name='News'):
                 data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=False, sort='TIME_DESC')
             except Exception as e:
                 log.exception(e)
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'An error occurred while searching for the most recently aired episodes. Try again.',
                     color=ERROR_EMBED_COLOR)
                 return await ctx.channel.send(embed=embed)
@@ -258,15 +258,15 @@ class News(commands.Cog, name='News'):
                 for page, anime in enumerate(data):
                     try:
                         embed = await self.get_last_embed(anime, page + 1, len(data))
-                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                        if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                             if is_adult(anime.get('media')) and not ctx.channel.is_nsfw():
-                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                      description=f'Adult content. No NSFW channel.')
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
                                     text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the recently aired episode.')
                         embed.set_footer(
@@ -276,7 +276,7 @@ class News(commands.Cog, name='News'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The most recently aired episodes could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -289,7 +289,7 @@ class News(commands.Cog, name='News'):
                 data = await self.scrape_animenewsnetwork(15)
             except Exception as e:
                 log.exception(e)
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'An error occurred while searching for the Anime News Network news. Try again.',
                     color=ERROR_EMBED_COLOR)
                 return await ctx.channel.send(embed=embed)
@@ -300,7 +300,7 @@ class News(commands.Cog, name='News'):
                         embed = await self.get_aninews_embed(news, page + 1, len(data))
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the Anime News Network news.')
                         embed.set_footer(
@@ -310,7 +310,7 @@ class News(commands.Cog, name='News'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The Anime News Network news could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -323,8 +323,8 @@ class News(commands.Cog, name='News'):
                 data = await self.scrape_crunchyroll(15)
             except Exception as e:
                 log.exception(e)
-                embed = discord.Embed(title=f'An error occurred while searching for the Crunchyroll news. Try again.',
-                                      color=ERROR_EMBED_COLOR)
+                embed = nextcord.Embed(title=f'An error occurred while searching for the Crunchyroll news. Try again.',
+                                       color=ERROR_EMBED_COLOR)
                 return await ctx.channel.send(embed=embed)
             if data is not None and len(data) > 0:
                 embeds = []
@@ -333,7 +333,7 @@ class News(commands.Cog, name='News'):
                         embed = await self.get_crunchynews_embed(news, page + 1, len(data))
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(
+                        embed = nextcord.Embed(
                             title='Error', color=ERROR_EMBED_COLOR,
                             description=f'An error occurred while loading the embed for the Crunchyroll news.')
                         embed.set_footer(
@@ -343,7 +343,7 @@ class News(commands.Cog, name='News'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'The Crunchyroll news could not be found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 
@@ -358,30 +358,30 @@ class News(commands.Cog, name='News'):
                 type_ = AniListMediaType.Manga.upper()
             else:
                 ctx.command.reset_cooldown(ctx)
-                raise discord.ext.commands.BadArgument
+                raise nextcord.ext.commands.BadArgument
             try:
                 data = await self.bot.anilist.trending(page=1, perPage=10, type=type_, sort='TRENDING_DESC')
             except Exception as e:
                 log.exception(e)
-                embed = discord.Embed(title=f'An error occurred while searching for the trending {type_.lower()}. '
-                                            f'Try again.', color=ERROR_EMBED_COLOR)
+                embed = nextcord.Embed(title=f'An error occurred while searching for the trending {type_.lower()}. '
+                                             f'Try again.', color=ERROR_EMBED_COLOR)
                 return await ctx.channel.send(embed=embed)
             if data is not None and len(data) > 0:
                 embeds = []
                 for page, entry in enumerate(data):
                     try:
                         embed = await Search.get_media_embed(entry, page + 1, len(data))
-                        if not isinstance(ctx.channel, discord.channel.DMChannel):
+                        if not isinstance(ctx.channel, nextcord.channel.DMChannel):
                             if is_adult(entry) and not ctx.channel.is_nsfw():
-                                embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                                      description=f'Adult content. No NSFW channel.')
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
                                 embed.set_footer(
                                     text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     except Exception as e:
                         log.exception(e)
-                        embed = discord.Embed(title='Error', color=ERROR_EMBED_COLOR,
-                                              description=f'An error occurred while loading the embed for the '
-                                                          f'{type_.lower()}.')
+                        embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                               description=f'An error occurred while loading the embed for the '
+                                                           f'{type_.lower()}.')
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
@@ -389,7 +389,7 @@ class News(commands.Cog, name='News'):
                     embeds), clear_reactions_after=True, timeout=30)
                 await menu.start(ctx)
             else:
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     title=f'No trending {type_.lower()} found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
 

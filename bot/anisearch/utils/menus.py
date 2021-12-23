@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 
-from discord.ext import menus
+from nextcord.ext import menus
 
 log = logging.getLogger(__name__)
 

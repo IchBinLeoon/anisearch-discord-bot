@@ -25,7 +25,7 @@ import sys
 from io import StringIO
 
 import aiohttp
-import discord
+import nextcord
 
 import anisearch
 from anisearch.bot import AniSearchBot
@@ -35,10 +35,10 @@ from anisearch.config import BOT_LEVEL
 def main() -> None:
     logging_level = logging.getLevelName(BOT_LEVEL)
     log_stream = setup_logging(logging_level)
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     loop.run_until_complete(check_update())
     logging.info(f'Starting AniSearch Bot v{anisearch.__version__}')
-    logging.info(f'Discord.py version: {discord.__version__}')
+    logging.info(f'Nextcord version: {nextcord.__version__}')
     logging.info(f'Python version: {platform.python_version()}')
     start(log_stream)
 

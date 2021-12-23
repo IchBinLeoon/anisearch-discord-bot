@@ -21,7 +21,7 @@ import logging
 import random as rnd
 from typing import Union
 
-from discord.ext.commands import Context
+from nextcord.ext.commands import Context
 
 logger = logging.getLogger(__name__)
 
