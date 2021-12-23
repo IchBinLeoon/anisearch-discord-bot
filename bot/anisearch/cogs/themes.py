@@ -30,7 +30,7 @@ from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANIMETHEMES_BASE_URL
 from anisearch.utils.http import get
-from anisearch.utils.menus import EmbedListMenu
+from anisearch.utils.menus import EmbedListButtonMenu
 
 log = logging.getLogger(__name__)
 
@@ -144,8 +144,12 @@ class Themes(commands.Cog, name='Themes'):
                             text=f'Provided by https://animethemes.moe/ • Page '
                                  f'{page + 1}/{len(data.get("search").get("anime"))}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(

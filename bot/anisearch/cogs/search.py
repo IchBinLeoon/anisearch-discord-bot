@@ -32,7 +32,7 @@ from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, AN
 from anisearch.utils.types import AniListSearchType, AniListMediaType
 from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
     format_manga_status
-from anisearch.utils.menus import EmbedListMenu
+from anisearch.utils.menus import EmbedListButtonMenu
 
 log = logging.getLogger(__name__)
 
@@ -432,8 +432,12 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, AniListSearchType.Anime)
             if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -448,8 +452,12 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, AniListSearchType.Manga)
             if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -465,8 +473,12 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Character)
             if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -482,8 +494,12 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Staff)
             if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -499,8 +515,12 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Studio)
             if embeds:
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(

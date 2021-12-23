@@ -35,7 +35,7 @@ from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, CR
     ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT, CRUNCHYROLL_NEWS_FEED_ENDPOINT, ANILIST_LOGO
 from anisearch.utils.formatters import clean_html, format_media_type
 from anisearch.utils.http import get
-from anisearch.utils.menus import EmbedListMenu
+from anisearch.utils.menus import EmbedListButtonMenu
 from anisearch.utils.types import AniListMediaType
 
 log = logging.getLogger(__name__)
@@ -232,8 +232,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -272,8 +276,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -306,8 +314,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://www.animenewsnetwork.com/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -339,8 +351,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://www.crunchyroll.com/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(
@@ -385,8 +401,12 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.MenuPages(source=EmbedListMenu(
-                    embeds), clear_reactions_after=True, timeout=30)
+                menu = menus.ButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
                 await menu.start(ctx)
             else:
                 embed = nextcord.Embed(

@@ -33,7 +33,7 @@ from anisearch.config import BOT_OWNER_ID
 from anisearch.utils.constants import DEFAULT_EMBED_COLOR, ERROR_EMBED_COLOR, DEFAULT_PREFIX, CREATOR_ID, BOT_ID, \
     DISCORD_INVITE, WEBSITE, GITHUB_REPO_API_ENDPOINT, SUPPORT_SERVER_INVITE
 from anisearch.utils.http import get as get_request
-from anisearch.utils.menus import EmbedListMenu
+from anisearch.utils.menus import EmbedListButtonMenu
 from anisearch.utils.misc import get_command_example
 
 log = logging.getLogger(__name__)
@@ -117,8 +117,12 @@ class Help(commands.Cog, name='Help'):
                 embeds.append(embed)
                 page += 1
 
-        menu = menus.MenuPages(source=EmbedListMenu(
-            embeds), clear_reactions_after=True, timeout=30)
+        menu = menus.ButtonMenuPages(
+            source=EmbedListButtonMenu(embeds),
+            clear_buttons_after=True,
+            timeout=60,
+            style=nextcord.ButtonStyle.primary
+        )
         await menu.start(ctx)
 
     @commands.command(name='about', usage='about', ignore_extra=False)

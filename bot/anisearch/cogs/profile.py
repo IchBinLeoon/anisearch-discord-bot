@@ -31,7 +31,7 @@ from anisearch.bot import AniSearchBot
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, \
     ANILIST_LOGO, KITSU_BASE_URL
 from anisearch.utils.http import get
-from anisearch.utils.menus import EmbedListMenu
+from anisearch.utils.menus import EmbedListButtonMenu
 
 log = logging.getLogger(__name__)
 
@@ -828,8 +828,12 @@ class Profile(commands.Cog, name='Profile'):
             if username:
                 embeds = await self.get_anilist_profile(username)
                 if embeds:
-                    menu = menus.MenuPages(source=EmbedListMenu(
-                        embeds), clear_reactions_after=True, timeout=30)
+                    menu = menus.ButtonMenuPages(
+                        source=EmbedListButtonMenu(embeds),
+                        clear_buttons_after=True,
+                        timeout=60,
+                        style=nextcord.ButtonStyle.primary
+                    )
                     await menu.start(ctx)
                 else:
                     embed = nextcord.Embed(title=f'The AniList profile `{username}` could not be found.',
@@ -857,8 +861,12 @@ class Profile(commands.Cog, name='Profile'):
             if username:
                 embeds = await self.get_myanimelist_profile(username)
                 if embeds:
-                    menu = menus.MenuPages(source=EmbedListMenu(
-                        embeds), clear_reactions_after=True, timeout=30)
+                    menu = menus.ButtonMenuPages(
+                        source=EmbedListButtonMenu(embeds),
+                        clear_buttons_after=True,
+                        timeout=60,
+                        style=nextcord.ButtonStyle.primary
+                    )
                     await menu.start(ctx)
                 else:
                     embed = nextcord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
@@ -885,8 +893,12 @@ class Profile(commands.Cog, name='Profile'):
             if username:
                 embeds = await self.get_kitsu_profile(username)
                 if embeds:
-                    menu = menus.MenuPages(source=EmbedListMenu(
-                        embeds), clear_reactions_after=True, timeout=30)
+                    menu = menus.ButtonMenuPages(
+                        source=EmbedListButtonMenu(embeds),
+                        clear_buttons_after=True,
+                        timeout=60,
+                        style=nextcord.ButtonStyle.primary
+                    )
                     await menu.start(ctx)
                 else:
                     embed = nextcord.Embed(title=f'The Kitsu profile `{username}` could not be found.',

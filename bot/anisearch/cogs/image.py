@@ -30,7 +30,7 @@ from pysaucenao import GenericSource
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
-from anisearch.utils.menus import EmbedListMenu
+from anisearch.utils.menus import EmbedListButtonMenu
 
 log = logging.getLogger(__name__)
 
@@ -155,8 +155,12 @@ class Image(commands.Cog, name='Image'):
                                 embed.set_footer(
                                     text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
-                        menu = menus.MenuPages(source=EmbedListMenu(
-                            embeds), clear_reactions_after=True, timeout=30)
+                        menu = menus.ButtonMenuPages(
+                            source=EmbedListButtonMenu(embeds),
+                            clear_buttons_after=True,
+                            timeout=60,
+                            style=nextcord.ButtonStyle.primary
+                        )
                         await menu.start(ctx)
                     else:
                         embed = nextcord.Embed(
@@ -208,8 +212,12 @@ class Image(commands.Cog, name='Image'):
                                 embed.set_footer(
                                     text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
-                        menu = menus.MenuPages(source=EmbedListMenu(
-                            embeds), clear_reactions_after=True, timeout=30)
+                        menu = menus.ButtonMenuPages(
+                            source=EmbedListButtonMenu(embeds),
+                            clear_buttons_after=True,
+                            timeout=60,
+                            style=nextcord.ButtonStyle.primary
+                        )
                         await menu.start(ctx)
                     else:
                         embed = nextcord.Embed(
