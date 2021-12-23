@@ -23,14 +23,14 @@ from urllib.parse import urljoin
 
 import nextcord
 from nextcord import Embed
-from nextcord.ext import commands, menus
+from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, ANIMETHEMES_BASE_URL
 from anisearch.utils.http import get
-from anisearch.utils.menus import EmbedListButtonMenu
+from anisearch.utils.menus import EmbedListButtonMenu, SearchButtonMenuPages
 
 log = logging.getLogger(__name__)
 
@@ -144,7 +144,7 @@ class Themes(commands.Cog, name='Themes'):
                             text=f'Provided by https://animethemes.moe/ • Page '
                                  f'{page + 1}/{len(data.get("search").get("anime"))}')
                     embeds.append(embed)
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,

@@ -23,14 +23,14 @@ from typing import Optional, Dict, Any
 
 import nextcord
 from nextcord import Embed
-from nextcord.ext import commands, menus
+from nextcord.ext import commands
 from nextcord.ext.commands import Context
 from pysaucenao import GenericSource
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.checks import is_adult
 from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR
-from anisearch.utils.menus import EmbedListButtonMenu
+from anisearch.utils.menus import EmbedListButtonMenu, SearchButtonMenuPages
 
 log = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ class Image(commands.Cog, name='Image'):
                                 embed.set_footer(
                                     text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
-                        menu = menus.ButtonMenuPages(
+                        menu = SearchButtonMenuPages(
                             source=EmbedListButtonMenu(embeds),
                             clear_buttons_after=True,
                             timeout=60,
@@ -212,7 +212,7 @@ class Image(commands.Cog, name='Image'):
                                 embed.set_footer(
                                     text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
                             embeds.append(embed)
-                        menu = menus.ButtonMenuPages(
+                        menu = SearchButtonMenuPages(
                             source=EmbedListButtonMenu(embeds),
                             clear_buttons_after=True,
                             timeout=60,

@@ -25,7 +25,7 @@ from typing import Dict, Any, Union, List
 import nextcord
 from bs4 import BeautifulSoup
 from nextcord import Embed
-from nextcord.ext import commands, menus
+from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
@@ -35,7 +35,7 @@ from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, CR
     ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT, CRUNCHYROLL_NEWS_FEED_ENDPOINT, ANILIST_LOGO
 from anisearch.utils.formatters import clean_html, format_media_type
 from anisearch.utils.http import get
-from anisearch.utils.menus import EmbedListButtonMenu
+from anisearch.utils.menus import EmbedListButtonMenu, SearchButtonMenuPages
 from anisearch.utils.types import AniListMediaType
 
 log = logging.getLogger(__name__)
@@ -232,7 +232,7 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -276,7 +276,7 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -314,7 +314,7 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://www.animenewsnetwork.com/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -351,7 +351,7 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://www.crunchyroll.com/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -401,7 +401,7 @@ class News(commands.Cog, name='News'):
                         embed.set_footer(
                             text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
                     embeds.append(embed)
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,

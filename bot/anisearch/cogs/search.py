@@ -23,7 +23,7 @@ from typing import Union, List, Dict, Any, Optional
 
 import nextcord
 from nextcord import Embed
-from nextcord.ext import commands, menus
+from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
 from anisearch.bot import AniSearchBot
@@ -32,7 +32,7 @@ from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, AN
 from anisearch.utils.types import AniListSearchType, AniListMediaType
 from anisearch.utils.formatters import format_description, format_date, format_media_type, format_anime_status, \
     format_manga_status
-from anisearch.utils.menus import EmbedListButtonMenu
+from anisearch.utils.menus import EmbedListButtonMenu, SearchButtonMenuPages
 
 log = logging.getLogger(__name__)
 
@@ -432,7 +432,7 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, AniListSearchType.Anime)
             if embeds:
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -452,7 +452,7 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, title, AniListSearchType.Manga)
             if embeds:
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -473,7 +473,7 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Character)
             if embeds:
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -494,7 +494,7 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Staff)
             if embeds:
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
@@ -515,7 +515,7 @@ class Search(commands.Cog, name='Search'):
         async with ctx.channel.typing():
             embeds = await self.anilist_search(ctx, name, AniListSearchType.Studio)
             if embeds:
-                menu = menus.ButtonMenuPages(
+                menu = SearchButtonMenuPages(
                     source=EmbedListButtonMenu(embeds),
                     clear_buttons_after=True,
                     timeout=60,
