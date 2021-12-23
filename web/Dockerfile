@@ -1,4 +1,4 @@
-FROM golang:1.17.1-buster
+FROM golang:1.17.5-buster
 
 WORKDIR /web
 
