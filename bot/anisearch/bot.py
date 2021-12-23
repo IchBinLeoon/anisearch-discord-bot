@@ -88,6 +88,9 @@ class AniSearchBot(AutoShardedBot):
         self.load_cogs()
         self.set_status.start()
 
+        if BOT_TOPGG_TOKEN:
+            self.post_topgg_stats.start()
+
     def load_cogs(self) -> None:
         for extension in initial_extensions:
             try:
@@ -204,6 +207,22 @@ class AniSearchBot(AutoShardedBot):
     def get_uptime(self) -> float:
         uptime = time.time() - self.start_time
         return uptime
+
+    @tasks.loop(minutes=30)
+    async def post_topgg_stats(self) -> None:
+        guilds = len(self.guilds)
+        shards = self.shard_count
+        r = await self.session.post(f'https://top.gg/api/bots/{self.user.id}/stats',
+                                    json={'server_count': guilds, 'shard_count': shards},
+                                    headers={'Authorization': BOT_TOPGG_TOKEN})
+        if r.status == 200:
+            log.info(f'TopGG statistics posted (Guilds: {guilds}, Shards: {shards})')
+        else:
+            log.warning(f'Error while posting TopGG statistics: {r.status} {r.reason} {await r.text()}')
+
+    @post_topgg_stats.before_loop
+    async def post_topgg_stats_before(self) -> None:
+        await self.wait_until_ready()
 
     def run(self):
         super().run(BOT_TOKEN)
