@@ -1,4 +1,4 @@
-# AniSearch
+# 🔍 AniSearch
 
 [![Status](https://top.gg/api/widget/status/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 [![Discord](https://img.shields.io/discord/835960108466176041?label=&logo=discord&logoColor=ffffff&color=7289DA&labelColor=7289DA&style=flat-square)](https://discord.gg/Bv94yQYZM8)
@@ -10,14 +10,14 @@ The source code of the AniSearch Discord Bot.
 
 [![Discord Bots](https://top.gg/api/widget/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
 
-# Contribute
+# 🤝 Contribute
 You have an idea or found a bug? Open [a new issue](https://github.com/IchBinLeoon/anisearch-discord-bot/issues) with detailed explanation.
 
 You want to write code and add new things or fix a bug? Just fork, clone to your computer, and when you're done, open a pull request!
 
 You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask your questions or get support!
 
-# Structure
+# 🛠️ Structure
 | Codebase             | Description                 |
 | -------------------- | --------------------------- |
 | [bot](bot)           | Discord Bot                 |
@@ -26,7 +26,7 @@ You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask you
 | [db](db)             | PostgreSQL Database         |
 | [gh-pages](gh-pages) | GitHub Pages Website        |
 
-# Running
+# 🚀 Running
 **I would prefer if you don't run an instance of my bot unless you want to contribute to the code.** 
 
 Use the official instance instead, which you can add to your server [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
@@ -63,8 +63,8 @@ Nevertheless, the installation steps are as follows:
 
 7. Build the images and run the discord bot, episode notification service, admin panel and postgresql database.
     ```
-    $ docker-compose up --build
+    $ docker-compose up --build -d
     ```
     
-# License
+# ⚖️ License
 This project is licensed under the GNU General Public License v3.0 (GPL-v3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE) file for more details.
