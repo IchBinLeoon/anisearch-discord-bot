@@ -1,2 +1,2 @@
 aiohttp==3.8.1
-psycopg2==2.9.2
+psycopg2==2.9.3
