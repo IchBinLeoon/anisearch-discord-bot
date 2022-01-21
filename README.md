@@ -23,7 +23,7 @@ You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask you
 | [bot](bot)           | Discord Bot                 |
 | [web](web)           | Admin Panel                 |
 | [asuka](asuka)       | Episode Notification Service |
-| [db](db)             | PostgreSQL Database         |
+| [db](db)             | PostgreSQL initdb           |
 | [gh-pages](gh-pages) | GitHub Pages Website        |
 
 # 🚀 Running
