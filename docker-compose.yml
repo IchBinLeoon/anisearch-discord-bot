@@ -11,6 +11,7 @@ services:
       - '8765:8765'
     restart: unless-stopped
     container_name: anisearch-bot
+
   web:
     build: ./web
     env_file:
@@ -22,6 +23,7 @@ services:
       - '5000:5000'
     restart: unless-stopped
     container_name: anisearch-web
+
   asuka:
     build: ./asuka
     env_file:
@@ -31,6 +33,7 @@ services:
       - bot
     restart: unless-stopped
     container_name: anisearch-asuka
+
   db:
     image: postgres:latest
     env_file:
@@ -42,6 +45,3 @@ services:
       - ./db/pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     container_name: anisearch-db
-
-volumes:
-  pgdata:
