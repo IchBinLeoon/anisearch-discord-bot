@@ -1,4 +1,4 @@
-nextcord==2.0.0a6
+nextcord==2.0.0a7
 nextcord-ext-menus==1.5.0
 aiohttp==3.8.1
 psycopg2==2.9.3
