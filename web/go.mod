@@ -6,7 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/lib/pq v1.10.4
 	gorm.io/driver/postgres v1.2.3
-	gorm.io/gorm v1.22.5
+	gorm.io/gorm v1.23.1
 )
 
 require (
