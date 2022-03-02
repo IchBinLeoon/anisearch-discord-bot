@@ -14,7 +14,7 @@ ERROR_EMBED_COLOR = 0xff0000
 
 CREATOR_ID = 223871059068321793
 BOT_ID = 737236600878137363
-DISCORD_INVITE = 'https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot'
+DISCORD_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=92224&scope=bot%20applications.commands'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 SUPPORT_SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 

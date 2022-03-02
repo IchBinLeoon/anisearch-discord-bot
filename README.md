@@ -28,7 +28,7 @@ You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask you
 # 🚀 Running
 **I would prefer if you don't run an instance of my bot unless you want to contribute to the code.** 
 
-Use the official instance instead, which you can add to your server [here](https://discord.com/oauth2/authorize?client_id=737236600878137363&permissions=124992&scope=bot)!
+Use the official instance instead, which you can add to your server [here](https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=92224&scope=bot%20applications.commands)!
 
 Nevertheless, the installation steps are as follows:  
 
