@@ -1,5 +1,5 @@
 nextcord==2.0.0a8
-nextcord-ext-menus==1.5.1
+nextcord-ext-menus==1.5.2
 aiohttp==3.8.1
 psycopg2==2.9.3
 beautifulsoup4==4.10.0
