@@ -3,7 +3,7 @@ import random
 from typing import Union, List, Dict, Any, Optional
 
 import nextcord
-from nextcord import Embed
+from nextcord import Embed, Interaction, SlashOption
 from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
@@ -23,7 +23,7 @@ class Search(commands.Cog, name='Search'):
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
-    async def anilist_search(self, ctx: Context, search: str, type_: str) -> Union[List[Embed], None]:
+    async def anilist_search(self, ctx: Union[Context, Interaction], search: str, type_: str) -> Union[List[Embed], None]:
         embeds = []
         data = None
 
@@ -535,6 +535,146 @@ class Search(commands.Cog, name='Search'):
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise nextcord.ext.commands.BadArgument
+
+    @nextcord.slash_command(
+        name='anime',
+        description='Searches for an anime with the given title and displays information about the search results'
+    )
+    async def anime_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            title: str = SlashOption(
+                description='The title of the anime',
+                required=True
+            )
+    ):
+        embeds = await self.anilist_search(interaction, title, AniListSearchType.Anime)
+        if embeds:
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'An anime with the title `{title}` could not be found.',
+                color=ERROR_EMBED_COLOR
+            )
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='manga',
+        description='Searches for a manga with the given title and displays information about the search results'
+    )
+    async def manga_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            title: str = SlashOption(
+                description='The title of the manga',
+                required=True
+            )
+    ):
+        embeds = await self.anilist_search(interaction, title, AniListSearchType.Manga)
+        if embeds:
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'A manga with the title `{title}` could not be found.',
+                color=ERROR_EMBED_COLOR
+            )
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='character',
+        description='Searches for a character with the given name and displays information about the search results'
+    )
+    async def character_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            name: str = SlashOption(
+                description='The name of the character',
+                required=True
+            )
+    ):
+        embeds = await self.anilist_search(interaction, name, AniListSearchType.Character)
+        if embeds:
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'A character with the name `{name}` could not be found.',
+                color=ERROR_EMBED_COLOR
+            )
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='staff',
+        description='Searches for a staff with the given name and displays information about the search results'
+    )
+    async def staff_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            name: str = SlashOption(
+                description='The name of the staff',
+                required=True
+            )
+    ):
+        embeds = await self.anilist_search(interaction, name, AniListSearchType.Staff)
+        if embeds:
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'A staff with the name `{name}` could not be found.',
+                color=ERROR_EMBED_COLOR
+            )
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='studio',
+        description='Searches for a studio with the given name and displays information about the search results'
+    )
+    async def studio_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            name: str = SlashOption(
+                description='The name of the studio',
+                required=True
+            )
+    ):
+        embeds = await self.anilist_search(interaction, name, AniListSearchType.Studio)
+        if embeds:
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'A studio with the name `{name}` could not be found.',
+                color=ERROR_EMBED_COLOR
+            )
+            await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: AniSearchBot):
