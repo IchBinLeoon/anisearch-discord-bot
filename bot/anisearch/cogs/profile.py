@@ -234,7 +234,7 @@ class Profile(commands.Cog, name='Profile'):
                                 inline=False)
 
                 embed.set_footer(
-                    text=f'Provided by https://anilist.co/ • Statistics')
+                    text=f'Provided by https://anilist.co/ • Overview')
 
                 embeds.append(embed)
 
@@ -246,7 +246,7 @@ class Profile(commands.Cog, name='Profile'):
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the AniList profile.')
                 embed.set_footer(
-                    text=f'Provided by https://anilist.co/ • Statistics')
+                    text=f'Provided by https://anilist.co/ • Overview')
                 embeds.append(embed)
 
             try:
@@ -454,7 +454,7 @@ class Profile(commands.Cog, name='Profile'):
                                 value=f'https://myanimelist.net/mangalist/{data.get("username")}')
 
                 embed.set_footer(
-                    text=f'Provided by https://myanimelist.net/ • Statistics')
+                    text=f'Provided by https://myanimelist.net/ • Overview')
 
                 embeds.append(embed)
 
@@ -466,7 +466,7 @@ class Profile(commands.Cog, name='Profile'):
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the MyAnimeList profile.')
                 embed.set_footer(
-                    text=f'Provided by https://myanimelist.net/ • Statistics')
+                    text=f'Provided by https://myanimelist.net/ • Overview')
                 embeds.append(embed)
 
             try:
@@ -695,7 +695,7 @@ class Profile(commands.Cog, name='Profile'):
                                       f'/library?media=manga')
 
                 embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Statistics')
+                    text=f'Provided by https://kitsu.io/ • Overview')
 
                 embeds.append(embed)
 
@@ -707,7 +707,7 @@ class Profile(commands.Cog, name='Profile'):
                     color=ERROR_EMBED_COLOR,
                     description='An error occurred while loading the embed for the Kitsu profile.')
                 embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Statistics')
+                    text=f'Provided by https://kitsu.io/ • Overview')
                 embeds.append(embed)
 
             try:
@@ -812,8 +812,7 @@ class Profile(commands.Cog, name='Profile'):
                     menu = ProfileButtonMenuPages(
                         source=EmbedListButtonMenu(embeds),
                         clear_buttons_after=True,
-                        timeout=60,
-                        style=nextcord.ButtonStyle.primary
+                        timeout=60
                     )
                     await menu.start(ctx)
                 else:
@@ -845,8 +844,7 @@ class Profile(commands.Cog, name='Profile'):
                     menu = ProfileButtonMenuPages(
                         source=EmbedListButtonMenu(embeds),
                         clear_buttons_after=True,
-                        timeout=60,
-                        style=nextcord.ButtonStyle.primary
+                        timeout=60
                     )
                     await menu.start(ctx)
                 else:
@@ -877,8 +875,7 @@ class Profile(commands.Cog, name='Profile'):
                     menu = ProfileButtonMenuPages(
                         source=EmbedListButtonMenu(embeds),
                         clear_buttons_after=True,
-                        timeout=60,
-                        style=nextcord.ButtonStyle.primary
+                        timeout=60
                     )
                     await menu.start(ctx)
                 else:

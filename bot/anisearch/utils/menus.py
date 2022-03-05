@@ -26,8 +26,8 @@ class ProfileButtonMenuPages(menus.ButtonMenuPages, inherit_buttons=False):
     def __init__(self, source, **kwargs):
         super().__init__(source, **kwargs)
 
-        self.add_item(menus.MenuPaginationButton(emoji=self.PREVIOUS_PAGE))
-        self.add_item(menus.MenuPaginationButton(emoji=self.NEXT_PAGE))
+        self.add_item(menus.MenuPaginationButton(label='Overview', emoji=self.PREVIOUS_PAGE))
+        self.add_item(menus.MenuPaginationButton(label='Favorites', emoji=self.NEXT_PAGE))
         self.add_item(menus.MenuPaginationButton(emoji=self.STOP))
 
         self._disable_unavailable_buttons()
