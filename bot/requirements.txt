@@ -2,7 +2,7 @@ nextcord==2.0.0a10
 nextcord-ext-menus==1.5.2
 aiohttp==3.8.1
 psycopg2==2.9.3
-beautifulsoup4==4.11.0
+beautifulsoup4==4.11.1
 psutil==5.9.0
 jikanpy==4.3.2
 tracemoe-py==1.0.3
