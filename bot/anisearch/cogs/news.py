@@ -5,7 +5,7 @@ from typing import Dict, Any, Union, List
 
 import nextcord
 from bs4 import BeautifulSoup
-from nextcord import Embed
+from nextcord import Embed, SlashOption
 from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
@@ -393,6 +393,208 @@ class News(commands.Cog, name='News'):
                 embed = nextcord.Embed(
                     title=f'No trending {type_.lower()} found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
+
+    @nextcord.slash_command(name='next', description='Displays the next airing anime episodes')
+    async def next_slash_command(self, interaction: nextcord.Interaction):
+        try:
+            data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=True, sort='TIME')
+        except Exception as e:
+            log.exception(e)
+            embed = nextcord.Embed(
+                title=f'An error occurred while searching for the next airing episodes. Try again.',
+                color=ERROR_EMBED_COLOR)
+            return await interaction.response.send_message(embed=embed)
+        if data is not None and len(data) > 0:
+            embeds = []
+            for page, anime in enumerate(data):
+                try:
+                    embed = await self.get_next_embed(anime, page + 1, len(data))
+                    if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                        if is_adult(anime.get('media')) and not interaction.channel.is_nsfw():
+                            embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                   description=f'Adult content. No NSFW channel.')
+                            embed.set_footer(
+                                text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                except Exception as e:
+                    log.exception(e)
+                    embed = nextcord.Embed(
+                        title='Error', color=ERROR_EMBED_COLOR,
+                        description=f'An error occurred while loading the embed for the next airing episode.')
+                    embed.set_footer(
+                        text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                embeds.append(embed)
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'The next airing episodes could not be found.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='last', description='Displays the most recently aired anime episodes')
+    async def last_slash_command(self, interaction: nextcord.Interaction):
+        try:
+            data = await self.bot.anilist.schedule(page=1, perPage=15, notYetAired=False, sort='TIME_DESC')
+        except Exception as e:
+            log.exception(e)
+            embed = nextcord.Embed(
+                title=f'An error occurred while searching for the most recently aired episodes. Try again.',
+                color=ERROR_EMBED_COLOR)
+            return await interaction.response.send_message(embed=embed)
+        if data is not None and len(data) > 0:
+            embeds = []
+            for page, anime in enumerate(data):
+                try:
+                    embed = await self.get_last_embed(anime, page + 1, len(data))
+                    if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                        if is_adult(anime.get('media')) and not interaction.channel.is_nsfw():
+                            embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                   description=f'Adult content. No NSFW channel.')
+                            embed.set_footer(
+                                text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                except Exception as e:
+                    log.exception(e)
+                    embed = nextcord.Embed(
+                        title='Error', color=ERROR_EMBED_COLOR,
+                        description=f'An error occurred while loading the embed for the recently aired episode.')
+                    embed.set_footer(
+                        text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                embeds.append(embed)
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'The most recently aired episodes could not be found.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='aninews', description='Displays the latest anime news from Anime News Network')
+    async def aninews_slash_command(self, interaction: nextcord.Interaction):
+        try:
+            data = await self.scrape_animenewsnetwork(15)
+        except Exception as e:
+            log.exception(e)
+            embed = nextcord.Embed(
+                title=f'An error occurred while searching for the Anime News Network news. Try again.',
+                color=ERROR_EMBED_COLOR)
+            return interaction.response.send_message(embed=embed)
+        if data is not None and len(data) > 0:
+            embeds = []
+            for page, news in enumerate(data):
+                try:
+                    embed = await self.get_aninews_embed(news, page + 1, len(data))
+                except Exception as e:
+                    log.exception(e)
+                    embed = nextcord.Embed(
+                        title='Error', color=ERROR_EMBED_COLOR,
+                        description=f'An error occurred while loading the embed for the Anime News Network news.')
+                    embed.set_footer(
+                        text=f'Provided by https://www.animenewsnetwork.com/ • Page {page + 1}/{len(data)}')
+                embeds.append(embed)
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'The Anime News Network news could not be found.', color=ERROR_EMBED_COLOR)
+            interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='crunchynews', description='Displays the latest anime news from Crunchyroll')
+    async def crunchynews_slash_command(self, interaction: nextcord.Interaction):
+        try:
+            data = await self.scrape_crunchyroll(15)
+        except Exception as e:
+            log.exception(e)
+            embed = nextcord.Embed(title=f'An error occurred while searching for the Crunchyroll news. Try again.',
+                                   color=ERROR_EMBED_COLOR)
+            return await interaction.response.send_message(embed=embed)
+        if data is not None and len(data) > 0:
+            embeds = []
+            for page, news in enumerate(data):
+                try:
+                    embed = await self.get_crunchynews_embed(news, page + 1, len(data))
+                except Exception as e:
+                    log.exception(e)
+                    embed = nextcord.Embed(
+                        title='Error', color=ERROR_EMBED_COLOR,
+                        description=f'An error occurred while loading the embed for the Crunchyroll news.')
+                    embed.set_footer(
+                        text=f'Provided by https://www.crunchyroll.com/ • Page {page + 1}/{len(data)}')
+                embeds.append(embed)
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'The Crunchyroll news could not be found.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='trending',
+        description='Displays the current trending anime or manga on AniList'
+    )
+    async def trending_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            media: str = SlashOption(
+                description='The type of the media',
+                required=True,
+                choices=['Anime', 'Manga']
+            ),
+    ):
+        try:
+            data = await self.bot.anilist.trending(page=1, perPage=10, type=media.upper(), sort='TRENDING_DESC')
+        except Exception as e:
+            log.exception(e)
+            embed = nextcord.Embed(title=f'An error occurred while searching for the trending {media.lower()}. '
+                                         f'Try again.', color=ERROR_EMBED_COLOR)
+            return await interaction.response.send_message(embed=embed)
+        if data is not None and len(data) > 0:
+            embeds = []
+            for page, entry in enumerate(data):
+                try:
+                    embed = await Search.get_media_embed(entry, page + 1, len(data))
+                    if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                        if is_adult(entry) and not interaction.channel.is_nsfw():
+                            embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                   description=f'Adult content. No NSFW channel.')
+                            embed.set_footer(
+                                text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                except Exception as e:
+                    log.exception(e)
+                    embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                           description=f'An error occurred while loading the embed for the '
+                                                       f'{media.lower()}.')
+                    embed.set_footer(
+                        text=f'Provided by https://anilist.co/ • Page {page + 1}/{len(data)}')
+                embeds.append(embed)
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'No trending {media.lower()} found.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: AniSearchBot):

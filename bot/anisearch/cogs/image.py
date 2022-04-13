@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Optional, Dict, Any
 
 import nextcord
-from nextcord import Embed
+from nextcord import Embed, SlashOption
 from nextcord.ext import commands
 from nextcord.ext.commands import Context
 from pysaucenao import GenericSource
@@ -226,6 +226,248 @@ class Image(commands.Cog, name='Image'):
             embed.set_image(url=data)
             embed.set_footer(text='Provided by https://waifu.pics/')
             await ctx.channel.send(embed=embed)
+
+    @nextcord.slash_command(
+        name='trace',
+        description='Tries to find the anime the image is from through the image url or the image as attachment'
+    )
+    async def trace_slash_command(self, interaction: nextcord.Interaction):
+        pass
+
+    @trace_slash_command.subcommand(
+        name='url',
+        description='Tries to find the anime the image is from through the image url')
+    async def trace_slash_command_url(
+            self,
+            interaction: nextcord.Interaction,
+            url: str = SlashOption(
+                description='The url of the image',
+                required=True
+            )
+    ):
+        if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
+            embed = nextcord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
+                                   color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+        else:
+            try:
+                data = await self.bot.tracemoe.search(url, anilist_info=True)
+            except Exception as e:
+                log.exception(e)
+                embed = nextcord.Embed(
+                    title=f'An error occurred while searching for the anime, the url is invalid or '
+                          f'the search queue is full.',
+                    color=ERROR_EMBED_COLOR)
+                return await interaction.response.send_message(embed=embed)
+            if len(data) > 0:
+                embeds = []
+                for page, anime in enumerate(data):
+                    try:
+                        embed = await self.get_trace_embed(anime, page + 1, len(data))
+                        if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                            if is_adult(anime.get('anilist')) and not interaction.channel.is_nsfw():
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
+                                embed.set_footer(
+                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
+                    except Exception as e:
+                        log.exception(e)
+                        embed = nextcord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
+                                               description='An error occurred while loading the embed.')
+                        embed.set_footer(
+                            text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
+                    embeds.append(embed)
+                pages = SearchButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(
+                    title='No anime found.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+
+    @trace_slash_command.subcommand(
+        name='attachment',
+        description='Tries to find the anime the image is from through the image as attachment'
+    )
+    async def trace_slash_command_attachment(
+            self,
+            interaction: nextcord.Interaction,
+            attachment: nextcord.Attachment = SlashOption(
+                description='The image as attachment',
+                required=True
+            )
+    ):
+        url = attachment.url
+        if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
+            embed = nextcord.Embed(title='No correct file specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
+                                   color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+        else:
+            try:
+                data = await self.bot.tracemoe.search(url, anilist_info=True)
+            except Exception as e:
+                log.exception(e)
+                embed = nextcord.Embed(
+                    title=f'An error occurred while searching for the anime, the url is invalid or '
+                          f'the search queue is full.',
+                    color=ERROR_EMBED_COLOR)
+                return await interaction.response.send_message(embed=embed)
+            if len(data) > 0:
+                embeds = []
+                for page, anime in enumerate(data):
+                    try:
+                        embed = await self.get_trace_embed(anime, page + 1, len(data))
+                        if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                            if is_adult(anime.get('anilist')) and not interaction.channel.is_nsfw():
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
+                                embed.set_footer(
+                                    text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
+                    except Exception as e:
+                        log.exception(e)
+                        embed = nextcord.Embed(title='Error', color=DEFAULT_EMBED_COLOR,
+                                               description='An error occurred while loading the embed.')
+                        embed.set_footer(
+                            text=f'Provided by https://trace.moe/ • Page {page + 1}/{len(data)}')
+                    embeds.append(embed)
+                pages = SearchButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(
+                    title='No anime found.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='source',
+        description='Tries to find the source of an image through the image url or the image as attachment'
+    )
+    async def source_slash_command(self, interaction: nextcord.Interaction):
+        pass
+
+    @source_slash_command.subcommand(
+        name='url',
+        description='Tries to find the source of an image through the image url')
+    async def source_slash_command_url(
+            self,
+            interaction: nextcord.Interaction,
+            url: str = SlashOption(
+                description='The url of the image',
+                required=True
+            )
+    ):
+        if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
+            embed = nextcord.Embed(title='No correct url specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
+                                   color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+        else:
+            try:
+                data = await self.bot.saucenao.from_url(url)
+            except Exception as e:
+                log.exception(e)
+                embed = nextcord.Embed(
+                    title=f'An error occurred while looking for the source, the url is invalid, or the '
+                          f'daily limit has been reached.',
+                    color=ERROR_EMBED_COLOR)
+                return await interaction.response.send_message(embed=embed)
+            if data:
+                embeds = []
+                for page, entry in enumerate(data):
+                    try:
+                        embed = await self.get_source_embed(entry, page + 1, len(data))
+                    except Exception as e:
+                        log.exception(e)
+                        embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                               description='An error occurred while loading the embed.')
+                        embed.set_footer(
+                            text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
+                    embeds.append(embed)
+                pages = SearchButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(
+                    title='No source found.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+
+    @source_slash_command.subcommand(
+        name='attachment',
+        description='Tries to find the source of an image through the image as attachment'
+    )
+    async def source_slash_command_attachment(
+            self,
+            interaction: nextcord.Interaction,
+            attachment: nextcord.Attachment = SlashOption(
+                description='The image as attachment',
+                required=True
+            )
+    ):
+        url = attachment.url
+        if not url.lower().endswith(('.jpg', '.png', '.bmp', '.jpeg', '.gif')):
+            embed = nextcord.Embed(title='No correct file specified (`.jpg`, `.png`, `.bmp`, `.jpeg`, `.gif`).',
+                                   color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+        else:
+            try:
+                data = await self.bot.saucenao.from_url(url)
+            except Exception as e:
+                log.exception(e)
+                embed = nextcord.Embed(
+                    title=f'An error occurred while looking for the source, the url is invalid, or the '
+                          f'daily limit has been reached.',
+                    color=ERROR_EMBED_COLOR)
+                return await interaction.response.send_message(embed=embed)
+            if data:
+                embeds = []
+                for page, entry in enumerate(data):
+                    try:
+                        embed = await self.get_source_embed(entry, page + 1, len(data))
+                    except Exception as e:
+                        log.exception(e)
+                        embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                               description='An error occurred while loading the embed.')
+                        embed.set_footer(
+                            text=f'Provided by https://saucenao.com/ • Page {page + 1}/{len(data)}')
+                    embeds.append(embed)
+                pages = SearchButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60,
+                    style=nextcord.ButtonStyle.primary
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(
+                    title='No source found.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='waifu', description='Posts a random image of a waifu')
+    async def waifu_slash_command(self, interaction: nextcord.Interaction):
+        data = await self.bot.waifu.sfw('waifu')
+        embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR)
+        embed.set_image(url=data)
+        embed.set_footer(text='Provided by https://waifu.pics/')
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='neko', description='Posts a random image of a catgirl')
+    async def neko_slash_command(self, interaction: nextcord.Interaction):
+        data = await self.bot.waifu.sfw('neko')
+        embed = nextcord.Embed(color=DEFAULT_EMBED_COLOR)
+        embed.set_image(url=data)
+        embed.set_footer(text='Provided by https://waifu.pics/')
+        await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: AniSearchBot):

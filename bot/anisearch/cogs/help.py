@@ -3,6 +3,7 @@ from datetime import timedelta
 from typing import Optional
 
 import nextcord
+from nextcord import SlashOption
 from nextcord.channel import DMChannel
 from nextcord.ext import commands
 from nextcord.ext.commands import Context
@@ -188,6 +189,130 @@ class Help(commands.Cog, name='Help'):
         embed = nextcord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
                                color=DEFAULT_EMBED_COLOR)
         await ctx.channel.send(embed=embed)
+
+    @nextcord.slash_command(
+        name='help',
+        description='Shows help or displays information about a command'
+    )
+    async def help_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            command: str = SlashOption(
+                description='The name of the command',
+                required=False
+            )
+    ):
+        if command is None:
+            embed = nextcord.Embed(title='AniSearch', color=DEFAULT_EMBED_COLOR,
+                                   description=f'**Command help:**\n`/help`\n\n'
+                                               f'**Command list:**\n`/commands`\n\n**Links:**\n'
+                                               f'[Invite AniSearch!]({DISCORD_INVITE}) | '
+                                               f'[Support Server]({SUPPORT_SERVER_INVITE}) | '
+                                               f'[Website]({WEBSITE})')
+            embed.set_thumbnail(url=self.bot.user.display_avatar.url)
+            await interaction.response.send_message(embed=embed)
+        else:
+            if cmd := get([i for i in self.bot.get_all_application_commands()], name=command.lower()):
+                embed = nextcord.Embed(
+                    title=f'Command » `{cmd.name}`', colour=DEFAULT_EMBED_COLOR)
+                embed.set_author(name='AniSearch Help',
+                                 icon_url=self.bot.user.display_avatar.url)
+                embed.add_field(
+                    name='Usage', value=f'`/{cmd.name}`', inline=False)
+                embed.add_field(name='Description', value=cmd.description.replace('\n', ' ').replace('\r', ''),
+                                inline=False)
+                await interaction.response.send_message(embed=embed)
+            else:
+                embed = nextcord.Embed(
+                    title=f'The command `{command}` could not be found.',
+                    color=ERROR_EMBED_COLOR
+                )
+                await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='commands', description='Displays all commands')
+    async def commands_slash_command(self, interaction: nextcord.Interaction):
+        cmds = '\n'.join([f"● /{i.name}" for i in self.bot.get_all_application_commands()])
+        embed = nextcord.Embed(description=f'To view information about a specified command use: `/help`\n'
+                                           f'```{cmds}```',
+                               colour=DEFAULT_EMBED_COLOR)
+        embed.set_author(name="AniSearch's commands",
+                         icon_url=self.bot.user.display_avatar.url)
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='about', description='Displays information about the bot')
+    async def about_slash_command(self, interaction: nextcord.Interaction):
+        embed = nextcord.Embed(title='About AniSearch', color=DEFAULT_EMBED_COLOR,
+                               description=f'<@!{BOT_ID}> is an easy-to-use bot that allows you to look up information '
+                                           f'about anime, manga and much more directly in Discord!')
+        embed.add_field(name='❯ Creator',
+                        value=f'<@!{CREATOR_ID}>', inline=True)
+        embed.add_field(name='❯ Version',
+                        value=f'v{anisearch.__version__}', inline=True)
+        embed.add_field(name='❯ Commands',
+                        value=f'{DEFAULT_PREFIX}help', inline=True)
+        embed.add_field(name='❯ Invite',
+                        value=f'[Click me!]({DISCORD_INVITE})', inline=True)
+        embed.add_field(name='❯ Support Server',
+                        value=f'[Click me!]({SUPPORT_SERVER_INVITE})', inline=True)
+        embed.add_field(name='❯ Website',
+                        value=f'[Click me!]({WEBSITE})', inline=True)
+        embed.set_thumbnail(url=self.bot.user.display_avatar.url)
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='stats', description='Displays statistics about the bot')
+    async def stats_slash_command(self, interaction: nextcord.Interaction):
+        embed = nextcord.Embed(description=f'The current instance of the bot is owned by <@!{BOT_OWNER_ID}>',
+                               color=DEFAULT_EMBED_COLOR)
+        embed.set_author(name="AniSearch's statistics",
+                         icon_url=self.bot.user.display_avatar.url)
+        embed.add_field(name='❯ Guilds', value=str(
+            self.bot.get_guild_count()), inline=True)
+        embed.add_field(name='❯ Users', value=str(
+            self.bot.get_user_count()), inline=True)
+        embed.add_field(name='❯ Channels', value=str(
+            self.bot.get_channel_count()), inline=True)
+        embed.add_field(name='❯ Uptime', value=str(
+            timedelta(seconds=round(self.bot.get_uptime()))), inline=True)
+        embed.add_field(name='❯ Shards',
+                        value=self.bot.shard_count, inline=True)
+        embed.add_field(name='❯ Latency', value=str(
+            round(self.bot.latency, 5)), inline=True)
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='github', description='Displays information about the GitHub repository')
+    async def github_slash_command(self, interaction: nextcord.Interaction):
+        data = None
+        try:
+            data = await get_request(url=GITHUB_REPO_API_ENDPOINT, session=self.bot.session, res_method='json')
+        except Exception as e:
+            log.exception(e)
+            embed = nextcord.Embed(title='An error occurred while retrieving data from the GitHub repository.',
+                                   color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+        if data:
+            embed = nextcord.Embed(title=data.get('full_name'), url=data.get('html_url'),
+                                   description=data.get('description'), color=DEFAULT_EMBED_COLOR)
+            embed.set_author(name='GitHub Repository')
+            embed.add_field(name='❯ Stargazers', value=data.get(
+                'stargazers_count'), inline=True)
+            embed.add_field(name='❯ Forks', value=data.get(
+                'forks_count'), inline=True)
+            embed.add_field(name='❯ Issues', value=data.get(
+                'open_issues_count'), inline=True)
+            embed.add_field(name='❯ Language', value=data.get(
+                'language'), inline=True)
+            embed.add_field(name='❯ License', value=data.get(
+                'license').get('spdx_id'), inline=True)
+            embed.add_field(name='❯ Updated', value=data.get('updated_at').replace('T', ' ').replace('Z', ' '),
+                            inline=True)
+            embed.set_thumbnail(url=self.bot.user.display_avatar.url)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(name='ping', description='Checks the latency of the bot')
+    async def ping_slash_command(self, interaction: nextcord.Interaction):
+        embed = nextcord.Embed(title='Pong!', description=f'Latency: `{str(round(self.bot.latency * 1000))}ms`',
+                               color=DEFAULT_EMBED_COLOR)
+        await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: AniSearchBot):

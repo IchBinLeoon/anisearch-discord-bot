@@ -87,7 +87,7 @@ class Search(commands.Cog, name='Search'):
             return embeds
         return None
 
-    async def anilist_random(self, ctx: Context, search: str, type_: str, format_in: List[str]) -> Union[Embed, None]:
+    async def anilist_random(self, ctx: Union[Context, Interaction], search: str, type_: str, format_in: List[str]) -> Union[Embed, None]:
         try:
 
             data = await self.bot.anilist.genre(genre=search, page=1, perPage=1, type=type_,
@@ -674,6 +674,55 @@ class Search(commands.Cog, name='Search'):
                 title=f'A studio with the name `{name}` could not be found.',
                 color=ERROR_EMBED_COLOR
             )
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='random',
+        description='Displays a random anime or manga of the specified genre'
+    )
+    async def random_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            media: str = SlashOption(
+                description='The type of the media',
+                required=True,
+                choices=['Anime', 'Manga']
+            ),
+            genre: str = SlashOption(
+                description='The name of the genre',
+                required=True,
+                choices=[
+                    'Action',
+                    'Adventure',
+                    'Comedy',
+                    'Drama',
+                    'Ecchi',
+                    'Fantasy',
+                    'Horror',
+                    'Mahou Shoujo',
+                    'Mecha',
+                    'Music',
+                    'Mystery',
+                    'Psychological',
+                    'Romance',
+                    'Sci-Fi',
+                    'Slice of Life',
+                    'Sports',
+                    'Supernatural',
+                    'Thriller'
+                ]
+            )
+    ):
+        embed = await self.anilist_random(interaction, genre, media.upper(), ['TV', 'MOVIE', 'OVA', 'ONA', 'TV_SHORT',
+                                                                              'MUSIC', 'SPECIAL', 'MANGA', 'ONE_SHOT',
+                                                                              'NOVEL'])
+        if embed:
+            await interaction.response.send_message(embed=embed)
+        else:
+            embed = nextcord.Embed(
+                title=f'{"An" if media == "Anime" else "A"} {media.lower()} with the genre `{genre}` '
+                      f'could not be found.',
+                color=ERROR_EMBED_COLOR)
             await interaction.response.send_message(embed=embed)
 
 

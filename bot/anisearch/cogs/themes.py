@@ -3,7 +3,7 @@ from typing import Dict, Any
 from urllib.parse import urljoin
 
 import nextcord
-from nextcord import Embed
+from nextcord import Embed, SlashOption
 from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
@@ -185,6 +185,120 @@ class Themes(commands.Cog, name='Themes'):
                 embed = nextcord.Embed(
                     title=f'No theme for the anime `{anime}` found.', color=ERROR_EMBED_COLOR)
                 await ctx.channel.send(embed=embed)
+
+    @nextcord.slash_command(
+        name='themes',
+        description='Searches for the openings and endings of the given anime and displays them'
+    )
+    async def themes_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            title: str = SlashOption(
+                description='The title of the anime',
+                required=True
+            )
+    ):
+        params = {
+            'q': title,
+            'limit': 15,
+            'fields[search]': 'anime',
+            'include[anime]': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
+        }
+        data = await get(url=urljoin(ANIMETHEMES_BASE_URL, 'search'), session=self.bot.session,
+                         res_method='json', params=params, headers={'User-Agent': 'AniSearch Discord Bot'})
+        if data.get('search').get('anime'):
+            embeds = []
+            for page, entry in enumerate(data.get('search').get('anime')):
+                try:
+                    embed = await self.get_themes_embed(entry, page + 1, len(data.get('search').get('anime')))
+                    if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                        if is_adult(entry.get('animethemes')[0]['animethemeentries'][0]) and not \
+                                interaction.channel.is_nsfw():
+                            embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                   description=f'Adult content. No NSFW channel.')
+                            embed.set_footer(
+                                text=f'Provided by https://animethemes.moe/ • Page {page + 1}/'
+                                     f'{len(data.get("search").get("anime"))}')
+                except Exception as e:
+                    log.exception(e)
+                    embed = nextcord.Embed(
+                        title='Error', color=ERROR_EMBED_COLOR,
+                        description=f'An error occurred while loading the embed for the anime.')
+                    embed.set_footer(
+                        text=f'Provided by https://animethemes.moe/ • Page '
+                             f'{page + 1}/{len(data.get("search").get("anime"))}')
+                embeds.append(embed)
+            pages = SearchButtonMenuPages(
+                source=EmbedListButtonMenu(embeds),
+                clear_buttons_after=True,
+                timeout=60,
+                style=nextcord.ButtonStyle.primary
+            )
+            await pages.start(interaction=interaction)
+        else:
+            embed = nextcord.Embed(
+                title=f'No themes for the anime `{title}` found.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='theme',
+        description='Displays a specific opening or ending of the given anime'
+    )
+    async def theme_slash_command(
+        self,
+        interaction: nextcord.Interaction,
+        theme: str = SlashOption(
+            description='The specific opening or ending',
+            required=True
+        ),
+        title: str = SlashOption(
+            description='The title of the anime',
+            required=True
+        )
+    ):
+        params = {
+            'q': title,
+            'limit': 1,
+            'fields[search]': 'anime',
+            'include[anime]': 'animethemes.animethemeentries.videos,animethemes.song.artists,images'
+        }
+        data = await get(url=urljoin(ANIMETHEMES_BASE_URL, 'search'), session=self.bot.session,
+                         res_method='json', params=params, headers={'User-Agent': 'AniSearch Discord Bot'})
+        if data.get('search').get('anime'):
+            anime_ = data.get('search').get('anime')[0]
+            for entry in anime_.get('animethemes'):
+                if theme.upper() == entry.get('slug') or \
+                        (theme.upper() == 'OP' and entry.get('slug') == 'OP1') or \
+                        (theme.upper() == 'ED' and entry.get('slug') == 'ED1') or \
+                        (theme.upper() == 'OP1' and entry.get('slug') == 'OP') or \
+                        (theme.upper() == 'ED1' and entry.get('slug') == 'ED'):
+                    try:
+                        embed = await self.get_theme_embed(anime_, entry)
+                        if not isinstance(interaction.channel, nextcord.channel.DMChannel):
+                            if is_adult(entry.get('animethemeentries')[0]) and not interaction.channel.is_nsfw():
+                                embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
+                                                       description=f'Adult content. No NSFW channel.')
+                                embed.set_footer(
+                                    text=f'Provided by https://animethemes.moe/')
+                                return await interaction.response.send_message(embed=embed)
+                    except Exception as e:
+                        log.exception(e)
+                        embed = nextcord.Embed(
+                            title='Error', color=ERROR_EMBED_COLOR,
+                            description=f'An error occurred while loading the embed for the theme.')
+                        embed.set_footer(
+                            text=f'Provided by https://animethemes.moe/')
+                    await interaction.response.send_message(embed=embed)
+                    return await interaction.channel.send(
+                        f'https://animethemes.moe/video/'
+                        f'{entry.get("animethemeentries")[0]["videos"][0]["basename"]}')
+            embed = nextcord.Embed(
+                title=f'Cannot find `{theme.upper()}` for the anime `{title}`.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+        else:
+            embed = nextcord.Embed(
+                title=f'No theme for the anime `{title}` found.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: AniSearchBot):

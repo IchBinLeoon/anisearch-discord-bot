@@ -4,7 +4,9 @@ import re
 from typing import Optional, Union, List
 from urllib.parse import urljoin
 
+import discord
 import nextcord
+from nextcord import SlashOption, Interaction
 from nextcord.ext import commands
 from nextcord.ext.commands import Context
 
@@ -22,7 +24,7 @@ class Profile(commands.Cog, name='Profile'):
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
 
-    async def set_profile(self, ctx: Context, site: str, username: str):
+    async def set_profile(self, ctx: Union[Context, Interaction], site: str, username: str) -> discord.Embed:
 
         data = None
 
@@ -48,14 +50,19 @@ class Profile(commands.Cog, name='Profile'):
                 "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
             embed = nextcord.Embed(
                 color=ERROR_EMBED_COLOR,
-                title=f'An error occurred while setting the {site} profile `{username}`.')
+                title=f'An error occurred while adding the {site} profile `{username}`.')
 
-            return await ctx.channel.send(embed=embed)
+            return embed
 
         if data is not None:
             if site == 'anilist':
-                self.bot.db.insert_profile(
-                    'anilist', data.get('name'), ctx.author.id)
+
+                if isinstance(ctx, Interaction):
+                    author = ctx.user.id
+                else:
+                    author = ctx.author.id
+
+                self.bot.db.insert_profile('anilist', data.get('name'), author)
 
                 embed = nextcord.Embed(
                     title=f'Added AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
@@ -78,11 +85,15 @@ class Profile(commands.Cog, name='Profile'):
 
                 embed.set_footer(text=f'Provided by https://anilist.co/')
 
-                await ctx.channel.send(embed=embed)
+                return embed
 
             if site == 'myanimelist':
-                self.bot.db.insert_profile(
-                    'myanimelist', data.get('username'), ctx.author.id)
+                if isinstance(ctx, Interaction):
+                    author = ctx.user.id
+                else:
+                    author = ctx.author.id
+
+                self.bot.db.insert_profile('myanimelist', data.get('username'), author)
 
                 embed = nextcord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`',
                                        color=DEFAULT_EMBED_COLOR)
@@ -106,13 +117,17 @@ class Profile(commands.Cog, name='Profile'):
 
                 embed.set_footer(text=f'Provided by https://myanimelist.net/')
 
-                await ctx.channel.send(embed=embed)
+                return embed
 
             if site == 'kitsu':
                 user = data.get('data')[0]
 
-                self.bot.db.insert_profile('kitsu', user.get(
-                    'attributes')['name'], ctx.author.id)
+                if isinstance(ctx, Interaction):
+                    author = ctx.user.id
+                else:
+                    author = ctx.author.id
+
+                self.bot.db.insert_profile('kitsu', user.get('attributes')['name'], author)
 
                 embed = nextcord.Embed(title=f'Added Kitsu Profile `{user.get("attributes")["name"]}`',
                                        color=DEFAULT_EMBED_COLOR)
@@ -170,14 +185,14 @@ class Profile(commands.Cog, name='Profile'):
 
                 embed.set_footer(text=f'Provided by https://kitsu.io/')
 
-                await ctx.channel.send(embed=embed)
+                return embed
 
         else:
             site = site.replace("anilist", "AniList").replace(
                 "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
             embed = nextcord.Embed(title=f'The {site} profile `{username}` could not be found.',
                                    color=ERROR_EMBED_COLOR)
-            await ctx.channel.send(embed=embed)
+            return embed
 
     async def get_anilist_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
 
@@ -894,11 +909,11 @@ class Profile(commands.Cog, name='Profile'):
         """Adds an AniList, MyAnimeList or Kitsu profile."""
         async with ctx.channel.typing():
             if site.lower() == 'anilist' or site.lower() == 'al':
-                await self.set_profile(ctx, 'anilist', username)
+                await ctx.channel.send(embed=await self.set_profile(ctx, 'anilist', username))
             elif site.lower() == 'myanimelist' or site.lower() == 'mal':
-                await self.set_profile(ctx, 'myanimelist', username)
+                await ctx.channel.send(embed=await self.set_profile(ctx, 'myanimelist', username))
             elif site.lower() == 'kitsu':
-                await self.set_profile(ctx, 'kitsu', username)
+                await ctx.channel.send(embed=await self.set_profile(ctx, 'kitsu', username))
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise nextcord.ext.commands.BadArgument
@@ -983,6 +998,232 @@ class Profile(commands.Cog, name='Profile'):
             else:
                 ctx.command.reset_cooldown(ctx)
                 raise nextcord.ext.commands.BadArgument
+
+    @nextcord.slash_command(
+        name='anilist',
+        description='Displays information about the given AniList profile such as stats and favorites'
+    )
+    async def anilist_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            username: str = SlashOption(
+                description='The AniList username',
+                required=False
+            ),
+            member: nextcord.User = SlashOption(
+                description='The guild member',
+                required=False
+            )
+    ):
+        if member:
+            user = self.bot.db.select_profile('anilist', member.id)
+        elif username:
+            user = username
+        else:
+            user = self.bot.db.select_profile('anilist', interaction.user.id)
+        if user:
+            embeds = await self.get_anilist_profile(user)
+            if embeds:
+                pages = ProfileButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(title=f'The AniList profile `{user}` could not be found.',
+                                       color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+        else:
+            embed = nextcord.Embed(
+                title='No AniList profile added.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='myanimelist',
+        description='Displays information about the given MyAnimeList profile such as stats and favorites'
+    )
+    async def myanimelist_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            username: str = SlashOption(
+                description='The MyAnimeList username',
+                required=False
+            ),
+            member: nextcord.User = SlashOption(
+                description='The guild member',
+                required=False
+            )
+    ):
+        if member:
+            user = self.bot.db.select_profile('myanimelist', member.id)
+        elif username:
+            user = username
+        else:
+            user = self.bot.db.select_profile('myanimelist', interaction.user.id)
+        if user:
+            embeds = await self.get_myanimelist_profile(user)
+            if embeds:
+                pages = ProfileButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(title=f'The MyAnimeList profile `{user}` could not be found.',
+                                       color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+        else:
+            embed = nextcord.Embed(
+                title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='kitsu',
+        description='Displays information about the given Kitsu profile such as stats and favorites'
+    )
+    async def kitsu_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            username: str = SlashOption(
+                description='The Kitsu username',
+                required=False
+            ),
+            member: nextcord.User = SlashOption(
+                description='The guild member',
+                required=False
+            )
+    ):
+        if member:
+            user = self.bot.db.select_profile('kitsu', member.id)
+        elif username:
+            user = username
+        else:
+            user = self.bot.db.select_profile('kitsu', interaction.user.id)
+        if user:
+            embeds = await self.get_kitsu_profile(user)
+            if embeds:
+                pages = ProfileButtonMenuPages(
+                    source=EmbedListButtonMenu(embeds),
+                    clear_buttons_after=True,
+                    timeout=60
+                )
+                await pages.start(interaction=interaction)
+            else:
+                embed = nextcord.Embed(title=f'The Kitsu profile `{user}` could not be found.',
+                                       color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+        else:
+            embed = nextcord.Embed(
+                title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
+            await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='addprofile',
+        description='Adds an AniList, MyAnimeList or Kitsu profile'
+    )
+    async def addprofile_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            site: str = SlashOption(
+                description='The site',
+                required=True,
+                choices=['AniList', 'MyAnimeList', 'Kitsu']
+            ),
+            username: str = SlashOption(
+                description='The username',
+                required=True
+            )
+    ):
+        if site.lower() == 'anilist':
+            embed = await self.set_profile(interaction, 'anilist', username)
+        elif site.lower() == 'myanimelist':
+            embed = await self.set_profile(interaction, 'myanimelist', username)
+        else:
+            embed = await self.set_profile(interaction, 'kitsu', username)
+        await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='removeprofile',
+        description='Removes the added AniList, MyAnimeList or Kitsu profile'
+    )
+    async def removeprofile_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            site: str = SlashOption(
+                description='The site',
+                required=True,
+                choices=['AniList', 'MyAnimeList', 'Kitsu', 'All']
+            )
+    ):
+        if site.lower() == 'anilist':
+            anilist = self.bot.db.select_profile('anilist', interaction.user.id)
+            if anilist is None:
+                embed = nextcord.Embed(title='No AniList profile added.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+            else:
+                self.bot.db.insert_profile('anilist', None, interaction.user.id)
+                embed = nextcord.Embed(title='Removed the added AniList profile.', color=DEFAULT_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+        elif site.lower() == 'myanimelist':
+            myanimelist = self.bot.db.select_profile('myanimelist', interaction.user.id)
+            if myanimelist is None:
+                embed = nextcord.Embed(title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+            else:
+                self.bot.db.insert_profile('myanimelist', None, interaction.user.id)
+                embed = nextcord.Embed(title='Removed the added MyAnimeList profile.', color=DEFAULT_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+        elif site.lower() == 'kitsu':
+            kitsu = self.bot.db.select_profile('kitsu', interaction.user.id)
+            if kitsu is None:
+                embed = nextcord.Embed(title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+            else:
+                self.bot.db.insert_profile('kitsu', None, interaction.user.id)
+                embed = nextcord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+        elif site.lower() == 'all':
+            if not self.bot.db.check_user(interaction.user.id):
+                embed = nextcord.Embed(title=f'The user {interaction.user.name} does not exist in the database.',
+                                       color=ERROR_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+            else:
+                self.bot.db.delete_user(interaction.user.id)
+                embed = nextcord.Embed(title=f'Removed the user {interaction.user.name} from the database.',
+                                       color=DEFAULT_EMBED_COLOR)
+                await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(
+        name='profiles',
+        description='Displays the added profiles of you, or the specified user'
+    )
+    async def profiles_slash_command(
+            self,
+            interaction: nextcord.Interaction,
+            member: nextcord.User = SlashOption(
+                description='The guild member',
+                required=False
+            )
+    ):
+        if member:
+            id_ = member.id
+        else:
+            id_ = interaction.user.id
+        anilist = self.bot.db.select_profile('anilist', id_)
+        myanimelist = self.bot.db.select_profile('myanimelist', id_)
+        kitsu = self.bot.db.select_profile('kitsu', id_)
+        user = await self.bot.fetch_user(id_)
+        embed = nextcord.Embed(title=user, color=DEFAULT_EMBED_COLOR)
+        embed.set_thumbnail(url=user.display_avatar.url)
+        embed.add_field(
+            name='AniList', value=anilist if anilist else '*Not added*', inline=False)
+        embed.add_field(
+            name='MyAnimeList', value=myanimelist if myanimelist else '*Not added*', inline=False)
+        embed.add_field(
+            name='Kitsu', value=kitsu if kitsu else '*Not added*', inline=False)
+        await interaction.response.send_message(embed=embed)
 
 
 def setup(bot: AniSearchBot):
