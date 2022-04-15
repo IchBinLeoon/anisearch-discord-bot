@@ -1,11 +1,14 @@
-FROM python:3.10.1-buster
+FROM python:3.10-alpine
 
 WORKDIR /bot
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+
+RUN apk update && \
+    apk upgrade && \
+    rm -rf /var/cache/apk/*
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 CMD [ "python", "-m", "anisearch" ]

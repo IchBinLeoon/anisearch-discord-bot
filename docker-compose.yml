@@ -39,7 +39,7 @@ services:
     container_name: anisearch-asuka
 
   db:
-    image: postgres:14.1
+    image: postgres:14-alpine
     env_file:
       - ./.env
     networks:

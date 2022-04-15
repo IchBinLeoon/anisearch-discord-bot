@@ -1,9 +1,13 @@
-FROM golang:1.17.6-buster
+FROM golang:1.18-alpine
 
 WORKDIR /web
 
 COPY . .
 
-RUN go build .
+RUN apk update && \
+    apk upgrade && \
+    rm -rf /var/cache/apk/*
+
+RUN go build
 
 ENTRYPOINT [ "./web" ]
