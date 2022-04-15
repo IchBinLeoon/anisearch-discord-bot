@@ -30,8 +30,7 @@ initial_extensions = [
     'anisearch.cogs.themes',
     'anisearch.cogs.news',
     'anisearch.cogs.help',
-    'anisearch.cogs.settings',
-    'anisearch.cogs.admin'
+    'anisearch.cogs.settings'
 ]
 
 
