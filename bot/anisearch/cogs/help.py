@@ -21,9 +21,62 @@ from anisearch.utils.misc import get_command_example
 
 log = logging.getLogger(__name__)
 
+BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=92224&scope=bot%20applications.commands'
+SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
+
+
+class CommandsCategory:
+    def __init__(self, label: str, emoji: str, embed: nextcord.Embed):
+        self.label = label
+        self.emoji = emoji
+        self.embed = embed
+
+
+class CommandsView(nextcord.ui.View):
+    def __init__(self, user: nextcord.User, categories: List[CommandsCategory]):
+        super().__init__(timeout=180)
+        self.add_item(CommandsDropdown(categories))
+        self._user = user
+
+    async def interaction_check(self, interaction: nextcord.Interaction):
+        return self._user == interaction.user
+
+
+class CommandsDropdown(nextcord.ui.Select):
+    def __init__(self, categories: List[CommandsCategory]):
+        super().__init__(
+            placeholder='Choose a category...',
+            min_values=1,
+            max_values=1,
+            options=[nextcord.SelectOption(label=i.label, emoji=i.emoji) for i in categories]
+        )
+        self.categories = categories
+
+    async def callback(self, interaction: nextcord.Interaction):
+        embed = self.categories[[i.label for i in self.categories].index(self.values[0])].embed
+        await interaction.message.edit(embed=embed)
+
+
+def _label_to_emoji(label: str) -> str:
+    emojis = {
+        'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
+        'Profile': '\N{BUST IN SILHOUETTE}',
+        'Notification': '\N{BELL}',
+        'Image': '\N{FRAME WITH PICTURE}',
+        'Themes': '\N{CLAPPER BOARD}',
+        'News': '\N{NEWSPAPER}',
+        'Help': '\N{BLACK QUESTION MARK ORNAMENT}',
+    }
+    return emojis[label]
+
+
+class LinkView(nextcord.ui.View):
+    def __init__(self, label: str, url: str):
+        super().__init__()
+        self.add_item(nextcord.ui.Button(label=label, url=url))
+
 
 class Help(commands.Cog, name='Help'):
-
     def __init__(self, bot: AniSearchBot):
         self.bot = bot
         self.bot.remove_command('help')
@@ -245,7 +298,7 @@ class Help(commands.Cog, name='Help'):
 
         await interaction.response.send_message(embed=embed)
 
-    @nextcord.slash_command(name='commands', description='Browse all commands of the bot', guild_ids=[701168020160118896])
+    @nextcord.slash_command(name='commands', description='Browse all commands of the bot')
     async def commands_slash_command(
             self,
             interaction: nextcord.Interaction,
@@ -407,61 +460,6 @@ class Help(commands.Cog, name='Help'):
 
         view = LinkView(label='Join the Support Server', url=SERVER_INVITE)
         await interaction.response.send_message(embed=embed, view=view)
-
-
-def _label_to_emoji(label: str) -> str:
-    emojis = {
-        'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
-        'Profile': '\N{BUST IN SILHOUETTE}',
-        'Notification': '\N{BELL}',
-        'Image': '\N{FRAME WITH PICTURE}',
-        'Themes': '\N{CLAPPER BOARD}',
-        'News': '\N{NEWSPAPER}',
-        'Help': '\N{BLACK QUESTION MARK ORNAMENT}',
-    }
-    return emojis[label]
-
-
-class CommandsCategory:
-    def __init__(self, label: str, emoji: str, embed: nextcord.Embed):
-        self.label = label
-        self.emoji = emoji
-        self.embed = embed
-
-
-class CommandsView(nextcord.ui.View):
-    def __init__(self, user: nextcord.User, categories: List[CommandsCategory]):
-        super().__init__(timeout=180)
-        self.add_item(CommandsDropdown(categories))
-        self._user = user
-
-    async def interaction_check(self, interaction: nextcord.Interaction):
-        return self._user == interaction.user
-
-
-class CommandsDropdown(nextcord.ui.Select):
-    def __init__(self, categories: List[CommandsCategory]):
-        super().__init__(
-            placeholder='Choose a category...',
-            min_values=1,
-            max_values=1,
-            options=[nextcord.SelectOption(label=i.label, emoji=i.emoji) for i in categories]
-        )
-        self.categories = categories
-
-    async def callback(self, interaction: nextcord.Interaction):
-        embed = self.categories[[i.label for i in self.categories].index(self.values[0])].embed
-        await interaction.message.edit(embed=embed)
-
-
-class LinkView(nextcord.ui.View):
-    def __init__(self, label: str, url: str):
-        super().__init__()
-        self.add_item(nextcord.ui.Button(label=label, url=url))
-
-
-BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=92224&scope=bot%20applications.commands'
-SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 
 
 def setup(bot: AniSearchBot):
