@@ -7,7 +7,6 @@ import nextcord
 from aiohttp import ClientSession
 from nextcord.ext import commands, tasks, menus
 from nextcord.ext.commands import AutoShardedBot, Context, when_mentioned_or
-from nextcord.utils import get
 from jikanpy import AioJikan
 from pysaucenao import SauceNao
 from tracemoe import TraceMoe
@@ -17,7 +16,7 @@ from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCE
     BOT_API_PORT, BOT_API_SECRET_KEY
 from anisearch.utils.anilist import AniListClient
 from anisearch.utils.api import Server
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX, BOT_ID, SUPPORT_SERVER_INVITE
+from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
 from anisearch.utils.database import DataBase
 
 log = logging.getLogger(__name__)
@@ -30,7 +29,8 @@ initial_extensions = [
     'anisearch.cogs.themes',
     'anisearch.cogs.news',
     'anisearch.cogs.help',
-    'anisearch.cogs.settings'
+    'anisearch.cogs.settings',
+    'anisearch.cogs.events'
 ]
 
 
@@ -135,35 +135,29 @@ class AniSearchBot(AutoShardedBot):
         log.info(f'Api is ready: Listening and serving HTTP on {host}:{port}')
 
     async def on_command(self, ctx: Context) -> None:
+        #embed = nextcord.Embed(
+            #title='Attention!',
+            #description=f'This command is also available as a **slash command**! '
+                        #f'Please use `/{ctx.command.qualified_name}` instead to execute this command. '
+                        #f'Non-slash commands will **stop working** in the future.\n\n'
+                        #f"If the server you are in doesn't show AniSearch's slash commands, "
+                        #f'ask a server administrator to invite the bot with [this link]({DISCORD_INVITE}) '
+                        #f"to enable application commands. For this, the bot **doesn't have to be kicked**, "
+                        #f'only **invited again**.\n\n'
+                        #f'The reason for this is an upcoming change of Discord.\n'
+                        #f'You can read more about it [here](https://support-dev.discord.com/hc/'
+                        #f'en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ).\n\n'
+                        #f'**Thanks for your understanding!**',
+            #color=0x4169E1
+        #)
+
+        #await ctx.message.reply(embed=embed)
+
         if isinstance(ctx.channel, nextcord.channel.DMChannel):
             log.info(f'User {ctx.author.id} executed command: {ctx.message.content}')
         else:
             log.info(
                 f'(Guild {ctx.guild.id}) User {ctx.author.id} executed command: {ctx.message.content}')
-
-    async def on_guild_join(self, guild: nextcord.Guild) -> None:
-        log.info(f'Bot joined guild {guild.id}')
-        self.db.insert_guild(guild)
-        try:
-            user = await self.fetch_user(guild.owner_id)
-            await user.send(f'**Hey there! Thanks for using <@!{BOT_ID}>!**\n\n'
-                            f'A few things to get started with the bot:\n\n'
-                            f'• To display all commands use: `as!{get(self.commands, name="commands").usage}`\n\n'
-                            f'• To display information about a command use: '
-                            f'`as!{get(self.commands, name="help").usage}`\n\n'
-                            f'• To change the server prefix use: `as!{get(self.commands, name="setprefix").usage}`\n\n'
-                            f'• Do **not** include `<>`, `[]` or `|` when executing a command.\n\n'
-                            f'• In case of any problems, bugs, suggestions or if you just want to chat, '
-                            f'feel free to join the support server! {SUPPORT_SERVER_INVITE}\n\n'
-                            "Have fun with the bot!")
-        except nextcord.errors.Forbidden:
-            pass
-        except Exception as e:
-            log.exception(e)
-
-    async def on_guild_remove(self, guild: nextcord.Guild) -> None:
-        log.info(f'Bot left guild {guild.id}')
-        self.db.delete_guild(guild)
 
     def get_guild_count(self) -> int:
         guilds = len(self.guilds)
