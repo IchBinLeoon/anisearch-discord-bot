@@ -25,6 +25,14 @@ BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 
 
+class HelpView(nextcord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(nextcord.ui.Button(label='Invite AniSearch', url=BOT_INVITE))
+        self.add_item(nextcord.ui.Button(label='Support Server', url=SERVER_INVITE))
+        self.add_item(nextcord.ui.Button(label='Website', url='https://ichbinleoon.github.io/anisearch-discord-bot/'))
+
+
 class CommandsCategory:
     def __init__(self, label: str, emoji: str, embed: nextcord.Embed):
         self.label = label
@@ -263,10 +271,8 @@ class Help(commands.Cog, name='Help'):
                 else:
                     cmds.append(cmd)
 
-                embed = nextcord.Embed(title=f'» `{cmd.qualified_name}`', colour=0x4169E1, timestamp=datetime.now())
-
+                embed = nextcord.Embed(title=f'» {cmd.qualified_name} «', colour=0x4169E1)
                 embed.set_author(name='AniSearch Command', icon_url=self.bot.user.display_avatar.url)
-                embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
 
                 for i in cmds:
                     name = f'/{i.qualified_name}'
@@ -280,7 +286,7 @@ class Help(commands.Cog, name='Help'):
                         embed.description = ':shield: = This command can be used only in a server\n' \
                                             ':lock: = This command can be used only by a server administrator'
 
-                    embed.add_field(name=name, value=i.description, inline=False)
+                    embed.add_field(name=name, value=f'`{i.description}`', inline=False)
 
                 return await interaction.response.send_message(embed=embed)
 
@@ -296,7 +302,7 @@ class Help(commands.Cog, name='Help'):
 
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, view=HelpView())
 
     @nextcord.slash_command(name='commands', description='Browse all commands of the bot')
     async def commands_slash_command(
@@ -318,10 +324,8 @@ class Help(commands.Cog, name='Help'):
                 emoji = _label_to_emoji(label)
                 cmds = []
 
-                embed = nextcord.Embed(title=f'{emoji} {label}', color=0x4169E1, timestamp=datetime.now())
-
+                embed = nextcord.Embed(title=f'{emoji} {label}', color=0x4169E1)
                 embed.set_author(name='AniSearch Category', icon_url=self.bot.user.display_avatar.url)
-                embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
 
                 for j in cog.to_register:
                     if len(j.children) > 0:
@@ -378,11 +382,12 @@ class Help(commands.Cog, name='Help'):
         )
 
         embed.add_field(name='❯ Shards', value=self.bot.shard_count, inline=True)
+        embed.add_field(name='❯ Latency', value=round(self.bot.latency, 5), inline=True)
+        embed.add_field(name='❯ Commands', value='/help', inline=True)
         embed.add_field(name='❯ Version', value=f'v{anisearch.__version__}', inline=True)
-        embed.add_field(name='❯ Creator', value=f'<@!223871059068321793>', inline=False)
+        embed.add_field(name='❯ Creator', value=f'<@!223871059068321793>', inline=True)
 
-        view = LinkView(label='Invite AniSearch to Your Server', url=BOT_INVITE)
-        await interaction.response.send_message(embed=embed, view=view)
+        await interaction.response.send_message(embed=embed, view=HelpView())
 
     @nextcord.slash_command(name='github', description='Displays information about the GitHub repository')
     async def github_slash_command(self, interaction: nextcord.Interaction):
@@ -401,7 +406,7 @@ class Help(commands.Cog, name='Help'):
         )
 
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
-        embed.set_author(name='GitHub Repository')
+        embed.set_author(name='AniSearch GitHub', icon_url=self.bot.user.display_avatar.url)
         embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
 
         embed.add_field(name='❯ Stargazers', value=data.get('stargazers_count'), inline=True)
