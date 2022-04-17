@@ -3,7 +3,7 @@ from datetime import datetime
 
 import nextcord
 from nextcord import utils
-from nextcord.ext import commands, application_checks
+from nextcord.ext import commands, application_checks, menus
 
 from anisearch.bot import AniSearchBot
 from anisearch.cogs.help import HelpView
@@ -53,12 +53,20 @@ class Events(commands.Cog, name='Events'):
     async def on_application_command_error(self, interaction: nextcord.Interaction, exception: Exception):
         error = getattr(exception, 'original', exception)
 
-        if isinstance(error, application_checks.errors.ApplicationNoPrivateMessage):
+        if isinstance(error, nextcord.Forbidden):
+            title = 'Missing Access.'
+
+        elif isinstance(error, application_checks.errors.ApplicationNoPrivateMessage):
             title = 'This command cannot be used in private messages.'
         elif isinstance(error, application_checks.errors.ApplicationMissingPermissions):
             title = 'You are missing permissions to execute this command.'
+
+        elif isinstance(error, menus.CannotSendMessages):
+            title = 'Bot cannot send messages in this channel.'
+
         else:
             title = 'An unknown error occurred.'
+            log.exception(exception)
 
             embed = nextcord.Embed(
                 title=f':x: {error.__class__.__name__}',
