@@ -45,7 +45,7 @@ services:
     networks:
       - anisearch
     volumes:
-      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     container_name: anisearch-db
