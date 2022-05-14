@@ -54,7 +54,7 @@ class Events(commands.Cog, name='Events'):
         error = getattr(exception, 'original', exception)
 
         if isinstance(error, nextcord.Forbidden):
-            title = 'Missing Access.'
+            title = 'Bot is missing access or permissions.'
 
         elif isinstance(error, application_checks.errors.ApplicationNoPrivateMessage):
             title = 'This command cannot be used in private messages.'
