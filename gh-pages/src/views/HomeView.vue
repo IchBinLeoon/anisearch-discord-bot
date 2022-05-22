@@ -116,19 +116,19 @@ export default defineComponent({
         },
         {
           text: '👤 View user profiles with anime and manga stats from AniList, MyAnimeList or Kitsu!',
-          image: require('@/assets/example-four.png'),
-        },
-        {
-          text: '🔔 Receive a notification when a new anime episode airs in Japan!',
           image: require('@/assets/example-three.png'),
         },
         {
+          text: '🔔 Receive a notification when a new anime episode airs in Japan!',
+          image: require('@/assets/example-four.png'),
+        },
+        {
           text: '🖼️ Search for the anime or the source of an image!',
-          image: require('@/assets/example-six.png'),
+          image: require('@/assets/example-five.png'),
         },
         {
           text: '🎬 View the opening and ending themes of an anime!',
-          image: require('@/assets/example-five.png'),
+          image: require('@/assets/example-six.png'),
         },
       ],
     }
