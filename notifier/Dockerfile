@@ -1,6 +1,6 @@
 FROM python:3.10-alpine
 
-WORKDIR /notify
+WORKDIR /notifier
 
 COPY . .
 
@@ -11,4 +11,4 @@ RUN apk update && \
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "notify.py" ]
+CMD [ "python", "notifier.py" ]

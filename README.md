@@ -22,7 +22,7 @@ You can also join the [support server](https://discord.gg/Bv94yQYZM8) to ask you
 | -------------------- | --------------------------- |
 | [bot](bot)           | Discord Bot                 |
 | [web](web)           | Admin Panel                 |
-| [notify](notify)     | Notification Service        |
+| [notifier](notifier) | Notification Service        |
 | [gh-pages](gh-pages) | GitHub Pages Website        |
 
 # 🚀 Running

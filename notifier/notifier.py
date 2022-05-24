@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(m
 
 ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 
-INTERVAL = int(os.getenv('NOTIFY_CHECK_INTERVAL'))
+INTERVAL = int(os.getenv('NOTIFIER_CHECK_INTERVAL'))
 
 
 def handle_exception(loop, context):
