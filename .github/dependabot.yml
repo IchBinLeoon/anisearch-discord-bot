@@ -25,3 +25,18 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "docker"
+    directory: "/bot"
+    schedule:
+      interval: "weekly"
+      
+  - package-ecosystem: "docker"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+      
+  - package-ecosystem: "docker"
+    directory: "/notifier"
+    schedule:
+      interval: "weekly"
