@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(m
 
 ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 
-INTERVAL = int(os.getenv('ASUKA_INTERVAL'))
+INTERVAL = int(os.getenv('NOTIFY_CHECK_INTERVAL'))
 
 
 def handle_exception(loop, context):
@@ -30,8 +30,7 @@ def handle_exception(loop, context):
     logging.error(f'Caught exception: {msg}')
 
 
-class Asuka:
-
+class Notifier:
     def __init__(self):
         self.pool = psycopg2.pool.SimpleConnectionPool(5, 10, host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER,
                                                        password=DB_PASSWORD)
@@ -164,7 +163,7 @@ class Asuka:
             await asyncio.sleep(INTERVAL)
 
     def run(self):
-        logging.info('Starting Asuka')
+        logging.info('Starting Notifier')
         loop = self.loop
         loop.set_exception_handler(handle_exception)
         loop.run_until_complete(self.clear_table())
@@ -174,11 +173,11 @@ class Asuka:
         except KeyboardInterrupt:
             logging.info('Process interrupted')
         finally:
-            logging.info('Stopping Asuka')
+            logging.info('Stopping Notifier')
             self.pool.closeall()
             loop.close()
 
 
 if __name__ == '__main__':
-    a = Asuka()
-    a.run()
+    n = Notifier()
+    n.run()

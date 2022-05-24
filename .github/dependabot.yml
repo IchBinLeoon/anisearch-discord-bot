@@ -12,7 +12,7 @@ updates:
       interval: "daily"
   
   - package-ecosystem: "pip"
-    directory: "/asuka"
+    directory: "/notify"
     schedule:
       interval: "daily"
 
