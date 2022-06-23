@@ -40,10 +40,8 @@ class AniSearchBot(AutoShardedBot):
         intents = nextcord.Intents(
             messages=True,
             guilds=True,
-            reactions=True,
-            message_content=True
+            reactions=True
         )
-
         super().__init__(command_prefix=self.get_prefix,
                          intents=intents, owner_id=int(BOT_OWNER_ID))
 
