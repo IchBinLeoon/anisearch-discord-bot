@@ -213,7 +213,7 @@ class Notification(commands.Cog, name='Notification'):
                     if channel is not None:
                         watchlist = self.bot.db.get_watchlist(guild.id)
 
-                        if len(watchlist) == 0 and data.get('origin') == 'CN':
+                        if len(watchlist) == 0 and data.get('origin') != 'JP':
                             continue
 
                         if len(watchlist) == 0 or data.get('id') in watchlist:
