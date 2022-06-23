@@ -22,4 +22,5 @@ CREATE TABLE IF NOT EXISTS schedule (
     image text NOT NULL,
     url text NOT NULL,
     nsfw boolean NOT NULL
+    origin text NOT NULL,
 );

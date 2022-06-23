@@ -212,6 +212,10 @@ class Notification(commands.Cog, name='Notification'):
                     channel = guild.get_channel(channel_id)
                     if channel is not None:
                         watchlist = self.bot.db.get_watchlist(guild.id)
+
+                        if len(watchlist) == 0 and data.get('origin') == 'CN':
+                            continue
+
                         if len(watchlist) == 0 or data.get('id') in watchlist:
 
                             if is_adult(data) and not channel.is_nsfw():
