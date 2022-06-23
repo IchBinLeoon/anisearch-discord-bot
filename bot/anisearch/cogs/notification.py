@@ -219,6 +219,10 @@ class Notification(commands.Cog, name='Notification'):
                         if len(watchlist) == 0 or data.get('id') in watchlist:
 
                             if is_adult(data) and not channel.is_nsfw():
+
+                                if len(watchlist) == 0:
+                                    continue
+
                                 embed = nextcord.Embed(title='Error', color=ERROR_EMBED_COLOR,
                                                        description=f'Adult content. No NSFW channel.')
                                 await channel.send(embed=embed)
