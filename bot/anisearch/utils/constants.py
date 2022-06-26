@@ -3,7 +3,7 @@ DEFAULT_PREFIX = 'as!'
 ANILIST_API_ENDPOINT = 'https://graphql.anilist.co'
 GITHUB_REPO_API_ENDPOINT = 'https://api.github.com/repos/IchBinLeoon/anisearch-discord-bot'
 
-ANIMETHEMES_BASE_URL = 'https://staging.animethemes.moe/api/'
+ANIMETHEMES_BASE_URL = 'https://api.animethemes.moe/'
 KITSU_BASE_URL = 'https://kitsu.io/api/edge/'
 
 ANIMENEWSNETWORK_NEWS_FEED_ENDPOINT = 'https://www.animenewsnetwork.com/newsroom/rss.xml'

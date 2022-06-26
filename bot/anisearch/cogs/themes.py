@@ -48,7 +48,7 @@ class Themes(commands.Cog, name='Themes'):
             if theme.get('song')['artists']:
                 list_.append('**Artist:** ' + theme.get('song')['artists'][0]['name'])
 
-            link = f'[Link](https://animethemes.moe/video/' \
+            link = f'[Link](https://v.animethemes.moe/' \
                    f'{theme.get("animethemeentries")[0]["videos"][0]["basename"]})'
             list_.append(link)
 
@@ -176,7 +176,7 @@ class Themes(commands.Cog, name='Themes'):
                                 text=f'Provided by https://animethemes.moe/')
                         await ctx.channel.send(embed=embed)
                         return await ctx.channel.send(
-                            f'https://animethemes.moe/video/'
+                            f'https://v.animethemes.moe/'
                             f'{entry.get("animethemeentries")[0]["videos"][0]["basename"]}')
                 embed = nextcord.Embed(
                     title=f'Cannot find `{theme.upper()}` for the anime `{anime}`.', color=ERROR_EMBED_COLOR)
@@ -290,7 +290,7 @@ class Themes(commands.Cog, name='Themes'):
                             text=f'Provided by https://animethemes.moe/')
                     await interaction.response.send_message(embed=embed)
                     return await interaction.channel.send(
-                        f'https://animethemes.moe/video/'
+                        f'https://v.animethemes.moe/'
                         f'{entry.get("animethemeentries")[0]["videos"][0]["basename"]}')
             embed = nextcord.Embed(
                 title=f'Cannot find `{theme.upper()}` for the anime `{title}`.', color=ERROR_EMBED_COLOR)
