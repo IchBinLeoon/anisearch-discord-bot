@@ -1,7 +1,7 @@
 aiohttp==3.8.1
 beautifulsoup4==4.11.1
 jikanpy==4.3.2
-nextcord-ext-menus==1.5.4
+nextcord-ext-menus==1.5.5
 nextcord==2.0.0
 psycopg2-binary==2.9.3
 pysaucenao==1.6.1
