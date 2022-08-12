@@ -1,3 +1,4 @@
 aiohttp==3.8.1
 asyncpg==0.26.0
 git+https://github.com/Rapptz/discord.py
+waifu-py==1.0.3

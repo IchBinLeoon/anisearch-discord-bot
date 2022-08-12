@@ -59,6 +59,7 @@ class CategorySelect(discord.ui.Select):
 
 def _label_to_emoji(label: str) -> str:
     emojis = {
+        'Image': '\N{FRAME WITH PICTURE}',
         'Utility': '\N{HAMMER AND WRENCH}',
         'Help': '\N{BLACK QUESTION MARK ORNAMENT}',
     }
@@ -88,8 +89,12 @@ class Help(commands.Cog):
     async def help_slash_command(
         self,
         interaction: discord.Interaction,
-        category: Optional[Literal['Utility', 'Help']] = None,
-        command: Optional[Literal['avatar', 'github', 'help', 'invite', 'ping', 'stats', 'support']] = None,
+        category: Optional[Literal['Image', 'Utility', 'Help']] = None,
+        command: Optional[
+            Literal[
+                'avatar', 'github', 'help', 'invite', 'megumin', 'neko', 'ping', 'shinobu', 'stats', 'support', 'waifu'
+            ]
+        ] = None,
     ):
         categories = []
 
