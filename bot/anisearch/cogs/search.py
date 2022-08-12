@@ -1,7 +1,7 @@
 import datetime
 import logging
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 import discord
 from discord import app_commands
@@ -360,12 +360,14 @@ class Search(commands.Cog):
         name='anime',
         description='Searches for an anime with the given title and displays information about the search results',
     )
-    @app_commands.describe(title='The title of the anime')
+    @app_commands.describe(title='The title of the anime to search for', limit='The number of results to return')
     @app_commands.checks.bot_has_permissions(embed_links=True)
-    async def anime_slash_command(self, interaction: discord.Interaction, title: str):
+    async def anime_slash_command(
+        self, interaction: discord.Interaction, title: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
+    ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.media(page=1, perPage=15, type='ANIME', search=title):
+        if data := await self.bot.anilist.media(page=1, perPage=limit, type='ANIME', search=title):
             embeds = []
 
             for k, v in enumerate(data):
@@ -388,12 +390,14 @@ class Search(commands.Cog):
         name='manga',
         description='Searches for a manga with the given title and displays information about the search results',
     )
-    @app_commands.describe(title='The title of the manga')
+    @app_commands.describe(title='The title of the manga to search for', limit='The number of results to return')
     @app_commands.checks.bot_has_permissions(embed_links=True)
-    async def manga_slash_command(self, interaction: discord.Interaction, title: str):
+    async def manga_slash_command(
+        self, interaction: discord.Interaction, title: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
+    ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.media(page=1, perPage=15, type='MANGA', search=title):
+        if data := await self.bot.anilist.media(page=1, perPage=limit, type='MANGA', search=title):
             embeds = []
 
             for k, v in enumerate(data):
@@ -416,12 +420,14 @@ class Search(commands.Cog):
         name='character',
         description='Searches for a character with the given name and displays information about the search results',
     )
-    @app_commands.describe(name='The name of the character')
+    @app_commands.describe(name='The name of the character to search for', limit='The number of results to return')
     @app_commands.checks.bot_has_permissions(embed_links=True)
-    async def character_slash_command(self, interaction: discord.Interaction, name: str):
+    async def character_slash_command(
+        self, interaction: discord.Interaction, name: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
+    ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.character(page=1, perPage=15, search=name):
+        if data := await self.bot.anilist.character(page=1, perPage=limit, search=name):
             embeds = []
 
             for k, v in enumerate(data):
@@ -441,12 +447,14 @@ class Search(commands.Cog):
         name='staff',
         description='Searches for a staff with the given name and displays information about the search results',
     )
-    @app_commands.describe(name='The name of the staff')
+    @app_commands.describe(name='The name of the staff to search for', limit='The number of results to return')
     @app_commands.checks.bot_has_permissions(embed_links=True)
-    async def staff_slash_command(self, interaction: discord.Interaction, name: str):
+    async def staff_slash_command(
+        self, interaction: discord.Interaction, name: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
+    ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.staff(page=1, perPage=15, search=name):
+        if data := await self.bot.anilist.staff(page=1, perPage=limit, search=name):
             embeds = []
 
             for k, v in enumerate(data):
@@ -466,12 +474,14 @@ class Search(commands.Cog):
         name='studio',
         description='Searches for a studio with the given name and displays information about the search results',
     )
-    @app_commands.describe(name='The name of the studio')
+    @app_commands.describe(name='The name of the studio to search for', limit='The number of results to return')
     @app_commands.checks.bot_has_permissions(embed_links=True)
-    async def studio_slash_command(self, interaction: discord.Interaction, name: str):
+    async def studio_slash_command(
+        self, interaction: discord.Interaction, name: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
+    ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.studio(page=1, perPage=15, search=name):
+        if data := await self.bot.anilist.studio(page=1, perPage=limit, search=name):
             embeds = []
 
             for k, v in enumerate(data):
