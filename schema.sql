@@ -1,26 +1,26 @@
-CREATE TABLE IF NOT EXISTS guilds (
-    id bigint NOT NULL,
-    prefix varchar(5) NOT NULL DEFAULT 'as!',
-    channel bigint,
-    role bigint,
-    watchlist integer[] NOT NULL DEFAULT '{}'
+create table guilds
+(
+    id        bigint                              not null
+        constraint guilds_pk
+            primary key,
+    joined_at timestamp default CURRENT_TIMESTAMP not null
 );
 
-CREATE TABLE IF NOT EXISTS users (
-    id bigint NOT NULL,
-    anilist text,
-    myanimelist text,
-    kitsu text
+create table guild_command_usages
+(
+    shard_id     integer                             not null,
+    guild_id     bigint                              not null,
+    channel_id   bigint                              not null,
+    user_id      bigint                              not null,
+    command_name text                                not null,
+    command_type text                                not null,
+    used_at      timestamp default CURRENT_TIMESTAMP not null
 );
 
-CREATE TABLE IF NOT EXISTS schedule (
-    id bigint NOT NULL,
-    time bigint NOT NULL,
-    episode int NOT NULL,
-    romaji text NOT NULL,
-    english text,
-    image text NOT NULL,
-    url text NOT NULL,
-    nsfw boolean NOT NULL
-    origin text NOT NULL,
+create table dm_command_usages
+(
+    user_id      bigint                              not null,
+    command_name text                                not null,
+    command_type text                                not null,
+    used_at      timestamp default CURRENT_TIMESTAMP not null
 );

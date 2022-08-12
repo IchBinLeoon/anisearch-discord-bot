@@ -1,123 +1,39 @@
 import logging
-import time
 from io import StringIO
-from asyncio import sleep
 
-import nextcord
+import asyncpg
+import discord
+import time
 from aiohttp import ClientSession
-from nextcord.ext import commands, tasks, menus
-from nextcord.ext.commands import AutoShardedBot, Context, when_mentioned_or
-from jikanpy import AioJikan
-from pysaucenao import SauceNao
-from tracemoe import TraceMoe
-from waifu import WaifuAioClient
+from discord.ext import commands
 
-from anisearch.config import BOT_TOKEN, BOT_OWNER_ID, BOT_TOPGG_TOKEN, BOT_SAUCENAO_API_KEY, BOT_API_HOST, \
-    BOT_API_PORT, BOT_API_SECRET_KEY
-from anisearch.utils.anilist import AniListClient
-from anisearch.utils.api import Server
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_PREFIX
-from anisearch.utils.database import DataBase
+from anisearch.api import Server
+from anisearch.database import Database
 
 log = logging.getLogger(__name__)
 
-initial_extensions = [
-    'anisearch.cogs.search',
-    'anisearch.cogs.profile',
-    'anisearch.cogs.notification',
-    'anisearch.cogs.image',
-    'anisearch.cogs.themes',
-    'anisearch.cogs.news',
-    'anisearch.cogs.help',
-    'anisearch.cogs.settings',
-    'anisearch.cogs.events'
-]
+initial_extensions = ['anisearch.cogs.events']
+
+intents = discord.Intents.default()
 
 
-class AniSearchBot(AutoShardedBot):
-
-    def __init__(self, log_stream: StringIO) -> None:
-        intents = nextcord.Intents(
-            messages=True,
-            guilds=True,
-            reactions=True
-        )
-        super().__init__(command_prefix=self.get_prefix,
-                         intents=intents, owner_id=int(BOT_OWNER_ID))
+class AniSearchBot(commands.AutoShardedBot):
+    def __init__(self, log_stream: StringIO, pool: asyncpg.Pool) -> None:
+        super().__init__(command_prefix=[], intents=intents)
 
         self.log_stream = log_stream
 
         self.start_time = time.time()
-        self.session = ClientSession(loop=self.loop)
+        self.session = ClientSession()
 
-        self.db = DataBase()
-        self.api = Server(bot=self, host=BOT_API_HOST, port=int(
-            BOT_API_PORT), secret_key=BOT_API_SECRET_KEY)
+        self.db = Database(pool)
+        self.api = Server(self)
 
-        self.anilist = AniListClient(session=ClientSession(loop=self.loop))
-
-        self.tracemoe = TraceMoe(session=ClientSession(loop=self.loop))
-
-        self.saucenao = SauceNao(api_key=BOT_SAUCENAO_API_KEY, db=999, loop=self.loop,
-                                 results_limit=10, min_similarity=0)
-
-        self.jikan = AioJikan(session=ClientSession(loop=self.loop))
-
-        self.waifu = WaifuAioClient(session=ClientSession(loop=self.loop))
-
-        self.load_cogs()
-        self.set_status.start()
-
-        if BOT_TOPGG_TOKEN:
-            self.post_topgg_stats.start()
-
-    def load_cogs(self) -> None:
+    async def setup_hook(self) -> None:
         for extension in initial_extensions:
-            try:
-                self.load_extension(extension)
-            except nextcord.ext.commands.errors.ExtensionAlreadyLoaded:
-                pass
-            except Exception as e:
-                log.exception(e)
-        log.info(f'{len(self.cogs)}/{len(initial_extensions)} cogs loaded')
+            await self.load_extension(extension)
 
-    def unload_cogs(self) -> None:
-        for extension in initial_extensions:
-            try:
-                self.unload_extension(extension)
-            except nextcord.ext.commands.errors.ExtensionNotLoaded:
-                pass
-            except Exception as e:
-                log.exception(e)
-        log.info(
-            f'{len(initial_extensions) - len(self.cogs)}/{len(initial_extensions)} cogs unloaded')
-
-    async def get_prefix(self, message: nextcord.Message) -> list[str]:
-        if isinstance(message.channel, nextcord.channel.DMChannel):
-            return when_mentioned_or(DEFAULT_PREFIX)(self, message)
-        prefix = self.db.get_prefix(message)
-        return when_mentioned_or(prefix, DEFAULT_PREFIX)(self, message)
-
-    @tasks.loop(seconds=80)
-    async def set_status(self) -> None:
-        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening,
-                                                              name=f'{DEFAULT_PREFIX}help'),
-                                   status=nextcord.Status.online)
-        await sleep(20)
-        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.playing,
-                                                              name=f'on {self.get_guild_count()} servers'),
-                                   status=nextcord.Status.online)
-        await sleep(20)
-        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.playing,
-                                                              name=f'with {self.get_user_count()} users'),
-                                   status=nextcord.Status.online)
-        await sleep(20)
-        await self.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name='Anime'),
-                                   status=nextcord.Status.online)
-
-    @set_status.before_loop
-    async def set_status_before(self) -> None:
-        await self.wait_until_ready()
+        await self.tree.sync()
 
     async def on_shard_ready(self, shard_id: int) -> None:
         log.info(f'Shard ID {shard_id} is ready')
@@ -131,151 +47,14 @@ class AniSearchBot(AutoShardedBot):
     async def on_shard_resumed(self, shard_id: int) -> None:
         log.info(f'Shard ID {shard_id} resumed to Discord')
 
-    async def on_api_ready(self, host: str, port: int):
-        log.info(f'Api is ready: Listening and serving HTTP on {host}:{port}')
+    async def on_api_ready(self, host: str, port: int) -> None:
+        log.info(f'Listening and serving HTTP on {host}:{port}')
 
-    async def on_command(self, ctx: Context) -> None:
-        #embed = nextcord.Embed(
-            #title='Attention!',
-            #description=f'This command is also available as a **slash command**! '
-                        #f'Please use `/{ctx.command.qualified_name}` instead to execute this command. '
-                        #f'Non-slash commands will **stop working** in the future.\n\n'
-                        #f"If the server you are in doesn't show AniSearch's slash commands, "
-                        #f'ask a server administrator to invite the bot with [this link]({DISCORD_INVITE}) '
-                        #f"to enable application commands. For this, the bot **doesn't have to be kicked**, "
-                        #f'only **invited again**.\n\n'
-                        #f'The reason for this is an upcoming change of Discord.\n'
-                        #f'You can read more about it [here](https://support-dev.discord.com/hc/'
-                        #f'en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ).\n\n'
-                        #f'**Thanks for your understanding!**',
-            #color=0x4169E1
-        #)
-
-        #await ctx.message.reply(embed=embed)
-
-        if isinstance(ctx.channel, nextcord.channel.DMChannel):
-            log.info(f'User {ctx.author.id} executed command: {ctx.message.content}')
-        else:
-            log.info(
-                f'(Guild {ctx.guild.id}) User {ctx.author.id} executed command: {ctx.message.content}')
-
-    def get_guild_count(self) -> int:
-        guilds = len(self.guilds)
-        return guilds
-
-    def get_user_count(self) -> int:
-        users = 0
-        for guild in self.guilds:
-            try:
-                users += guild.member_count
-            except Exception as e:
-                logging.warning(e)
-        return users
-
-    def get_channel_count(self) -> int:
-        channels = 0
-        for guild in self.guilds:
-            channels += len(guild.channels)
-        return channels
-
-    def get_uptime(self) -> float:
-        uptime = time.time() - self.start_time
-        return uptime
-
-    @tasks.loop(minutes=30)
-    async def post_topgg_stats(self) -> None:
-        guilds = len(self.guilds)
-        shards = self.shard_count
-        r = await self.session.post(f'https://top.gg/api/bots/{self.user.id}/stats',
-                                    json={'server_count': guilds, 'shard_count': shards},
-                                    headers={'Authorization': BOT_TOPGG_TOKEN})
-        if r.status == 200:
-            log.info(f'TopGG statistics posted (Guilds: {guilds}, Shards: {shards})')
-        else:
-            log.warning(f'Error while posting TopGG statistics: {r.status} {r.reason} {await r.text()}')
-
-    @post_topgg_stats.before_loop
-    async def post_topgg_stats_before(self) -> None:
-        await self.wait_until_ready()
-
-    def run(self):
-        super().run(BOT_TOKEN)
-
-    async def close(self):
-        self.unload_cogs()
-        self.db.close()
-        await self.anilist.close()
-        await self.tracemoe.close()
-        await self.jikan.close()
-        await self.waifu.close()
-        await self.session.close()
+    async def close(self) -> None:
         await super().close()
+        await self.session.close()
+        await self.db.close()
+        await self.api.stop()
 
-    async def on_command_error(self, ctx: Context, error: Exception) -> nextcord.Message | None:
-
-        if hasattr(ctx.command, 'on_error'):
-            return
-
-        error = getattr(error, 'original', error)
-
-        if isinstance(error, commands.CommandNotFound):
-            return
-
-        if isinstance(error, nextcord.errors.Forbidden):
-            return await ctx.message.add_reaction(emoji='🔇')
-
-        title = 'An unknown error occurred.'
-
-        if isinstance(error, commands.CommandOnCooldown):
-            title = f'Command on cooldown for `{error.retry_after:.2f}s`.'
-
-        elif isinstance(error, commands.TooManyArguments):
-            title = f'Too many arguments. Use `{self.db.get_prefix(ctx.message)}help {ctx.command}` for help.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, commands.MissingRequiredArgument):
-            title = f'Missing required argument. Use `{self.db.get_prefix(ctx.message)}help {ctx.command}` for help.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, commands.BadArgument):
-            title = f'Wrong arguments. Use `{self.db.get_prefix(ctx.message)}help {ctx.command}` for help.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, commands.MissingPermissions):
-            title = 'Missing permissions.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, commands.BotMissingPermissions):
-            title = 'Bot missing permissions.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, commands.NoPrivateMessage):
-            title = 'Command cannot be used in private messages.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, commands.NotOwner):
-            title = 'You are not the owner of the bot.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, menus.CannotAddReactions):
-            title = 'Cannot add reactions.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, menus.CannotEmbedLinks):
-            title = 'Cannot embed links.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, menus.CannotReadMessageHistory):
-            title = 'Cannot read message history.'
-            ctx.command.reset_cooldown(ctx)
-
-        elif isinstance(error, nextcord.errors.Forbidden):
-            log.warning(error)
-            ctx.command.reset_cooldown(ctx)
-
-        else:
-            log.exception(
-                'An unknown exception occurred while executing a command:', exc_info=error)
-
-        embed = nextcord.Embed(title=title, color=ERROR_EMBED_COLOR)
-        return await ctx.channel.send(embed=embed)
+    async def start(self, token: str) -> None:
+        await super().start(token=token, reconnect=True)
