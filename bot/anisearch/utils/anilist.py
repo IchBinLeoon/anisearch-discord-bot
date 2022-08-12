@@ -1,138 +1,71 @@
 import logging
-from typing import Any, Optional, Union, Dict, List
+from typing import Any, Union, Dict, List
 
 import aiohttp
 
-from anisearch.utils.constants import ANILIST_API_ENDPOINT
-
 log = logging.getLogger(__name__)
 
-
-class AnilistException(Exception):
-    pass
+API_ENDPOINT = 'https://graphql.anilist.co'
 
 
-class AnilistAPIError(AnilistException):
-
+class AniListAPIError(Exception):
     def __init__(self, msg: str, status: int, locations: List[Dict[str, Any]]) -> None:
-        super().__init__(
-            f'{msg} - Status: {str(status)} - Locations: {locations}')
+        super().__init__(f'{msg} - Status: {status} - Locations: {locations}')
 
 
 class AniListClient:
-
-    def __init__(self, session: Optional[aiohttp.ClientSession] = None) -> None:
+    def __init__(self, session: aiohttp.ClientSession) -> None:
         self.session = session
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> 'AniListClient':
         return self
 
     async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
         await self.close()
 
     async def close(self) -> None:
-        if self.session is not None:
-            await self.session.close()
-
-    async def _session(self) -> aiohttp.ClientSession:
-        if self.session is None or self.session.closed:
-            self.session = aiohttp.ClientSession()
-        return self.session
+        await self.session.close()
 
     async def _request(self, query: str, **variables: Union[str, Any]) -> Dict[str, Any]:
-        session = await self._session()
-        response = await session.post(ANILIST_API_ENDPOINT, json={'query': query, 'variables': variables})
-        log.debug(f'{response.method} {response.url} {response.status} {response.reason}')
-        data = await response.json()
-        if data.get('errors'):
-            raise AnilistAPIError(data.get('errors')[0]['message'], data.get('errors')[0]['status'],
-                                  data.get('errors')[0].get('locations'))
+        r = await self.session.post(API_ENDPOINT, json={'query': query, 'variables': variables})
+        log.debug(f'{r.method} {r.url} {r.status} {r.reason}')
+        data = await r.json()
+        if r.status != 200:
+            error = data.get('errors')[0]
+            raise AniListAPIError(error.get('message'), error.get('status'), error.get('locations'))
         return data
 
     async def media(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-        data = await self._request(query=Query.media(), **variables)
-        if data.get('data')['Page']['media']:
-            return data.get('data')['Page']['media']
-        return None
+        data = await self._request(query=self._get_media_query(), **variables)
+        return data.get('data').get('Page').get('media')
 
     async def character(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-        data = await self._request(query=Query.character(), **variables)
-        if data.get('data')['Page']['characters']:
-            return data.get('data')['Page']['characters']
-        return None
+        data = await self._request(query=self._get_character_query(), **variables)
+        return data.get('data').get('Page').get('characters')
 
     async def staff(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-        data = await self._request(query=Query.staff(), **variables)
-        if data.get('data')['Page']['staff']:
-            return data.get('data')['Page']['staff']
-        return None
+        data = await self._request(query=self._get_staff_query(), **variables)
+        return data.get('data').get('Page').get('staff')
 
     async def studio(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-        data = await self._request(query=Query.studio(), **variables)
-        if data.get('data')['Page']['studios']:
-            return data.get('data')['Page']['studios']
-        return None
+        data = await self._request(query=self._get_studio_query(), **variables)
+        return data.get('data').get('Page').get('studios')
 
-    async def genre(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-        data = await self._request(query=Query.genre(), **variables)
-        if data:
-            return data
-        return None
-
-    async def tag(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-        data = await self._request(query=Query.tag(), **variables)
-        if data:
-            return data
-        return None
-
-    async def user(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-        data = await self._request(query=Query.user(), **variables)
-        if data.get('data')['Page']['users']:
-            return data.get('data')['Page']['users'][0]
-        return None
-
-    async def schedule(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-        data = await self._request(query=Query.schedule(), **variables)
-        if data.get('data')['Page']['airingSchedules']:
-            return data.get('data')['Page']['airingSchedules']
-        return None
-
-    async def trending(self, **variables: Union[str, Any]) -> Union[Dict[str, Any], None]:
-        data = await self._request(query=Query.trending(), **variables)
-        if data.get('data')['Page']['media']:
-            return data.get('data')['Page']['media']
-        return None
-
-    async def watchlist(self, **variables: Union[str, Any]) -> Union[List[Dict[str, Any]], None]:
-        data = await self._request(query=Query.watchlist(), **variables)
-        if data.get('data')['Page']['media']:
-            return data.get('data')['Page']['media']
-        return None
-
-
-class Query:
-
-    @classmethod
-    def media(cls) -> str:
-        MEDIA_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $search: String, $type: MediaType) {
+    @staticmethod
+    def _get_media_query() -> str:
+        return '''
+        query ($page: Int, $perPage: Int, $type: MediaType, $isAdult: Boolean, $genre: String, $search: String, $sort: [MediaSort]) {
           Page(page: $page, perPage: $perPage) {
-            media(search: $search, type: $type) {
+            media(type: $type, isAdult: $isAdult, genre: $genre, search: $search, sort: $sort) {
               idMal
               title {
                 romaji
                 english
               }
-              coverImage {
-                large
-                color
-              }
-              description
-              bannerImage
-              format
-              status
               type
-              meanScore
+              format
+              status(version: 2)
+              description
               startDate {
                 year
                 month
@@ -143,42 +76,48 @@ class Query:
                 month
                 day
               }
-              duration
-              source
               episodes
+              duration
               chapters
               volumes
-              studios {
-                nodes {
-                  name
-                }
-              }
-              synonyms
-              genres
+              source(version: 3)
               trailer {
                 id
                 site
               }
-              externalLinks {
-                site
-                url
+              coverImage {
+                large
+                color
               }
-              siteUrl
+              bannerImage
+              genres
+              synonyms
+              meanScore
+              popularity
+              favourites
+              studios(isMain: true) {
+                nodes {
+                  name
+                }
+              }
               isAdult
               nextAiringEpisode {
-                episode
-                timeUntilAiring
                 airingAt
+                episode
               }
+              externalLinks {
+                url
+                site
+              }
+              siteUrl
             }
           }
         }
         '''
-        return MEDIA_QUERY
 
-    @classmethod
-    def character(cls) -> str:
-        CHARACTER_QUERY: str = '''
+    @staticmethod
+    def _get_character_query() -> str:
+        return '''
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
             characters(search: $search) {
@@ -186,75 +125,90 @@ class Query:
                 full
                 native
                 alternative
+                alternativeSpoiler
               }
               image {
                 large
               }
               description
+              gender
+              dateOfBirth {
+                year
+                month
+                day
+              }
+              age
               siteUrl
-              media(perPage: 6) {
+              media(sort: POPULARITY_DESC, page: 1, perPage: 5) {
                 nodes {
-                  siteUrl
                   title {
                     romaji
                   }
+                  siteUrl
                 }
               }
             }
           }
         }
         '''
-        return CHARACTER_QUERY
 
-    @classmethod
-    def staff(cls) -> str:
-        STAFF_QUERY: str = '''
+    @staticmethod
+    def _get_staff_query() -> str:
+        return '''
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
             staff(search: $search) {
               name {
                 full
                 native
+                alternative
               }
-              language
+              languageV2
               image {
                 large
               }
               description
+              primaryOccupations
+              gender
+              dateOfBirth {
+                year
+                month
+                day
+              }
+              age
+              homeTown
               siteUrl
-              staffMedia(perPage: 6) {
+              staffMedia(sort: POPULARITY_DESC, page: 1, perPage: 5) {
                 nodes {
-                  siteUrl
                   title {
                     romaji
                   }
+                  siteUrl
                 }
               }
-              characters(perPage: 6) {
+              characters(sort: FAVOURITES_DESC, page: 1, perPage: 5) {
                 nodes {
-                  id
-                  siteUrl
                   name {
                     full
                   }
+                  siteUrl
                 }
               }
             }
           }
         }
         '''
-        return STAFF_QUERY
 
-    @classmethod
-    def studio(cls) -> str:
-        STUDIO_QUERY: str = '''
+    @staticmethod
+    def _get_studio_query() -> str:
+        return '''
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
             studios(search: $search) {
               name
-              media(sort: POPULARITY_DESC, perPage: 10, isMain: true) {
+              isAnimationStudio
+              media(sort: POPULARITY_DESC, isMain: true, page: 1, perPage: 10) {
                 nodes {
-                  siteUrl
                   title {
                     romaji
                   }
@@ -263,230 +217,7 @@ class Query:
                   coverImage {
                     large
                   }
-                }
-              }
-              isAnimationStudio
-              siteUrl
-            }
-          }
-        }
-        '''
-        return STUDIO_QUERY
-
-    @classmethod
-    def genre(cls) -> str:
-        GENRE_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $genre: String, $type: MediaType, $format_in: [MediaFormat]) {
-          Page(page: $page, perPage: $perPage) {
-            pageInfo {
-              lastPage
-            }
-            media(genre: $genre, type: $type, format_in: $format_in) {
-              idMal
-              title {
-                romaji
-                english
-              }
-              coverImage {
-                large
-                color
-              }
-              description
-              bannerImage
-              format
-              status
-              type
-              meanScore
-              startDate {
-                year
-                month
-                day
-              }
-              endDate {
-                year
-                month
-                day
-              }
-              duration
-              source
-              episodes
-              chapters
-              volumes
-              studios {
-                nodes {
-                  name
-                }
-              }
-              synonyms
-              genres
-              trailer {
-                id
-                site
-              }
-              externalLinks {
-                site
-                url
-              }
-              siteUrl
-              isAdult
-              nextAiringEpisode {
-                episode
-                timeUntilAiring
-              }
-            }
-          }
-        }
-        '''
-        return GENRE_QUERY
-
-    @classmethod
-    def tag(cls) -> str:
-        TAG_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $tag: String, $type: MediaType, $format_in: [MediaFormat]) {
-          Page(page: $page, perPage: $perPage) {
-            pageInfo {
-              lastPage
-            }
-            media(tag: $tag, type: $type, format_in: $format_in) {
-              idMal
-              title {
-                romaji
-                english
-              }
-              coverImage {
-                large
-                color
-              }
-              description
-              bannerImage
-              format
-              status
-              type
-              meanScore
-              startDate {
-                year
-                month
-                day
-              }
-              endDate {
-                year
-                month
-                day
-              }
-              duration
-              source
-              episodes
-              chapters
-              volumes
-              studios {
-                nodes {
-                  name
-                }
-              }
-              synonyms
-              genres
-              trailer {
-                id
-                site
-              }
-              externalLinks {
-                site
-                url
-              }
-              siteUrl
-              isAdult
-              nextAiringEpisode {
-                episode
-                timeUntilAiring
-              }
-            }
-          }
-        }
-        '''
-        return TAG_QUERY
-
-    @classmethod
-    def user(cls) -> str:
-        USER_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $name: String) {
-          Page(page: $page, perPage: $perPage) {
-            users(name: $name) {
-              name
-              avatar {
-                large
-                medium
-              }
-              about
-              bannerImage
-              statistics {
-                anime {
-                  count
-                  meanScore
-                  minutesWatched
-                  episodesWatched
-                }
-                manga {
-                  count
-                  meanScore
-                  chaptersRead
-                  volumesRead
-                }
-              }
-              favourites {
-                anime {
-                  nodes {
-                    id
-                    siteUrl
-                    title {
-                      romaji
-                      english
-                      native
-                      userPreferred
-                    }
-                  }
-                }
-                manga {
-                  nodes {
-                    id
-                    siteUrl
-                    title {
-                      romaji
-                      english
-                      native
-                      userPreferred
-                    }
-                  }
-                }
-                characters {
-                  nodes {
-                    id
-                    siteUrl
-                    name {
-                      first
-                      last
-                      full
-                      native
-                    }
-                  }
-                }
-                staff {
-                  nodes {
-                    id
-                    siteUrl
-                    name {
-                      first
-                      last
-                      full
-                      native
-                    }
-                  }
-                }
-                studios {
-                  nodes {
-                    id
-                    siteUrl
-                    name
-                  }
+                  siteUrl
                 }
               }
               siteUrl
@@ -494,123 +225,3 @@ class Query:
           }
         }
         '''
-        return USER_QUERY
-
-    @classmethod
-    def schedule(cls) -> str:
-        SCHEDULE_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $notYetAired: Boolean, $sort: [AiringSort]) {
-          Page(page: $page, perPage: $perPage) {
-            airingSchedules(notYetAired: $notYetAired, sort: $sort) {
-              timeUntilAiring
-              airingAt
-              episode
-              media {
-                id
-                idMal
-                siteUrl
-                title {
-                  romaji
-                  english
-                }
-                coverImage {
-                  large
-                }
-                externalLinks {
-                  site
-                  url
-                }
-                duration
-                format
-                isAdult
-                trailer {
-                  id
-                  site
-                }
-              }
-            }
-          }
-        }
-        '''
-        return SCHEDULE_QUERY
-
-    @classmethod
-    def trending(cls) -> str:
-        TRENDING_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $type: MediaType, $sort: [MediaSort]) {
-          Page(page: $page, perPage: $perPage) {
-            media(type: $type, sort: $sort) {
-              idMal
-              title {
-                romaji
-                english
-              }
-              coverImage {
-                large
-                color
-              }
-              description
-              bannerImage
-              format
-              status
-              type
-              meanScore
-              startDate {
-                year
-                month
-                day
-              }
-              endDate {
-                year
-                month
-                day
-              }
-              duration
-              source
-              episodes
-              chapters
-              volumes
-              studios {
-                nodes {
-                  name
-                }
-              }
-              synonyms
-              genres
-              trailer {
-                id
-                site
-              }
-              externalLinks {
-                site
-                url
-              }
-              siteUrl
-              isAdult
-              nextAiringEpisode {
-                episode
-                timeUntilAiring
-                airingAt
-              }
-            }
-          }
-        }
-        '''
-        return TRENDING_QUERY
-
-    @classmethod
-    def watchlist(cls) -> str:
-        WATCHLIST_QUERY: str = '''
-        query ($page: Int, $perPage: Int, $id_in: [Int] = [1, 20665], $type: MediaType = ANIME) {
-          Page(page: $page, perPage: $perPage) {
-            media(id_in: $id_in, type: $type) {
-              id
-              title {
-                romaji
-              }
-              siteUrl
-            }
-          }
-        }
-        '''
-        return WATCHLIST_QUERY

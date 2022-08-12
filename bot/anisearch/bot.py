@@ -10,10 +10,17 @@ from waifu import WaifuAioClient
 
 from anisearch.api import Server
 from anisearch.database import Database
+from anisearch.utils.anilist import AniListClient
 
 log = logging.getLogger(__name__)
 
-initial_extensions = ['anisearch.cogs.image', 'anisearch.cogs.utility', 'anisearch.cogs.help', 'anisearch.cogs.events']
+initial_extensions = [
+    'anisearch.cogs.search',
+    'anisearch.cogs.image',
+    'anisearch.cogs.utility',
+    'anisearch.cogs.help',
+    'anisearch.cogs.events',
+]
 
 intents = discord.Intents.default()
 
@@ -30,6 +37,7 @@ class AniSearchBot(commands.AutoShardedBot):
         self.db = Database(pool)
         self.api = Server(self)
 
+        self.anilist = AniListClient(session=ClientSession())
         self.waifu = WaifuAioClient(session=ClientSession())
 
     async def setup_hook(self) -> None:
@@ -58,6 +66,7 @@ class AniSearchBot(commands.AutoShardedBot):
         await self.session.close()
         await self.db.close()
         await self.api.stop()
+        await self.anilist.close()
         await self.waifu.close()
 
     async def start(self, token: str) -> None:
