@@ -12,7 +12,7 @@ from anisearch.database import Database
 
 log = logging.getLogger(__name__)
 
-initial_extensions = ['anisearch.cogs.help', 'anisearch.cogs.events']
+initial_extensions = ['anisearch.cogs.utility', 'anisearch.cogs.help', 'anisearch.cogs.events']
 
 intents = discord.Intents.default()
 
