@@ -5,16 +5,6 @@ updates:
     directory: "/bot"
     schedule:
       interval: "daily"
-  
-  - package-ecosystem: "gomod"
-    directory: "/web"
-    schedule:
-      interval: "daily"
-  
-  - package-ecosystem: "pip"
-    directory: "/notifier"
-    schedule:
-      interval: "daily"
 
   - package-ecosystem: "npm"
     directory: "/gh-pages"
@@ -28,15 +18,5 @@ updates:
 
   - package-ecosystem: "docker"
     directory: "/bot"
-    schedule:
-      interval: "weekly"
-      
-  - package-ecosystem: "docker"
-    directory: "/web"
-    schedule:
-      interval: "weekly"
-      
-  - package-ecosystem: "docker"
-    directory: "/notifier"
     schedule:
       interval: "weekly"
