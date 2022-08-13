@@ -56,8 +56,8 @@ class Events(commands.Cog):
     async def on_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError) -> None:
         exception = getattr(error, 'original', error)
 
-        if isinstance(exception, app_commands.BotMissingPermissions):
-            title = error
+        if isinstance(exception, discord.Forbidden):
+            title = 'Bot is missing access or permissions.'
 
         else:
             title = 'An unknown error occurred.'

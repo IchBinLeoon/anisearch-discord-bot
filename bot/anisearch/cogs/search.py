@@ -138,7 +138,10 @@ def format_name(full: str, native: str) -> str:
         return f'{full} ({native})'
 
 
-def check_nsfw_allowed(interaction: discord.Interaction, is_adult: bool) -> bool:
+def nsfw_embed_allowed(interaction: discord.Interaction, is_adult: bool) -> bool:
+    if interaction.channel.type == discord.ChannelType.private:
+        return True
+
     if not is_adult:
         return True
 
@@ -361,7 +364,6 @@ class Search(commands.Cog):
         description='Searches for an anime with the given title and displays information about the search results',
     )
     @app_commands.describe(title='The title of the anime to search for', limit='The number of results to return')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def anime_slash_command(
         self, interaction: discord.Interaction, title: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
     ):
@@ -371,7 +373,7 @@ class Search(commands.Cog):
             embeds = []
 
             for k, v in enumerate(data):
-                if not check_nsfw_allowed(interaction, v.get('isAdult')):
+                if not nsfw_embed_allowed(interaction, v.get('isAdult')):
                     continue
 
                 embed = self.get_media_embed(v)
@@ -391,7 +393,6 @@ class Search(commands.Cog):
         description='Searches for a manga with the given title and displays information about the search results',
     )
     @app_commands.describe(title='The title of the manga to search for', limit='The number of results to return')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def manga_slash_command(
         self, interaction: discord.Interaction, title: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
     ):
@@ -401,7 +402,7 @@ class Search(commands.Cog):
             embeds = []
 
             for k, v in enumerate(data):
-                if not check_nsfw_allowed(interaction, v.get('isAdult')):
+                if not nsfw_embed_allowed(interaction, v.get('isAdult')):
                     continue
 
                 embed = self.get_media_embed(v)
@@ -421,7 +422,6 @@ class Search(commands.Cog):
         description='Searches for a character with the given name and displays information about the search results',
     )
     @app_commands.describe(name='The name of the character to search for', limit='The number of results to return')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def character_slash_command(
         self, interaction: discord.Interaction, name: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
     ):
@@ -448,7 +448,6 @@ class Search(commands.Cog):
         description='Searches for a staff with the given name and displays information about the search results',
     )
     @app_commands.describe(name='The name of the staff to search for', limit='The number of results to return')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def staff_slash_command(
         self, interaction: discord.Interaction, name: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
     ):
@@ -475,7 +474,6 @@ class Search(commands.Cog):
         description='Searches for a studio with the given name and displays information about the search results',
     )
     @app_commands.describe(name='The name of the studio to search for', limit='The number of results to return')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def studio_slash_command(
         self, interaction: discord.Interaction, name: str, limit: Optional[app_commands.Range[int, 1, 30]] = 15
     ):

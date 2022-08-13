@@ -36,7 +36,6 @@ class Image(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name='waifu', description='Posts a random image of a waifu')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def waifu_slash_command(self, interaction: discord.Interaction):
         await interaction.response.defer()
         url = await self.bot.waifu.sfw(interaction.command.qualified_name)
@@ -49,7 +48,6 @@ class Image(commands.Cog):
         await interaction.followup.send(embed=embed, view=view)
 
     @app_commands.command(name='neko', description='Posts a random image of a catgirl')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def neko_slash_command(self, interaction: discord.Interaction):
         await interaction.response.defer()
         url = await self.bot.waifu.sfw(interaction.command.qualified_name)
@@ -62,7 +60,6 @@ class Image(commands.Cog):
         await interaction.followup.send(embed=embed, view=view)
 
     @app_commands.command(name='shinobu', description='Posts a random image of shinobu')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def shinobu_slash_command(self, interaction: discord.Interaction):
         await interaction.response.defer()
         url = await self.bot.waifu.sfw(interaction.command.qualified_name)
@@ -75,7 +72,6 @@ class Image(commands.Cog):
         await interaction.followup.send(embed=embed, view=view)
 
     @app_commands.command(name='megumin', description='Posts a random image of megumin')
-    @app_commands.checks.bot_has_permissions(embed_links=True)
     async def megumin_slash_command(self, interaction: discord.Interaction):
         await interaction.response.defer()
         url = await self.bot.waifu.sfw(interaction.command.qualified_name)
