@@ -42,9 +42,9 @@ class Database:
             command_type,
         )
 
-    async def add_dm_command_usage(self, user_id: int, command_name: str, command_type: str) -> None:
+    async def add_private_command_usage(self, user_id: int, command_name: str, command_type: str) -> None:
         await self.pool.execute(
-            'INSERT INTO dm_command_usages (user_id, command_name, command_type) VALUES ($1, $2, $3)',
+            'INSERT INTO private_command_usages (user_id, command_name, command_type) VALUES ($1, $2, $3)',
             user_id,
             command_name,
             command_type,

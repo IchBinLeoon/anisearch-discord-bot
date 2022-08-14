@@ -38,7 +38,7 @@ class Events(commands.Cog):
             log.info(f'User {interaction.user.id} executed command {interaction.command.qualified_name}')
 
             if interaction.guild_id is None:
-                await self.bot.db.add_dm_command_usage(
+                await self.bot.db.add_private_command_usage(
                     interaction.user.id,
                     interaction.command.qualified_name,
                     discord.AppCommandType(interaction.data.get('type')).name,

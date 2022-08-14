@@ -17,7 +17,7 @@ create table guild_command_usages
     used_at      timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table dm_command_usages
+create table private_command_usages
 (
     user_id      bigint                              not null,
     command_name text                                not null,
