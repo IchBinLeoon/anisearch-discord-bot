@@ -21,15 +21,15 @@ ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033
 def format_media_format(media_format: str) -> str:
     formats = {
         'TV': 'TV',
+        'TV_SHORT': 'TV Short',
         'MOVIE': 'Movie',
+        'SPECIAL': 'Special',
         'OVA': 'OVA',
         'ONA': 'ONA',
-        'TV_SHORT': 'TV Short',
         'MUSIC': 'Music',
-        'SPECIAL': 'Special',
-        'ONE_SHOT': 'One Shot',
-        'NOVEL': 'Novel',
         'MANGA': 'Manga',
+        'NOVEL': 'Novel',
+        'ONE_SHOT': 'One Shot',
     }
     try:
         return formats[media_format]
@@ -198,9 +198,7 @@ class Search(commands.Cog):
             color=discord.Color.from_str(data.get('coverImage').get('color') or '0x4169E1'),
             url=data.get('siteUrl'),
         )
-        embed.set_author(
-            name=f'{data.get("type").capitalize()} • {format_media_format(data.get("format"))}', icon_url=ANILIST_LOGO
-        )
+        embed.set_author(name=format_media_format(data.get('format')), icon_url=ANILIST_LOGO)
         embed.set_footer(text=f'Provided by https://anilist.co/')
 
         if data.get('coverImage').get('large'):
@@ -268,9 +266,6 @@ class Search(commands.Cog):
         embed.add_field(name='Popularity', value=data.get("popularity") or 'N/A', inline=True)
         embed.add_field(name='Favourites', value=data.get("favourites") or 'N/A', inline=True)
 
-        if data.get('synonyms'):
-            embed.add_field(name='Synonyms', value=', '.join([f'`{i}`' for i in data.get('synonyms')]), inline=False)
-
         if data.get('genres'):
             embed.add_field(name='Genres', value=', '.join([f'`{i}`' for i in data.get('genres')]), inline=False)
 
@@ -282,11 +277,10 @@ class Search(commands.Cog):
         for i in data.get('externalLinks'):
             sites.append(f'[{i.get("site")}]({i.get("url")})')
 
-        if data.get('trailer'):
-            if data.get('trailer').get('site') == 'youtube':
-                sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("trailer")["id"]})')
+        if data.get('trailer') and data.get('trailer').get('site') == 'youtube':
+            sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("trailer")["id"]})')
 
-        embed.add_field(name='External Sites', value=' | '.join(sites), inline=False)
+        embed.add_field(name='External Sites', value=' • '.join(sites), inline=False)
 
         return embed
 
@@ -320,7 +314,7 @@ class Search(commands.Cog):
             embed.add_field(name='Synonyms', value=', '.join(synonyms), inline=False)
 
         if media := [f'[{i.get("title").get("romaji")}]({i.get("siteUrl")})' for i in data.get('media').get('nodes')]:
-            embed.add_field(name='Popular Appearances', value=' | '.join(media), inline=False)
+            embed.add_field(name='Popular Appearances', value=' • '.join(media), inline=False)
 
         return embed
 
@@ -343,14 +337,15 @@ class Search(commands.Cog):
             data.get('dateOfBirth').get('month'),
             data.get('dateOfBirth').get('year'),
         )
-        occupation = data.get('primaryOccupations')[0] if len(data.get('primaryOccupations')) > 0 else 'N/A'
 
         embed.add_field(name='Birthday', value=birthday, inline=True)
         embed.add_field(name='Age', value=data.get('age') or 'N/A', inline=True)
         embed.add_field(name='Gender', value=data.get('gender') or 'N/A', inline=True)
         embed.add_field(name='Hometown', value=data.get('homeTown') or 'N/A', inline=True)
         embed.add_field(name='Language', value=data.get('languageV2') or 'N/A', inline=True)
-        embed.add_field(name='Occupation', value=occupation, inline=True)
+
+        if occupations := data.get('primaryOccupations'):
+            embed.add_field(name='Primary Occupations', value=', '.join(occupations), inline=True)
 
         if synonyms := [f'`{i}`' for i in data.get('name').get('alternative')]:
             embed.add_field(name='Synonyms', value=', '.join(synonyms), inline=False)
@@ -358,12 +353,12 @@ class Search(commands.Cog):
         if staff_roles := [
             f'[{i.get("title").get("romaji")}]({i.get("siteUrl")})' for i in data.get('staffMedia').get('nodes')
         ]:
-            embed.add_field(name='Popular Staff Roles', value=' | '.join(staff_roles), inline=False)
+            embed.add_field(name='Popular Staff Roles', value=' • '.join(staff_roles), inline=False)
 
         if character_roles := [
             f'[{i.get("name").get("full")}]({i.get("siteUrl")})' for i in data.get('characters').get('nodes')
         ]:
-            embed.add_field(name='Popular Character Roles', value=' | '.join(character_roles), inline=False)
+            embed.add_field(name='Popular Character Roles', value=' • '.join(character_roles), inline=False)
 
         return embed
 
@@ -573,8 +568,9 @@ class Search(commands.Cog):
 
                 await asyncio.sleep(1)
 
-        if not nsfw_embed_allowed(interaction, result.get('isAdult')):
-            result = None
+        if result:
+            if not nsfw_embed_allowed(interaction, result.get('isAdult')):
+                result = None
 
         if result:
             embed = self.get_media_embed(result)

@@ -99,7 +99,6 @@ class AniListClient:
               }
               bannerImage
               genres
-              synonyms
               meanScore
               popularity
               favourites
