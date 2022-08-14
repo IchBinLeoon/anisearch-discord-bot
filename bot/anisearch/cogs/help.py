@@ -18,6 +18,28 @@ BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 
+CATEGORIES = Literal['Search', 'Image', 'Utility', 'Help']
+
+COMMANDS = Literal[
+    'anime',
+    'manga',
+    'character',
+    'staff',
+    'studio',
+    'random',
+    'waifu',
+    'neko',
+    'shinobu',
+    'megumin',
+    'avatar',
+    'help',
+    'stats',
+    'github',
+    'ping',
+    'invite',
+    'support',
+]
+
 
 class Category:
     def __init__(self, label: str, emoji: str, embed: discord.Embed):
@@ -90,27 +112,8 @@ class Help(commands.Cog):
     async def help_slash_command(
         self,
         interaction: discord.Interaction,
-        category: Optional[Literal['Search', 'Image', 'Utility', 'Help']] = None,
-        command: Optional[
-            Literal[
-                'anime',
-                'avatar',
-                'character',
-                'github',
-                'help',
-                'invite',
-                'manga',
-                'megumin',
-                'neko',
-                'ping',
-                'shinobu',
-                'staff',
-                'stats',
-                'studio',
-                'support',
-                'waifu',
-            ]
-        ] = None,
+        category: Optional[CATEGORIES] = None,
+        command: Optional[COMMANDS] = None,
     ):
         categories = []
 

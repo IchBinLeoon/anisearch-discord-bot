@@ -1,13 +1,16 @@
+import asyncio
 import datetime
 import logging
+import random
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Literal
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
 from anisearch.bot import AniSearchBot
+from anisearch.utils.anilist import GENRES, TAGS, ADULT_TAGS
 from anisearch.utils.menus import PaginationView
 
 log = logging.getLogger(__name__)
@@ -149,6 +152,33 @@ def nsfw_embed_allowed(interaction: discord.Interaction, is_adult: bool) -> bool
         return True
 
     return False
+
+
+async def comma_separated_autocomplete(arr: List[str], current: str) -> List[app_commands.Choice[str]]:
+    incomplete, choices = current.split(',')[-1].strip(), []
+
+    for i in arr:
+        if incomplete.lower() in i.lower():
+            choice = ', '.join([i.strip().capitalize() for i in current.split(',')[:-1]] + [i])
+
+            choices.append(app_commands.Choice(name=choice, value=choice))
+
+    return choices[:25]
+
+
+async def genres_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    return await comma_separated_autocomplete(arr=GENRES, current=current)
+
+
+async def tags_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    if interaction.channel.type == discord.ChannelType.private:
+        tags = TAGS + ADULT_TAGS
+    elif interaction.channel.is_nsfw():
+        tags = TAGS + ADULT_TAGS
+    else:
+        tags = TAGS
+
+    return await comma_separated_autocomplete(arr=tags, current=current)
 
 
 class SearchView(PaginationView):
@@ -493,6 +523,62 @@ class Search(commands.Cog):
             embed = discord.Embed(
                 title=f':no_entry: A studio with the name `{name}` could not be found.', color=0x4169E1
             )
+            await interaction.followup.send(embed=embed)
+
+    @app_commands.command(name='random', description='Displays a random anime or manga')
+    @app_commands.describe(
+        media='A specific media type', genres='A comma separated list of genres', tags='A comma separated list of tags'
+    )
+    @app_commands.autocomplete(genres=genres_autocomplete, tags=tags_autocomplete)
+    async def random_slash_command(
+        self,
+        interaction: discord.Interaction,
+        media: Optional[Literal['Anime', 'Manga']] = None,
+        genres: Optional[str] = None,
+        tags: Optional[str] = None,
+    ):
+        await interaction.response.defer()
+
+        media = media or random.choice(['Anime', 'Manga'])
+
+        if genres:
+            genres = [i.strip() for i in genres.split(',')]
+
+        if tags:
+            tags = [i.strip() for i in tags.split(',')]
+
+        page, limit, result = random.randrange(1, 1000), 1, None
+
+        for i in range(0, 3):
+            if data := await self.bot.anilist.media(
+                page=page,
+                perPage=limit,
+                type=media.upper(),
+                genres=genres,
+                tags=tags,
+                sort='POPULARITY_DESC',
+            ):
+                if i < 2:
+                    result = data[0]
+                else:
+                    result = data[random.randrange(0, len(data))]
+                break
+            else:
+                if i < 1:
+                    page = round(page / 3)
+                else:
+                    page, limit = 1, 50
+
+                await asyncio.sleep(1)
+
+        if not nsfw_embed_allowed(interaction, result.get('isAdult')):
+            result = None
+
+        if result:
+            embed = self.get_media_embed(result)
+            await interaction.followup.send(embed=embed)
+        else:
+            embed = discord.Embed(title=f':no_entry: A random media could not be found.', color=0x4169E1)
             await interaction.followup.send(embed=embed)
 
 
