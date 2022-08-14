@@ -17,6 +17,7 @@ class Utility(commands.Cog):
 
     @app_commands.command(name='avatar', description='Displays the avatar of a server member')
     @app_commands.describe(member='The server member')
+    @app_commands.guild_only()
     async def avatar_slash_command(self, interaction: discord.Interaction, member: Optional[discord.Member] = None):
         user = member or interaction.user
 
@@ -34,6 +35,7 @@ class Utility(commands.Cog):
 
     @app_commands.command(name='userinfo', description='Displays information about a server member')
     @app_commands.describe(member='The server member')
+    @app_commands.guild_only()
     async def userinfo_slash_command(self, interaction: discord.Interaction, member: Optional[discord.Member] = None):
         user = member or interaction.user
 
@@ -61,6 +63,7 @@ class Utility(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name='serverinfo', description='Displays information about the current server')
+    @app_commands.guild_only()
     async def serverinfo_slash_command(self, interaction: discord.Interaction):
         guild = interaction.guild
 
