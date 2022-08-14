@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import logging
 import random
-import re
 from typing import List, Dict, Any, Optional, Literal
 
 import discord
@@ -11,134 +10,21 @@ from discord.ext import commands
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.anilist import GENRES, TAGS, ADULT_TAGS
+from anisearch.utils.formatters import (
+    format_media_format,
+    format_anime_status,
+    format_manga_status,
+    format_media_source,
+    format_media_title,
+    sanitize_description,
+    format_date,
+    format_name,
+)
 from anisearch.utils.menus import PaginationView
 
 log = logging.getLogger(__name__)
 
 ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033399107289189/anilist.png'
-
-
-def format_media_format(media_format: str) -> str:
-    formats = {
-        'TV': 'TV',
-        'TV_SHORT': 'TV Short',
-        'MOVIE': 'Movie',
-        'SPECIAL': 'Special',
-        'OVA': 'OVA',
-        'ONA': 'ONA',
-        'MUSIC': 'Music',
-        'MANGA': 'Manga',
-        'NOVEL': 'Novel',
-        'ONE_SHOT': 'One Shot',
-    }
-    try:
-        return formats[media_format]
-    except KeyError:
-        return 'N/A'
-
-
-def format_anime_status(media_status: str) -> str:
-    statuses = {
-        'FINISHED': 'Finished',
-        'RELEASING': 'Currently Airing',
-        'NOT_YET_RELEASED': 'Not Yet Aired',
-        'CANCELLED': 'Cancelled',
-        'HIATUS': 'Currently Paused',
-    }
-    try:
-        return statuses[media_status]
-    except KeyError:
-        return 'N/A'
-
-
-def format_manga_status(media_status: str) -> str:
-    statuses = {
-        'FINISHED': 'Finished',
-        'RELEASING': 'Publishing',
-        'NOT_YET_RELEASED': 'Not Yet Published',
-        'CANCELLED': 'Cancelled',
-        'HIATUS': 'Currently Paused',
-    }
-    try:
-        return statuses[media_status]
-    except KeyError:
-        return 'N/A'
-
-
-def format_media_source(media_source: str) -> str:
-    sources = {
-        'ORIGINAL': 'Original',
-        'MANGA': 'Manga',
-        'LIGHT_NOVEL': 'Light Novel',
-        'VISUAL_NOVEL': 'Visual Novel',
-        'VIDEO_GAME': 'Video Game',
-        'OTHER': 'Other',
-        'NOVEL': 'Novel',
-        'DOUJINSHI': 'Doujinshi',
-        'ANIME': 'Anime',
-        'WEB_NOVEL': 'Web Novel',
-        'LIVE_ACTION': 'Live Action',
-        'GAME': 'Game',
-        'COMIC': 'Comic',
-        'MULTIMEDIA_PROJECT': 'Multimedia Project',
-        'PICTURE_BOOK': 'Picture Book',
-    }
-    try:
-        return sources[media_source]
-    except KeyError:
-        return 'N/A'
-
-
-def format_media_title(romaji: str, english: str) -> str:
-    if english is None or english == romaji:
-        return romaji
-    else:
-        return f'{romaji} ({english})'
-
-
-def clean_html(text: str) -> str:
-    return re.sub('<.*?>', '', text)
-
-
-def sanitize_description(description: str, length: int) -> str:
-    if description is None:
-        return 'N/A'
-
-    sanitized = clean_html(description).replace('**', '').replace('__', '').replace('~!', '||').replace('!~', '||')
-
-    if len(sanitized) > length:
-        sanitized = sanitized[0:length]
-
-        if sanitized.count('||') % 2 != 0:
-            return sanitized + '...||'
-
-        return sanitized + '...'
-    return sanitized
-
-
-def format_date(day: int, month: int, year: int) -> str:
-    if day is None and month is None and year is None:
-        return 'N/A'
-
-    if day is None and month is None:
-        return str(year)
-
-    if day is None:
-        return datetime.date(year, month, 1).strftime('%b, %Y')
-
-    if year is None:
-        return datetime.date(2000, month, day).strftime('%b %d')
-
-    return datetime.date(year, month, day).strftime('%b %d, %Y')
-
-
-def format_name(full: str, native: str) -> str:
-    if full is None or full == native:
-        return native
-    elif native is None:
-        return full
-    else:
-        return f'{full} ({native})'
 
 
 def nsfw_embed_allowed(interaction: discord.Interaction, is_adult: bool) -> bool:
@@ -399,12 +285,12 @@ class Search(commands.Cog):
         if data := await self.bot.anilist.media(page=1, perPage=limit, type='ANIME', search=title):
             embeds = []
 
-            for k, v in enumerate(data):
+            for k, v in enumerate(data, start=1):
                 if not nsfw_embed_allowed(interaction, v.get('isAdult')):
                     continue
 
                 embed = self.get_media_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k + 1}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -428,12 +314,12 @@ class Search(commands.Cog):
         if data := await self.bot.anilist.media(page=1, perPage=limit, type='MANGA', search=title):
             embeds = []
 
-            for k, v in enumerate(data):
+            for k, v in enumerate(data, start=1):
                 if not nsfw_embed_allowed(interaction, v.get('isAdult')):
                     continue
 
                 embed = self.get_media_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k + 1}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -457,9 +343,9 @@ class Search(commands.Cog):
         if data := await self.bot.anilist.character(page=1, perPage=limit, search=name):
             embeds = []
 
-            for k, v in enumerate(data):
+            for k, v in enumerate(data, start=1):
                 embed = self.get_character_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k + 1}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -483,9 +369,9 @@ class Search(commands.Cog):
         if data := await self.bot.anilist.staff(page=1, perPage=limit, search=name):
             embeds = []
 
-            for k, v in enumerate(data):
+            for k, v in enumerate(data, start=1):
                 embed = self.get_staff_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k + 1}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -509,9 +395,9 @@ class Search(commands.Cog):
         if data := await self.bot.anilist.studio(page=1, perPage=limit, search=name):
             embeds = []
 
-            for k, v in enumerate(data):
+            for k, v in enumerate(data, start=1):
                 embed = self.get_studio_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k + 1}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
