@@ -188,7 +188,7 @@ class Help(commands.Cog):
         embed.add_field(name='❯ Latency', value=round(self.bot.latency, 5), inline=True)
         embed.add_field(name='❯ Commands', value='/help', inline=True)
         embed.add_field(name='❯ Version', value=f'v{anisearch.__version__}', inline=True)
-        embed.add_field(name='❯ Creator', value=f'<@!223871059068321793>', inline=True)
+        embed.add_field(name='❯ Creator', value='<@!223871059068321793>', inline=True)
 
         await interaction.response.send_message(embed=embed, view=SocialsView())
 
@@ -219,8 +219,8 @@ class Help(commands.Cog):
         embed.add_field(name='❯ Language', value=data.get('language'), inline=True)
         embed.add_field(name='❯ License', value=data.get('license').get('spdx_id'), inline=True)
 
-        timestamp = datetime.strptime(data.get('pushed_at'), '%Y-%m-%dT%H:%M:%SZ').timestamp()
-        embed.add_field(name='❯ Updated', value=f'<t:{int(timestamp)}>', inline=True)
+        updated = datetime.strptime(data.get('pushed_at'), '%Y-%m-%dT%H:%M:%SZ')
+        embed.add_field(name='❯ Updated', value=discord.utils.format_dt(updated), inline=True)
 
         view = LinkView(label='Visit the Repository', emoji='\N{GLOBE WITH MERIDIANS}', url=data.get('html_url'))
         await interaction.followup.send(embed=embed, view=view)

@@ -218,7 +218,9 @@ class Search(commands.Cog):
                     aired_episodes = data.get('nextAiringEpisode').get('episode') - 1
 
                 if data.get('nextAiringEpisode').get('airingAt'):
-                    airing_at = f'<t:{data.get("nextAiringEpisode").get("airingAt")}:R>'
+                    airing_at = discord.utils.format_dt(
+                        datetime.datetime.fromtimestamp(data.get('nextAiringEpisode').get('airingAt')), 'R'
+                    )
                 else:
                     airing_at = 'N/A'
 
