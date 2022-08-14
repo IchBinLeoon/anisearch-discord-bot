@@ -1,14 +1,20 @@
-import logging
-from typing import Dict, Any
+from typing import Any
 
-log = logging.getLogger(__name__)
+import discord
 
 
-def is_adult(data: Dict[str, Any]) -> bool:
-    if data.get('isAdult') is True:
+def is_private_channel(channel: Any) -> bool:
+    return channel.type == discord.ChannelType.private
+
+
+def nsfw_embed_allowed(channel: Any, is_adult: bool) -> bool:
+    if is_private_channel(channel):
         return True
-    if data.get('is_adult') is True:
+
+    if not is_adult:
         return True
-    if data.get('nsfw') is True:
+
+    if is_adult and channel.is_nsfw():
         return True
+
     return False

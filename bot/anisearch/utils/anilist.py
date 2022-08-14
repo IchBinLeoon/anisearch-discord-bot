@@ -255,6 +255,8 @@ GENRES = [
     'Thriller',
 ]
 
+ADULT_GENRES = ['Hentai']
+
 TAGS = [
     '4-koma',
     'Achromatic',

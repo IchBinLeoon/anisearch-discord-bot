@@ -9,7 +9,8 @@ from discord import app_commands
 from discord.ext import commands
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.anilist import GENRES, TAGS, ADULT_TAGS
+from anisearch.utils import menus, checks
+from anisearch.utils.anilist import GENRES, ADULT_GENRES, TAGS, ADULT_TAGS
 from anisearch.utils.formatters import (
     format_media_format,
     format_anime_status,
@@ -20,27 +21,13 @@ from anisearch.utils.formatters import (
     format_date,
     format_name,
 )
-from anisearch.utils.menus import PaginationView
 
 log = logging.getLogger(__name__)
 
 ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033399107289189/anilist.png'
 
 
-def nsfw_embed_allowed(interaction: discord.Interaction, is_adult: bool) -> bool:
-    if interaction.channel.type == discord.ChannelType.private:
-        return True
-
-    if not is_adult:
-        return True
-
-    if is_adult and interaction.channel.is_nsfw():
-        return True
-
-    return False
-
-
-async def comma_separated_autocomplete(arr: List[str], current: str) -> List[app_commands.Choice[str]]:
+async def comma_separated_choices(arr: List[str], current: str) -> List[app_commands.Choice[str]]:
     incomplete, choices = current.split(',')[-1].strip(), []
 
     for i in arr:
@@ -53,21 +40,24 @@ async def comma_separated_autocomplete(arr: List[str], current: str) -> List[app
 
 
 async def genres_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
-    return await comma_separated_autocomplete(arr=GENRES, current=current)
+    if checks.is_private_channel(interaction.channel) or interaction.channel.is_nsfw():
+        genres = GENRES + ADULT_GENRES
+    else:
+        genres = GENRES
+
+    return await comma_separated_choices(arr=genres, current=current)
 
 
 async def tags_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
-    if interaction.channel.type == discord.ChannelType.private:
-        tags = TAGS + ADULT_TAGS
-    elif interaction.channel.is_nsfw():
+    if checks.is_private_channel(interaction.channel) or interaction.channel.is_nsfw():
         tags = TAGS + ADULT_TAGS
     else:
         tags = TAGS
 
-    return await comma_separated_autocomplete(arr=tags, current=current)
+    return await comma_separated_choices(arr=tags, current=current)
 
 
-class SearchView(PaginationView):
+class SearchView(menus.PaginationView):
     def __init__(self, interaction: discord.Interaction, embeds: List[discord.Embed]) -> None:
         super().__init__(interaction, embeds, timeout=180)
 
@@ -286,7 +276,7 @@ class Search(commands.Cog):
             embeds = []
 
             for k, v in enumerate(data, start=1):
-                if not nsfw_embed_allowed(interaction, v.get('isAdult')):
+                if not checks.nsfw_embed_allowed(interaction.channel, v.get('isAdult')):
                     continue
 
                 embed = self.get_media_embed(v)
@@ -315,7 +305,7 @@ class Search(commands.Cog):
             embeds = []
 
             for k, v in enumerate(data, start=1):
-                if not nsfw_embed_allowed(interaction, v.get('isAdult')):
+                if not checks.nsfw_embed_allowed(interaction.channel, v.get('isAdult')):
                     continue
 
                 embed = self.get_media_embed(v)
@@ -455,7 +445,7 @@ class Search(commands.Cog):
                 await asyncio.sleep(1)
 
         if result:
-            if not nsfw_embed_allowed(interaction, result.get('isAdult')):
+            if not checks.nsfw_embed_allowed(interaction.channel, result.get('isAdult')):
                 result = None
 
         if result:
