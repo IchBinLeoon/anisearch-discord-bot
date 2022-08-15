@@ -23,7 +23,7 @@ class Utility(commands.Cog):
 
         embed = discord.Embed(
             title=':frame_photo: Avatar',
-            description=f'**Avatar of {user.mention}**',
+            description=f'Avatar of {user.mention}',
             color=0x4169E1,
             timestamp=discord.utils.utcnow(),
         )
@@ -39,26 +39,28 @@ class Utility(commands.Cog):
     async def userinfo_slash_command(self, interaction: discord.Interaction, member: Optional[discord.Member] = None):
         user = member or interaction.user
 
-        data = {
-            'Name': user.name,
-            'Nickname': user.display_name if user.display_name != user.name else '-',
-            'Discriminator': user.discriminator,
-            'Bot': user.bot,
-            'Joined': discord.utils.format_dt(user.joined_at),
-            'Created': discord.utils.format_dt(user.created_at),
-            'ID': user.id,
-        }
-
-        info = '\n'.join([f'• {k}: **{v}**' for k, v in data.items()])
-
         embed = discord.Embed(
             title=':bust_in_silhouette: User Info',
-            description=f'**Information about {user.mention}**\n\n{info}',
+            description=f'Information about {user.mention}',
             color=0x4169E1,
             timestamp=discord.utils.utcnow(),
         )
         embed.set_thumbnail(url=user.display_avatar)
         embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+
+        embed.add_field(name='❯ Name', value=user.name, inline=True)
+        embed.add_field(name='❯ Nickname', value=user.nick or '-', inline=True)
+        embed.add_field(name='❯ Discriminator', value=user.discriminator, inline=True)
+        embed.add_field(name='❯ Created', value=discord.utils.format_dt(user.created_at, 'R'), inline=True)
+        embed.add_field(name='❯ Joined', value=discord.utils.format_dt(user.joined_at, 'R'), inline=True)
+        embed.add_field(name='❯ Bot', value=user.bot, inline=True)
+        embed.add_field(name='❯ Avatar', value=f'[Click Here]({user.display_avatar.url})', inline=True)
+        embed.add_field(name='❯ Top Role', value=user.top_role.mention, inline=True)
+
+        commands_used = await self.bot.db.get_user_command_usages_count(user.id)
+        embed.add_field(name='❯ Commands Used', value=commands_used, inline=True)
+
+        embed.add_field(name='❯ ID', value=user.id, inline=False)
 
         await interaction.response.send_message(embed=embed)
 
@@ -67,25 +69,28 @@ class Utility(commands.Cog):
     async def serverinfo_slash_command(self, interaction: discord.Interaction):
         guild = interaction.guild
 
-        data = {
-            'Name': guild.name,
-            'Owner': f'<@!{guild.owner_id}>',
-            'Members': guild.member_count,
-            'Channels': len(guild.channels),
-            'Roles': len(guild.roles),
-            'Server Boosts': guild.premium_subscription_count,
-            'Created': discord.utils.format_dt(guild.created_at),
-            'ID': guild.id,
-        }
-
         embed = discord.Embed(
             title=':shield: Server Info',
-            description='\n'.join([f'• {k}: **{v}**' for k, v in data.items()]),
+            description='Information about this server',
             color=0x4169E1,
             timestamp=discord.utils.utcnow(),
         )
         embed.set_thumbnail(url=guild.icon)
         embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+
+        embed.add_field(name='❯ Name', value=guild.name, inline=True)
+        embed.add_field(name='❯ Owner', value=f'<@!{guild.owner_id}>', inline=True)
+        embed.add_field(name='❯ Locale', value=guild.preferred_locale, inline=True)
+        embed.add_field(name='❯ Members', value=guild.member_count, inline=True)
+        embed.add_field(name='❯ Channels', value=len(guild.channels), inline=True)
+        embed.add_field(name='❯ Roles', value=len(guild.roles), inline=True)
+        embed.add_field(name='❯ Created', value=discord.utils.format_dt(guild.created_at, 'R'), inline=True)
+        embed.add_field(name='❯ Server Boosts', value=guild.premium_subscription_count, inline=True)
+
+        commands_used = await self.bot.db.get_guild_command_usages_count(guild.id)
+        embed.add_field(name='❯ Commands Used', value=commands_used, inline=True)
+
+        embed.add_field(name='❯ ID', value=guild.id, inline=False)
 
         await interaction.response.send_message(embed=embed)
 

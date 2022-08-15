@@ -32,6 +32,8 @@ COMMANDS = Literal[
     'shinobu',
     'megumin',
     'avatar',
+    'userinfo',
+    'serverinfo',
     'help',
     'stats',
     'github',
@@ -218,9 +220,7 @@ class Help(commands.Cog):
         embed.add_field(name='❯ Issues', value=data.get('open_issues_count'), inline=True)
         embed.add_field(name='❯ Language', value=data.get('language'), inline=True)
         embed.add_field(name='❯ License', value=data.get('license').get('spdx_id'), inline=True)
-
-        updated = datetime.strptime(data.get('pushed_at'), '%Y-%m-%dT%H:%M:%SZ')
-        embed.add_field(name='❯ Updated', value=discord.utils.format_dt(updated), inline=True)
+        embed.add_field(name='❯ Size', value=f'{round(data.get("size") / 1024, 2)} MB', inline=True)
 
         view = LinkView(label='Visit the Repository', emoji='\N{GLOBE WITH MERIDIANS}', url=data.get('html_url'))
         await interaction.followup.send(embed=embed, view=view)
