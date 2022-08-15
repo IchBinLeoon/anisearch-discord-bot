@@ -1,9 +1,9 @@
 import logging
+import time
 from io import StringIO
 
 import asyncpg
 import discord
-import time
 from aiohttp import ClientSession
 from discord.ext import commands
 from waifu import WaifuAioClient

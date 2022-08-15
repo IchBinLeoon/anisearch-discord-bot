@@ -3,12 +3,12 @@ import logging
 import os
 import platform
 import re
+import sys
 from io import StringIO
 
 import aiohttp
 import asyncpg
 import discord
-import sys
 
 import anisearch
 from anisearch.bot import AniSearchBot
