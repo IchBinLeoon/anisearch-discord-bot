@@ -32,8 +32,7 @@ class Database:
         command_type: str,
     ) -> None:
         await self.pool.execute(
-            'INSERT INTO guild_command_usages (shard_id, guild_id, channel_id, user_id, command_name, command_type) '
-            'VALUES ($1, $2, $3, $4, $5, $6)',
+            'INSERT INTO guild_command_usages (shard_id, guild_id, channel_id, user_id, command_name, command_type) VALUES ($1, $2, $3, $4, $5, $6)',
             shard_id,
             guild_id,
             channel_id,
@@ -55,7 +54,6 @@ class Database:
 
     async def get_user_command_usages_count(self, user_id: int) -> int:
         return await self.pool.fetchval(
-            'SELECT (SELECT COUNT(*) FROM guild_command_usages WHERE user_id = $1) + (SELECT COUNT(*) FROM '
-            'private_command_usages WHERE user_id = $1)',
+            'SELECT (SELECT COUNT(*) FROM guild_command_usages WHERE user_id = $1) + (SELECT COUNT(*) FROM private_command_usages WHERE user_id = $1)',
             user_id,
         )

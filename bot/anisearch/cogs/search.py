@@ -62,6 +62,11 @@ class SearchView(menus.PaginationView):
         super().__init__(interaction, embeds, timeout=180)
 
 
+class TrendingView(menus.SimplePaginationView):
+    def __init__(self, interaction: discord.Interaction, embeds: List[List[discord.Embed]]) -> None:
+        super().__init__(interaction, embeds, timeout=180)
+
+
 class Search(commands.Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
@@ -262,6 +267,49 @@ class Search(commands.Cog):
 
         return embed
 
+    @staticmethod
+    def get_trending_embed(data: Dict[str, Any]) -> discord.Embed:
+        description = []
+
+        if data.get('type') == 'ANIME':
+            description.append(f'**Status:** {format_anime_status(data.get("status"))}')
+            description.append(f'**Episodes:** {data.get("episodes") or "N/A"}')
+            studio = data.get('studios').get('nodes')[0].get('name') if data.get('studios').get('nodes') else 'N/A'
+            description.append(f'**Studio:** {studio}')
+            description.append(f'**Score:** {data.get("meanScore") or "N/A"}')
+        else:
+            description.append(f'**Status:** {format_manga_status(data.get("status"))}')
+            description.append(f'**Chapters:** {data.get("chapters") or "N/A"}')
+            description.append(f'**Volumes:** {data.get("volumes") or "N/A"}')
+            description.append(f'**Score:** {data.get("meanScore") or "N/A"}')
+
+        sites = [f'[AniList]({data.get("siteUrl")})']
+
+        if data.get('idMal'):
+            sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{data.get("idMal")})')
+
+        for i in data.get('externalLinks'):
+            sites.append(f'[{i.get("site")}]({i.get("url")})')
+
+        if data.get('trailer') and data.get('trailer').get('site') == 'youtube':
+            sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("trailer")["id"]})')
+
+        description.append(f'\n{" • ".join(sites)}')
+
+        embed = discord.Embed(
+            title=data.get('title').get('romaji'),
+            description='\n'.join(description),
+            color=discord.Color.from_str(data.get('coverImage').get('color') or '0x4169E1'),
+            url=data.get('siteUrl'),
+        )
+        embed.set_author(name=format_media_format(data.get('format')), icon_url=ANILIST_LOGO)
+        embed.set_footer(text=f'Provided by https://anilist.co/')
+
+        if data.get('coverImage').get('large'):
+            embed.set_thumbnail(url=data.get('coverImage').get('large'))
+
+        return embed
+
     @app_commands.command(
         name='anime',
         description='Searches for an anime with the given title and displays information about the search results',
@@ -400,7 +448,7 @@ class Search(commands.Cog):
 
     @app_commands.command(name='random', description='Displays a random anime or manga')
     @app_commands.describe(
-        media='A specific media type', genres='A comma separated list of genres', tags='A comma separated list of tags'
+        media='The type of the media', genres='A comma separated list of genres', tags='A comma separated list of tags'
     )
     @app_commands.autocomplete(genres=genres_autocomplete, tags=tags_autocomplete)
     async def random_slash_command(
@@ -454,6 +502,24 @@ class Search(commands.Cog):
         else:
             embed = discord.Embed(title=f':no_entry: A random media could not be found.', color=0x4169E1)
             await interaction.followup.send(embed=embed)
+
+    @app_commands.command(name='trending', description='Displays the current trending anime or manga')
+    @app_commands.describe(media='The type of the media')
+    async def trending_slash_command(self, interaction: discord.Interaction, media: Literal['Anime', 'Manga']):
+        await interaction.response.defer()
+
+        data, embeds = await self.bot.anilist.media(page=1, perPage=15, type=media.upper(), sort='TRENDING_DESC'), []
+
+        for k, v in enumerate(data, start=1):
+            if not checks.nsfw_embed_allowed(interaction.channel, v.get('isAdult')):
+                continue
+
+            embed = self.get_trending_embed(v)
+            embed.set_author(name=f'{embed.author.name} • #{k} Trending {media}', icon_url=ANILIST_LOGO)
+            embeds.append(embed)
+
+        view = TrendingView(interaction=interaction, embeds=[embeds[i : i + 3] for i in range(0, len(embeds), 3)])
+        await interaction.followup.send(embeds=embeds[0:3], view=view)
 
 
 async def setup(bot: AniSearchBot) -> None:

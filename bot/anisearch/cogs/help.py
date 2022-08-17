@@ -27,6 +27,7 @@ COMMANDS = Literal[
     'staff',
     'studio',
     'random',
+    'trending',
     'waifu',
     'neko',
     'shinobu',
@@ -187,7 +188,7 @@ class Help(commands.Cog):
         embed.add_field(name='❯ Channels', value=sum([len(i.channels) for i in self.bot.guilds]), inline=True)
         embed.add_field(name='❯ Uptime', value=timedelta(seconds=round(time.time() - self.bot.start_time)), inline=True)
         embed.add_field(name='❯ Shards', value=self.bot.shard_count, inline=True)
-        embed.add_field(name='❯ Latency', value=round(self.bot.latency, 5), inline=True)
+        embed.add_field(name='❯ Latency', value=f'{round(self.bot.latency * 1000)}ms', inline=True)
         embed.add_field(name='❯ Commands', value='/help', inline=True)
         embed.add_field(name='❯ Version', value=f'v{anisearch.__version__}', inline=True)
         embed.add_field(name='❯ Creator', value='<@!223871059068321793>', inline=True)
