@@ -131,33 +131,41 @@ class Help(commands.Cog):
                 embed.set_author(name='AniSearch Category', icon_url=self.bot.user.display_avatar)
 
                 for j in cmds:
-                    embed.add_field(name=f'/{j.qualified_name}', value=f'`{j.description}`', inline=False)
+                    if isinstance(j, app_commands.Group):
+                        for c in j.walk_commands():
+                            embed.add_field(name=f'/{c.qualified_name}', value=f'`{c.description}`', inline=False)
+                    else:
+                        embed.add_field(name=f'/{j.qualified_name}', value=f'`{j.description}`', inline=False)
 
                 categories.append(Category(label=label, emoji=emoji, embed=embed))
 
         home = discord.Embed(
             title=':books: Help',
-            description=f'[Invite AniSearch]({BOT_INVITE}) | [Support Server]({SERVER_INVITE}) | [Website]({WEBSITE})',
+            description=f'[Invite AniSearch]({BOT_INVITE}) • [Support Server]({SERVER_INVITE}) • [Website]({WEBSITE})',
             color=0x4169E1,
         )
         home.set_author(name='AniSearch Bot', icon_url=self.bot.user.display_avatar)
         home.set_thumbnail(url=self.bot.user.display_avatar)
 
         for i in categories:
-            cmds = self.bot.get_cog(i.label).get_app_commands()
-            home.add_field(name=f'{i.emoji} {i.label}', value=', '.join([f'`{i.name}`' for i in cmds]), inline=False)
+            cmds = [i for i in self.bot.get_cog(i.label).walk_app_commands() if not isinstance(i, app_commands.Group)]
+            home.add_field(
+                name=f'{i.emoji} {i.label}', value=', '.join([f'`{i.qualified_name}`' for i in cmds]), inline=False
+            )
 
         if command:
-            cmds = []
-            for i in self.bot.cogs:
-                for j in self.bot.get_cog(i).walk_app_commands():
-                    cmds.append(j)
+            cmd = [i for i in self.bot.tree.walk_commands() if i.qualified_name == command][0]
 
-            cmd = discord.utils.get(cmds, name=command)
-
-            embed = discord.Embed(title=f'» {cmd.qualified_name} «', colour=0x4169E1)
+            embed = discord.Embed(title=f'/{cmd.qualified_name}', colour=0x4169E1)
             embed.set_author(name='AniSearch Command', icon_url=self.bot.user.display_avatar)
-            embed.add_field(name=f'/{cmd.qualified_name}', value=f'`{cmd.description}`', inline=False)
+
+            embed.add_field(name='Description', value=cmd.description, inline=False)
+
+            if cmd.parameters:
+                embed.add_field(name='Options', value=', '.join([f'`{i.name}`' for i in cmd.parameters]), inline=False)
+
+            usages = await self.bot.db.get_global_command_usages_count(cmd.qualified_name)
+            embed.add_field(name='Global Usages', value=usages, inline=False)
 
         elif category:
             embed = categories[[i.label for i in categories].index(category)].embed

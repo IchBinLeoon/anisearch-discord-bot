@@ -57,3 +57,9 @@ class Database:
             'SELECT (SELECT COUNT(*) FROM guild_command_usages WHERE user_id = $1) + (SELECT COUNT(*) FROM private_command_usages WHERE user_id = $1)',
             user_id,
         )
+
+    async def get_global_command_usages_count(self, command_name: str) -> int:
+        return await self.pool.fetchval(
+            'SELECT (SELECT COUNT(*) FROM guild_command_usages WHERE command_name = $1) + (SELECT COUNT(*) FROM private_command_usages WHERE command_name = $1)',
+            command_name,
+        )
