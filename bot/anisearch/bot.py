@@ -6,6 +6,7 @@ import asyncpg
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands
+from tracemoe import TraceMoe
 from waifu import WaifuAioClient
 
 from anisearch.api import Server
@@ -38,6 +39,7 @@ class AniSearchBot(commands.AutoShardedBot):
         self.api = Server(self)
 
         self.anilist = AniListClient(session=ClientSession())
+        self.tracemoe = TraceMoe(session=ClientSession())
         self.waifu = WaifuAioClient(session=ClientSession())
 
     async def setup_hook(self) -> None:
@@ -67,6 +69,7 @@ class AniSearchBot(commands.AutoShardedBot):
         await self.db.close()
         await self.api.stop()
         await self.anilist.close()
+        await self.tracemoe.close()
         await self.waifu.close()
 
     async def start(self, token: str) -> None:
