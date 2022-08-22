@@ -24,10 +24,10 @@ def format_media_format(media_format: str) -> str:
 def format_anime_status(media_status: str) -> str:
     statuses = {
         'FINISHED': 'Finished',
-        'RELEASING': 'Currently Airing',
+        'RELEASING': 'Airing',
         'NOT_YET_RELEASED': 'Not Yet Aired',
         'CANCELLED': 'Cancelled',
-        'HIATUS': 'Currently Paused',
+        'HIATUS': 'Paused',
     }
     try:
         return statuses[media_status]
@@ -41,7 +41,7 @@ def format_manga_status(media_status: str) -> str:
         'RELEASING': 'Publishing',
         'NOT_YET_RELEASED': 'Not Yet Published',
         'CANCELLED': 'Cancelled',
-        'HIATUS': 'Currently Paused',
+        'HIATUS': 'Paused',
     }
     try:
         return statuses[media_status]
