@@ -22,8 +22,8 @@ class AniListException(Exception):
 
 
 class AniListClient:
-    def __init__(self, session: aiohttp.ClientSession) -> None:
-        self.session = session
+    def __init__(self) -> None:
+        self.session = aiohttp.ClientSession()
 
     async def __aenter__(self) -> 'AniListClient':
         return self
