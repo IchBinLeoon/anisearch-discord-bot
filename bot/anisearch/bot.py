@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from io import StringIO
 
@@ -6,6 +7,7 @@ import asyncpg
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands
+from pysaucenao import SauceNao
 from tracemoe import TraceMoe
 from waifu import WaifuAioClient
 
@@ -14,6 +16,9 @@ from anisearch.database import Database
 from anisearch.utils.anilist import AniListClient
 
 log = logging.getLogger(__name__)
+
+TRACEMOE_API_KEY = os.getenv('BOT_TRACEMOE_API_KEY')
+SAUCENAO_API_KEY = os.getenv('BOT_SAUCENAO_API_KEY')
 
 initial_extensions = [
     'anisearch.cogs.search',
@@ -38,9 +43,10 @@ class AniSearchBot(commands.AutoShardedBot):
         self.db = Database(pool)
         self.api = Server(self)
 
-        self.anilist = AniListClient(session=ClientSession())
-        self.tracemoe = TraceMoe(session=ClientSession())
-        self.waifu = WaifuAioClient(session=ClientSession())
+        self.anilist = AniListClient()
+        self.tracemoe = TraceMoe(api_key=TRACEMOE_API_KEY)
+        self.saucenao = SauceNao(api_key=SAUCENAO_API_KEY, results_limit=10)
+        self.waifu = WaifuAioClient()
 
     async def setup_hook(self) -> None:
         for extension in initial_extensions:
