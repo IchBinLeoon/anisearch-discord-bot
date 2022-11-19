@@ -1,11 +1,13 @@
 create type application_command_type as enum ('chat_input', 'user', 'message');
 
+create type anime_platform as enum ('anilist', 'myanimelist', 'kitsu');
+
 create table guilds
 (
-    id        bigint                              not null
+    id       bigint                              not null
         constraint guilds_pk
             primary key,
-    joined_at timestamp default CURRENT_TIMESTAMP not null
+    added_at timestamp default CURRENT_TIMESTAMP not null
 );
 
 create table guild_command_usages
