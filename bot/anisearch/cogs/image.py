@@ -5,6 +5,7 @@ from typing import List, Optional, Dict, Any
 import discord
 from discord import app_commands
 from discord.ext import commands
+from pysaucenao import GenericSource, PixivSource, BooruSource, VideoSource, MangaSource, AnimeSource
 from waifu import WaifuAioClient
 
 from anisearch.bot import AniSearchBot
@@ -45,29 +46,42 @@ class Image(commands.Cog):
 
     @staticmethod
     def get_trace_embed(data: Dict[str, Any]) -> discord.Embed:
-        embed = discord.Embed(title=data.get('anilist').get('title').get('romaji'), color=0x4169E1)
+        embed = discord.Embed(
+            title=data.get('anilist').get('title').get('romaji'),
+            color=0x4169E1,
+            url=f'https://anilist.co/anime/{data.get("anilist").get("id")}',
+        )
         embed.set_image(url=data.get('image'))
         embed.set_footer(text=f'Provided by https://trace.moe/')
 
+        embed.add_field(name='Similarity', value=f'{data.get("similarity") * 100:0.2f}%', inline=False)
         embed.add_field(
             name='Episode',
             value=f'{data.get("episode")} ({timedelta(seconds=round(data.get("from")))})',
             inline=False,
         )
 
-        embed.add_field(name='Similarity', value=f'{(data.get("similarity")) * 100:0.2f}%', inline=False)
+        return embed
 
-        if data.get('anilist').get('id'):
-            embed.add_field(
-                name='AniList', value=f'https://anilist.co/anime/{data.get("anilist").get("id")}', inline=False
-            )
+    @staticmethod
+    def get_source_embed(data: GenericSource) -> discord.Embed:
+        embed = discord.Embed(title=data.title, color=0x4169E1, url=data.url)
+        embed.set_image(url=data.thumbnail)
+        embed.set_footer(text=f'Provided by https://saucenao.com/')
 
-        if data.get('anilist').get('idMal'):
-            embed.add_field(
-                name='MyAnimeList',
-                value=f'https://myanimelist.net/anime/{data.get("anilist").get("idMal")}',
-                inline=False,
-            )
+        embed.add_field(name='Similarity', value=f'{data.similarity}%', inline=False)
+        embed.add_field(name='Type', value=data.type.capitalize(), inline=False)
+
+        if isinstance(data, PixivSource) or isinstance(data, BooruSource):
+            embed.add_field(name='Author', value=f'[{data.author_name}]({data.author_url})', inline=False)
+
+        if isinstance(data, VideoSource) or isinstance(data, AnimeSource):
+            embed.add_field(name='Episode', value=data.episode, inline=False)
+            embed.add_field(name='Year', value=data.year, inline=False)
+            embed.add_field(name='Timestamp', value=data.timestamp, inline=False)
+
+        if isinstance(data, MangaSource):
+            embed.add_field(name='Chapter', value=data.chapter, inline=False)
 
         return embed
 
@@ -105,6 +119,40 @@ class Image(commands.Cog):
             await interaction.followup.send(embed=embeds[0], view=view)
         else:
             embed = discord.Embed(title=f':no_entry: An anime could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
+
+    @app_commands.command(
+        name='source',
+        description='Tries to find the source of an image through the image url or the image as attachment',
+        nsfw=True,
+    )
+    @app_commands.describe(url='Search by image url', attachment='Search by image as attachment')
+    async def source_slash_command(
+        self,
+        interaction: discord.Interaction,
+        url: Optional[str] = None,
+        attachment: Optional[discord.Attachment] = None,
+    ):
+        await interaction.response.defer()
+
+        if url is None and attachment is None:
+            embed = discord.Embed(title=f':no_entry: A url or attachment must be specified.', color=0x4169E1)
+            return await interaction.followup.send(embed=embed)
+
+        url = url or attachment.url
+
+        if data := await self.bot.saucenao.from_url(url):
+            embeds = []
+
+            for k, v in enumerate(data, start=1):
+                embed = self.get_source_embed(v)
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+                embeds.append(embed)
+
+            view = SearchImageView(interaction=interaction, embeds=embeds)
+            await interaction.followup.send(embed=embeds[0], view=view)
+        else:
+            embed = discord.Embed(title=f':no_entry: A source could not be found.', color=0x4169E1)
             await interaction.followup.send(embed=embed)
 
     @app_commands.command(name='waifu', description='Posts a random image of a waifu')
