@@ -22,24 +22,25 @@ CATEGORIES = Literal['Search', 'Image', 'Utility', 'Help']
 
 COMMANDS = Literal[
     'anime',
-    'manga',
-    'character',
-    'staff',
-    'studio',
-    'random',
-    'trending',
-    'trace',
-    'waifu',
-    'neko',
     'avatar',
-    'userinfo',
-    'serverinfo',
-    'help',
-    'stats',
+    'character',
     'github',
-    'ping',
+    'help',
     'invite',
+    'manga',
+    'neko',
+    'ping',
+    'random',
+    'serverinfo',
+    'source',
+    'staff',
+    'stats',
+    'studio',
     'support',
+    'trace',
+    'trending',
+    'userinfo',
+    'waifu',
 ]
 
 
@@ -162,6 +163,9 @@ class Help(commands.Cog):
 
             if cmd.parameters:
                 embed.add_field(name='Options', value=', '.join([f'`{i.name}`' for i in cmd.parameters]), inline=False)
+
+            if cmd.nsfw:
+                embed.add_field(name='NSFW', value=cmd.nsfw, inline=False)
 
             usages = await self.bot.db.get_global_command_usages_count(cmd.qualified_name)
             embed.add_field(name='Global Usages', value=usages, inline=False)
