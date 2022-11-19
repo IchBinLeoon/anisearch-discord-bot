@@ -1,6 +1,6 @@
-aiohttp==3.8.1
-asyncpg==0.26.0
-discord.py==2.0.0
+aiohttp==3.8.3
+asyncpg==0.27.0
+discord.py==2.1.0
 pysaucenao==1.6.1
 tracemoe-py==1.0.3
 waifu-py==1.0.3

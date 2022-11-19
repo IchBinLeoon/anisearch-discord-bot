@@ -15,7 +15,7 @@ services:
     container_name: anisearch-bot
 
   postgres:
-    image: postgres:14-alpine
+    image: postgres:15-alpine
     env_file:
       - ./.env
     networks:
