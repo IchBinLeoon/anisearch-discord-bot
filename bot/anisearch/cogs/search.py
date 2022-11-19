@@ -282,12 +282,6 @@ class Search(commands.Cog):
         if data.get('idMal'):
             sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{data.get("idMal")})')
 
-        for i in data.get('externalLinks'):
-            sites.append(f'[{i.get("site")}]({i.get("url")})')
-
-        if data.get('trailer') and data.get('trailer').get('site') == 'youtube':
-            sites.append(f'[Trailer](https://www.youtube.com/watch?v={data.get("trailer")["id"]})')
-
         description.append(f'\n{" • ".join(sites)}')
 
         embed = discord.Embed(
