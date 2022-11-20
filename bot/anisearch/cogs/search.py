@@ -155,7 +155,7 @@ class Search(commands.Cog):
         if data.get('idMal'):
             sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{data.get("idMal")})')
 
-        embed.add_field(name='Find out more', value=' • '.join(sites), inline=False)
+        embed.add_field(name='Find Out More', value=' • '.join(sites), inline=False)
 
         return embed
 

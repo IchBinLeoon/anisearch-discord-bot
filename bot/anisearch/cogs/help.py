@@ -18,12 +18,14 @@ BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 
-CATEGORIES = Literal['Search', 'Image', 'Utility', 'Help']
+CATEGORIES = Literal['Search', 'Image', 'News', 'Utility', 'Help']
 
 COMMANDS = Literal[
     'anime',
+    'aninews',
     'avatar',
     'character',
+    'crunchynews',
     'github',
     'help',
     'invite',
@@ -86,6 +88,7 @@ def _label_to_emoji(label: str) -> str:
     emojis = {
         'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
         'Image': '\N{FRAME WITH PICTURE}',
+        'News': '\N{NEWSPAPER}',
         'Utility': '\N{HAMMER AND WRENCH}',
         'Help': '\N{BLACK QUESTION MARK ORNAMENT}',
     }

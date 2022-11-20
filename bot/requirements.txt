@@ -1,6 +1,8 @@
 aiohttp==3.8.3
 asyncpg==0.27.0
+beautifulsoup4==4.11.1
 discord.py==2.1.0
+lxml==4.9.1
 pysaucenao==1.6.1
 tracemoe-py==1.0.3
 waifu-py==1.0.3
