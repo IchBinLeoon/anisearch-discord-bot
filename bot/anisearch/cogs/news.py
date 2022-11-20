@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 import discord
 from bs4 import BeautifulSoup
 from discord import app_commands
+from discord.app_commands import Choice
 from discord.ext import commands
 
 from anisearch.bot import AniSearchBot
@@ -97,13 +98,33 @@ class News(commands.Cog):
         await interaction.followup.send(embed=embeds[0], view=view)
 
     @app_commands.command(name='crunchynews', description='Displays the latest anime news from Crunchyroll')
-    @app_commands.describe(limit='The number of results to return')
+    @app_commands.describe(language='The language of the news', limit='The number of results to return')
+    @app_commands.choices(
+        language=[
+            Choice(name='Arabic', value='arAR'),
+            Choice(name='English', value='enEN'),
+            Choice(name='French', value='frFR'),
+            Choice(name='German', value='deDE'),
+            Choice(name='Italian', value='itIT'),
+            Choice(name='Portuguese', value='ptPT'),
+            Choice(name='Russian', value='ruRU'),
+            Choice(name='Spanish', value='esES'),
+        ]
+    )
     async def crunchynews_slash_command(
-        self, interaction: discord.Interaction, limit: Optional[app_commands.Range[int, 1, 30]] = 15
+        self,
+        interaction: discord.Interaction,
+        language: Optional[Choice[str]] = None,
+        limit: Optional[app_commands.Range[int, 1, 30]] = 15,
     ):
         await interaction.response.defer()
 
-        data, embeds = await self.parse_news_feed('https://www.crunchyroll.com/newsrss?lang=enEN', limit), []
+        data, embeds = (
+            await self.parse_news_feed(
+                f'https://www.crunchyroll.com/newsrss?lang={getattr(language, "value", "enEN")}', limit
+            ),
+            [],
+        )
 
         for k, v in enumerate(data, start=1):
             embed = self.get_crunchynews_embed(v)
