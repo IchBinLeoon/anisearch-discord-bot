@@ -18,9 +18,10 @@ BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 
-CATEGORIES = Literal['Search', 'Image', 'Themes', 'News', 'Utility', 'Help']
+CATEGORIES = Literal['Search', 'Profile', 'Image', 'Themes', 'News', 'Utility', 'Help']
 
 COMMANDS = Literal[
+    'anilist',
     'anime',
     'aninews',
     'avatar',
@@ -29,9 +30,14 @@ COMMANDS = Literal[
     'github',
     'help',
     'invite',
+    'kitsu',
     'manga',
+    'myanimelist',
     'neko',
     'ping',
+    'profile add',
+    'profile info',
+    'profile remove',
     'random',
     'serverinfo',
     'source',
@@ -88,6 +94,7 @@ class CategorySelect(discord.ui.Select):
 def _label_to_emoji(label: str) -> str:
     emojis = {
         'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
+        'Profile': '\N{BUST IN SILHOUETTE}',
         'Image': '\N{FRAME WITH PICTURE}',
         'Themes': '\N{CLAPPER BOARD}',
         'News': '\N{NEWSPAPER}',

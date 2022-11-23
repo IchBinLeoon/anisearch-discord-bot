@@ -22,6 +22,7 @@ SAUCENAO_API_KEY = os.getenv('BOT_SAUCENAO_API_KEY')
 
 initial_extensions = [
     'anisearch.cogs.search',
+    'anisearch.cogs.profile',
     'anisearch.cogs.image',
     'anisearch.cogs.themes',
     'anisearch.cogs.news',
