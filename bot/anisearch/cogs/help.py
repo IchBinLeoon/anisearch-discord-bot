@@ -18,40 +18,6 @@ BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 
-CATEGORIES = Literal['Search', 'Profile', 'Image', 'Themes', 'News', 'Utility', 'Help']
-
-COMMANDS = Literal[
-    'anilist',
-    'anime',
-    'aninews',
-    'avatar',
-    'character',
-    'crunchynews',
-    'github',
-    'help',
-    'invite',
-    'kitsu',
-    'manga',
-    'myanimelist',
-    'neko',
-    'ping',
-    'profile add',
-    'profile info',
-    'profile remove',
-    'random',
-    'serverinfo',
-    'source',
-    'staff',
-    'stats',
-    'studio',
-    'support',
-    'themes',
-    'trace',
-    'trending',
-    'userinfo',
-    'waifu',
-]
-
 
 class Category:
     def __init__(self, label: str, emoji: str, embed: discord.Embed):
@@ -122,13 +88,23 @@ class Help(commands.Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
+    async def command_autocomplete(
+        self, interaction: discord.Interaction, current: str
+    ) -> List[app_commands.Choice[str]]:
+        return [
+            app_commands.Choice(name=i, value=i)
+            for i in [i.qualified_name for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)]
+            if current.lower() in i.lower()
+        ][:25]
+
     @app_commands.command(name='help', description='Browse all commands of the bot')
     @app_commands.describe(category='Browse a specific command category', command='Look up a specific command')
+    @app_commands.autocomplete(command=command_autocomplete)
     async def help_slash_command(
         self,
         interaction: discord.Interaction,
-        category: Optional[CATEGORIES] = None,
-        command: Optional[COMMANDS] = None,
+        category: Optional[Literal['Search', 'Profile', 'Image', 'Themes', 'News', 'Utility', 'Help']] = None,
+        command: Optional[str] = None,
     ):
         categories = []
 
@@ -165,18 +141,23 @@ class Help(commands.Cog):
                 name=f'{i.emoji} {i.label}', value=', '.join([f'`{i.qualified_name}`' for i in cmds]), inline=False
             )
 
-        if command:
-            cmd = [i for i in self.bot.tree.walk_commands() if i.qualified_name == command][0]
+        command = discord.utils.get(
+            [i for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)],
+            qualified_name=command.lower() if command else None,
+        )
 
-            embed = discord.Embed(title=f'/{cmd.qualified_name}', colour=0x4169E1)
+        if command:
+            embed = discord.Embed(title=f'/{command.qualified_name}', colour=0x4169E1)
             embed.set_author(name='AniSearch Command', icon_url=self.bot.user.display_avatar)
 
-            embed.add_field(name='Description', value=cmd.description, inline=False)
+            embed.add_field(name='Description', value=command.description, inline=False)
 
-            if cmd.parameters:
-                embed.add_field(name='Options', value=', '.join([f'`{i.name}`' for i in cmd.parameters]), inline=False)
+            if command.parameters:
+                embed.add_field(
+                    name='Options', value=', '.join([f'`{i.name}`' for i in command.parameters]), inline=False
+                )
 
-            usages = await self.bot.db.get_global_command_usages_count(cmd.qualified_name)
+            usages = await self.bot.db.get_global_command_usages_count(command.qualified_name)
             embed.add_field(name='Global Usages', value=usages, inline=False)
 
         elif category:
