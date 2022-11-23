@@ -18,7 +18,7 @@ BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 
-CATEGORIES = Literal['Search', 'Image', 'News', 'Utility', 'Help']
+CATEGORIES = Literal['Search', 'Image', 'Themes', 'News', 'Utility', 'Help']
 
 COMMANDS = Literal[
     'anime',
@@ -39,6 +39,7 @@ COMMANDS = Literal[
     'stats',
     'studio',
     'support',
+    'themes',
     'trace',
     'trending',
     'userinfo',
@@ -88,6 +89,7 @@ def _label_to_emoji(label: str) -> str:
     emojis = {
         'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
         'Image': '\N{FRAME WITH PICTURE}',
+        'Themes': '\N{CLAPPER BOARD}',
         'News': '\N{NEWSPAPER}',
         'Utility': '\N{HAMMER AND WRENCH}',
         'Help': '\N{BLACK QUESTION MARK ORNAMENT}',
@@ -166,9 +168,6 @@ class Help(commands.Cog):
 
             if cmd.parameters:
                 embed.add_field(name='Options', value=', '.join([f'`{i.name}`' for i in cmd.parameters]), inline=False)
-
-            if cmd.nsfw:
-                embed.add_field(name='NSFW', value=cmd.nsfw, inline=False)
 
             usages = await self.bot.db.get_global_command_usages_count(cmd.qualified_name)
             embed.add_field(name='Global Usages', value=usages, inline=False)

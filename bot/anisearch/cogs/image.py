@@ -124,7 +124,6 @@ class Image(commands.Cog):
     @app_commands.command(
         name='source',
         description='Tries to find the source of an image through the image url or the image as attachment',
-        nsfw=True,
     )
     @app_commands.describe(url='Search by image url', attachment='Search by image as attachment')
     async def source_slash_command(
