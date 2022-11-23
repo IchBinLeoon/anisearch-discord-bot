@@ -20,6 +20,8 @@ log = logging.getLogger(__name__)
 TRACEMOE_API_KEY = os.getenv('BOT_TRACEMOE_API_KEY')
 SAUCENAO_API_KEY = os.getenv('BOT_SAUCENAO_API_KEY')
 
+TESTING_GUILD = os.getenv('BOT_TESTING_GUILD')
+
 initial_extensions = [
     'anisearch.cogs.search',
     'anisearch.cogs.profile',
@@ -56,7 +58,12 @@ class AniSearchBot(commands.AutoShardedBot):
         for extension in initial_extensions:
             await self.load_extension(extension)
 
-        await self.tree.sync()
+        if TESTING_GUILD:
+            guild = discord.Object(id=TESTING_GUILD)
+            self.tree.copy_global_to(guild=guild)
+            await self.tree.sync(guild=guild)
+        else:
+            await self.tree.sync()
 
     async def on_shard_ready(self, shard_id: int) -> None:
         log.info(f'Shard ID {shard_id} is ready')
