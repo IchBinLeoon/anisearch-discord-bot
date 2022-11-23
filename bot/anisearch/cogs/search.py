@@ -9,6 +9,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from anisearch.bot import AniSearchBot
+from anisearch.cogs.profile import ANILIST_LOGO
 from anisearch.utils import menus, checks
 from anisearch.utils.anilist import GENRES, ADULT_GENRES, TAGS, ADULT_TAGS
 from anisearch.utils.formatters import (
@@ -23,8 +24,6 @@ from anisearch.utils.formatters import (
 )
 
 log = logging.getLogger(__name__)
-
-ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033399107289189/anilist.png'
 
 
 async def comma_separated_choices(arr: List[str], current: str) -> List[app_commands.Choice[str]]:

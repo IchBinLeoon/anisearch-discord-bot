@@ -9,6 +9,10 @@ from anisearch.bot import AniSearchBot
 
 log = logging.getLogger(__name__)
 
+ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033399107289189/anilist.png'
+MYANIMELIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033442816143390/myanimelist.png'
+KITSU_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033462776840232/kitsu.png'
+
 
 class Profile(commands.Cog):
     def __init__(self, bot: AniSearchBot) -> None:
