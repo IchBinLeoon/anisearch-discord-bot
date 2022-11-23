@@ -61,6 +61,7 @@ def _label_to_emoji(label: str) -> str:
     emojis = {
         'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
         'Profile': '\N{BUST IN SILHOUETTE}',
+        'Notification': '\N{BELL}',
         'Image': '\N{FRAME WITH PICTURE}',
         'Themes': '\N{CLAPPER BOARD}',
         'News': '\N{NEWSPAPER}',
@@ -103,7 +104,9 @@ class Help(commands.Cog):
     async def help_slash_command(
         self,
         interaction: discord.Interaction,
-        category: Optional[Literal['Search', 'Profile', 'Image', 'Themes', 'News', 'Utility', 'Help']] = None,
+        category: Optional[
+            Literal['Search', 'Profile', 'Notification', 'Image', 'Themes', 'News', 'Utility', 'Help']
+        ] = None,
         command: Optional[str] = None,
     ):
         categories = []
