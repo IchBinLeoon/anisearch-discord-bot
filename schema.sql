@@ -28,3 +28,14 @@ create table private_command_usages
     command_type application_command_type            not null,
     used_at      timestamp default CURRENT_TIMESTAMP not null
 );
+
+create table user_profiles
+(
+    user_id  bigint                              not null,
+    platform anime_platform                      not null,
+    username text                                not null,
+    added_at timestamp default CURRENT_TIMESTAMP not null
+);
+
+create unique index user_profiles_user_id_platform_uindex
+    on user_profiles (user_id, platform);
