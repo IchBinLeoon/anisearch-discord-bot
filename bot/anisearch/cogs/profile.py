@@ -3,7 +3,7 @@ from typing import Optional, Literal
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 
@@ -14,7 +14,7 @@ MYANIMELIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/97
 KITSU_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033462776840232/kitsu.png'
 
 
-class Profile(commands.Cog):
+class Profile(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 

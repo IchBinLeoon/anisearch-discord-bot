@@ -6,7 +6,7 @@ import discord
 from bs4 import BeautifulSoup
 from discord import app_commands
 from discord.app_commands import Choice
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.formatters import clean_html
@@ -26,7 +26,7 @@ class NewsView(SimplePaginationView):
         super().__init__(interaction, embeds, timeout=180)
 
 
-class News(commands.Cog):
+class News(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 

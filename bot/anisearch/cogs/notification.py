@@ -1,13 +1,13 @@
 import logging
 
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 
 log = logging.getLogger(__name__)
 
 
-class Notification(commands.Cog):
+class Notification(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
