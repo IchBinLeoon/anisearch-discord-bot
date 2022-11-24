@@ -6,12 +6,11 @@ from typing import List, Dict, Any, Optional, Literal
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 from anisearch.cogs.profile import ANILIST_LOGO
-from anisearch.utils import menus, checks
-from anisearch.utils.anilist import GENRES, ADULT_GENRES, TAGS, ADULT_TAGS
+from anisearch.utils.anilist import GENRES, TAGS
 from anisearch.utils.formatters import (
     format_media_format,
     format_anime_status,
@@ -22,6 +21,7 @@ from anisearch.utils.formatters import (
     format_date,
     format_name,
 )
+from anisearch.utils.menus import PaginationView, SimplePaginationView
 
 log = logging.getLogger(__name__)
 
@@ -39,34 +39,24 @@ async def comma_separated_choices(arr: List[str], current: str) -> List[app_comm
 
 
 async def genres_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
-    if checks.is_private_channel(interaction.channel) or interaction.channel.is_nsfw():
-        genres = GENRES + ADULT_GENRES
-    else:
-        genres = GENRES
-
-    return await comma_separated_choices(arr=genres, current=current)
+    return await comma_separated_choices(arr=GENRES, current=current)
 
 
 async def tags_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
-    if checks.is_private_channel(interaction.channel) or interaction.channel.is_nsfw():
-        tags = TAGS + ADULT_TAGS
-    else:
-        tags = TAGS
-
-    return await comma_separated_choices(arr=tags, current=current)
+    return await comma_separated_choices(arr=TAGS, current=current)
 
 
-class SearchView(menus.PaginationView):
+class SearchView(PaginationView):
     def __init__(self, interaction: discord.Interaction, embeds: List[discord.Embed]) -> None:
         super().__init__(interaction, embeds, timeout=180)
 
 
-class TrendingView(menus.SimplePaginationView):
+class TrendingView(SimplePaginationView):
     def __init__(self, interaction: discord.Interaction, embeds: List[List[discord.Embed]]) -> None:
         super().__init__(interaction, embeds, timeout=180)
 
 
-class Search(commands.Cog):
+class Search(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
@@ -307,13 +297,10 @@ class Search(commands.Cog):
     ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.media(page=1, perPage=limit, type='ANIME', search=title):
+        if data := await self.bot.anilist.media(page=1, perPage=limit, type='ANIME', isAdult=False, search=title):
             embeds = []
 
             for k, v in enumerate(data, start=1):
-                if not checks.nsfw_embed_allowed(interaction.channel, v.get('isAdult')):
-                    continue
-
                 embed = self.get_media_embed(v)
                 embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
@@ -336,13 +323,10 @@ class Search(commands.Cog):
     ):
         await interaction.response.defer()
 
-        if data := await self.bot.anilist.media(page=1, perPage=limit, type='MANGA', search=title):
+        if data := await self.bot.anilist.media(page=1, perPage=limit, type='MANGA', isAdult=False, search=title):
             embeds = []
 
             for k, v in enumerate(data, start=1):
-                if not checks.nsfw_embed_allowed(interaction.channel, v.get('isAdult')):
-                    continue
-
                 embed = self.get_media_embed(v)
                 embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
                 embeds.append(embed)
@@ -462,6 +446,7 @@ class Search(commands.Cog):
                 page=page,
                 perPage=limit,
                 type=media.upper(),
+                isAdult=False,
                 genres=genres,
                 tags=tags,
                 sort='POPULARITY_DESC',
@@ -480,10 +465,6 @@ class Search(commands.Cog):
                 await asyncio.sleep(1)
 
         if result:
-            if not checks.nsfw_embed_allowed(interaction.channel, result.get('isAdult')):
-                result = None
-
-        if result:
             embed = self.get_media_embed(result)
             await interaction.followup.send(embed=embed)
         else:
@@ -495,12 +476,12 @@ class Search(commands.Cog):
     async def trending_slash_command(self, interaction: discord.Interaction, media: Literal['Anime', 'Manga']):
         await interaction.response.defer()
 
-        data, embeds = await self.bot.anilist.media(page=1, perPage=15, type=media.upper(), sort='TRENDING_DESC'), []
+        data, embeds = (
+            await self.bot.anilist.media(page=1, perPage=15, type=media.upper(), isAdult=False, sort='TRENDING_DESC'),
+            [],
+        )
 
         for k, v in enumerate(data, start=1):
-            if not checks.nsfw_embed_allowed(interaction.channel, v.get('isAdult')):
-                continue
-
             embed = self.get_trending_embed(v)
             embed.set_author(name=f'{embed.author.name} • #{k} Trending {media}', icon_url=ANILIST_LOGO)
             embeds.append(embed)

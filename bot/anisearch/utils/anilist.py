@@ -62,9 +62,9 @@ class AniListClient:
     @staticmethod
     def _get_media_query() -> str:
         return '''
-        query ($page: Int, $perPage: Int, $type: MediaType, $search: String, $genres: [String], $tags: [String], $sort: [MediaSort]) {
+        query ($page: Int, $perPage: Int, $type: MediaType, $isAdult: Boolean, $search: String, $genres: [String], $tags: [String], $sort: [MediaSort]) {
           Page(page: $page, perPage: $perPage) {
-            media(type: $type, search: $search, genre_in: $genres, tag_in: $tags, sort: $sort) {
+            media(type: $type, isAdult: $isAdult, search: $search, genre_in: $genres, tag_in: $tags, sort: $sort) {
               idMal
               title {
                 romaji
@@ -254,8 +254,6 @@ GENRES = [
     'Supernatural',
     'Thriller',
 ]
-
-ADULT_GENRES = ['Hentai']
 
 TAGS = [
     '4-koma',
@@ -532,62 +530,4 @@ TAGS = [
     'Youkai',
     'Yuri',
     'Zombie',
-]
-
-ADULT_TAGS = [
-    'Ahegao',
-    'Amputation',
-    'Anal Sex',
-    'Armpits',
-    'Ashikoki',
-    'Asphyxiation',
-    'Blackmail',
-    'Bondage',
-    'Boobjob',
-    'Cumflation',
-    'Cunnilingus',
-    'Deepthroat',
-    'Defloration',
-    'DILF',
-    'Exhibitionism',
-    'Facial',
-    'Feet',
-    'Fellatio',
-    'Femdom',
-    'Flat Chest',
-    'Futanari',
-    'Group Sex',
-    'Handjob',
-    'Human Pet',
-    'Incest',
-    'Inseki',
-    'Irrumatio',
-    'Lactation',
-    'Large Breasts',
-    'Masochism',
-    'Masturbation',
-    'MILF',
-    'Nakadashi',
-    'Netorare',
-    'Netorase',
-    'Netori',
-    'Omegaverse',
-    'Pregnant',
-    'Prostitution',
-    'Public Sex',
-    'Rape',
-    'Rimjob',
-    'Sadism',
-    'Scat',
-    'Scissoring',
-    'Sex Toys',
-    'Squirting',
-    'Sumata',
-    'Sweat',
-    'Tentacles',
-    'Threesome',
-    'Virginity',
-    'Vore',
-    'Voyeur',
-    'Watersports',
 ]
