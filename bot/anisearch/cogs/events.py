@@ -1,9 +1,11 @@
 import logging
+from asyncio import sleep
 from typing import Any
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import tasks
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 
@@ -17,22 +19,23 @@ def _get_full_class_name(obj: Any) -> str:
     return module + '.' + obj.__class__.__name__
 
 
-class Events(commands.Cog):
+class Events(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
         self.bot.tree.on_error = self.on_app_command_error
+        self.change_presence.start()
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         log.info(f'Bot joined guild {guild.id}')
         await self.bot.db.add_guild(guild.id)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
         log.info(f'Bot left guild {guild.id}')
         await self.bot.db.remove_guild(guild.id)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
         if interaction.type == discord.InteractionType.application_command:
             log.info(f'User {interaction.user.id} executed command {interaction.command.qualified_name}')
@@ -83,6 +86,32 @@ class Events(commands.Cog):
             await interaction.followup.send(embed=embed)
         else:
             await interaction.response.send_message(embed=embed)
+
+    @tasks.loop(seconds=80)
+    async def change_presence(self) -> None:
+        await self.bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.listening, name='/help'), status=discord.Status.online
+        )
+        await sleep(20)
+        await self.bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.playing, name=f'on {len(self.bot.guilds)} servers'),
+            status=discord.Status.online,
+        )
+        await sleep(20)
+        await self.bot.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.playing, name=f'with {sum([i.member_count for i in self.bot.guilds])} users'
+            ),
+            status=discord.Status.online,
+        )
+        await sleep(20)
+        await self.bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'), status=discord.Status.online
+        )
+
+    @change_presence.before_loop
+    async def change_presence_before(self) -> None:
+        await self.bot.wait_until_ready()
 
 
 async def setup(bot: AniSearchBot) -> None:
