@@ -151,6 +151,7 @@ class AniListClient:
                   title {
                     romaji
                   }
+                  isAdult
                   siteUrl
                 }
               }
@@ -190,6 +191,7 @@ class AniListClient:
                   title {
                     romaji
                   }
+                  isAdult
                   siteUrl
                 }
               }
@@ -224,6 +226,7 @@ class AniListClient:
                   coverImage {
                     large
                   }
+                  isAdult
                   siteUrl
                 }
               }

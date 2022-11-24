@@ -177,7 +177,11 @@ class Search(Cog):
         ]:
             embed.add_field(name='Synonyms', value=', '.join(synonyms), inline=False)
 
-        if media := [f'[{i.get("title").get("romaji")}]({i.get("siteUrl")})' for i in data.get('media').get('nodes')]:
+        if media := [
+            f'[{i.get("title").get("romaji")}]({i.get("siteUrl")})'
+            for i in data.get('media').get('nodes')
+            if not i.get('isAdult')
+        ]:
             embed.add_field(name='Popular Appearances', value=' • '.join(media), inline=False)
 
         return embed
@@ -215,7 +219,9 @@ class Search(Cog):
             embed.add_field(name='Synonyms', value=', '.join(synonyms), inline=False)
 
         if staff_roles := [
-            f'[{i.get("title").get("romaji")}]({i.get("siteUrl")})' for i in data.get('staffMedia').get('nodes')
+            f'[{i.get("title").get("romaji")}]({i.get("siteUrl")})'
+            for i in data.get('staffMedia').get('nodes')
+            if not i.get('isAdult')
         ]:
             embed.add_field(name='Popular Staff Roles', value=' • '.join(staff_roles), inline=False)
 
@@ -235,18 +241,21 @@ class Search(Cog):
         if data.get('isAnimationStudio'):
             embed.description = '**Animation Studio**'
 
-        if data.get('media').get('nodes'):
-            embed.set_thumbnail(url=data.get('media').get('nodes')[0].get('coverImage').get('large'))
+        if nodes := data.get('media').get('nodes'):
+            if not nodes[0].get('isAdult'):
+                embed.set_thumbnail(url=nodes[0].get('coverImage').get('large'))
 
             media = []
-            for i in data.get('media').get('nodes'):
-                anime = (
-                    f'[{i.get("title").get("romaji")}]({i.get("siteUrl")}) » '
-                    f'**{format_media_format(i.get("format"))}** • Episodes: **{i.get("episodes") or "N/A"}** '
-                )
-                media.append(anime)
+            for i in nodes:
+                if not i.get('isAdult'):
+                    anime = (
+                        f'[{i.get("title").get("romaji")}]({i.get("siteUrl")}) » '
+                        f'**{format_media_format(i.get("format"))}** • Episodes: **{i.get("episodes") or "N/A"}** '
+                    )
+                    media.append(anime)
 
-            embed.add_field(name='Most Popular Productions', value='\n'.join(media), inline=False)
+            if media:
+                embed.add_field(name='Most Popular Productions', value='\n'.join(media), inline=False)
 
         return embed
 
