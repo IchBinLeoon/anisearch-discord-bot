@@ -1,11 +1,11 @@
 import logging
 import time
 from datetime import timedelta
-from typing import Optional, Literal, List
+from typing import Optional, List
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 import anisearch
 from anisearch.bot import AniSearchBot
@@ -85,51 +85,30 @@ class LinkView(discord.ui.View):
         self.add_item(discord.ui.Button(label=label, emoji=emoji, url=url))
 
 
-class Help(commands.Cog):
+class Help(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
+
+    async def category_autocomplete(
+        self, interaction: discord.Interaction, current: str
+    ) -> List[app_commands.Choice[str]]:
+        cogs = [self.bot.get_cog(i).qualified_name for i in self.bot.cogs if self.bot.get_cog(i).get_app_commands()]
+
+        return [app_commands.Choice(name=i, value=i) for i in cogs if current.lower() in i.lower()][:25]
 
     async def command_autocomplete(
         self, interaction: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
-        return [
-            app_commands.Choice(name=i, value=i)
-            for i in [i.qualified_name for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)]
-            if current.lower() in i.lower()
-        ][:25]
+        commands = [i.qualified_name for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)]
+
+        return [app_commands.Choice(name=i, value=i) for i in commands if current.lower() in i.lower()][:25]
 
     @app_commands.command(name='help', description='Browse all commands of the bot')
     @app_commands.describe(category='Browse a specific command category', command='Look up a specific command')
-    @app_commands.autocomplete(command=command_autocomplete)
+    @app_commands.autocomplete(category=category_autocomplete, command=command_autocomplete)
     async def help_slash_command(
-        self,
-        interaction: discord.Interaction,
-        category: Optional[
-            Literal['Search', 'Profile', 'Notification', 'Image', 'Themes', 'News', 'Utility', 'Help']
-        ] = None,
-        command: Optional[str] = None,
+        self, interaction: discord.Interaction, category: Optional[str] = None, command: Optional[str] = None
     ):
-        categories = []
-
-        for i in self.bot.cogs:
-            cog = self.bot.get_cog(i)
-
-            if cmds := cog.get_app_commands():
-                label = cog.qualified_name
-                emoji = _label_to_emoji(label)
-
-                embed = discord.Embed(title=f'{emoji} {label}', color=0x4169E1)
-                embed.set_author(name='AniSearch Category', icon_url=self.bot.user.display_avatar)
-
-                for j in cmds:
-                    if isinstance(j, app_commands.Group):
-                        for c in j.walk_commands():
-                            embed.add_field(name=f'/{c.qualified_name}', value=f'`{c.description}`', inline=False)
-                    else:
-                        embed.add_field(name=f'/{j.qualified_name}', value=f'`{j.description}`', inline=False)
-
-                categories.append(Category(label=label, emoji=emoji, embed=embed))
-
         home = discord.Embed(
             title=':books: Help',
             description=f'[Invite AniSearch]({BOT_INVITE}) • [Support Server]({SERVER_INVITE}) • [Website]({WEBSITE})',
@@ -138,18 +117,31 @@ class Help(commands.Cog):
         home.set_author(name='AniSearch Bot', icon_url=self.bot.user.display_avatar)
         home.set_thumbnail(url=self.bot.user.display_avatar)
 
-        for i in categories:
-            cmds = [i for i in self.bot.get_cog(i.label).walk_app_commands() if not isinstance(i, app_commands.Group)]
-            home.add_field(
-                name=f'{i.emoji} {i.label}', value=', '.join([f'`{i.qualified_name}`' for i in cmds]), inline=False
-            )
+        categories = []
 
-        command = discord.utils.get(
+        for i in self.bot.cogs:
+            cog = self.bot.get_cog(i)
+
+            if commands := [i for i in cog.walk_app_commands() if not isinstance(i, app_commands.Group)]:
+                label = cog.qualified_name
+                emoji = _label_to_emoji(label)
+
+                home.add_field(
+                    name=f'{emoji} {label}', value=', '.join([f'`{i.qualified_name}`' for i in commands]), inline=False
+                )
+
+                embed = discord.Embed(title=f'{emoji} {label}', color=0x4169E1)
+                embed.set_author(name='AniSearch Category', icon_url=self.bot.user.display_avatar)
+
+                for j in commands:
+                    embed.add_field(name=f'/{j.qualified_name}', value=f'`{j.description}`', inline=False)
+
+                categories.append(Category(label=label, emoji=emoji, embed=embed))
+
+        if command := discord.utils.get(
             [i for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)],
             qualified_name=command.lower() if command else None,
-        )
-
-        if command:
+        ):
             embed = discord.Embed(title=f'/{command.qualified_name}', colour=0x4169E1)
             embed.set_author(name='AniSearch Command', icon_url=self.bot.user.display_avatar)
 
@@ -163,8 +155,11 @@ class Help(commands.Cog):
             usages = await self.bot.db.get_global_command_usages_count(command.qualified_name)
             embed.add_field(name='Global Usages', value=usages, inline=False)
 
-        elif category:
-            embed = categories[[i.label for i in categories].index(category)].embed
+        elif category := discord.utils.get(
+            [self.bot.get_cog(i) for i in self.bot.cogs if self.bot.get_cog(i).get_app_commands()],
+            qualified_name=category.capitalize() if category else None,
+        ):
+            embed = categories[[i.label for i in categories].index(category.qualified_name)].embed
         else:
             embed = home
 

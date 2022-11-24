@@ -3,7 +3,7 @@ from typing import Optional
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 from anisearch.cogs.help import LinkView
@@ -11,7 +11,7 @@ from anisearch.cogs.help import LinkView
 log = logging.getLogger(__name__)
 
 
-class Utility(commands.Cog):
+class Utility(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
