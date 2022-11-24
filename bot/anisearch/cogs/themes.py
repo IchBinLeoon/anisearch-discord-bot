@@ -3,10 +3,9 @@ from typing import Optional, List, Dict, Any
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.checks import nsfw_embed_allowed
 from anisearch.utils.http import get
 from anisearch.utils.menus import PaginationView
 
@@ -18,7 +17,7 @@ class ThemesView(PaginationView):
         super().__init__(interaction, embeds, timeout=180)
 
 
-class Themes(commands.Cog):
+class Themes(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
@@ -65,8 +64,8 @@ class Themes(commands.Cog):
             'include[anime]': 'images,animethemes.animethemeentries.videos,animethemes.song.artists',
         }
 
-        if (
-            data := (
+        data, entries = (
+            (
                 await get(
                     url='https://api.animethemes.moe/search/',
                     session=self.bot.session,
@@ -76,17 +75,21 @@ class Themes(commands.Cog):
             )
             .get('search')
             .get('anime')
-        ):
+        ), []
+
+        for i in data:
+            for j in i.get('animethemes'):
+                for k in j.get('animethemeentries'):
+                    if not k.get('nsfw'):
+                        if i not in entries:
+                            entries.append(i)
+
+        if entries:
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                if not nsfw_embed_allowed(
-                    interaction.channel, v.get('animethemes')[0].get('animethemeentries')[0].get('nsfw')
-                ):
-                    continue
-
+            for k, v in enumerate(entries, start=1):
                 embed = self.get_themes_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(entries)}')
                 embeds.append(embed)
 
             view = ThemesView(interaction=interaction, embeds=embeds)

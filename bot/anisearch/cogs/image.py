@@ -4,18 +4,17 @@ from typing import List, Optional, Dict, Any
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext.commands import Cog
 from pysaucenao import GenericSource, PixivSource, BooruSource, VideoSource, MangaSource, AnimeSource
 from waifu import WaifuAioClient
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.checks import nsfw_embed_allowed
-from anisearch.utils.menus import SimplePaginationView, BaseView
+from anisearch.utils.menus import PaginationView, BaseView
 
 log = logging.getLogger(__name__)
 
 
-class SearchImageView(SimplePaginationView):
+class SearchImageView(PaginationView):
     def __init__(self, interaction: discord.Interaction, embeds: List[discord.Embed]) -> None:
         super().__init__(interaction, embeds, timeout=180)
 
@@ -40,7 +39,7 @@ class WaifuImageView(BaseView):
         await self.close()
 
 
-class Image(commands.Cog):
+class Image(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
@@ -104,15 +103,18 @@ class Image(commands.Cog):
 
         url = url or attachment.url
 
-        if data := await self.bot.tracemoe.search(image=url, anilist_info=True):
+        data, entries = await self.bot.tracemoe.search(image=url, anilist_info=True), []
+
+        for i in data:
+            if not i.get('anilist').get('isAdult'):
+                entries.append(i)
+
+        if entries:
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                if not nsfw_embed_allowed(interaction.channel, v.get('anilist').get('isAdult')):
-                    continue
-
+            for k, v in enumerate(entries, start=1):
                 embed = self.get_trace_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(entries)}')
                 embeds.append(embed)
 
             view = SearchImageView(interaction=interaction, embeds=embeds)
