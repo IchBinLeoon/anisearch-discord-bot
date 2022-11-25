@@ -6,7 +6,7 @@ from discord import app_commands
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.http import get
+from anisearch.utils.http import get, HttpException
 from anisearch.utils.menus import PaginationView
 
 log = logging.getLogger(__name__)
@@ -43,7 +43,23 @@ class Themes(Cog):
             except IndexError:
                 pass
 
-            embed.add_field(name=i.get('slug'), value='\n'.join(info), inline=False)
+            embed.add_field(name=f'{i.get("slug")} • {i.get("id")}', value='\n'.join(info), inline=False)
+
+        return embed
+
+    @staticmethod
+    def get_theme_embed(data: Dict[str, Any]) -> discord.Embed:
+        embed = discord.Embed(title=data.get('anime').get('name'), color=0x4169E1)
+        embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '))
+        embed.set_thumbnail(url=data.get('anime').get('images')[0].get('link'))
+        embed.set_footer(text='Provided by https://animethemes.moe/')
+
+        info = ['**Title:** ' + data.get('song').get('title')]
+
+        if data.get('song').get('artists'):
+            info.append('**Artist:** ' + ', '.join([i.get('name') for i in data.get('song').get('artists')]))
+
+        embed.description = '\n'.join(info)
 
         return embed
 
@@ -96,6 +112,37 @@ class Themes(Cog):
             await interaction.followup.send(embed=embeds[0], view=view)
         else:
             embed = discord.Embed(title=f':no_entry: No themes for the anime `{title}` found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
+
+    @app_commands.command(name='theme', description='Displays a specific anime opening or ending theme')
+    @app_commands.describe(animethemes_id='The AnimeThemes ID of the theme')
+    @app_commands.rename(animethemes_id='id')
+    async def theme_slash_command(self, interaction: discord.Interaction, animethemes_id: int):
+        await interaction.response.defer()
+
+        try:
+            data = (
+                await get(
+                    url=f'https://api.animethemes.moe/animetheme/{animethemes_id}',
+                    session=self.bot.session,
+                    res_method='json',
+                    params={'include': 'anime.images,animethemeentries.videos,song.artists'},
+                )
+            ).get('animetheme')
+        except HttpException as e:
+            if not e.status == 404:
+                log.error(e)
+            data = None
+
+        if data and not data.get('animethemeentries')[0].get('nsfw'):
+            embed = self.get_theme_embed(data)
+
+            await interaction.followup.send(embed=embed)
+            await interaction.followup.send(
+                f'https://v.animethemes.moe/{data.get("animethemeentries")[0].get("videos")[0].get("basename")}'
+            )
+        else:
+            embed = discord.Embed(title=f':no_entry: No theme with the ID `{animethemes_id}` found.', color=0x4169E1)
             await interaction.followup.send(embed=embed)
 
 
