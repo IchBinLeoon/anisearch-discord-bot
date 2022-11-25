@@ -1,6 +1,6 @@
 import logging
 from datetime import timedelta
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 
 import discord
 from discord import app_commands
@@ -44,25 +44,6 @@ class Image(Cog):
         self.bot = bot
 
     @staticmethod
-    def get_trace_embed(data: Dict[str, Any]) -> discord.Embed:
-        embed = discord.Embed(
-            title=data.get('anilist').get('title').get('romaji'),
-            color=0x4169E1,
-            url=f'https://anilist.co/anime/{data.get("anilist").get("id")}',
-        )
-        embed.set_image(url=data.get('image'))
-        embed.set_footer(text=f'Provided by https://trace.moe/')
-
-        embed.add_field(name='Similarity', value=f'{data.get("similarity") * 100:0.2f}%', inline=False)
-        embed.add_field(
-            name='Episode',
-            value=f'{data.get("episode")} ({timedelta(seconds=round(data.get("from")))})',
-            inline=False,
-        )
-
-        return embed
-
-    @staticmethod
     def get_source_embed(data: GenericSource) -> discord.Embed:
         embed = discord.Embed(title=data.title, color=0x4169E1, url=data.url)
         embed.set_image(url=data.thumbnail)
@@ -88,12 +69,15 @@ class Image(Cog):
         name='trace',
         description='Tries to find the anime the image is from through the image url or the image as attachment',
     )
-    @app_commands.describe(url='Search by image url', attachment='Search by image as attachment')
+    @app_commands.describe(
+        url='Search by image url', attachment='Search by image as attachment', limit='The number of results to return'
+    )
     async def trace_slash_command(
         self,
         interaction: discord.Interaction,
         url: Optional[str] = None,
         attachment: Optional[discord.Attachment] = None,
+        limit: Optional[app_commands.Range[int, 1, 10]] = 10,
     ):
         await interaction.response.defer()
 
@@ -103,18 +87,30 @@ class Image(Cog):
 
         url = url or attachment.url
 
-        data, entries = await self.bot.tracemoe.search(image=url, anilist_info=True), []
+        data = await self.bot.tracemoe.search(image=url, anilist_info=True)
 
-        for i in data:
-            if not i.get('anilist').get('isAdult'):
-                entries.append(i)
+        entries = list(filter(lambda x: not x.get('anilist').get('isAdult'), data))[:limit]
 
         if entries:
             embeds = []
 
-            for k, v in enumerate(entries, start=1):
-                embed = self.get_trace_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(entries)}')
+            for page, anime in enumerate(entries, start=1):
+                embed = discord.Embed(
+                    title=anime.get('anilist').get('title').get('romaji'),
+                    color=0x4169E1,
+                    url=f'https://anilist.co/anime/{anime.get("anilist").get("id")}',
+                )
+                embed.set_author(name='Trace')
+                embed.set_image(url=anime.get('image'))
+                embed.set_footer(text=f'Provided by https://trace.moe/ • Page {page}/{len(entries)}')
+
+                embed.add_field(name='Similarity', value=f'{anime.get("similarity") * 100:0.2f}%', inline=False)
+                embed.add_field(
+                    name='Episode',
+                    value=f'{anime.get("episode")} ({timedelta(seconds=round(anime.get("from")))})',
+                    inline=False,
+                )
+
                 embeds.append(embed)
 
             view = SearchImageView(interaction=interaction, embeds=embeds)
