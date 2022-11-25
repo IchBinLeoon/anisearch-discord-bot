@@ -14,7 +14,7 @@ from anisearch.utils.menus import BaseView
 
 log = logging.getLogger(__name__)
 
-BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=92224&scope=bot%20applications.commands'
+BOT_INVITE = 'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=18432&scope=bot%20applications.commands'
 SERVER_INVITE = 'https://discord.gg/Bv94yQYZM8'
 WEBSITE = 'https://ichbinleoon.github.io/anisearch-discord-bot/'
 
