@@ -39,6 +39,7 @@ class Events(Cog):
     async def on_interaction(self, interaction: discord.Interaction):
         if interaction.type == discord.InteractionType.application_command:
             log.info(f'User {interaction.user.id} executed command {interaction.command.qualified_name}')
+            await self.bot.db.add_user(interaction.user.id)
 
             if interaction.guild_id is None:
                 await self.bot.db.add_private_command_usage(
@@ -55,6 +56,7 @@ class Events(Cog):
                     interaction.command.qualified_name,
                     discord.AppCommandType(interaction.data.get('type')).name,
                 )
+                await self.bot.db.add_guild(interaction.guild_id)
 
     async def on_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError) -> None:
         exception = getattr(error, 'original', error)

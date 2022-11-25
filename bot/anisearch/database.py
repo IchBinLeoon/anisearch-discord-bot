@@ -22,6 +22,9 @@ class Database:
     async def remove_guild(self, guild_id: int) -> None:
         await self.pool.execute('DELETE FROM guilds WHERE id = $1', guild_id)
 
+    async def add_user(self, user_id: int) -> None:
+        await self.pool.execute('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', user_id)
+
     async def add_guild_command_usage(
         self,
         shard_id: int,

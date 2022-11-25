@@ -10,6 +10,28 @@ create table guilds
     added_at timestamp default CURRENT_TIMESTAMP not null
 );
 
+create table users
+(
+    id       bigint                              not null
+        constraint users_pk
+            primary key,
+    added_at timestamp default CURRENT_TIMESTAMP not null
+);
+
+create table user_profiles
+(
+    user_id  bigint                              not null
+        constraint user_profiles_users_id_fk
+            references users
+            on delete cascade,
+    platform anime_platform                      not null,
+    username text                                not null,
+    added_at timestamp default CURRENT_TIMESTAMP not null
+);
+
+create unique index user_profiles_user_id_platform_uindex
+    on user_profiles (user_id, platform);
+
 create table guild_command_usages
 (
     shard_id     integer                             not null,
@@ -28,14 +50,3 @@ create table private_command_usages
     command_type application_command_type            not null,
     used_at      timestamp default CURRENT_TIMESTAMP not null
 );
-
-create table user_profiles
-(
-    user_id  bigint                              not null,
-    platform anime_platform                      not null,
-    username text                                not null,
-    added_at timestamp default CURRENT_TIMESTAMP not null
-);
-
-create unique index user_profiles_user_id_platform_uindex
-    on user_profiles (user_id, platform);
