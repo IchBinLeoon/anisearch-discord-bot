@@ -48,38 +48,6 @@ class News(Cog):
 
         return data
 
-    @staticmethod
-    def get_aninews_embed(data: Dict[str, Any]) -> discord.Embed:
-        embed = discord.Embed(
-            title=data.get('title'),
-            description=f'```{html.unescape(clean_html(data.get("description")))}```',
-            color=0x4169E1,
-            url=data.get('link'),
-        )
-        embed.set_footer(text='Provided by https://www.animenewsnetwork.com/')
-
-        info = ['Anime News Network', data.get('date').replace('-0500', 'EST')]
-
-        if data.get('category'):
-            info.append(data.get('category'))
-
-        embed.set_author(name=' • '.join(info), icon_url=ANIMENEWSNETWORK_LOGO)
-
-        return embed
-
-    @staticmethod
-    def get_crunchynews_embed(data: Dict[str, Any]) -> discord.Embed:
-        embed = discord.Embed(
-            title=data.get('title'),
-            description=f'```{html.unescape(clean_html(data.get("description")))}```',
-            color=0x4169E1,
-            url=data.get('link'),
-        )
-        embed.set_footer(text='Provided by https://www.crunchyroll.com/')
-        embed.set_author(name=f'Crunchyroll • {data.get("date")}', icon_url=CRUNCHYROLL_LOGO)
-
-        return embed
-
     @app_commands.command(name='aninews', description='Displays the latest anime news from Anime News Network')
     @app_commands.describe(limit='The number of results to return')
     async def aninews_slash_command(
@@ -89,9 +57,21 @@ class News(Cog):
 
         data, embeds = await self.parse_news_feed('https://www.animenewsnetwork.com/newsroom/rss.xml', limit), []
 
-        for k, v in enumerate(data, start=1):
-            embed = self.get_aninews_embed(v)
-            embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+        for page, news in enumerate(data, start=1):
+            embed = discord.Embed(
+                title=news.get('title'),
+                description=f'```{html.unescape(clean_html(news.get("description")))}```',
+                color=0x4169E1,
+                url=news.get('link'),
+            )
+
+            name = f'Anime News Network • {news.get("date").replace("-0500", "EST")}'
+            if news.get('category'):
+                name += f' • {news.get("category")}'
+
+            embed.set_author(name=name, icon_url=ANIMENEWSNETWORK_LOGO)
+            embed.set_footer(text=f'Provided by https://www.animenewsnetwork.com/ • Page {page}/{len(data)}')
+
             embeds.append(embed)
 
         view = NewsView(interaction=interaction, embeds=embeds)
@@ -126,9 +106,16 @@ class News(Cog):
             [],
         )
 
-        for k, v in enumerate(data, start=1):
-            embed = self.get_crunchynews_embed(v)
-            embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+        for page, news in enumerate(data, start=1):
+            embed = discord.Embed(
+                title=news.get('title'),
+                description=f'```{html.unescape(clean_html(news.get("description")))}```',
+                color=0x4169E1,
+                url=news.get('link'),
+            )
+            embed.set_author(name=f'Crunchyroll • {news.get("date")}', icon_url=CRUNCHYROLL_LOGO)
+            embed.set_footer(text=f'Provided by https://www.crunchyroll.com/ • Page {page}/{len(data)}')
+
             embeds.append(embed)
 
         view = NewsView(interaction=interaction, embeds=embeds)
