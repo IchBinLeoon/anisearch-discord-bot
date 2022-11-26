@@ -5,7 +5,7 @@ from typing import List, Optional
 import discord
 from discord import app_commands
 from discord.ext.commands import Cog
-from pysaucenao import GenericSource, PixivSource, BooruSource, VideoSource, MangaSource, AnimeSource
+from pysaucenao import PixivSource, BooruSource, VideoSource, MangaSource, AnimeSource
 from waifu import WaifuAioClient
 
 from anisearch.bot import AniSearchBot
@@ -42,28 +42,6 @@ class WaifuImageView(BaseView):
 class Image(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
-
-    @staticmethod
-    def get_source_embed(data: GenericSource) -> discord.Embed:
-        embed = discord.Embed(title=data.title, color=0x4169E1, url=data.url)
-        embed.set_image(url=data.thumbnail)
-        embed.set_footer(text=f'Provided by https://saucenao.com/')
-
-        embed.add_field(name='Similarity', value=f'{data.similarity}%', inline=False)
-        embed.add_field(name='Type', value=data.type.capitalize(), inline=False)
-
-        if isinstance(data, PixivSource) or isinstance(data, BooruSource):
-            embed.add_field(name='Author', value=f'[{data.author_name}]({data.author_url})', inline=False)
-
-        if isinstance(data, VideoSource) or isinstance(data, AnimeSource):
-            embed.add_field(name='Episode', value=data.episode, inline=False)
-            embed.add_field(name='Year', value=data.year, inline=False)
-            embed.add_field(name='Timestamp', value=data.timestamp, inline=False)
-
-        if isinstance(data, MangaSource):
-            embed.add_field(name='Chapter', value=data.chapter, inline=False)
-
-        return embed
 
     @app_commands.command(
         name='trace',
@@ -123,12 +101,15 @@ class Image(Cog):
         name='source',
         description='Tries to find the source of an image through the image url or the image as attachment',
     )
-    @app_commands.describe(url='Search by image url', attachment='Search by image as attachment')
+    @app_commands.describe(
+        url='Search by image url', attachment='Search by image as attachment', limit='The number of results to return'
+    )
     async def source_slash_command(
         self,
         interaction: discord.Interaction,
         url: Optional[str] = None,
         attachment: Optional[discord.Attachment] = None,
+        limit: Optional[app_commands.Range[int, 1, 10]] = 10,
     ):
         await interaction.response.defer()
 
@@ -141,9 +122,27 @@ class Image(Cog):
         if data := await self.bot.saucenao.from_url(url):
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                embed = self.get_source_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+            data = data[:limit]
+
+            for page, source in enumerate(data, start=1):
+                embed = discord.Embed(title=source.title, color=0x4169E1, url=source.url)
+                embed.set_image(url=source.thumbnail)
+                embed.set_footer(text=f'Provided by https://saucenao.com/ • Page {page}/{len(data)}')
+
+                embed.add_field(name='Similarity', value=f'{source.similarity}%', inline=False)
+                embed.add_field(name='Type', value=source.type.capitalize(), inline=False)
+
+                if isinstance(source, PixivSource) or isinstance(source, BooruSource):
+                    embed.add_field(name='Author', value=f'[{source.author_name}]({source.author_url})', inline=False)
+
+                if isinstance(source, VideoSource) or isinstance(source, AnimeSource):
+                    embed.add_field(name='Episode', value=source.episode, inline=False)
+                    embed.add_field(name='Year', value=source.year, inline=False)
+                    embed.add_field(name='Timestamp', value=source.timestamp, inline=False)
+
+                if isinstance(source, MangaSource):
+                    embed.add_field(name='Chapter', value=source.chapter, inline=False)
+
                 embeds.append(embed)
 
             view = SearchImageView(interaction=interaction, embeds=embeds)
