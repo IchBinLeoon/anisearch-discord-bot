@@ -1,10 +1,10 @@
 # 🔍 AniSearch
 
 [![Status](https://top.gg/api/widget/status/737236600878137363.svg)](https://top.gg/bot/737236600878137363)
-[![Discord](https://img.shields.io/discord/835960108466176041?label=&logo=discord&logoColor=ffffff&color=7289DA&labelColor=7289DA&style=flat-square)](https://discord.gg/Bv94yQYZM8)
-[![Commit](https://img.shields.io/github/last-commit/IchBinLeoon/anisearch-discord-bot?style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot/commits/main)
-[![Size](https://img.shields.io/github/repo-size/IchBinLeoon/anisearch-discord-bot?style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot)
-[![License](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot?style=flat-square)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE)
+[![Discord](https://img.shields.io/discord/835960108466176041?logo=discord&logoColor=ffffff)](https://discord.gg/Bv94yQYZM8)
+[![CodeQL](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/codeql-analysis.yml)
+[![Black](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/black.yml/badge.svg)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/black.yml)
+[![License](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE)
 
 The source code of the AniSearch Bot.
 
