@@ -1,4 +1,5 @@
 import logging
+import os
 from asyncio import sleep
 from typing import Any
 
@@ -8,8 +9,11 @@ from discord.ext import tasks
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
+from anisearch.utils.http import post
 
 log = logging.getLogger(__name__)
+
+TOPGG_TOKEN = os.getenv('BOT_TOPGG_TOKEN')
 
 
 def _get_full_class_name(obj: Any) -> str:
@@ -23,7 +27,11 @@ class Events(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
         self.bot.tree.on_error = self.on_app_command_error
+
         self.change_presence.start()
+
+        if TOPGG_TOKEN:
+            self.post_topgg_stats.start()
 
     @Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
@@ -113,6 +121,25 @@ class Events(Cog):
 
     @change_presence.before_loop
     async def change_presence_before(self) -> None:
+        await self.bot.wait_until_ready()
+
+    @tasks.loop(minutes=30)
+    async def post_topgg_stats(self) -> None:
+        guilds = len(self.bot.guilds)
+        shards = self.bot.shard_count
+
+        await post(
+            url=f'https://top.gg/api/bots/{self.bot.user.id}/stats',
+            session=self.bot.session,
+            res_method='json',
+            json={'server_count': guilds, 'shard_count': shards},
+            headers={'Authorization': TOPGG_TOKEN},
+        )
+
+        log.info(f'TopGG statistics posted (Guilds: {guilds}, Shards: {shards})')
+
+    @post_topgg_stats.before_loop
+    async def post_topgg_stats_before(self) -> None:
         await self.bot.wait_until_ready()
 
 
