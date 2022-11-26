@@ -123,3 +123,21 @@ def format_name(full: str, native: str) -> str:
         return full
     else:
         return f'{full} ({native})'
+
+
+def month_to_season(month: int) -> str:
+    seasons = {
+        1: 'WINTER',
+        2: 'WINTER',
+        3: 'WINTER',
+        4: 'SPRING',
+        5: 'SPRING',
+        6: 'SPRING',
+        7: 'SUMMER',
+        8: 'SUMMER',
+        9: 'SUMMER',
+        10: 'FALL',
+        11: 'FALL',
+        12: 'FALL',
+    }
+    return seasons[month]

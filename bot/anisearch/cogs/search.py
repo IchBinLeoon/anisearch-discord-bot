@@ -20,6 +20,7 @@ from anisearch.utils.formatters import (
     sanitize_description,
     format_date,
     format_name,
+    month_to_season,
 )
 from anisearch.utils.menus import PaginationView, SimplePaginationView
 
@@ -51,7 +52,7 @@ class SearchView(PaginationView):
         super().__init__(interaction, embeds, timeout=180)
 
 
-class TrendingView(SimplePaginationView):
+class SimpleSearchView(SimplePaginationView):
     def __init__(self, interaction: discord.Interaction, embeds: List[List[discord.Embed]]) -> None:
         super().__init__(interaction, embeds, timeout=180)
 
@@ -260,7 +261,7 @@ class Search(Cog):
         return embed
 
     @staticmethod
-    def get_trending_embed(data: Dict[str, Any]) -> discord.Embed:
+    def get_simple_media_embed(data: Dict[str, Any]) -> discord.Embed:
         description = []
 
         if data.get('type') == 'ANIME':
@@ -309,9 +310,10 @@ class Search(Cog):
         if data := await self.bot.anilist.media(page=1, perPage=limit, type='ANIME', isAdult=False, search=title):
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                embed = self.get_media_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+            for page, anime in enumerate(data, start=1):
+                embed = self.get_media_embed(anime)
+                embed.set_footer(text=f'{embed.footer.text} • Page {page}/{len(data)}')
+
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -335,9 +337,10 @@ class Search(Cog):
         if data := await self.bot.anilist.media(page=1, perPage=limit, type='MANGA', isAdult=False, search=title):
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                embed = self.get_media_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+            for page, manga in enumerate(data, start=1):
+                embed = self.get_media_embed(manga)
+                embed.set_footer(text=f'{embed.footer.text} • Page {page}/{len(data)}')
+
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -361,9 +364,10 @@ class Search(Cog):
         if data := await self.bot.anilist.character(page=1, perPage=limit, search=name):
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                embed = self.get_character_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+            for page, character in enumerate(data, start=1):
+                embed = self.get_character_embed(character)
+                embed.set_footer(text=f'{embed.footer.text} • Page {page}/{len(data)}')
+
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -387,9 +391,10 @@ class Search(Cog):
         if data := await self.bot.anilist.staff(page=1, perPage=limit, search=name):
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                embed = self.get_staff_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+            for page, staff in enumerate(data, start=1):
+                embed = self.get_staff_embed(staff)
+                embed.set_footer(text=f'{embed.footer.text} • Page {page}/{len(data)}')
+
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -413,9 +418,10 @@ class Search(Cog):
         if data := await self.bot.anilist.studio(page=1, perPage=limit, search=name):
             embeds = []
 
-            for k, v in enumerate(data, start=1):
-                embed = self.get_studio_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(data)}')
+            for page, studio in enumerate(data, start=1):
+                embed = self.get_studio_embed(studio)
+                embed.set_footer(text=f'{embed.footer.text} • Page {page}/{len(data)}')
+
                 embeds.append(embed)
 
             view = SearchView(interaction=interaction, embeds=embeds)
@@ -490,12 +496,38 @@ class Search(Cog):
             [],
         )
 
-        for k, v in enumerate(data, start=1):
-            embed = self.get_trending_embed(v)
-            embed.set_author(name=f'{embed.author.name} • #{k} Trending {media}', icon_url=ANILIST_LOGO)
+        for rank, anime in enumerate(data, start=1):
+            embed = self.get_simple_media_embed(anime)
+            embed.set_author(name=f'{embed.author.name} • #{rank} Trending {media}', icon_url=ANILIST_LOGO)
+
             embeds.append(embed)
 
-        view = TrendingView(interaction=interaction, embeds=[embeds[i : i + 3] for i in range(0, len(embeds), 3)])
+        view = SimpleSearchView(interaction=interaction, embeds=[embeds[i : i + 3] for i in range(0, len(embeds), 3)])
+        await interaction.followup.send(embeds=embeds[0:3], view=view)
+
+    @app_commands.command(name='seasonal', description='Displays the currently airing anime')
+    async def seasonal_slash_command(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
+        date = datetime.datetime.now()
+
+        season = month_to_season(date.month)
+        year = date.year
+
+        data, embeds = (
+            await self.bot.anilist.media(
+                season=season, seasonYear=year, page=1, type='ANIME', isAdult=False, sort='POPULARITY_DESC'
+            ),
+            [],
+        )
+
+        for anime in data:
+            embed = self.get_simple_media_embed(anime)
+            embed.set_author(name=f'{embed.author.name} • {season} {year}', icon_url=ANILIST_LOGO)
+
+            embeds.append(embed)
+
+        view = SimpleSearchView(interaction=interaction, embeds=[embeds[i : i + 3] for i in range(0, len(embeds), 3)])
         await interaction.followup.send(embeds=embeds[0:3], view=view)
 
 
