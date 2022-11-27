@@ -18,6 +18,51 @@ create table users
     added_at timestamp default CURRENT_TIMESTAMP not null
 );
 
+create table guild_episode_notifications
+(
+    guild_id   bigint                              not null
+        constraint guild_episode_notifications_guilds_id_fk
+            references guilds
+            on delete cascade,
+    anilist_id integer                             not null,
+    added_at   timestamp default CURRENT_TIMESTAMP not null
+);
+
+create unique index guild_episode_notifications_guild_id_anilist_id_uindex
+    on guild_episode_notifications (guild_id, anilist_id);
+
+create table guild_channels
+(
+    guild_id   bigint                              not null
+        constraint guild_channels_guilds_id_fk
+            references guilds
+            on delete cascade,
+    channel_id bigint                              not null,
+    added_at   timestamp default CURRENT_TIMESTAMP not null
+);
+
+create unique index guild_channels_guild_id_uindex
+    on guild_channels (guild_id);
+
+create unique index guild_channels_channel_id_uindex
+    on guild_channels (channel_id);
+
+create table guild_roles
+(
+    guild_id bigint                              not null
+        constraint guild_roles_guilds_id_fk
+            references guilds
+            on delete cascade,
+    role_id  bigint                              not null,
+    added_at timestamp default CURRENT_TIMESTAMP not null
+);
+
+create unique index guild_roles_guild_id_uindex
+    on guild_roles (guild_id);
+
+create unique index guild_roles_role_id_uindex
+    on guild_roles (role_id);
+
 create table user_profiles
 (
     user_id  bigint                              not null
