@@ -2,11 +2,9 @@ import asyncio
 import logging
 import os
 import platform
-import re
 import sys
 from io import StringIO
 
-import aiohttp
 import asyncpg
 import discord
 
@@ -25,7 +23,6 @@ LOG_LEVEL = os.getenv('BOT_LOG_LEVEL')
 
 async def main() -> None:
     log_stream = setup_logging()
-    await check_for_update()
 
     logging.info(f'Starting AniSearch Bot v{anisearch.__version__}')
     logging.info(f'Discord.py version: {discord.__version__}')
@@ -55,20 +52,6 @@ def setup_logging() -> StringIO:
         logging.getLogger('aiohttp.access').setLevel(logging.WARNING)
 
     return log_stream
-
-
-async def check_for_update() -> None:
-    async with aiohttp.ClientSession() as s:
-        async with s.get(
-            'https://raw.githubusercontent.com/IchBinLeoon/anisearch-discord-bot/main/bot/anisearch/__init__.py'
-        ) as r:
-            if r.status == 200:
-                version = re.findall("__version__ = '(.*)'", await r.text())[0]
-                if version != anisearch.__version__:
-                    logging.info(
-                        f'Update available! You are running version {anisearch.__version__} - Version {version} is '
-                        f'available at https://github.com/IchBinLeoon/anisearch-discord-bot'
-                    )
 
 
 async def start(log_stream: StringIO, pool: asyncpg.Pool) -> None:
