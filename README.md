@@ -4,6 +4,7 @@
 [![Discord](https://img.shields.io/discord/835960108466176041?logo=discord&logoColor=ffffff)](https://discord.gg/Bv94yQYZM8)
 [![CodeQL](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/codeql-analysis.yml)
 [![Black](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/black.yml/badge.svg)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/black.yml)
+[![Pages](https://img.shields.io/github/deployments/IchBinLeoon/anisearch-discord-bot/github-pages?label=github-pages)](https://ichbinleoon.github.io/anisearch-discord-bot/)
 [![License](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE)
 
 The source code of the AniSearch Bot.
