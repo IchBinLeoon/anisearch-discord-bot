@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 
 import discord
 from discord import app_commands
@@ -21,48 +21,6 @@ class Themes(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
-    @staticmethod
-    def get_themes_embed(data: Dict[str, Any]) -> discord.Embed:
-        embed = discord.Embed(
-            title=data.get('name'), color=0x4169E1, url=f'https://animethemes.moe/anime/{data.get("slug")}'
-        )
-        embed.set_author(name='Anime Themes')
-        embed.set_thumbnail(url=data.get('images')[0].get('link'))
-        embed.set_footer(text='Provided by https://animethemes.moe/')
-
-        for i in data.get('animethemes'):
-            info = ['**Title:** ' + i.get('song').get('title')]
-
-            if i.get('song').get('artists'):
-                info.append('**Artist:** ' + i.get('song').get('artists')[0].get('name'))
-
-            try:
-                info.append(
-                    f'[Link](https://v.animethemes.moe/{i.get("animethemeentries")[0].get("videos")[0].get("basename")})'
-                )
-            except IndexError:
-                pass
-
-            embed.add_field(name=f'{i.get("slug")} • {i.get("id")}', value='\n'.join(info), inline=False)
-
-        return embed
-
-    @staticmethod
-    def get_theme_embed(data: Dict[str, Any]) -> discord.Embed:
-        embed = discord.Embed(title=data.get('anime').get('name'), color=0x4169E1)
-        embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '))
-        embed.set_thumbnail(url=data.get('anime').get('images')[0].get('link'))
-        embed.set_footer(text='Provided by https://animethemes.moe/')
-
-        info = ['**Title:** ' + data.get('song').get('title')]
-
-        if data.get('song').get('artists'):
-            info.append('**Artist:** ' + ', '.join([i.get('name') for i in data.get('song').get('artists')]))
-
-        embed.description = '\n'.join(info)
-
-        return embed
-
     @app_commands.command(
         name='themes',
         description='Searches for the opening and ending themes of an anime',
@@ -77,11 +35,11 @@ class Themes(Cog):
             'q': title,
             'page[limit]': limit,
             'fields[search]': 'anime',
-            'include[anime]': 'images,animethemes.animethemeentries.videos,animethemes.song.artists',
+            'include[anime]': 'images,animethemes.animethemeentries.videos,animethemes.song',
         }
 
-        data, entries = (
-            (
+        if (
+            data := (
                 await get(
                     url='https://api.animethemes.moe/search/',
                     session=self.bot.session,
@@ -91,21 +49,27 @@ class Themes(Cog):
             )
             .get('search')
             .get('anime')
-        ), []
-
-        for i in data:
-            for j in i.get('animethemes'):
-                for k in j.get('animethemeentries'):
-                    if not k.get('nsfw'):
-                        if i not in entries:
-                            entries.append(i)
-
-        if entries:
+        ):
             embeds = []
 
-            for k, v in enumerate(entries, start=1):
-                embed = self.get_themes_embed(v)
-                embed.set_footer(text=f'{embed.footer.text} • Page {k}/{len(entries)}')
+            for page, anime in enumerate(data, start=1):
+                embed = discord.Embed(
+                    title=anime.get('name'), color=0x4169E1, url=f'https://animethemes.moe/anime/{anime.get("slug")}'
+                )
+                embed.set_author(name='Anime Themes')
+                embed.set_thumbnail(url=anime.get('images')[0].get('link'))
+                embed.set_footer(text=f'Provided by https://animethemes.moe/ • Page {page}/{len(data)}')
+
+                for i in anime.get('animethemes'):
+                    if not i.get('nsfw'):
+                        link = f'https://v.animethemes.moe/{i.get("animethemeentries")[0].get("videos")[0].get("basename")}'
+
+                        embed.add_field(
+                            name=f'{i.get("slug")} • {i.get("id")}',
+                            value=f'[{i.get("song").get("title")}]({link})',
+                            inline=False,
+                        )
+
                 embeds.append(embed)
 
             view = ThemesView(interaction=interaction, embeds=embeds)
@@ -131,13 +95,22 @@ class Themes(Cog):
             ).get('animetheme')
         except HttpException as e:
             if not e.status == 404:
-                log.error(e)
+                raise e
             data = None
 
         if data and not data.get('animethemeentries')[0].get('nsfw'):
-            embed = self.get_theme_embed(data)
+            description = f'**Title:** {data.get("song").get("title")}'
+
+            if data.get('song').get('artists'):
+                description += f'\n**Artists:** {", ".join([i.get("name") for i in data.get("song").get("artists")])}'
+
+            embed = discord.Embed(title=data.get('anime').get('name'), description=description, color=0x4169E1)
+            embed.set_author(name=data.get('slug').replace('OP', 'Opening ').replace('ED', 'Ending '))
+            embed.set_thumbnail(url=data.get('anime').get('images')[0].get('link'))
+            embed.set_footer(text='Provided by https://animethemes.moe/')
 
             await interaction.followup.send(embed=embed)
+
             await interaction.followup.send(
                 f'https://v.animethemes.moe/{data.get("animethemeentries")[0].get("videos")[0].get("basename")}'
             )
