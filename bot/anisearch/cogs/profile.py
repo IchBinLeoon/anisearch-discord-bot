@@ -1,5 +1,6 @@
+import enum
 import logging
-from typing import Optional, Literal
+from typing import Optional
 
 import discord
 from discord import app_commands
@@ -12,6 +13,15 @@ log = logging.getLogger(__name__)
 ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033399107289189/anilist.png'
 MYANIMELIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033442816143390/myanimelist.png'
 KITSU_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033462776840232/kitsu.png'
+
+
+class AnimePlatform(enum.Enum):
+    AniList = 0
+    MyAnimeList = 1
+    Kitsu = 2
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Profile(Cog):
@@ -57,10 +67,8 @@ class Profile(Cog):
     )
 
     @profile_group.command(name='add', description='Adds an AniList, MyAnimeList or Kitsu profile to your account')
-    @app_commands.describe(site='The anime tracking site', username='Your site username')
-    async def profile_add_slash_command(
-        self, interaction: discord.Interaction, site: Literal['AniList', 'MyAnimeList', 'Kitsu'], username: str
-    ):
+    @app_commands.describe(platform='The anime tracking site', username='Your site username')
+    async def profile_add_slash_command(self, interaction: discord.Interaction, platform: AnimePlatform, username: str):
         await interaction.response.defer()
 
         await interaction.followup.send('profile add')
@@ -68,10 +76,8 @@ class Profile(Cog):
     @profile_group.command(
         name='remove', description='Removes an added AniList, MyAnimeList or Kitsu profile from your account'
     )
-    @app_commands.describe(site='The anime tracking site')
-    async def profile_remove_slash_command(
-        self, interaction: discord.Interaction, site: Literal['AniList', 'MyAnimeList', 'Kitsu']
-    ):
+    @app_commands.describe(platform='The anime tracking site')
+    async def profile_remove_slash_command(self, interaction: discord.Interaction, platform: AnimePlatform):
         await interaction.response.send_message('profile remove')
 
     @profile_group.command(name='info', description='Displays the added profiles of you or a server member')
