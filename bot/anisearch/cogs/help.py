@@ -174,7 +174,6 @@ class Help(Cog):
     async def stats_slash_command(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title=':bar_chart: Information & Statistics',
-            description=f'This instance of the bot is owned by {(await self.bot.application_info()).owner.mention}',
             color=0x4169E1,
             timestamp=discord.utils.utcnow(),
         )
