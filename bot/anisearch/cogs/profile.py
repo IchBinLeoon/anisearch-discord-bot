@@ -1,6 +1,6 @@
 import enum
 import logging
-from typing import Optional
+from typing import Optional, Dict, Any, Tuple
 
 import discord
 from discord import app_commands
@@ -8,6 +8,7 @@ from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.http import get, HttpException
+from anisearch.utils.menus import BaseView
 
 log = logging.getLogger(__name__)
 
@@ -25,9 +26,44 @@ class AnimePlatform(enum.Enum):
         return self.name
 
 
+class ProfileView(BaseView):
+    def __init__(self, interaction: discord.Interaction, overview: discord.Embed, favorites: discord.Embed) -> None:
+        super().__init__(interaction, timeout=180)
+        self.overview = overview
+        self.favorites = favorites
+
+        self.on_overview.disabled = True
+
+    def disable_unavailable_buttons(self) -> None:
+        self.on_overview.disabled = not self.on_overview.disabled
+        self.on_favorites.disabled = not self.on_favorites.disabled
+
+    @discord.ui.button(label='Overview', emoji='\N{BUST IN SILHOUETTE}', style=discord.ButtonStyle.gray)
+    async def on_overview(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.disable_unavailable_buttons()
+        await interaction.response.edit_message(embed=self.overview, view=self)
+
+    @discord.ui.button(label='Favorites', emoji='\N{WHITE MEDIUM STAR}', style=discord.ButtonStyle.gray)
+    async def on_favorites(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.disable_unavailable_buttons()
+        await interaction.response.edit_message(embed=self.favorites, view=self)
+
+    @discord.ui.button(emoji='\N{WASTEBASKET}', style=discord.ButtonStyle.red)
+    async def on_close(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.close()
+
+
 class Profile(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
+
+    @staticmethod
+    def get_anilist_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
+        overview = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=0x4169E1)
+
+        favorites = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=0x4169E1)
+
+        return overview, favorites
 
     @app_commands.command(
         name='anilist', description='Displays information about the given AniList profile such as stats and favorites'
@@ -38,7 +74,27 @@ class Profile(Cog):
     ):
         await interaction.response.defer()
 
-        await interaction.followup.send('anilist')
+        if username:
+            data = await self.bot.anilist.user(page=1, perPage=1, name=username)
+
+        else:
+            user = member or interaction.user
+
+            if profile := await self.bot.db.get_user_profile(user.id, str(AnimePlatform.AniList).lower()):
+                data = await self.bot.anilist.user(page=1, perPage=1, id=profile.get('profile_id'))
+            else:
+                embed = discord.Embed(title=f':no_entry: No AniList profile added.', color=0x4169E1)
+                return await interaction.followup.send(embed=embed)
+
+        if data:
+            overview, favorites = self.get_anilist_embeds(data[0])
+
+            view = ProfileView(interaction=interaction, overview=overview, favorites=favorites)
+            await interaction.followup.send(embed=overview, view=view)
+
+        else:
+            embed = discord.Embed(title=f':no_entry: The AniList profile could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
 
     @app_commands.command(
         name='myanimelist',

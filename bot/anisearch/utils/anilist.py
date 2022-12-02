@@ -243,9 +243,9 @@ class AniListClient:
     @staticmethod
     def _get_user_query() -> str:
         return '''
-        query ($page: Int, $perPage: Int, $name: String) {
+        query ($page: Int, $perPage: Int, $id: Int, $name: String) {
           Page(page: $page, perPage: $perPage) {
-            users(name: $name) {
+            users(id: $id, name: $name) {
               id
               name
               avatar {
@@ -263,6 +263,7 @@ class AniListClient:
                   chaptersRead
                 }
               }
+              siteUrl
             }
           }
         }
