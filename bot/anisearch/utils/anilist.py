@@ -59,6 +59,10 @@ class AniListClient:
         data = await self._request(query=self._get_studio_query(), **variables)
         return data.get('data').get('Page').get('studios')
 
+    async def user(self, **variables: Dict[str, Any]) -> List[Dict[str, Any]]:
+        data = await self._request(query=self._get_user_query(), **variables)
+        return data.get('data').get('Page').get('users')
+
     @staticmethod
     def _get_media_query() -> str:
         return '''
@@ -231,6 +235,19 @@ class AniListClient:
                 }
               }
               siteUrl
+            }
+          }
+        }
+        '''
+
+    @staticmethod
+    def _get_user_query() -> str:
+        return '''
+        query ($page: Int, $perPage: Int, $name: String) {
+          Page(page: $page, perPage: $perPage) {
+            users(name: $name) {
+              id
+              name
             }
           }
         }

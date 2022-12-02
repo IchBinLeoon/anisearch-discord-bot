@@ -7,6 +7,7 @@ from discord import app_commands
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
+from anisearch.utils.http import get, HttpException
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +72,54 @@ class Profile(Cog):
     async def profile_add_slash_command(self, interaction: discord.Interaction, platform: AnimePlatform, username: str):
         await interaction.response.defer()
 
-        await interaction.followup.send('profile add')
+        if platform == AnimePlatform.AniList:
+            if data := await self.bot.anilist.user(page=1, perPage=1, name=username):
+                await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), data[0].get('id'))
+
+                embed = discord.Embed(title=data[0].get('name'))
+
+                return await interaction.followup.send(embed=embed)
+
+        if platform == AnimePlatform.MyAnimeList:
+            try:
+                data = (
+                    await get(
+                        url=f'https://api.jikan.moe/v4/users/{username}/full',
+                        session=self.bot.session,
+                        res_method='json',
+                    )
+                ).get('data')
+            except HttpException as e:
+                if not e.status == 404:
+                    raise e
+                data = None
+
+            if data:
+                await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), data.get('mal_id'))
+
+                embed = discord.Embed(title=data.get('username'))
+
+                return await interaction.followup.send(embed=embed)
+
+        if platform == AnimePlatform.Kitsu:
+            if data := (
+                await get(
+                    url='https://kitsu.io/api/edge/users',
+                    session=self.bot.session,
+                    res_method='json',
+                    params={'filter[name]': username},
+                )
+            ).get('data'):
+                await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), int(data[0].get('id')))
+
+                embed = discord.Embed(title=data[0].get('attributes').get('name'))
+
+                return await interaction.followup.send(embed=embed)
+
+        embed = discord.Embed(
+            title=f':no_entry: The {str(platform)} profile `{username}` could not be found.', color=0x4169E1
+        )
+        await interaction.followup.send(embed=embed)
 
     @profile_group.command(
         name='remove', description='Removes an added AniList, MyAnimeList or Kitsu profile from your account'
