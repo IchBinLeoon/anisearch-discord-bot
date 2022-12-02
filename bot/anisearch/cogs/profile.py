@@ -208,13 +208,38 @@ class Profile(Cog):
     )
     @app_commands.describe(platform='The anime tracking site')
     async def profile_remove_slash_command(self, interaction: discord.Interaction, platform: AnimePlatform):
-        await interaction.response.send_message('profile remove')
+        if await self.bot.db.get_user_profile(interaction.user.id, str(platform).lower()):
+            await self.bot.db.remove_user_profile(interaction.user.id, str(platform).lower())
+
+            embed = discord.Embed(
+                title=f':white_check_mark: The added {str(platform)} profile has been removed.', color=0x4169E1
+            )
+        else:
+            embed = discord.Embed(title=f':no_entry: You have not added a {str(platform)} profile.', color=0x4169E1)
+
+        await interaction.response.send_message(embed=embed)
 
     @profile_group.command(name='info', description='Displays the added profiles of you or a server member')
     async def profile_info_slash_command(
         self, interaction: discord.Interaction, member: Optional[discord.Member] = None
     ):
-        await interaction.response.send_message('profile info')
+        user = member or interaction.user
+
+        embed = discord.Embed(title=user.name, color=0x4169E1)
+        embed.set_author(name='Profiles')
+        embed.set_thumbnail(url=user.display_avatar)
+
+        for i in AnimePlatform:
+            if data := await self.bot.db.get_user_profile(user.id, str(i).lower()):
+                embed.add_field(
+                    name=str(i),
+                    value=f'ID: {data.get("profile_id")}\nAdded: {discord.utils.format_dt(data.get("added_at"), "R")}',
+                    inline=False,
+                )
+            else:
+                embed.add_field(name=str(i), value='*Not added*', inline=False)
+
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: AniSearchBot) -> None:

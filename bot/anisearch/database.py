@@ -25,12 +25,23 @@ class Database:
     async def add_user(self, user_id: int) -> None:
         await self.pool.execute('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', user_id)
 
+    async def remove_user(self, user_id: int) -> None:
+        await self.pool.execute('DELETE FROM users WHERE id = $1', user_id)
+
     async def add_user_profile(self, user_id: int, platform: str, profile_id: int) -> None:
         await self.pool.execute(
-            "INSERT INTO user_profiles (user_id, platform, profile_id) VALUES ($1, $2, $3) ON CONFLICT (user_id, platform) DO UPDATE SET profile_id = $3",
+            "INSERT INTO user_profiles (user_id, platform, profile_id) VALUES ($1, $2, $3) ON CONFLICT (user_id, platform) DO UPDATE SET profile_id = $3, added_at = current_timestamp",
             user_id,
             platform,
             profile_id,
+        )
+
+    async def remove_user_profile(self, user_id: int, platform: str) -> None:
+        await self.pool.execute("DELETE FROM user_profiles WHERE user_id = $1 AND platform = $2", user_id, platform)
+
+    async def get_user_profile(self, user_id: int, platform: str) -> asyncpg.Record:
+        return await self.pool.fetchrow(
+            "SELECT * FROM user_profiles WHERE user_id = $1 AND platform = $2", user_id, platform
         )
 
     async def add_guild_command_usage(
