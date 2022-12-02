@@ -25,6 +25,14 @@ class Database:
     async def add_user(self, user_id: int) -> None:
         await self.pool.execute('INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING', user_id)
 
+    async def add_user_profile(self, user_id: int, platform: str, profile_id: int) -> None:
+        await self.pool.execute(
+            "INSERT INTO user_profiles (user_id, platform, profile_id) VALUES ($1, $2, $3) ON CONFLICT (user_id, platform) DO UPDATE SET profile_id = $3",
+            user_id,
+            platform,
+            profile_id,
+        )
+
     async def add_guild_command_usage(
         self,
         shard_id: int,

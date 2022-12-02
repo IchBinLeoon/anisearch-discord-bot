@@ -65,13 +65,13 @@ create unique index guild_roles_role_id_uindex
 
 create table user_profiles
 (
-    user_id  bigint                              not null
+    user_id    bigint                              not null
         constraint user_profiles_users_id_fk
             references users
             on delete cascade,
-    platform anime_platform                      not null,
-    username text                                not null,
-    added_at timestamp default CURRENT_TIMESTAMP not null
+    platform   anime_platform                      not null,
+    profile_id integer                             not null,
+    added_at   timestamp default CURRENT_TIMESTAMP not null
 );
 
 create unique index user_profiles_user_id_platform_uindex
