@@ -76,7 +76,32 @@ class Profile(Cog):
             if data := await self.bot.anilist.user(page=1, perPage=1, name=username):
                 await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), data[0].get('id'))
 
-                embed = discord.Embed(title=data[0].get('name'))
+                embed = discord.Embed(title=f'Added AniList Profile `{data[0].get("name")}`', color=0x4169E1)
+                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+                embed.set_footer(text='Provided by https://anilist.co/')
+
+                if data[0].get('avatar').get('large'):
+                    embed.set_thumbnail(url=data[0].get('avatar').get('large'))
+
+                anime_count = data[0].get('statistics').get('anime').get('count')
+                anime_score = data[0].get('statistics').get('anime').get('meanScore')
+                anime_days = round(data[0].get('statistics').get('anime').get('minutesWatched') / 60 / 24, 2)
+
+                embed.add_field(
+                    name='Anime Stats',
+                    value=f'Anime Count: {anime_count}\nMean Score: {anime_score}\nDays Watched: {anime_days}',
+                    inline=True,
+                )
+
+                manga_count = data[0].get('statistics').get('manga').get('count')
+                manga_score = data[0].get('statistics').get('manga').get('meanScore')
+                manga_chapters = data[0].get('statistics').get('manga').get('chaptersRead')
+
+                embed.add_field(
+                    name='Manga Stats',
+                    value=f'Manga Count: {manga_count}\nMean Score: {manga_score}\nChapters Read: {manga_chapters}',
+                    inline=True,
+                )
 
                 return await interaction.followup.send(embed=embed)
 
@@ -97,7 +122,32 @@ class Profile(Cog):
             if data:
                 await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), data.get('mal_id'))
 
-                embed = discord.Embed(title=data.get('username'))
+                embed = discord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`', color=0x4169E1)
+                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+                embed.set_footer(text='Provided by https://myanimelist.net/')
+
+                if data.get('images').get('jpg').get('image_url') is not None:
+                    embed.set_thumbnail(url=data.get('images').get('jpg').get('image_url'))
+
+                anime_days = data.get('statistics').get('anime').get('days_watched')
+                anime_score = data.get('statistics').get('anime').get('mean_score')
+                anime_entries = data.get('statistics').get('anime').get('total_entries')
+
+                embed.add_field(
+                    name='Anime Stats',
+                    value=f'Days Watched: {anime_days}\nMean Score: {anime_score}\nTotal Entries: {anime_entries}',
+                    inline=True,
+                )
+
+                manga_days = data.get('statistics').get('manga').get('days_read')
+                manga_score = data.get('statistics').get('manga').get('mean_score')
+                manga_entries = data.get('statistics').get('manga').get('total_entries')
+
+                embed.add_field(
+                    name='Manga Stats',
+                    value=f'Days Read: {manga_days}\nMean Score: {manga_score}\nTotal Entries: {manga_entries}',
+                    inline=True,
+                )
 
                 return await interaction.followup.send(embed=embed)
 
@@ -107,12 +157,44 @@ class Profile(Cog):
                     url='https://kitsu.io/api/edge/users',
                     session=self.bot.session,
                     res_method='json',
-                    params={'filter[name]': username},
+                    params={'filter[name]': username, 'include': 'stats'},
                 )
-            ).get('data'):
-                await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), int(data[0].get('id')))
+            ):
+                await self.bot.db.add_user_profile(
+                    interaction.user.id, str(platform).lower(), int(data.get('data')[0].get('id'))
+                )
 
-                embed = discord.Embed(title=data[0].get('attributes').get('name'))
+                embed = discord.Embed(
+                    title=f'Added Kitsu Profile `{data.get("data")[0].get("attributes").get("name")}`', color=0x4169E1
+                )
+                embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+                embed.set_footer(text='Provided by https://kitsu.io/')
+
+                if data.get('data')[0].get('attributes').get('avatar').get('original'):
+                    embed.set_thumbnail(url=data.get('data')[0].get('attributes').get('avatar').get('original'))
+
+                for i in data.get('included'):
+                    if i.get('attributes').get('kind') == 'anime-amount-consumed':
+                        episodes = i.get('attributes').get('statsData').get('units')
+                        completed = i.get('attributes').get('statsData').get('completed')
+                        entries = i.get('attributes').get('statsData').get('media')
+
+                        embed.add_field(
+                            name='Anime Stats',
+                            value=f'Episodes: {episodes}\nCompleted: {completed}\nTotal Entries: {entries}',
+                            inline=True,
+                        )
+
+                    if i.get('attributes').get('kind') == 'manga-amount-consumed':
+                        chapters = i.get('attributes').get('statsData').get('units')
+                        completed = i.get('attributes').get('statsData').get('completed')
+                        entries = i.get('attributes').get('statsData').get('media')
+
+                        embed.add_field(
+                            name='Manga Stats',
+                            value=f'Chapters: {chapters}\nCompleted: {completed}\nTotal Entries: {entries}',
+                            inline=True,
+                        )
 
                 return await interaction.followup.send(embed=embed)
 

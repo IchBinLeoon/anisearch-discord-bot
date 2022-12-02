@@ -248,6 +248,21 @@ class AniListClient:
             users(name: $name) {
               id
               name
+              avatar {
+                large
+              }
+              statistics {
+                anime {
+                  count
+                  meanScore
+                  minutesWatched
+                }
+                manga {
+                  count
+                  meanScore
+                  chaptersRead
+                }
+              }
             }
           }
         }
