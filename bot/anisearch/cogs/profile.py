@@ -1,5 +1,6 @@
 import enum
 import logging
+from datetime import datetime
 from typing import Optional, Dict, Any, Tuple
 
 import discord
@@ -124,7 +125,120 @@ class Profile(Cog):
                     else:
                         name = i.get('name')
 
-                    entries.append(f'[{name}]({data.get("siteUrl")})')
+                    entries.append(f'[{name}]({i.get("siteUrl")})')
+
+                total = 0
+
+                for i, j in enumerate(entries):
+                    total += len(j) + 3
+
+                    if total >= 1024:
+                        entries = entries[:i]
+                        entries[i - 1] = entries[i - 1] + '...'
+                        break
+
+                value = ' • '.join(entries)
+            else:
+                value = 'N/A'
+
+            favorites.add_field(name=f'Favorite {k.capitalize()}', value=value, inline=False)
+
+        return overview, favorites
+
+    @staticmethod
+    def get_myanimelist_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
+        description = []
+
+        if data.get('last_online'):
+            last_online = datetime.strptime(data.get('last_online').replace('+00:00', ''), "%Y-%m-%dT%H:%M:%S")
+            description.append(f'**Last Online:** {discord.utils.format_dt(last_online, "R")}')
+
+        if data.get('gender'):
+            description.append(f'**Gender:** {data.get("gender")}')
+
+        if data.get('birthday'):
+            birthday = datetime.strptime(data.get('birthday').replace('+00:00', ''), "%Y-%m-%dT%H:%M:%S")
+            description.append(f'**Birthday:** {discord.utils.format_dt(birthday, "R")}')
+
+        if data.get('location'):
+            description.append(f'**Location:** {data.get("location")}')
+
+        if data.get('joined'):
+            joined = datetime.strptime(data.get('joined').replace('+00:00', ''), "%Y-%m-%dT%H:%M:%S")
+            description.append(f'**Joined:** {discord.utils.format_dt(joined, "R")}')
+
+        overview = discord.Embed(
+            title=data.get('username'), description='\n'.join(description), url=data.get('url'), color=0x4169E1
+        )
+        overview.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+        overview.set_footer(text='Provided by https://myanimelist.net/ • Overview')
+
+        if data.get('images').get('jpg').get('image_url') is not None:
+            overview.set_thumbnail(url=data.get('images').get('jpg').get('image_url'))
+
+        if data.get('about'):
+            overview.add_field(
+                name='About',
+                value=data.get('about')[:500] + '...' if len(data.get('about')) > 500 else data.get('about'),
+                inline=False,
+            )
+
+        anime_stats_data = data.get('statistics').get('anime')
+        anime_stats = [
+            f'Days Watched: {anime_stats_data.get("days_watched")}',
+            f'Mean Score: {anime_stats_data.get("mean_score")}',
+            f'Watching: {anime_stats_data.get("watching")}',
+            f'Completed: {anime_stats_data.get("completed")}',
+            f'On-Hold: {anime_stats_data.get("on_hold")}',
+            f'Dropped: {anime_stats_data.get("dropped")}',
+            f'Plan to Watch: {anime_stats_data.get("plan_to_watch")}',
+            f'Total Entries: {anime_stats_data.get("total_entries")}',
+            f'Rewatched: {anime_stats_data.get("rewatched")}',
+            f'Episodes: {anime_stats_data.get("episodes_watched")}',
+        ]
+        overview.add_field(name='Anime Stats', value='\n'.join(anime_stats), inline=True)
+
+        manga_stats_data = data.get('statistics').get('manga')
+        manga_stats = [
+            f'Days Read: {manga_stats_data.get("days_read")}',
+            f'Mean Score: {manga_stats_data.get("mean_score")}',
+            f'Reading: {manga_stats_data.get("reading")}',
+            f'Completed: {manga_stats_data.get("completed")}',
+            f'On-Hold: {manga_stats_data.get("on_hold")}',
+            f'Dropped: {manga_stats_data.get("dropped")}',
+            f'Plan to Read: {manga_stats_data.get("plan_to_read")}',
+            f'Total Entries: {manga_stats_data.get("total_entries")}',
+            f'Reread: {manga_stats_data.get("reread")}',
+            f'Chapters Read: {manga_stats_data.get("chapters_read")}',
+            f'Volumes Read: {manga_stats_data.get("volumes_read")}',
+        ]
+        overview.add_field(name='Manga Stats', value='\n'.join(manga_stats), inline=True)
+
+        overview.add_field(
+            name='Anime List', value=f'https://myanimelist.net/animelist/{data.get("username")}', inline=False
+        )
+        overview.add_field(
+            name='Manga List', value=f'https://myanimelist.net/mangalist/{data.get("username")}', inline=False
+        )
+
+        favorites = discord.Embed(title=data.get('username'), url=data.get('url'), color=0x4169E1)
+        favorites.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+        favorites.set_footer(text='Provided by https://myanimelist.net/ • Favorites')
+
+        if data.get('images').get('jpg').get('image_url') is not None:
+            favorites.set_thumbnail(url=data.get('images').get('jpg').get('image_url'))
+
+        for k, v in data.get('favorites').items():
+            if v:
+                entries = []
+
+                for i in v:
+                    if k == 'anime' or k == 'manga':
+                        name = i.get('title')
+                    else:
+                        name = i.get('name')
+
+                    entries.append(f'[{name}]({i.get("url")})')
 
                 total = 0
 
@@ -185,7 +299,61 @@ class Profile(Cog):
     ):
         await interaction.response.defer()
 
-        await interaction.followup.send('myanimelist')
+        if username:
+            try:
+                data = (
+                    await get(
+                        url=f'https://api.jikan.moe/v4/users/{username}/full',
+                        session=self.bot.session,
+                        res_method='json',
+                    )
+                ).get('data')
+            except HttpException as e:
+                if not e.status == 404:
+                    raise e
+                data = None
+
+        else:
+            user = member or interaction.user
+
+            if profile := await self.bot.db.get_user_profile(user.id, str(AnimePlatform.MyAnimeList).lower()):
+                try:
+                    user = (
+                        (
+                            await get(
+                                url=f'https://api.jikan.moe/v4/users/userbyid/{profile.get("profile_id")}',
+                                session=self.bot.session,
+                                res_method='json',
+                            )
+                        )
+                        .get('data')
+                        .get('username')
+                    )
+
+                    data = (
+                        await get(
+                            url=f'https://api.jikan.moe/v4/users/{user}/full',
+                            session=self.bot.session,
+                            res_method='json',
+                        )
+                    ).get('data')
+                except HttpException as e:
+                    if not e.status == 404:
+                        raise e
+                    data = None
+            else:
+                embed = discord.Embed(title=f':no_entry: No MyAnimeList profile added.', color=0x4169E1)
+                return await interaction.followup.send(embed=embed)
+
+        if data:
+            overview, favorites = self.get_myanimelist_embeds(data)
+
+            view = ProfileView(interaction=interaction, overview=overview, favorites=favorites)
+            await interaction.followup.send(embed=overview, view=view)
+
+        else:
+            embed = discord.Embed(title=f':no_entry: The MyAnimeList profile could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
 
     @app_commands.command(
         name='kitsu', description='Displays information about the given Kitsu profile such as stats and favorites'
