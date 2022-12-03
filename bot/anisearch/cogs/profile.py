@@ -60,8 +60,87 @@ class Profile(Cog):
     @staticmethod
     def get_anilist_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
         overview = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=0x4169E1)
+        overview.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+        overview.set_footer(text='Provided by https://anilist.co/ • Overview')
+
+        if data.get('avatar').get('large'):
+            overview.set_thumbnail(url=data.get('avatar').get('large'))
+
+        if data.get('bannerImage'):
+            overview.set_image(url=data.get('bannerImage'))
+
+        if data.get('about'):
+            overview.add_field(
+                name='About',
+                value=data.get('about')[:500] + '...' if len(data.get('about')) > 500 else data.get('about'),
+                inline=False,
+            )
+
+        anime_count = data.get('statistics').get('anime').get('count')
+        anime_score = data.get('statistics').get('anime').get('meanScore')
+        anime_days = round(data.get('statistics').get('anime').get('minutesWatched') / 60 / 24, 2)
+        anime_episodes = data.get('statistics').get('anime').get('episodesWatched')
+
+        overview.add_field(
+            name='Anime Stats',
+            value=f'Anime Count: {anime_count}\nMean Score: {anime_score}\nDays Watched: {anime_days}\nEpisodes: {anime_episodes}',
+            inline=True,
+        )
+
+        manga_count = data.get('statistics').get('manga').get('count')
+        manga_score = data.get('statistics').get('manga').get('meanScore')
+        manga_chapters = data.get('statistics').get('manga').get('chaptersRead')
+        manga_volumes = data.get('statistics').get('manga').get('volumesRead')
+
+        overview.add_field(
+            name='Manga Stats',
+            value=f'Manga Count: {manga_count}\nMean Score: {manga_score}\nChapters Read: {manga_chapters}\nVolumes Read: {manga_volumes}',
+            inline=True,
+        )
+
+        overview.add_field(
+            name='Anime List', value=f'https://anilist.co/user/{data.get("name")}/animelist', inline=False
+        )
+        overview.add_field(
+            name='Manga List', value=f'https://anilist.co/user/{data.get("name")}/mangalist', inline=False
+        )
 
         favorites = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=0x4169E1)
+        favorites.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+        favorites.set_footer(text='Provided by https://anilist.co/ • Favorites')
+
+        if data.get('avatar').get('large'):
+            favorites.set_thumbnail(url=data.get('avatar').get('large'))
+
+        for k, v in data.get('favourites').items():
+            if nodes := v.get('nodes'):
+                entries = []
+
+                for i in nodes:
+                    if k == 'anime' or k == 'manga':
+                        name = i.get('title').get('romaji')
+                    elif k == 'characters' or k == 'staff':
+                        name = i.get('name').get('full')
+                    else:
+                        name = i.get('name')
+
+                    entries.append(f'[{name}]({data.get("siteUrl")})')
+
+                total = 0
+
+                for i, j in enumerate(entries):
+                    total += len(j) + 3
+
+                    if total >= 1024:
+                        entries = entries[:i]
+                        entries[i - 1] = entries[i - 1] + '...'
+                        break
+
+                value = ' • '.join(entries)
+            else:
+                value = 'N/A'
+
+            favorites.add_field(name=f'Favorite {k.capitalize()}', value=value, inline=False)
 
         return overview, favorites
 

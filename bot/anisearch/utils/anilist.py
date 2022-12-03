@@ -248,19 +248,63 @@ class AniListClient:
             users(id: $id, name: $name) {
               id
               name
+              about
               avatar {
                 large
+              }
+              bannerImage
+              favourites {
+                anime {
+                  nodes {
+                    title {
+                      romaji
+                    }
+                    siteUrl
+                  }
+                }
+                manga {
+                  nodes {
+                    title {
+                      romaji
+                    }
+                    siteUrl
+                  }
+                }
+                characters {
+                  nodes {
+                    name {
+                      full
+                    }
+                    siteUrl
+                  }
+                }
+                staff {
+                  nodes {
+                    name {
+                      full
+                    }
+                    siteUrl
+                  }
+                }
+                studios {
+                  nodes {
+                    name
+                    siteUrl
+                  }
+                }
               }
               statistics {
                 anime {
                   count
                   meanScore
                   minutesWatched
+                  episodesWatched
                 }
                 manga {
                   count
                   meanScore
                   chaptersRead
+                  volumesRead
                 }
               }
               siteUrl
