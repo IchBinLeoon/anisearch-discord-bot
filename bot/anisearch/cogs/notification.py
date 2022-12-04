@@ -1,12 +1,19 @@
 import logging
+from typing import List
 
 import discord
 from discord import app_commands
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
+from anisearch.utils.menus import SimplePaginationView
 
 log = logging.getLogger(__name__)
+
+
+class NotificationListView(SimplePaginationView):
+    def __init__(self, interaction: discord.Interaction, embeds: List[discord.Embed]) -> None:
+        super().__init__(interaction, embeds, timeout=180)
 
 
 class Notification(Cog):
@@ -69,9 +76,28 @@ class Notification(Cog):
     @notification_group.command(name='list', description='Displays your server notification list')
     @app_commands.checks.has_permissions(administrator=True)
     async def notification_list_slash_command(self, interaction: discord.Interaction):
-        await interaction.response.defer()
+        if anime := await self.bot.db.get_guild_episode_notifications(interaction.guild_id):
+            entries, embeds = [anime[i : i + 5] for i in range(0, len(anime), 5)], []
 
-        await interaction.followup.send('notification list')
+            for page, values in enumerate(entries, start=1):
+                embed = discord.Embed(title='Notification List', color=0x4169E1)
+                embed.set_thumbnail(url=interaction.guild.icon)
+                embed.set_footer(text=f'Page {page}/{len(entries)}')
+
+                for i in values:
+                    embed.add_field(
+                        name=i.get('title'),
+                        value=f'ID: {i.get("anilist_id")}\nAdded: {discord.utils.format_dt(i.get("added_at"), "R")}',
+                        inline=False,
+                    )
+
+                embeds.append(embed)
+
+            view = NotificationListView(interaction=interaction, embeds=embeds)
+            await interaction.response.send_message(embed=embeds[0], view=view)
+        else:
+            embed = discord.Embed(title=f':no_entry: No anime added to the server notification list.', color=0x4169E1)
+            await interaction.response.send_message(embed=embed)
 
     @notification_group.command(name='clear', description='Removes all anime from your server notification list')
     @app_commands.checks.has_permissions(administrator=True)
