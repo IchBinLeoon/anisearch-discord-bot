@@ -258,6 +258,108 @@ class Profile(Cog):
 
         return overview, favorites
 
+    @staticmethod
+    def get_kitsu_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
+        overview = discord.Embed(
+            title=data.get('data').get('attributes').get('name'),
+            url=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}',
+            color=0x4169E1,
+        )
+        overview.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+        overview.set_footer(text='Provided by https://kitsu.io/ • Overview')
+
+        if data.get('data').get('attributes').get('avatar'):
+            overview.set_thumbnail(url=data.get('data').get('attributes').get('avatar').get('original'))
+
+        if data.get('data').get('attributes').get('coverImage'):
+            overview.set_image(url=data.get('data').get('attributes').get('coverImage').get('original'))
+
+        for i in data.get('included'):
+            if i.get('attributes').get('kind') == 'anime-amount-consumed':
+                days = round(i.get('attributes').get('statsData').get('time') / 60 / 24, 2)
+                episodes = i.get('attributes').get('statsData').get('units')
+                completed = i.get('attributes').get('statsData').get('completed')
+                entries = i.get('attributes').get('statsData').get('media')
+
+                overview.add_field(
+                    name='Anime Stats',
+                    value=f'Days Watched: {days}\nEpisodes: {episodes}\nCompleted: {completed}\nTotal Entries: {entries}',
+                    inline=True,
+                )
+
+            if i.get('attributes').get('kind') == 'manga-amount-consumed':
+                chapters = i.get('attributes').get('statsData').get('units')
+                completed = i.get('attributes').get('statsData').get('completed')
+                entries = i.get('attributes').get('statsData').get('media')
+
+                overview.add_field(
+                    name='Manga Stats',
+                    value=f'Chapters: {chapters}\nCompleted: {completed}\nTotal Entries: {entries}',
+                    inline=True,
+                )
+
+        overview.add_field(
+            name='Anime List',
+            value=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}/library?media=anime',
+            inline=False,
+        )
+        overview.add_field(
+            name='Manga List',
+            value=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}/library?media=manga',
+            inline=False,
+        )
+
+        favorites = discord.Embed(
+            title=data.get('data').get('attributes').get('name'),
+            url=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}',
+            color=0x4169E1,
+        )
+        favorites.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+        favorites.set_footer(text='Provided by https://kitsu.io/ • Favorites')
+
+        if data.get('data').get('attributes').get('avatar'):
+            favorites.set_thumbnail(url=data.get('data').get('attributes').get('avatar').get('original'))
+
+        favs = {
+            'anime': [],
+            'manga': [],
+            'characters': [],
+        }
+        if included := data.get('included'):
+            for i in included:
+                if i.get('type') == 'anime':
+                    favs.get('anime').append(
+                        f'[{i.get("attributes").get("canonicalTitle")}](https://kitsu.io/anime/{i.get("attributes").get("slug")})'
+                    )
+                if i.get('type') == 'manga':
+                    favs.get('manga').append(
+                        f'[{i.get("attributes").get("canonicalTitle")}](https://kitsu.io/manga/{i.get("attributes").get("slug")})'
+                    )
+                if i.get('type') == 'characters':
+                    favs.get('characters').append(
+                        f'[{i.get("attributes").get("canonicalName")}](https://myanimelist.net/character/{i.get("attributes").get("malId")})'
+                    )
+
+        for k, v in favs.items():
+            if v:
+                total = 0
+
+                for i, j in enumerate(v):
+                    total += len(j) + 3
+
+                    if total >= 1024:
+                        v = v[:i]
+                        v[i - 1] = v[i - 1] + '...'
+                        break
+
+                value = ' • '.join(v)
+            else:
+                value = 'N/A'
+
+            favorites.add_field(name=f'Favorite {k.capitalize()}', value=value, inline=False)
+
+        return overview, favorites
+
     @app_commands.command(
         name='anilist', description='Displays information about the given AniList profile such as stats and favorites'
     )
@@ -364,7 +466,48 @@ class Profile(Cog):
     ):
         await interaction.response.defer()
 
-        await interaction.followup.send('kitsu')
+        if username:
+            results = await get(
+                url='https://kitsu.io/api/edge/users',
+                session=self.bot.session,
+                res_method='json',
+                params={'filter[name]': username, 'include': 'stats,favorites.item'},
+            )
+            if results.get('data'):
+                data = {'data': results.get('data')[0]}
+
+                if included := results.get('included'):
+                    data['included'] = included
+            else:
+                data = None
+        else:
+            user = member or interaction.user
+
+            if profile := await self.bot.db.get_user_profile(user.id, str(AnimePlatform.Kitsu).lower()):
+                try:
+                    data = await get(
+                        url=f'https://kitsu.io/api/edge/users/{profile.get("profile_id")}',
+                        session=self.bot.session,
+                        res_method='json',
+                        params={'include': 'stats,favorites.item'},
+                    )
+                except HttpException as e:
+                    if not e.status == 404:
+                        raise e
+                    data = None
+            else:
+                embed = discord.Embed(title=f':no_entry: No Kitsu profile added.', color=0x4169E1)
+                return await interaction.followup.send(embed=embed)
+
+        if data:
+            overview, favorites = self.get_kitsu_embeds(data)
+
+            view = ProfileView(interaction=interaction, overview=overview, favorites=favorites)
+            await interaction.followup.send(embed=overview, view=view)
+
+        else:
+            embed = discord.Embed(title=f':no_entry: The Kitsu profile could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
 
     profile_group = app_commands.Group(
         name='profile', description='AniList, MyAnimeList and Kitsu profile management commands'
