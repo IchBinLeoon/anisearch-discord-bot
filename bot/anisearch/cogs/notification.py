@@ -55,7 +55,7 @@ class Notification(Cog):
 
         embed = discord.Embed(
             title=':white_check_mark: Notification Channel',
-            description=f'Set the notification channel to {channel.mention}',
+            description=f'**Set the notification channel to {channel.mention}**\n\nYou will receive a notification for each new episode as long as no specific anime has been added to the server list.',
             color=0x4169E1,
         )
         await interaction.response.send_message(embed=embed)
@@ -76,12 +76,26 @@ class Notification(Cog):
     @app_commands.describe(role='The role')
     @app_commands.checks.has_permissions(administrator=True)
     async def notification_setrole_slash_command(self, interaction: discord.Interaction, role: discord.Role):
-        await interaction.response.send_message('notification setrole')
+        await self.bot.db.add_guild_role(interaction.guild_id, role.id)
+
+        embed = discord.Embed(
+            title=':white_check_mark: Notification Role',
+            description=f'**Set the notification role to {role.mention}**',
+            color=0x4169E1,
+        )
+        await interaction.response.send_message(embed=embed)
 
     @notification_group.command(name='removerole', description='Removes the set role')
     @app_commands.checks.has_permissions(administrator=True)
     async def notification_removerole_slash_command(self, interaction: discord.Interaction):
-        await interaction.response.send_message('notification removerole')
+        if await self.bot.db.get_guild_role(interaction.guild_id):
+            await self.bot.db.remove_guild_role(interaction.guild_id)
+
+            embed = discord.Embed(title=f':white_check_mark: The set role has been removed.', color=0x4169E1)
+        else:
+            embed = discord.Embed(title=f':no_entry: You have not set a role.', color=0x4169E1)
+
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: AniSearchBot) -> None:

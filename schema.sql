@@ -57,9 +57,6 @@ create table guild_roles
 create unique index guild_roles_guild_id_uindex
     on guild_roles (guild_id);
 
-create unique index guild_roles_role_id_uindex
-    on guild_roles (role_id);
-
 create table user_profiles
 (
     user_id    bigint                              not null
