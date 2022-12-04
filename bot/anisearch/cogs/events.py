@@ -72,6 +72,9 @@ class Events(Cog):
         if isinstance(exception, discord.Forbidden):
             title = 'Bot is missing access or permissions.'
 
+        elif isinstance(exception, app_commands.MissingPermissions):
+            title = error
+
         else:
             title = 'An unknown error occurred.'
             log.error(error)
