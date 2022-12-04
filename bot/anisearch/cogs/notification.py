@@ -51,12 +51,26 @@ class Notification(Cog):
     async def notification_setchannel_slash_command(
         self, interaction: discord.Interaction, channel: discord.TextChannel
     ):
-        await interaction.response.send_message('notification setchannel')
+        await self.bot.db.add_guild_channel(interaction.guild_id, channel.id)
+
+        embed = discord.Embed(
+            title=':white_check_mark: Notification Channel',
+            description=f'Set the notification channel to {channel.mention}',
+            color=0x4169E1,
+        )
+        await interaction.response.send_message(embed=embed)
 
     @notification_group.command(name='removechannel', description='Removes the set channel')
     @app_commands.checks.has_permissions(administrator=True)
     async def notification_removechannel_slash_command(self, interaction: discord.Interaction):
-        await interaction.response.send_message('notification removechannel')
+        if await self.bot.db.get_guild_channel(interaction.guild_id):
+            await self.bot.db.remove_guild_channel(interaction.guild_id)
+
+            embed = discord.Embed(title=f':white_check_mark: The set channel has been removed.', color=0x4169E1)
+        else:
+            embed = discord.Embed(title=f':no_entry: You have not set a channel.', color=0x4169E1)
+
+        await interaction.response.send_message(embed=embed)
 
     @notification_group.command(name='setrole', description='Sets the role for episode notification pings')
     @app_commands.describe(role='The role')

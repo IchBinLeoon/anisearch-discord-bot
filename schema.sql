@@ -44,9 +44,6 @@ create table guild_channels
 create unique index guild_channels_guild_id_uindex
     on guild_channels (guild_id);
 
-create unique index guild_channels_channel_id_uindex
-    on guild_channels (channel_id);
-
 create table guild_roles
 (
     guild_id bigint                              not null
