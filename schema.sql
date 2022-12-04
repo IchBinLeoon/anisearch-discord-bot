@@ -25,6 +25,7 @@ create table guild_episode_notifications
             references guilds
             on delete cascade,
     anilist_id integer                             not null,
+    title      text                                not null,
     added_at   timestamp default CURRENT_TIMESTAMP not null
 );
 

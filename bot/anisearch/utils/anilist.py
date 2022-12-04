@@ -66,9 +66,10 @@ class AniListClient:
     @staticmethod
     def _get_media_query() -> str:
         return '''
-        query ($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int, $type: MediaType, $isAdult: Boolean, $search: String, $genres: [String], $tags: [String], $sort: [MediaSort]) {
+        query ($page: Int, $perPage: Int, $id: Int, $season: MediaSeason, $seasonYear: Int, $type: MediaType, $isAdult: Boolean, $search: String, $genres: [String], $tags: [String], $sort: [MediaSort]) {
           Page(page: $page, perPage: $perPage) {
-            media(season: $season, seasonYear: $seasonYear, type: $type, isAdult: $isAdult, search: $search, genre_in: $genres, tag_in: $tags, sort: $sort) {
+            media(id: $id, season: $season, seasonYear: $seasonYear, type: $type, isAdult: $isAdult, search: $search, genre_in: $genres, tag_in: $tags, sort: $sort) {
+              id
               idMal
               title {
                 romaji

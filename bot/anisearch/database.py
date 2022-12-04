@@ -44,6 +44,24 @@ class Database:
             "SELECT * FROM user_profiles WHERE user_id = $1 AND platform = $2", user_id, platform
         )
 
+    async def add_guild_episode_notification(self, guild_id: int, anilist_id: int, title: str) -> None:
+        await self.pool.execute(
+            'INSERT INTO guild_episode_notifications (guild_id, anilist_id, title) VALUES ($1, $2, $3) ON CONFLICT (guild_id, anilist_id) DO NOTHING',
+            guild_id,
+            anilist_id,
+            title,
+        )
+
+    async def remove_guild_episode_notification(self, guild_id: int, anilist_id: int) -> None:
+        await self.pool.execute(
+            'DELETE FROM guild_episode_notifications WHERE guild_id = $1 AND anilist_id = $2', guild_id, anilist_id
+        )
+
+    async def get_guild_episode_notification(self, guild_id: int, anilist_id: int) -> asyncpg.Record:
+        return await self.pool.fetchrow(
+            'SELECT * FROM guild_episode_notifications WHERE guild_id = $1 AND anilist_id = $2', guild_id, anilist_id
+        )
+
     async def add_guild_channel(self, guild_id: int, channel_id: int) -> None:
         await self.pool.execute(
             'INSERT INTO guild_channels (guild_id, channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET channel_id = $2, added_at = current_timestamp',

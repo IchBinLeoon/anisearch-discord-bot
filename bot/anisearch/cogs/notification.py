@@ -24,14 +24,47 @@ class Notification(Cog):
     async def notification_add_slash_command(self, interaction: discord.Interaction, anilist_id: int):
         await interaction.response.defer()
 
-        await interaction.followup.send('notification add')
+        if await self.bot.db.get_guild_episode_notification(interaction.guild_id, anilist_id):
+            embed = discord.Embed(
+                title=f':no_entry: The ID `{anilist_id}` is already on the server notification list.',
+                color=0x4169E1,
+            )
+            return await interaction.followup.send(embed=embed)
+
+        if data := await self.bot.anilist.media(page=1, perPage=1, id=anilist_id, type='ANIME', isAdult=False):
+            await self.bot.db.add_guild_episode_notification(
+                interaction.guild_id, data[0].get('id'), data[0].get('title').get('romaji')
+            )
+
+            embed = discord.Embed(
+                title=f':white_check_mark: Added `{data[0].get("title").get("romaji")}` to the server notification list.',
+                color=0x4169E1,
+            )
+        else:
+            embed = discord.Embed(
+                title=f':no_entry: An anime with the ID `{anilist_id}` could not be found.', color=0x4169E1
+            )
+
+        await interaction.followup.send(embed=embed)
 
     @notification_group.command(name='remove', description='Removes an anime from your server notification list')
     @app_commands.describe(anilist_id='The AniList ID of the anime')
     @app_commands.rename(anilist_id='id')
     @app_commands.checks.has_permissions(administrator=True)
     async def notification_remove_slash_command(self, interaction: discord.Interaction, anilist_id: int):
-        await interaction.response.send_message('notification remove')
+        if await self.bot.db.get_guild_episode_notification(interaction.guild_id, anilist_id):
+            await self.bot.db.remove_guild_episode_notification(interaction.guild_id, anilist_id)
+
+            embed = discord.Embed(
+                title=f':white_check_mark: Removed ID `{anilist_id}` from the server notification list.',
+                color=0x4169E1,
+            )
+        else:
+            embed = discord.Embed(
+                title=f':no_entry: The ID `{anilist_id}` is not on the server notification list.', color=0x4169E1
+            )
+
+        await interaction.response.send_message(embed=embed)
 
     @notification_group.command(name='list', description='Displays your server notification list')
     @app_commands.checks.has_permissions(administrator=True)
