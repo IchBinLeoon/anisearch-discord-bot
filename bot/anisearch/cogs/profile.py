@@ -616,7 +616,7 @@ class Profile(Cog):
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
                 embed.set_footer(text='Provided by https://kitsu.io/')
 
-                if data.get('data')[0].get('attributes').get('avatar').get('original'):
+                if data.get('data')[0].get('attributes').get('avatar'):
                     embed.set_thumbnail(url=data.get('data')[0].get('attributes').get('avatar').get('original'))
 
                 for i in data.get('included'):
