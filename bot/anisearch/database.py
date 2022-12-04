@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import asyncpg
 
@@ -61,6 +62,12 @@ class Database:
         return await self.pool.fetchrow(
             'SELECT * FROM guild_episode_notifications WHERE guild_id = $1 AND anilist_id = $2', guild_id, anilist_id
         )
+
+    async def remove_guild_episode_notifications(self, guild_id: int) -> None:
+        await self.pool.execute('DELETE FROM guild_episode_notifications WHERE guild_id = $1', guild_id)
+
+    async def get_guild_episode_notifications(self, guild_id: int) -> List[asyncpg.Record]:
+        return await self.pool.fetch('SELECT * FROM guild_episode_notifications WHERE guild_id = $1', guild_id)
 
     async def add_guild_channel(self, guild_id: int, channel_id: int) -> None:
         await self.pool.execute(

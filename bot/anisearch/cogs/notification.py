@@ -76,7 +76,16 @@ class Notification(Cog):
     @notification_group.command(name='clear', description='Removes all anime from your server notification list')
     @app_commands.checks.has_permissions(administrator=True)
     async def notification_clear_slash_command(self, interaction: discord.Interaction):
-        await interaction.response.send_message('notification clear')
+        if await self.bot.db.get_guild_episode_notifications(interaction.guild_id):
+            await self.bot.db.remove_guild_episode_notifications(interaction.guild_id)
+
+            embed = discord.Embed(
+                title=f':white_check_mark: Removed all anime from the server notification list.', color=0x4169E1
+            )
+        else:
+            embed = discord.Embed(title=f':no_entry: No anime added to the server notification list.', color=0x4169E1)
+
+        await interaction.response.send_message(embed=embed)
 
     @notification_group.command(name='setchannel', description='Sets the channel for episode notifications')
     @app_commands.describe(channel='The text channel')
