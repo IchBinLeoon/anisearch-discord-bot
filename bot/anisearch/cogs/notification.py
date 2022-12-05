@@ -55,7 +55,7 @@ class Notification(Cog):
             timer_id = int(str(i.get('media').get('id')) + str(i.get('airingAt')) + str(i.get('episode')))
 
             if not any(t.timer_id == timer_id for t in self._timers):
-                timeout = int(i.get('airingAt') - time.time())
+                timeout = int(i.get('airingAt') - time.time()) + 15
 
                 timer = NotificationTimer(timer_id, timeout, self.send_episode_notification, i)
 
