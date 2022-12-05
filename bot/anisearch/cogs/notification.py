@@ -16,18 +16,26 @@ log = logging.getLogger(__name__)
 
 class NotificationTimer:
     def __init__(self, timer_id: int, timeout: int, callback: Callable, data: Dict[str, Any]) -> None:
-        self.timer_id = timer_id
+        self._timer_id = timer_id
         self._timeout = timeout
         self._callback = callback
         self._data = data
         self._task = asyncio.ensure_future(self._job())
+
+    @property
+    def id(self) -> int:
+        return self._timer_id
 
     async def _job(self) -> None:
         await asyncio.sleep(self._timeout)
         await self._callback(self, self._data)
 
     def cancel(self) -> None:
-        self._task.cancel()
+        if not self._task.cancelled():
+            self._task.cancel()
+
+    def is_done(self) -> bool:
+        return self._task.done()
 
 
 class NotificationListView(SimplePaginationView):
@@ -54,7 +62,7 @@ class Notification(Cog):
 
             timer_id = int(str(i.get('media').get('id')) + str(i.get('airingAt')) + str(i.get('episode')))
 
-            if not any(t.timer_id == timer_id for t in self._timers):
+            if not any(t.id == timer_id for t in self._timers):
                 timeout = int(i.get('airingAt') - time.time()) + 15
 
                 timer = NotificationTimer(timer_id, timeout, self.send_episode_notification, i)
@@ -71,7 +79,6 @@ class Notification(Cog):
         log.info(
             f'New episode notification: {data.get("media").get("title").get("romaji")} ({data.get("media").get("id")})'
         )
-
         self._timers.remove(timer)
 
     notification_group = app_commands.Group(
