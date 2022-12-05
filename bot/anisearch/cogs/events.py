@@ -128,6 +128,8 @@ class Events(Cog):
 
     @tasks.loop(minutes=30)
     async def post_topgg_stats(self) -> None:
+        log.info(f'Posting TopGG statistics')
+
         guilds = len(self.bot.guilds)
         shards = self.bot.shard_count
 

@@ -1,14 +1,33 @@
+import asyncio
 import logging
-from typing import List
+import time
+from typing import List, Dict, Any, Callable
 
 import discord
 from discord import app_commands
+from discord.ext import tasks
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
 from anisearch.utils.menus import SimplePaginationView
 
 log = logging.getLogger(__name__)
+
+
+class NotificationTimer:
+    def __init__(self, timer_id: int, timeout: int, callback: Callable, data: Dict[str, Any]) -> None:
+        self.timer_id = timer_id
+        self._timeout = timeout
+        self._callback = callback
+        self._data = data
+        self._task = asyncio.ensure_future(self._job())
+
+    async def _job(self) -> None:
+        await asyncio.sleep(self._timeout)
+        await self._callback(self, self._data)
+
+    def cancel(self) -> None:
+        self._task.cancel()
 
 
 class NotificationListView(SimplePaginationView):
@@ -19,6 +38,41 @@ class NotificationListView(SimplePaginationView):
 class Notification(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
+        self._timers = []
+
+        self.fetch_episode_schedule.start()
+
+    @tasks.loop(hours=1)
+    async def fetch_episode_schedule(self) -> None:
+        log.info('Fetching episode schedule')
+
+        data = await self.bot.anilist.schedule(page=1, perPage=50, notYetAired=True, sort='TIME')
+
+        for i in data:
+            if i.get('media').get('isAdult'):
+                continue
+
+            timer_id = int(str(i.get('media').get('id')) + str(i.get('airingAt')) + str(i.get('episode')))
+
+            if not any(t.timer_id == timer_id for t in self._timers):
+                timeout = int(i.get('airingAt') - time.time())
+
+                timer = NotificationTimer(timer_id, timeout, self.send_episode_notification, i)
+
+                self._timers.append(timer)
+
+        log.info(f'Episode schedule fetched (Timers: {len(self._timers)})')
+
+    @fetch_episode_schedule.before_loop
+    async def fetch_episode_schedule_before(self) -> None:
+        await self.bot.wait_until_ready()
+
+    async def send_episode_notification(self, timer: NotificationTimer, data: Dict[str, Any]) -> None:
+        log.info(
+            f'New episode notification: {data.get("media").get("title").get("romaji")} ({data.get("media").get("id")})'
+        )
+
+        self._timers.remove(timer)
 
     notification_group = app_commands.Group(
         name='notification', description='Episode notification management commands', guild_only=True

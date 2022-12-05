@@ -63,6 +63,10 @@ class AniListClient:
         data = await self._request(query=self._get_user_query(), **variables)
         return data.get('data').get('Page').get('users')
 
+    async def schedule(self, **variables: Dict[str, Any]) -> List[Dict[str, Any]]:
+        data = await self._request(query=self._get_schedule_query(), **variables)
+        return data.get('data').get('Page').get('airingSchedules')
+
     @staticmethod
     def _get_media_query() -> str:
         return '''
@@ -309,6 +313,33 @@ class AniListClient:
                 }
               }
               siteUrl
+            }
+          }
+        }
+        '''
+
+    @staticmethod
+    def _get_schedule_query() -> str:
+        return '''
+        query ($page: Int, $perPage: Int, $notYetAired: Boolean, $sort: [AiringSort]) {
+          Page(page: $page, perPage: $perPage) {
+            airingSchedules(notYetAired: $notYetAired, sort: $sort) {
+              airingAt
+              episode
+              media {
+                id
+                idMal
+                title {
+                  romaji
+                  english
+                }
+                coverImage {
+                  large
+                }
+                siteUrl
+                isAdult
+                countryOfOrigin
+              }
             }
           }
         }
