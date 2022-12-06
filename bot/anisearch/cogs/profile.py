@@ -1,1235 +1,692 @@
-import datetime
+import enum
 import logging
-import re
-from typing import Optional, Union, List
-from urllib.parse import urljoin
+from datetime import datetime
+from typing import Optional, Dict, Any, Tuple
 
 import discord
-import nextcord
-from nextcord import SlashOption, Interaction
-from nextcord.ext import commands
-from nextcord.ext.commands import Context
+from discord import app_commands
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
-from anisearch.utils.constants import ERROR_EMBED_COLOR, DEFAULT_EMBED_COLOR, KITSU_LOGO, MYANIMELIST_LOGO, \
-    ANILIST_LOGO, KITSU_BASE_URL
-from anisearch.utils.http import get
-from anisearch.utils.menus import EmbedListButtonMenu, ProfileButtonMenuPages
+from anisearch.utils.http import get, HttpException
+from anisearch.utils.menus import BaseView
 
 log = logging.getLogger(__name__)
 
+ANILIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033399107289189/anilist.png'
+MYANIMELIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033442816143390/myanimelist.png'
+KITSU_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033462776840232/kitsu.png'
 
-class Profile(commands.Cog, name='Profile'):
 
-    def __init__(self, bot: AniSearchBot):
+class AnimePlatform(enum.Enum):
+    AniList = 0
+    MyAnimeList = 1
+    Kitsu = 2
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class ProfileView(BaseView):
+    def __init__(self, interaction: discord.Interaction, overview: discord.Embed, favorites: discord.Embed) -> None:
+        super().__init__(interaction, timeout=180)
+        self.overview = overview
+        self.favorites = favorites
+
+        self.on_overview.disabled = True
+
+    def disable_unavailable_buttons(self) -> None:
+        self.on_overview.disabled = not self.on_overview.disabled
+        self.on_favorites.disabled = not self.on_favorites.disabled
+
+    @discord.ui.button(label='Overview', emoji='\N{BUST IN SILHOUETTE}', style=discord.ButtonStyle.gray)
+    async def on_overview(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.disable_unavailable_buttons()
+        await interaction.response.edit_message(embed=self.overview, view=self)
+
+    @discord.ui.button(label='Favorites', emoji='\N{WHITE MEDIUM STAR}', style=discord.ButtonStyle.gray)
+    async def on_favorites(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.disable_unavailable_buttons()
+        await interaction.response.edit_message(embed=self.favorites, view=self)
+
+    @discord.ui.button(emoji='\N{WASTEBASKET}', style=discord.ButtonStyle.red)
+    async def on_close(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.close()
+
+
+class Profile(Cog):
+    def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
 
-    async def set_profile(self, ctx: Union[Context, Interaction], site: str, username: str) -> discord.Embed:
+    @staticmethod
+    def get_anilist_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
+        overview = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=0x4169E1)
+        overview.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+        overview.set_footer(text='Provided by https://anilist.co/ • Overview')
 
-        data = None
+        if data.get('avatar').get('large'):
+            overview.set_thumbnail(url=data.get('avatar').get('large'))
 
-        try:
-            if site == 'anilist':
-                data = await self.bot.anilist.user(name=username, page=1, perPage=1)
-            if site == 'myanimelist':
-                data = await self.bot.jikan.user(username=username)
-            if site == 'kitsu':
-                params = {
-                    'filter[name]': username,
-                    'include': 'stats'
-                }
-                data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
-                                 res_method='json', params=params)
-                if not data.get('data'):
-                    data = None
+        if data.get('bannerImage'):
+            overview.set_image(url=data.get('bannerImage'))
 
-        except Exception as e:
-            log.exception(e)
+        if data.get('about'):
+            overview.add_field(
+                name='About',
+                value=data.get('about')[:500] + '...' if len(data.get('about')) > 500 else data.get('about'),
+                inline=False,
+            )
 
-            site = site.replace("anilist", "AniList").replace(
-                "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
-            embed = nextcord.Embed(
-                color=ERROR_EMBED_COLOR,
-                title=f'An error occurred while adding the {site} profile `{username}`.')
+        anime_count = data.get('statistics').get('anime').get('count')
+        anime_score = data.get('statistics').get('anime').get('meanScore')
+        anime_days = round(data.get('statistics').get('anime').get('minutesWatched') / 60 / 24, 2)
+        anime_episodes = data.get('statistics').get('anime').get('episodesWatched')
 
-            return embed
+        overview.add_field(
+            name='Anime Stats',
+            value=f'Anime Count: {anime_count}\nMean Score: {anime_score}\nDays Watched: {anime_days}\nEpisodes: {anime_episodes}',
+            inline=True,
+        )
 
-        if data is not None:
-            if site == 'anilist':
+        manga_count = data.get('statistics').get('manga').get('count')
+        manga_score = data.get('statistics').get('manga').get('meanScore')
+        manga_chapters = data.get('statistics').get('manga').get('chaptersRead')
+        manga_volumes = data.get('statistics').get('manga').get('volumesRead')
 
-                if isinstance(ctx, Interaction):
-                    author = ctx.user.id
-                else:
-                    author = ctx.author.id
+        overview.add_field(
+            name='Manga Stats',
+            value=f'Manga Count: {manga_count}\nMean Score: {manga_score}\nChapters Read: {manga_chapters}\nVolumes Read: {manga_volumes}',
+            inline=True,
+        )
 
-                self.bot.db.insert_profile('anilist', data.get('name'), author)
+        overview.add_field(
+            name='Anime List', value=f'https://anilist.co/user/{data.get("name")}/animelist', inline=False
+        )
+        overview.add_field(
+            name='Manga List', value=f'https://anilist.co/user/{data.get("name")}/mangalist', inline=False
+        )
 
-                embed = nextcord.Embed(
-                    title=f'Added AniList Profile `{data.get("name")}`', color=DEFAULT_EMBED_COLOR)
+        favorites = discord.Embed(title=data.get('name'), url=data.get('siteUrl'), color=0x4169E1)
+        favorites.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+        favorites.set_footer(text='Provided by https://anilist.co/ • Favorites')
 
-                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+        if data.get('avatar').get('large'):
+            favorites.set_thumbnail(url=data.get('avatar').get('large'))
 
-                if data.get('avatar')['large']:
-                    embed.set_thumbnail(url=data.get('avatar')['large'])
+        for k, v in data.get('favourites').items():
+            if nodes := v.get('nodes'):
+                entries = []
 
-                embed.add_field(
-                    name='Anime Stats', inline=True,
-                    value=f'Anime Count: {data.get("statistics")["anime"]["count"]}\n'
-                          f'Mean Score: {data.get("statistics")["anime"]["meanScore"]}\n'
-                          f'Days Watched: {round(data.get("statistics")["anime"]["minutesWatched"] / 60 / 24, 2)}')
-                embed.add_field(
-                    name='Manga Stats', inline=True,
-                    value=f'Manga Count: {data.get("statistics")["manga"]["count"]}\n'
-                          f'Mean Score: {data.get("statistics")["manga"]["meanScore"]}\n'
-                          f'Chapters Read: {data.get("statistics")["manga"]["chaptersRead"]}')
+                for i in nodes:
+                    if k == 'anime' or k == 'manga':
+                        name = i.get('title').get('romaji')
+                    elif k == 'characters' or k == 'staff':
+                        name = i.get('name').get('full')
+                    else:
+                        name = i.get('name')
 
-                embed.set_footer(text=f'Provided by https://anilist.co/')
+                    entries.append(f'[{name}]({i.get("siteUrl")})')
 
-                return embed
+                total = 0
 
-            if site == 'myanimelist':
-                if isinstance(ctx, Interaction):
-                    author = ctx.user.id
-                else:
-                    author = ctx.author.id
+                for i, j in enumerate(entries):
+                    total += len(j) + 3
 
-                self.bot.db.insert_profile('myanimelist', data.get('username'), author)
-
-                embed = nextcord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`',
-                                       color=DEFAULT_EMBED_COLOR)
-
-                embed.set_author(name='MyAnimeList Profile',
-                                 icon_url=MYANIMELIST_LOGO)
-
-                if data.get('image_url'):
-                    embed.set_thumbnail(url=data.get('image_url'))
-
-                embed.add_field(
-                    name='Anime Stats', inline=True,
-                    value=f'Days Watched: {data.get("anime_stats")["days_watched"]}\n'
-                          f'Mean Score: {data.get("anime_stats")["mean_score"]}\n'
-                          f'Total Entries: {data.get("anime_stats")["total_entries"]}')
-                embed.add_field(
-                    name='Manga Stats', inline=True,
-                    value=f'Days Read: {data.get("manga_stats")["days_read"]}\n'
-                          f'Mean Score: {data.get("manga_stats")["mean_score"]}\n'
-                          f'Total Entries: {data.get("manga_stats")["total_entries"]}')
-
-                embed.set_footer(text=f'Provided by https://myanimelist.net/')
-
-                return embed
-
-            if site == 'kitsu':
-                user = data.get('data')[0]
-
-                if isinstance(ctx, Interaction):
-                    author = ctx.user.id
-                else:
-                    author = ctx.author.id
-
-                self.bot.db.insert_profile('kitsu', user.get('attributes')['name'], author)
-
-                embed = nextcord.Embed(title=f'Added Kitsu Profile `{user.get("attributes")["name"]}`',
-                                       color=DEFAULT_EMBED_COLOR)
-
-                embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
-
-                if user.get('attributes')['avatar']:
-                    embed.set_thumbnail(url=user.get('attributes')[
-                        'avatar']['original'])
-
-                anime_completed = 'N/A'
-                anime_episodes_watched = 'N/A'
-                anime_total_entries = 'N/A'
-                manga_total_entries = 'N/A'
-                manga_chapters = 'N/A'
-                manga_completed = 'N/A'
-                stats = 0
-                for x in data['included']:
-                    if stats == 2:
+                    if total >= 1024:
+                        entries = entries[:i]
+                        entries[i - 1] = entries[i - 1] + '...'
                         break
-                    try:
-                        if x['attributes']:
-                            if x['attributes']['kind'] == 'anime-amount-consumed':
-                                if x['attributes']['statsData']:
-                                    try:
-                                        anime_stats = x['attributes']['statsData']
-                                        anime_completed = anime_stats['completed']
-                                        anime_total_entries = anime_stats['media']
-                                        anime_episodes_watched = anime_stats['units']
-                                        stats += 1
-                                    except Exception as e:
-                                        log.exception(e)
-                            if x['attributes']['kind'] == 'manga-amount-consumed':
-                                if x['attributes']['statsData']:
-                                    try:
-                                        manga_stats = x['attributes']['statsData']
-                                        manga_chapters = manga_stats['units']
-                                        manga_completed = manga_stats['completed']
-                                        manga_total_entries = manga_stats['media']
-                                        stats += 1
-                                    except Exception as e:
-                                        log.exception(e)
-                    except KeyError:
-                        pass
-                    except Exception as e:
-                        log.exception(e)
-                embed.add_field(name='Anime Stats', value=f'Episodes: {anime_episodes_watched}\n'
-                                                          f'Completed: {anime_completed}\n'
-                                                          f'Total Entries: {anime_total_entries}\n',
-                                inline=True)
-                embed.add_field(name='Manga Stats', value=f'Chapters: {manga_chapters}\n'
-                                                          f'Completed: {manga_completed}\n'
-                                                          f'Total Entries: {manga_total_entries}\n',
-                                inline=True)
 
-                embed.set_footer(text=f'Provided by https://kitsu.io/')
+                value = ' • '.join(entries)
+            else:
+                value = 'N/A'
 
-                return embed
+            favorites.add_field(name=f'Favorite {k.capitalize()}', value=value, inline=False)
+
+        return overview, favorites
+
+    @staticmethod
+    def get_myanimelist_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
+        description = []
+
+        if data.get('last_online'):
+            last_online = datetime.strptime(data.get('last_online').replace('+00:00', ''), "%Y-%m-%dT%H:%M:%S")
+            description.append(f'**Last Online:** {discord.utils.format_dt(last_online, "R")}')
+
+        if data.get('gender'):
+            description.append(f'**Gender:** {data.get("gender")}')
+
+        if data.get('birthday'):
+            birthday = datetime.strptime(data.get('birthday').replace('+00:00', ''), "%Y-%m-%dT%H:%M:%S")
+            description.append(f'**Birthday:** {discord.utils.format_dt(birthday, "R")}')
+
+        if data.get('location'):
+            description.append(f'**Location:** {data.get("location")}')
+
+        if data.get('joined'):
+            joined = datetime.strptime(data.get('joined').replace('+00:00', ''), "%Y-%m-%dT%H:%M:%S")
+            description.append(f'**Joined:** {discord.utils.format_dt(joined, "R")}')
+
+        overview = discord.Embed(
+            title=data.get('username'), description='\n'.join(description), url=data.get('url'), color=0x4169E1
+        )
+        overview.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+        overview.set_footer(text='Provided by https://myanimelist.net/ • Overview')
+
+        if data.get('images').get('jpg').get('image_url') is not None:
+            overview.set_thumbnail(url=data.get('images').get('jpg').get('image_url'))
+
+        if data.get('about'):
+            overview.add_field(
+                name='About',
+                value=data.get('about')[:500] + '...' if len(data.get('about')) > 500 else data.get('about'),
+                inline=False,
+            )
+
+        anime_stats_data = data.get('statistics').get('anime')
+        anime_stats = [
+            f'Days Watched: {anime_stats_data.get("days_watched")}',
+            f'Mean Score: {anime_stats_data.get("mean_score")}',
+            f'Watching: {anime_stats_data.get("watching")}',
+            f'Completed: {anime_stats_data.get("completed")}',
+            f'On-Hold: {anime_stats_data.get("on_hold")}',
+            f'Dropped: {anime_stats_data.get("dropped")}',
+            f'Plan to Watch: {anime_stats_data.get("plan_to_watch")}',
+            f'Total Entries: {anime_stats_data.get("total_entries")}',
+            f'Rewatched: {anime_stats_data.get("rewatched")}',
+            f'Episodes: {anime_stats_data.get("episodes_watched")}',
+        ]
+        overview.add_field(name='Anime Stats', value='\n'.join(anime_stats), inline=True)
+
+        manga_stats_data = data.get('statistics').get('manga')
+        manga_stats = [
+            f'Days Read: {manga_stats_data.get("days_read")}',
+            f'Mean Score: {manga_stats_data.get("mean_score")}',
+            f'Reading: {manga_stats_data.get("reading")}',
+            f'Completed: {manga_stats_data.get("completed")}',
+            f'On-Hold: {manga_stats_data.get("on_hold")}',
+            f'Dropped: {manga_stats_data.get("dropped")}',
+            f'Plan to Read: {manga_stats_data.get("plan_to_read")}',
+            f'Total Entries: {manga_stats_data.get("total_entries")}',
+            f'Reread: {manga_stats_data.get("reread")}',
+            f'Chapters Read: {manga_stats_data.get("chapters_read")}',
+            f'Volumes Read: {manga_stats_data.get("volumes_read")}',
+        ]
+        overview.add_field(name='Manga Stats', value='\n'.join(manga_stats), inline=True)
+
+        overview.add_field(
+            name='Anime List', value=f'https://myanimelist.net/animelist/{data.get("username")}', inline=False
+        )
+        overview.add_field(
+            name='Manga List', value=f'https://myanimelist.net/mangalist/{data.get("username")}', inline=False
+        )
+
+        favorites = discord.Embed(title=data.get('username'), url=data.get('url'), color=0x4169E1)
+        favorites.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+        favorites.set_footer(text='Provided by https://myanimelist.net/ • Favorites')
+
+        if data.get('images').get('jpg').get('image_url') is not None:
+            favorites.set_thumbnail(url=data.get('images').get('jpg').get('image_url'))
+
+        for k, v in data.get('favorites').items():
+            if v:
+                entries = []
+
+                for i in v:
+                    if k == 'anime' or k == 'manga':
+                        name = i.get('title')
+                    else:
+                        name = i.get('name')
+
+                    entries.append(f'[{name}]({i.get("url")})')
+
+                total = 0
+
+                for i, j in enumerate(entries):
+                    total += len(j) + 3
+
+                    if total >= 1024:
+                        entries = entries[:i]
+                        entries[i - 1] = entries[i - 1] + '...'
+                        break
+
+                value = ' • '.join(entries)
+            else:
+                value = 'N/A'
+
+            favorites.add_field(name=f'Favorite {k.capitalize()}', value=value, inline=False)
+
+        return overview, favorites
+
+    @staticmethod
+    def get_kitsu_embeds(data: Dict[str, Any]) -> Tuple[discord.Embed, discord.Embed]:
+        overview = discord.Embed(
+            title=data.get('data').get('attributes').get('name'),
+            url=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}',
+            color=0x4169E1,
+        )
+        overview.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+        overview.set_footer(text='Provided by https://kitsu.io/ • Overview')
+
+        if data.get('data').get('attributes').get('avatar'):
+            overview.set_thumbnail(url=data.get('data').get('attributes').get('avatar').get('original'))
+
+        if data.get('data').get('attributes').get('coverImage'):
+            overview.set_image(url=data.get('data').get('attributes').get('coverImage').get('original'))
+
+        for i in data.get('included'):
+            if i.get('attributes').get('kind') == 'anime-amount-consumed':
+                days = round(i.get('attributes').get('statsData').get('time') / 60 / 24, 2)
+                episodes = i.get('attributes').get('statsData').get('units')
+                completed = i.get('attributes').get('statsData').get('completed')
+                entries = i.get('attributes').get('statsData').get('media')
+
+                overview.add_field(
+                    name='Anime Stats',
+                    value=f'Days Watched: {days}\nEpisodes: {episodes}\nCompleted: {completed}\nTotal Entries: {entries}',
+                    inline=True,
+                )
+
+            if i.get('attributes').get('kind') == 'manga-amount-consumed':
+                chapters = i.get('attributes').get('statsData').get('units')
+                completed = i.get('attributes').get('statsData').get('completed')
+                entries = i.get('attributes').get('statsData').get('media')
+
+                overview.add_field(
+                    name='Manga Stats',
+                    value=f'Chapters: {chapters}\nCompleted: {completed}\nTotal Entries: {entries}',
+                    inline=True,
+                )
+
+        overview.add_field(
+            name='Anime List',
+            value=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}/library?media=anime',
+            inline=False,
+        )
+        overview.add_field(
+            name='Manga List',
+            value=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}/library?media=manga',
+            inline=False,
+        )
+
+        favorites = discord.Embed(
+            title=data.get('data').get('attributes').get('name'),
+            url=f'https://kitsu.io/users/{data.get("data").get("attributes").get("name")}',
+            color=0x4169E1,
+        )
+        favorites.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+        favorites.set_footer(text='Provided by https://kitsu.io/ • Favorites')
+
+        if data.get('data').get('attributes').get('avatar'):
+            favorites.set_thumbnail(url=data.get('data').get('attributes').get('avatar').get('original'))
+
+        favs = {
+            'anime': [],
+            'manga': [],
+            'characters': [],
+        }
+        if included := data.get('included'):
+            for i in included:
+                if i.get('type') == 'anime':
+                    favs.get('anime').append(
+                        f'[{i.get("attributes").get("canonicalTitle")}](https://kitsu.io/anime/{i.get("attributes").get("slug")})'
+                    )
+                if i.get('type') == 'manga':
+                    favs.get('manga').append(
+                        f'[{i.get("attributes").get("canonicalTitle")}](https://kitsu.io/manga/{i.get("attributes").get("slug")})'
+                    )
+                if i.get('type') == 'characters':
+                    favs.get('characters').append(
+                        f'[{i.get("attributes").get("canonicalName")}](https://myanimelist.net/character/{i.get("attributes").get("malId")})'
+                    )
+
+        for k, v in favs.items():
+            if v:
+                total = 0
+
+                for i, j in enumerate(v):
+                    total += len(j) + 3
+
+                    if total >= 1024:
+                        v = v[:i]
+                        v[i - 1] = v[i - 1] + '...'
+                        break
+
+                value = ' • '.join(v)
+            else:
+                value = 'N/A'
+
+            favorites.add_field(name=f'Favorite {k.capitalize()}', value=value, inline=False)
+
+        return overview, favorites
+
+    @app_commands.command(
+        name='anilist', description='Displays information about the given AniList profile such as stats and favorites'
+    )
+    @app_commands.describe(username='Look up by username', member='Look up by server member')
+    async def anilist_slash_command(
+        self, interaction: discord.Interaction, username: Optional[str] = None, member: Optional[discord.Member] = None
+    ):
+        await interaction.response.defer()
+
+        if username:
+            data = await self.bot.anilist.user(page=1, perPage=1, name=username)
 
         else:
-            site = site.replace("anilist", "AniList").replace(
-                "myanimelist", "MyAnimeList").replace("kitsu", "Kitsu")
-            embed = nextcord.Embed(title=f'The {site} profile `{username}` could not be found.',
-                                   color=ERROR_EMBED_COLOR)
-            return embed
+            user = member or interaction.user
 
-    async def get_anilist_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
+            if profile := await self.bot.db.get_user_profile(user.id, str(AnimePlatform.AniList).lower()):
+                data = await self.bot.anilist.user(page=1, perPage=1, id=profile.get('profile_id'))
+            else:
+                embed = discord.Embed(title=f':no_entry: No AniList profile added.', color=0x4169E1)
+                return await interaction.followup.send(embed=embed)
 
-        embeds = []
+        if data:
+            overview, favorites = self.get_anilist_embeds(data[0])
 
-        try:
-            data = await self.bot.anilist.user(name=username, page=1, perPage=1)
+            view = ProfileView(interaction=interaction, overview=overview, favorites=favorites)
+            await interaction.followup.send(embed=overview, view=view)
 
-        except Exception as e:
-            log.exception(e)
+        else:
+            embed = discord.Embed(title=f':no_entry: The AniList profile could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
 
-            embed = nextcord.Embed(
-                title=f'An error occurred while searching the AniList profile `{username}`. Try again.',
-                color=ERROR_EMBED_COLOR)
-            embeds.append(embed)
+    @app_commands.command(
+        name='myanimelist',
+        description='Displays information about the given MyAnimeList profile such as stats and favorites',
+    )
+    @app_commands.describe(username='Look up by username', member='Look up by server member')
+    async def myanimelist_slash_command(
+        self, interaction: discord.Interaction, username: Optional[str] = None, member: Optional[discord.Member] = None
+    ):
+        await interaction.response.defer()
 
-            return embeds
-
-        if data is not None:
-
+        if username:
             try:
-                embed = nextcord.Embed(title=data.get('name'), url=data.get(
-                    'siteUrl'), color=DEFAULT_EMBED_COLOR)
-
-                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
-
-                if data.get('avatar')['large']:
-                    embed.set_thumbnail(url=data.get('avatar')['large'])
-                if data.get('bannerImage'):
-                    embed.set_image(url=data.get('bannerImage'))
-                if data.get('about'):
-                    embed.add_field(name='About',
-                                    value=data.get('about')[0:500] + '...' if len(data.get('about')) >= 500
-                                    else data.get('about'), inline=False)
-
-                embed.add_field(
-                    name='Anime Stats', inline=True,
-                    value=f'Anime Count: {data.get("statistics")["anime"]["count"]}\n'
-                          f'Mean Score: {data.get("statistics")["anime"]["meanScore"]}\n'
-                          f'Days Watched: {round(data.get("statistics")["anime"]["minutesWatched"] / 60 / 24, 2)}\n'
-                          f'Episodes: {data.get("statistics")["anime"]["episodesWatched"]}')
-
-                embed.add_field(
-                    name='Manga Stats', inline=True,
-                    value=f'Manga Count: {data.get("statistics")["manga"]["count"]}\n'
-                          f'Mean Score: {data.get("statistics")["manga"]["meanScore"]}\n'
-                          f'Chapters Read: {data.get("statistics")["manga"]["chaptersRead"]}\n'
-                          f'Volumes Read: {data.get("statistics")["manga"]["volumesRead"]}')
-
-                embed.add_field(name='Anime List', value=f'https://anilist.co/user/{data.get("name")}/animelist',
-                                inline=False)
-
-                embed.add_field(name='Manga List', value=f'https://anilist.co/user/{data.get("name")}/mangalist',
-                                inline=False)
-
-                embed.set_footer(
-                    text=f'Provided by https://anilist.co/ • Overview')
-
-                embeds.append(embed)
-
-            except Exception as e:
-                log.exception(e)
-
-                embed = nextcord.Embed(
-                    title='Error',
-                    color=ERROR_EMBED_COLOR,
-                    description='An error occurred while loading the embed for the AniList profile.')
-                embed.set_footer(
-                    text=f'Provided by https://anilist.co/ • Overview')
-                embeds.append(embed)
-
-            try:
-                embed = nextcord.Embed(title=data.get('name'), url=data.get(
-                    'siteUrl'), color=DEFAULT_EMBED_COLOR)
-
-                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
-
-                if data.get('avatar')['large']:
-                    embed.set_thumbnail(url=data.get('avatar')['large'])
-
-                if data.get('favourites')['anime']['nodes']:
-                    fav_anime = []
-                    for anime in data.get('favourites')['anime']['nodes']:
-                        fav_anime.append(
-                            f"[{anime.get('title')['romaji']}]({anime.get('siteUrl')})")
-                    total = 0
-                    for i, fav in enumerate(fav_anime):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_anime = fav_anime[0:i]
-                            fav_anime[i - 1] = fav_anime[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Anime',
-                                    value=' | '.join(fav_anime), inline=False)
-                else:
-                    embed.add_field(name='Favorite Anime',
-                                    value='N/A', inline=False)
-
-                if data.get('favourites')['manga']['nodes']:
-                    fav_manga = []
-                    for manga in data.get('favourites')['manga']['nodes']:
-                        fav_manga.append(
-                            f"[{manga.get('title')['romaji']}]({manga.get('siteUrl')})")
-                    total = 0
-                    for i, fav in enumerate(fav_manga):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_manga = fav_manga[0:i]
-                            fav_manga[i - 1] = fav_manga[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Manga',
-                                    value=' | '.join(fav_manga), inline=False)
-                else:
-                    embed.add_field(name='Favorite Manga',
-                                    value='N/A', inline=False)
-
-                if data.get('favourites')['characters']['nodes']:
-                    fav_characters = []
-                    for character in data.get('favourites')['characters']['nodes']:
-                        fav_characters.append(
-                            f"[{character.get('name')['full']}]({character.get('siteUrl')})")
-                    total = 0
-                    for i, fav in enumerate(fav_characters):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_characters = fav_characters[0:i]
-                            fav_characters[i - 1] = fav_characters[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Characters', value=' | '.join(
-                        fav_characters), inline=False)
-                else:
-                    embed.add_field(name='Favorite Characters',
-                                    value='N/A', inline=False)
-
-                if data.get('favourites')['staff']['nodes']:
-                    fav_staff = []
-                    for staff in data.get('favourites')['staff']['nodes']:
-                        fav_staff.append(
-                            f"[{staff.get('name')['full']}]({staff.get('siteUrl')})")
-                    total = 0
-                    for i, fav in enumerate(fav_staff):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_staff = fav_staff[0:i]
-                            fav_staff[i - 1] = fav_staff[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Staff',
-                                    value=' | '.join(fav_staff), inline=False)
-                else:
-                    embed.add_field(name='Favorite Staff',
-                                    value='N/A', inline=False)
-
-                if data.get('favourites')['studios']['nodes']:
-                    fav_studio = []
-                    for studio in data.get('favourites')['studios']['nodes']:
-                        fav_studio.append(
-                            f"[{studio.get('name')}]({studio.get('siteUrl')})")
-                    total = 0
-                    for i, fav in enumerate(fav_studio):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_studio = fav_studio[0:i]
-                            fav_studio[i - 1] = fav_studio[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Studios',
-                                    value=' | '.join(fav_studio), inline=False)
-                else:
-                    embed.add_field(name='Favorite Studios',
-                                    value='N/A', inline=False)
-
-                embed.set_footer(
-                    text=f'Provided by https://anilist.co/ • Favorites')
-
-                embeds.append(embed)
-
-            except Exception as e:
-                log.exception(e)
-
-                embed = nextcord.Embed(
-                    title='Error',
-                    color=ERROR_EMBED_COLOR,
-                    description='An error occurred while loading the embed for the AniList profile.')
-                embed.set_footer(
-                    text=f'Provided by https://anilist.co/ • Favorites')
-                embeds.append(embed)
-
-            return embeds
-
-        return None
-
-    async def get_myanimelist_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
-
-        embeds = []
-
-        try:
-            data = await self.bot.jikan.user(username=username)
-
-        except Exception as e:
-            log.exception(e)
-
-            embed = nextcord.Embed(
-                title=f'An error occurred while searching the MyAnimeList profile `{username}`. Try again.',
-                color=ERROR_EMBED_COLOR)
-            embeds.append(embed)
-
-            return embeds
-
-        if data is not None:
-
-            try:
-                description = []
-                if data.get('last_online'):
-                    last_online = data.get('last_online').__str__().replace('-', '/') \
-                        .replace('T', ' ').replace('+', ' +').replace('+00:00', 'UTC')
-                    description.append(f'**Last Online:** {last_online}')
-                if data.get('gender'):
-                    description.append(f'**Gender:** {data.get("gender")}')
-                if data.get('birthday'):
-                    birthday = data.get('birthday').__str__().replace(
-                        'T00:00:00+00:00', ' ').replace('-', '/')
-                    description.append(f'**Birthday:** {birthday}')
-                if data.get('location'):
-                    description.append(f'**Location:** {data.get("location")}')
-                if data.get('joined'):
-                    joined = data.get('joined').__str__().replace(
-                        'T00:00:00+00:00', ' ').replace('-', '/')
-                    description.append(f'**Joined:** {joined}')
-
-                embed = nextcord.Embed(title=data.get('username'), url=data.get('url'), color=DEFAULT_EMBED_COLOR,
-                                       description='\n'.join(description))
-
-                embed.set_author(name='MyAnimeList Profile',
-                                 icon_url=MYANIMELIST_LOGO)
-
-                if data.get('image_url'):
-                    embed.set_thumbnail(url=data.get('image_url'))
-
-                if data.get('about'):
-                    embed.add_field(name='About',
-                                    value=data.get('about')[0:500] + '...' if len(data.get('about')) >= 500
-                                    else data.get('about'), inline=False)
-
-                embed.add_field(
-                    name='Anime Stats', inline=True,
-                    value=f'Days Watched: {data.get("anime_stats")["days_watched"]}\n'
-                          f'Mean Score: {data.get("anime_stats")["mean_score"]}\n'
-                          f'Watching: {data.get("anime_stats")["watching"]}\n'
-                          f'Completed: {data.get("anime_stats")["completed"]}\n'
-                          f'On-Hold: {data.get("anime_stats")["on_hold"]}\n'
-                          f'Dropped: {data.get("anime_stats")["dropped"]}\n'
-                          f'Plan to Watch: {data.get("anime_stats")["plan_to_watch"]}\n'
-                          f'Total Entries: {data.get("anime_stats")["total_entries"]}\n'
-                          f'Rewatched: {data.get("anime_stats")["rewatched"]}\n'
-                          f'Episodes: {data.get("anime_stats")["episodes_watched"]}')
-
-                embed.add_field(
-                    name='Manga Stats', inline=True,
-                    value=f'Days Read: {data.get("manga_stats")["days_read"]}\n'
-                          f'Mean Score: {data.get("manga_stats")["mean_score"]}\n'
-                          f'Reading: {data.get("manga_stats")["reading"]}\n'
-                          f'Completed: {data.get("manga_stats")["completed"]}\n'
-                          f'On-Hold: {data.get("manga_stats")["on_hold"]}\n'
-                          f'Dropped: {data.get("manga_stats")["dropped"]}\n'
-                          f'Plan to Read: {data.get("manga_stats")["plan_to_read"]}\n'
-                          f'Reread: {data.get("manga_stats")["reread"]}\n'
-                          f'Total Entries: {data.get("manga_stats")["total_entries"]}\n'
-                          f'Chapters Read: {data.get("manga_stats")["chapters_read"]}\n'
-                          f'Volumes Read: {data.get("manga_stats")["volumes_read"]}')
-
-                embed.add_field(name='Anime List', inline=False,
-                                value=f'https://myanimelist.net/animelist/{data.get("username")}')
-
-                embed.add_field(name='Manga List', inline=False,
-                                value=f'https://myanimelist.net/mangalist/{data.get("username")}')
-
-                embed.set_footer(
-                    text=f'Provided by https://myanimelist.net/ • Overview')
-
-                embeds.append(embed)
-
-            except Exception as e:
-                log.exception(e)
-
-                embed = nextcord.Embed(
-                    title='Error',
-                    color=ERROR_EMBED_COLOR,
-                    description='An error occurred while loading the embed for the MyAnimeList profile.')
-                embed.set_footer(
-                    text=f'Provided by https://myanimelist.net/ • Overview')
-                embeds.append(embed)
-
-            try:
-                embed = nextcord.Embed(title=data.get('username'),
-                                       url=data.get('url'), color=DEFAULT_EMBED_COLOR)
-
-                embed.set_author(name='MyAnimeList Profile',
-                                 icon_url=MYANIMELIST_LOGO)
-
-                if data.get('image_url'):
-                    embed.set_thumbnail(url=data.get('image_url'))
-
-                if data.get('favorites')['anime']:
-                    fav_anime = []
-                    for anime in data.get('favorites')['anime']:
-                        fav_anime.append(
-                            f"[{anime.get('name')}]({anime.get('url')})")
-                    total = 0
-                    for i, fav in enumerate(fav_anime):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_anime = fav_anime[0:i]
-                            fav_anime[i - 1] = fav_anime[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Anime',
-                                    value=' | '.join(fav_anime), inline=False)
-                else:
-                    embed.add_field(name='Favorite Anime',
-                                    value='N/A', inline=False)
-
-                if data.get('favorites')['manga']:
-                    fav_manga = []
-                    for manga in data.get('favorites')['manga']:
-                        fav_manga.append(
-                            f"[{manga.get('name')}]({manga.get('url')})")
-                    total = 0
-                    for i, fav in enumerate(fav_manga):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_manga = fav_manga[0:i]
-                            fav_manga[i - 1] = fav_manga[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Manga',
-                                    value=' | '.join(fav_manga), inline=False)
-                else:
-                    embed.add_field(name='Favorite Manga',
-                                    value='N/A', inline=False)
-
-                if data.get('favorites')['characters']:
-                    fav_characters = []
-                    for character in data.get('favorites')['characters']:
-                        fav_characters.append(
-                            f"[{character.get('name')}]({character.get('url')})")
-                    total = 0
-                    for i, fav in enumerate(fav_characters):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_characters = fav_characters[0:i]
-                            fav_characters[i - 1] = fav_characters[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Characters', value=' | '.join(
-                        fav_characters), inline=False)
-                else:
-                    embed.add_field(name='Favorite Characters',
-                                    value='N/A', inline=False)
-
-                if data.get('favorites')['people']:
-                    fav_people = []
-                    for people in data.get('favorites')['people']:
-                        fav_people.append(
-                            f"[{people.get('name')}]({people.get('url')})")
-                    total = 0
-                    for i, fav in enumerate(fav_people):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_people = fav_people[0:i]
-                            fav_people[i - 1] = fav_people[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite People',
-                                    value=' | '.join(fav_people), inline=False)
-                else:
-                    embed.add_field(name='Favorite People',
-                                    value='N/A', inline=False)
-
-                embed.set_footer(
-                    text=f'Provided by https://myanimelist.net/ • Favorites')
-
-                embeds.append(embed)
-
-            except Exception as e:
-                log.exception(e)
-
-                embed = nextcord.Embed(
-                    title='Error',
-                    color=ERROR_EMBED_COLOR,
-                    description='An error occurred while loading the embed for the MyAnimeList profile.')
-                embed.set_footer(
-                    text=f'Provided by https://myanimelist.net/ • Favorites')
-                embeds.append(embed)
-
-            return embeds
-
-        return None
-
-    async def get_kitsu_profile(self, username: str) -> Union[List[nextcord.Embed], None]:
-
-        embeds = []
-
-        try:
-            params = {
-                'filter[name]': username,
-                'include': 'stats,favorites.item'
-            }
-            data = await get(url=urljoin(KITSU_BASE_URL, 'users'), session=self.bot.session,
-                             res_method='json', params=params)
-            if not data.get('data'):
+                data = (
+                    await get(
+                        url=f'https://api.jikan.moe/v4/users/{username}/full',
+                        session=self.bot.session,
+                        res_method='json',
+                    )
+                ).get('data')
+            except HttpException as e:
+                if not e.status == 404:
+                    raise e
                 data = None
 
-        except Exception as e:
-            log.exception(e)
+        else:
+            user = member or interaction.user
 
-            embed = nextcord.Embed(
-                title=f'An error occurred while searching the Kitsu profile `{username}`. Try again.',
-                color=ERROR_EMBED_COLOR)
-            embeds.append(embed)
+            if profile := await self.bot.db.get_user_profile(user.id, str(AnimePlatform.MyAnimeList).lower()):
+                try:
+                    user = (
+                        (
+                            await get(
+                                url=f'https://api.jikan.moe/v4/users/userbyid/{profile.get("profile_id")}',
+                                session=self.bot.session,
+                                res_method='json',
+                            )
+                        )
+                        .get('data')
+                        .get('username')
+                    )
 
-            return embeds
+                    data = (
+                        await get(
+                            url=f'https://api.jikan.moe/v4/users/{user}/full',
+                            session=self.bot.session,
+                            res_method='json',
+                        )
+                    ).get('data')
+                except HttpException as e:
+                    if not e.status == 404:
+                        raise e
+                    data = None
+            else:
+                embed = discord.Embed(title=f':no_entry: No MyAnimeList profile added.', color=0x4169E1)
+                return await interaction.followup.send(embed=embed)
 
-        if data is not None:
+        if data:
+            overview, favorites = self.get_myanimelist_embeds(data)
 
+            view = ProfileView(interaction=interaction, overview=overview, favorites=favorites)
+            await interaction.followup.send(embed=overview, view=view)
+
+        else:
+            embed = discord.Embed(title=f':no_entry: The MyAnimeList profile could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
+
+    @app_commands.command(
+        name='kitsu', description='Displays information about the given Kitsu profile such as stats and favorites'
+    )
+    @app_commands.describe(username='Look up by username', member='Look up by server member')
+    async def kitsu_slash_command(
+        self, interaction: discord.Interaction, username: Optional[str] = None, member: Optional[discord.Member] = None
+    ):
+        await interaction.response.defer()
+
+        if username:
+            results = await get(
+                url='https://kitsu.io/api/edge/users',
+                session=self.bot.session,
+                res_method='json',
+                params={'filter[name]': username, 'include': 'stats,favorites.item'},
+            )
+            if results.get('data'):
+                data = {'data': results.get('data')[0]}
+
+                if included := results.get('included'):
+                    data['included'] = included
+            else:
+                data = None
+        else:
+            user = member or interaction.user
+
+            if profile := await self.bot.db.get_user_profile(user.id, str(AnimePlatform.Kitsu).lower()):
+                try:
+                    data = await get(
+                        url=f'https://kitsu.io/api/edge/users/{profile.get("profile_id")}',
+                        session=self.bot.session,
+                        res_method='json',
+                        params={'include': 'stats,favorites.item'},
+                    )
+                except HttpException as e:
+                    if not e.status == 404:
+                        raise e
+                    data = None
+            else:
+                embed = discord.Embed(title=f':no_entry: No Kitsu profile added.', color=0x4169E1)
+                return await interaction.followup.send(embed=embed)
+
+        if data:
+            overview, favorites = self.get_kitsu_embeds(data)
+
+            view = ProfileView(interaction=interaction, overview=overview, favorites=favorites)
+            await interaction.followup.send(embed=overview, view=view)
+
+        else:
+            embed = discord.Embed(title=f':no_entry: The Kitsu profile could not be found.', color=0x4169E1)
+            await interaction.followup.send(embed=embed)
+
+    profile_group = app_commands.Group(
+        name='profile', description='AniList, MyAnimeList and Kitsu profile management commands'
+    )
+
+    @profile_group.command(name='add', description='Adds an AniList, MyAnimeList or Kitsu profile to your account')
+    @app_commands.describe(platform='The anime tracking site', username='Your site username')
+    async def profile_add_slash_command(self, interaction: discord.Interaction, platform: AnimePlatform, username: str):
+        await interaction.response.defer()
+
+        if platform == AnimePlatform.AniList:
+            if data := await self.bot.anilist.user(page=1, perPage=1, name=username):
+                await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), data[0].get('id'))
+
+                embed = discord.Embed(title=f'Added AniList Profile `{data[0].get("name")}`', color=0x4169E1)
+                embed.set_author(name='AniList Profile', icon_url=ANILIST_LOGO)
+                embed.set_footer(text='Provided by https://anilist.co/')
+
+                if data[0].get('avatar').get('large'):
+                    embed.set_thumbnail(url=data[0].get('avatar').get('large'))
+
+                anime_count = data[0].get('statistics').get('anime').get('count')
+                anime_score = data[0].get('statistics').get('anime').get('meanScore')
+                anime_days = round(data[0].get('statistics').get('anime').get('minutesWatched') / 60 / 24, 2)
+
+                embed.add_field(
+                    name='Anime Stats',
+                    value=f'Anime Count: {anime_count}\nMean Score: {anime_score}\nDays Watched: {anime_days}',
+                    inline=True,
+                )
+
+                manga_count = data[0].get('statistics').get('manga').get('count')
+                manga_score = data[0].get('statistics').get('manga').get('meanScore')
+                manga_chapters = data[0].get('statistics').get('manga').get('chaptersRead')
+
+                embed.add_field(
+                    name='Manga Stats',
+                    value=f'Manga Count: {manga_count}\nMean Score: {manga_score}\nChapters Read: {manga_chapters}',
+                    inline=True,
+                )
+
+                return await interaction.followup.send(embed=embed)
+
+        if platform == AnimePlatform.MyAnimeList:
             try:
-                description = []
-                if data.get('data')[0].get('attributes').get('gender'):
-                    gender = data.get('data')[0].get('attributes').get('gender') \
-                        .replace('male', 'Male').replace('feMale', 'Female')
-                    description.append(f'**Gender:** {gender}')
-                if data.get('data')[0].get('attributes').get('birthday'):
-                    birthday = data.get('data')[0].get(
-                        'attributes').get('birthday')
-                    description.append(f'**Birthday:** {birthday}')
-                if data.get('data')[0].get('attributes').get('location'):
-                    location = data.get('data')[0].get(
-                        'attributes').get('location')
-                    description.append(f'**Location:** {location}')
-                if data.get('data')[0].get('attributes').get('createdAt'):
-                    created_at = data.get('data')[0].get(
-                        'attributes').get('createdAt').split('T')[0]
-                    description.append(f'**Created at:** {created_at}')
-                if data.get('data')[0].get('attributes').get('updatedAt'):
-                    updated_at = data.get('data')[0].get(
-                        'attributes').get('updatedAt').split('T')[0]
-                    description.append(f'**Updated at:** {updated_at}')
+                data = (
+                    await get(
+                        url=f'https://api.jikan.moe/v4/users/{username}/full',
+                        session=self.bot.session,
+                        res_method='json',
+                    )
+                ).get('data')
+            except HttpException as e:
+                if not e.status == 404:
+                    raise e
+                data = None
 
-                embed = nextcord.Embed(title=data.get('data')[0]['attributes']['name'],
-                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
-                                       color=DEFAULT_EMBED_COLOR, description='\n'.join(description))
+            if data:
+                await self.bot.db.add_user_profile(interaction.user.id, str(platform).lower(), data.get('mal_id'))
 
+                embed = discord.Embed(title=f'Added MyAnimeList Profile `{data.get("username")}`', color=0x4169E1)
+                embed.set_author(name='MyAnimeList Profile', icon_url=MYANIMELIST_LOGO)
+                embed.set_footer(text='Provided by https://myanimelist.net/')
+
+                if data.get('images').get('jpg').get('image_url') is not None:
+                    embed.set_thumbnail(url=data.get('images').get('jpg').get('image_url'))
+
+                anime_days = data.get('statistics').get('anime').get('days_watched')
+                anime_score = data.get('statistics').get('anime').get('mean_score')
+                anime_entries = data.get('statistics').get('anime').get('total_entries')
+
+                embed.add_field(
+                    name='Anime Stats',
+                    value=f'Days Watched: {anime_days}\nMean Score: {anime_score}\nTotal Entries: {anime_entries}',
+                    inline=True,
+                )
+
+                manga_days = data.get('statistics').get('manga').get('days_read')
+                manga_score = data.get('statistics').get('manga').get('mean_score')
+                manga_entries = data.get('statistics').get('manga').get('total_entries')
+
+                embed.add_field(
+                    name='Manga Stats',
+                    value=f'Days Read: {manga_days}\nMean Score: {manga_score}\nTotal Entries: {manga_entries}',
+                    inline=True,
+                )
+
+                return await interaction.followup.send(embed=embed)
+
+        if platform == AnimePlatform.Kitsu:
+            if data := (
+                await get(
+                    url='https://kitsu.io/api/edge/users',
+                    session=self.bot.session,
+                    res_method='json',
+                    params={'filter[name]': username, 'include': 'stats'},
+                )
+            ):
+                await self.bot.db.add_user_profile(
+                    interaction.user.id, str(platform).lower(), int(data.get('data')[0].get('id'))
+                )
+
+                embed = discord.Embed(
+                    title=f'Added Kitsu Profile `{data.get("data")[0].get("attributes").get("name")}`', color=0x4169E1
+                )
                 embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
+                embed.set_footer(text='Provided by https://kitsu.io/')
 
                 if data.get('data')[0].get('attributes').get('avatar'):
-                    embed.set_thumbnail(url=data.get(
-                        'data')[0]['attributes']['avatar']['original'])
+                    embed.set_thumbnail(url=data.get('data')[0].get('attributes').get('avatar').get('original'))
 
-                if data.get('data')[0].get('attributes').get('coverImage'):
-                    embed.set_image(url=data.get('data')[
-                        0]['attributes']['coverImage']['original'])
-
-                anime_days_watched = 'N/A'
-                anime_completed = 'N/A'
-                anime_episodes_watched = 'N/A'
-                anime_total_entries = 'N/A'
-                manga_total_entries = 'N/A'
-                manga_chapters = 'N/A'
-                manga_completed = 'N/A'
-                stats = 0
-                for x in data['included']:
-                    if stats == 2:
-                        break
-                    try:
-                        if x['attributes']:
-                            if x['attributes']['kind'] == 'anime-amount-consumed':
-                                if x['attributes']['statsData']:
-                                    try:
-                                        anime_stats = x['attributes']['statsData']
-                                        anime_days_watched = \
-                                            str(datetime.timedelta(
-                                                seconds=anime_stats['time'])).split(',')
-                                        anime_days_watched = anime_days_watched[0]
-                                        anime_completed = anime_stats['completed']
-                                        anime_total_entries = anime_stats['media']
-                                        anime_episodes_watched = anime_stats['units']
-                                        stats += 1
-                                    except Exception as e:
-                                        log.exception(e)
-                            if x['attributes']['kind'] == 'manga-amount-consumed':
-                                if x['attributes']['statsData']:
-                                    try:
-                                        manga_stats = x['attributes']['statsData']
-                                        manga_chapters = manga_stats['units']
-                                        manga_completed = manga_stats['completed']
-                                        manga_total_entries = manga_stats['media']
-                                        stats += 1
-                                    except Exception as e:
-                                        log.exception(e)
-                    except KeyError:
-                        pass
-                    except Exception as e:
-                        log.exception(e)
-
-                embed.add_field(name='Anime Stats', value=f'Episodes: {anime_episodes_watched}\n'
-                                                          f'Completed: {anime_completed}\n'
-                                                          f'Total Entries: {anime_total_entries}\n'
-                                                          f'Days Watched: {anime_days_watched}',
-                                inline=True)
-                embed.add_field(name='Manga Stats', value=f'Chapters: {manga_chapters}\n'
-                                                          f'Completed: {manga_completed}\n'
-                                                          f'Total Entries: {manga_total_entries}',
-                                inline=True)
-
-                embed.add_field(name='Anime List', inline=False,
-                                value=f'https://kitsu.io/users/{data.get("data")[0]["attributes"]["name"]}'
-                                      f'/library?media=anime')
-
-                embed.add_field(name='Manga List', inline=False,
-                                value=f'https://kitsu.io/users/{data.get("data")[0]["attributes"]["name"]}'
-                                      f'/library?media=manga')
-
-                embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Overview')
-
-                embeds.append(embed)
-
-            except Exception as e:
-                log.exception(e)
-
-                embed = nextcord.Embed(
-                    title='Error',
-                    color=ERROR_EMBED_COLOR,
-                    description='An error occurred while loading the embed for the Kitsu profile.')
-                embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Overview')
-                embeds.append(embed)
-
-            try:
-                embed = nextcord.Embed(title=data.get('data')[0]['attributes']['name'],
-                                       url=f'https://kitsu.io/users/{data.get("data")[0].get("id")}',
-                                       color=DEFAULT_EMBED_COLOR)
-
-                embed.set_author(name='Kitsu Profile', icon_url=KITSU_LOGO)
-
-                fav_anime = []
-                fav_manga = []
-                fav_characters = []
                 for i in data.get('included'):
-                    if i.get('type') == 'anime':
-                        fav_anime.append(f'[{i.get("attributes").get("titles").get("en_jp")}]'
-                                         f'(https://kitsu.io/anime/{i.get("attributes").get("slug")})')
-                    if i.get('type') == 'manga':
-                        fav_manga.append(f'[{i.get("attributes").get("titles").get("en_jp")}]'
-                                         f'(https://kitsu.io/manga/{i.get("attributes").get("slug")})')
-                    if i.get('type') == 'characters':
-                        fav_characters.append(f'[{i.get("attributes").get("names").get("en")}]'
-                                              f'(https://myanimelist.net/character/{i.get("attributes").get("malId")})')
+                    if i.get('attributes').get('kind') == 'anime-amount-consumed':
+                        episodes = i.get('attributes').get('statsData').get('units')
+                        completed = i.get('attributes').get('statsData').get('completed')
+                        entries = i.get('attributes').get('statsData').get('media')
 
-                if len(fav_anime) > 0:
-                    total = 0
-                    for i, fav in enumerate(fav_anime):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_anime = fav_anime[0:i]
-                            fav_anime[i - 1] = fav_anime[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Anime',
-                                    value=' | '.join(fav_anime), inline=False)
-                else:
-                    embed.add_field(name='Favorite Anime',
-                                    value='N/A', inline=False)
+                        embed.add_field(
+                            name='Anime Stats',
+                            value=f'Episodes: {episodes}\nCompleted: {completed}\nTotal Entries: {entries}',
+                            inline=True,
+                        )
 
-                if len(fav_manga) > 0:
-                    total = 0
-                    for i, fav in enumerate(fav_manga):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_manga = fav_manga[0:i]
-                            fav_manga[i - 1] = fav_manga[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Manga',
-                                    value=' | '.join(fav_manga), inline=False)
-                else:
-                    embed.add_field(name='Favorite Manga',
-                                    value='N/A', inline=False)
+                    if i.get('attributes').get('kind') == 'manga-amount-consumed':
+                        chapters = i.get('attributes').get('statsData').get('units')
+                        completed = i.get('attributes').get('statsData').get('completed')
+                        entries = i.get('attributes').get('statsData').get('media')
 
-                if len(fav_characters) > 0:
-                    total = 0
-                    for i, fav in enumerate(fav_characters):
-                        total += len(fav) + 3
-                        if total >= 1024:
-                            fav_characters = fav_characters[0:i]
-                            fav_characters[i - 1] = fav_characters[i - 1] + '...'
-                            break
-                    embed.add_field(name='Favorite Characters', value=' | '.join(
-                        fav_characters), inline=False)
-                else:
-                    embed.add_field(name='Favorite Characters',
-                                    value='N/A', inline=False)
+                        embed.add_field(
+                            name='Manga Stats',
+                            value=f'Chapters: {chapters}\nCompleted: {completed}\nTotal Entries: {entries}',
+                            inline=True,
+                        )
 
-                embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Favorites')
+                return await interaction.followup.send(embed=embed)
 
-                embeds.append(embed)
+        embed = discord.Embed(
+            title=f':no_entry: The {str(platform)} profile `{username}` could not be found.', color=0x4169E1
+        )
+        await interaction.followup.send(embed=embed)
 
-            except Exception as e:
-                log.exception(e)
-
-                embed = nextcord.Embed(
-                    title='Error',
-                    color=ERROR_EMBED_COLOR,
-                    description='An error occurred while loading the embed for the Kitsu profile.')
-                embed.set_footer(
-                    text=f'Provided by https://kitsu.io/ • Favorites')
-                embeds.append(embed)
-
-            return embeds
-
-        return None
-
-    @commands.command(name='anilist', aliases=['al'], usage='anilist [username|@member]', ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def anilist(self, ctx: Context, username: Optional[str] = None):
-        """Displays information about the given AniList profile such as anime stats, manga stats and favorites."""
-        async with ctx.channel.typing():
-            if username is None:
-                username = self.bot.db.select_profile('anilist', ctx.author.id)
-            elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(
-                    r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
-                username = self.bot.db.select_profile('anilist', int(id_))
-            else:
-                username = username
-            if username:
-                embeds = await self.get_anilist_profile(username)
-                if embeds:
-                    menu = ProfileButtonMenuPages(
-                        source=EmbedListButtonMenu(embeds),
-                        clear_buttons_after=True,
-                        timeout=60
-                    )
-                    await menu.start(ctx)
-                else:
-                    embed = nextcord.Embed(title=f'The AniList profile `{username}` could not be found.',
-                                           color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            else:
-                embed = nextcord.Embed(
-                    title='No AniList profile added.', color=ERROR_EMBED_COLOR)
-                await ctx.channel.send(embed=embed)
-
-    @commands.command(name='myanimelist', aliases=['mal'], usage='myanimelist [username|@member]', ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def myanimelist(self, ctx: Context, username: Optional[str] = None):
-        """Displays information about the given MyAnimeList profile such as anime stats, manga stats and favorites."""
-        async with ctx.channel.typing():
-            if username is None:
-                username = self.bot.db.select_profile(
-                    'myanimelist', ctx.author.id)
-            elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(
-                    r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
-                username = self.bot.db.select_profile('myanimelist', int(id_))
-            else:
-                username = username
-            if username:
-                embeds = await self.get_myanimelist_profile(username)
-                if embeds:
-                    menu = ProfileButtonMenuPages(
-                        source=EmbedListButtonMenu(embeds),
-                        clear_buttons_after=True,
-                        timeout=60
-                    )
-                    await menu.start(ctx)
-                else:
-                    embed = nextcord.Embed(title=f'The MyAnimeList profile `{username}` could not be found.',
-                                           color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            else:
-                embed = nextcord.Embed(
-                    title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
-                await ctx.channel.send(embed=embed)
-
-    @commands.command(name='kitsu', usage='kitsu [username|@member]', ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def kitsu(self, ctx: Context, username: Optional[str] = None):
-        """Displays information about the given Kitsu profile such as anime stats, manga stats and favorites!"""
-        async with ctx.channel.typing():
-            if username is None:
-                username = self.bot.db.select_profile('kitsu', ctx.author.id)
-            elif username.startswith('<@') and username.endswith('>'):
-                id_ = re.match(
-                    r'^<@[!|&]?(?P<id>\d{17,18})>', username).group('id')
-                username = self.bot.db.select_profile('kitsu', int(id_))
-            else:
-                username = username
-            if username:
-                embeds = await self.get_kitsu_profile(username)
-                if embeds:
-                    menu = ProfileButtonMenuPages(
-                        source=EmbedListButtonMenu(embeds),
-                        clear_buttons_after=True,
-                        timeout=60
-                    )
-                    await menu.start(ctx)
-                else:
-                    embed = nextcord.Embed(title=f'The Kitsu profile `{username}` could not be found.',
-                                           color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            else:
-                embed = nextcord.Embed(
-                    title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
-                await ctx.channel.send(embed=embed)
-
-    @commands.command(name='addprofile', aliases=['addp'], usage='addprofile <al|mal|kitsu> <username>',
-                      ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def addprofile(self, ctx: Context, site: str, username: str):
-        """Adds an AniList, MyAnimeList or Kitsu profile."""
-        async with ctx.channel.typing():
-            if site.lower() == 'anilist' or site.lower() == 'al':
-                await ctx.channel.send(embed=await self.set_profile(ctx, 'anilist', username))
-            elif site.lower() == 'myanimelist' or site.lower() == 'mal':
-                await ctx.channel.send(embed=await self.set_profile(ctx, 'myanimelist', username))
-            elif site.lower() == 'kitsu':
-                await ctx.channel.send(embed=await self.set_profile(ctx, 'kitsu', username))
-            else:
-                ctx.command.reset_cooldown(ctx)
-                raise nextcord.ext.commands.BadArgument
-
-    @commands.command(name='profiles', usage='profiles [@member]', ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def profiles(self, ctx: Context, user: Optional[str] = None):
-        """Displays the added profiles of you, or the specified user."""
-        async with ctx.channel.typing():
-            if user:
-                if user.startswith('<@&') and user.endswith('>'):
-                    ctx.command.reset_cooldown(ctx)
-                    raise nextcord.ext.commands.BadArgument
-                if user.startswith('<@') and user.endswith('>'):
-                    id_ = re.match(
-                        r'^<@(!)?(?P<id>\d{17,18})>', user).group('id')
-                else:
-                    ctx.command.reset_cooldown(ctx)
-                    raise nextcord.ext.commands.BadArgument
-            else:
-                id_ = ctx.author.id
-            anilist = self.bot.db.select_profile('anilist', id_)
-            myanimelist = self.bot.db.select_profile('myanimelist', id_)
-            kitsu = self.bot.db.select_profile('kitsu', id_)
-            user = await self.bot.fetch_user(id_)
-            embed = nextcord.Embed(title=user, color=DEFAULT_EMBED_COLOR)
-            embed.set_thumbnail(url=user.display_avatar.url)
-            embed.add_field(
-                name='AniList', value=anilist if anilist else '*Not added*', inline=False)
-            embed.add_field(
-                name='MyAnimeList', value=myanimelist if myanimelist else '*Not added*', inline=False)
-            embed.add_field(
-                name='Kitsu', value=kitsu if kitsu else '*Not added*', inline=False)
-            await ctx.channel.send(embed=embed)
-
-    @commands.command(name='removeprofile', aliases=['rmp'], usage='removeprofile <al|mal|kitsu|all>',
-                      ignore_extra=False)
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def removeprofile(self, ctx: Context, site: str, ):
-        """Removes the added AniList, MyAnimeList or Kitsu profile."""
-        async with ctx.channel.typing():
-            if site.lower() == 'anilist' or site.lower() == 'al':
-                anilist = self.bot.db.select_profile('anilist', ctx.author.id)
-                if anilist is None:
-                    embed = nextcord.Embed(title='No AniList profile added.', color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-                    ctx.command.reset_cooldown(ctx)
-                else:
-                    self.bot.db.insert_profile('anilist', None, ctx.author.id)
-                    embed = nextcord.Embed(title='Removed the added AniList profile.', color=DEFAULT_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            elif site.lower() == 'myanimelist' or site.lower() == 'mal':
-                myanimelist = self.bot.db.select_profile('myanimelist', ctx.author.id)
-                if myanimelist is None:
-                    embed = nextcord.Embed(title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-                    ctx.command.reset_cooldown(ctx)
-                else:
-                    self.bot.db.insert_profile('myanimelist', None, ctx.author.id)
-                    embed = nextcord.Embed(title='Removed the added MyAnimeList profile.', color=DEFAULT_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            elif site.lower() == 'kitsu':
-                kitsu = self.bot.db.select_profile('kitsu', ctx.author.id)
-                if kitsu is None:
-                    embed = nextcord.Embed(title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-                    ctx.command.reset_cooldown(ctx)
-                else:
-                    self.bot.db.insert_profile('kitsu', None, ctx.author.id)
-                    embed = nextcord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            elif site.lower() == 'all':
-                if not self.bot.db.check_user(ctx.author.id):
-                    embed = nextcord.Embed(title=f'The user {ctx.author} does not exist in the database.',
-                                           color=ERROR_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-                else:
-                    self.bot.db.delete_user(ctx.author.id)
-                    embed = nextcord.Embed(title=f'Removed the user {ctx.author} from the database.',
-                                           color=DEFAULT_EMBED_COLOR)
-                    await ctx.channel.send(embed=embed)
-            else:
-                ctx.command.reset_cooldown(ctx)
-                raise nextcord.ext.commands.BadArgument
-
-    @nextcord.slash_command(
-        name='anilist',
-        description='Displays information about the given AniList profile such as stats and favorites'
+    @profile_group.command(
+        name='remove', description='Removes an added AniList, MyAnimeList or Kitsu profile from your account'
     )
-    async def anilist_slash_command(
-            self,
-            interaction: nextcord.Interaction,
-            username: str = SlashOption(
-                description='The AniList username',
-                required=False
-            ),
-            member: nextcord.User = SlashOption(
-                description='The guild member',
-                required=False
-            )
-    ):
-        if member:
-            user = self.bot.db.select_profile('anilist', member.id)
-        elif username:
-            user = username
-        else:
-            user = self.bot.db.select_profile('anilist', interaction.user.id)
-        if user:
-            embeds = await self.get_anilist_profile(user)
-            if embeds:
-                pages = ProfileButtonMenuPages(
-                    source=EmbedListButtonMenu(embeds),
-                    clear_buttons_after=True,
-                    timeout=60
-                )
-                await pages.start(interaction=interaction)
-            else:
-                embed = nextcord.Embed(title=f'The AniList profile `{user}` could not be found.',
-                                       color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-        else:
-            embed = nextcord.Embed(
-                title='No AniList profile added.', color=ERROR_EMBED_COLOR)
-            await interaction.response.send_message(embed=embed)
+    @app_commands.describe(platform='The anime tracking site')
+    async def profile_remove_slash_command(self, interaction: discord.Interaction, platform: AnimePlatform):
+        if await self.bot.db.get_user_profile(interaction.user.id, str(platform).lower()):
+            await self.bot.db.remove_user_profile(interaction.user.id, str(platform).lower())
 
-    @nextcord.slash_command(
-        name='myanimelist',
-        description='Displays information about the given MyAnimeList profile such as stats and favorites'
-    )
-    async def myanimelist_slash_command(
-            self,
-            interaction: nextcord.Interaction,
-            username: str = SlashOption(
-                description='The MyAnimeList username',
-                required=False
-            ),
-            member: nextcord.User = SlashOption(
-                description='The guild member',
-                required=False
+            embed = discord.Embed(
+                title=f':white_check_mark: The added {str(platform)} profile has been removed.', color=0x4169E1
             )
-    ):
-        if member:
-            user = self.bot.db.select_profile('myanimelist', member.id)
-        elif username:
-            user = username
         else:
-            user = self.bot.db.select_profile('myanimelist', interaction.user.id)
-        if user:
-            embeds = await self.get_myanimelist_profile(user)
-            if embeds:
-                pages = ProfileButtonMenuPages(
-                    source=EmbedListButtonMenu(embeds),
-                    clear_buttons_after=True,
-                    timeout=60
-                )
-                await pages.start(interaction=interaction)
-            else:
-                embed = nextcord.Embed(title=f'The MyAnimeList profile `{user}` could not be found.',
-                                       color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-        else:
-            embed = nextcord.Embed(
-                title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
-            await interaction.response.send_message(embed=embed)
+            embed = discord.Embed(title=f':no_entry: You have not added a {str(platform)} profile.', color=0x4169E1)
 
-    @nextcord.slash_command(
-        name='kitsu',
-        description='Displays information about the given Kitsu profile such as stats and favorites'
-    )
-    async def kitsu_slash_command(
-            self,
-            interaction: nextcord.Interaction,
-            username: str = SlashOption(
-                description='The Kitsu username',
-                required=False
-            ),
-            member: nextcord.User = SlashOption(
-                description='The guild member',
-                required=False
-            )
-    ):
-        if member:
-            user = self.bot.db.select_profile('kitsu', member.id)
-        elif username:
-            user = username
-        else:
-            user = self.bot.db.select_profile('kitsu', interaction.user.id)
-        if user:
-            embeds = await self.get_kitsu_profile(user)
-            if embeds:
-                pages = ProfileButtonMenuPages(
-                    source=EmbedListButtonMenu(embeds),
-                    clear_buttons_after=True,
-                    timeout=60
-                )
-                await pages.start(interaction=interaction)
-            else:
-                embed = nextcord.Embed(title=f'The Kitsu profile `{user}` could not be found.',
-                                       color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-        else:
-            embed = nextcord.Embed(
-                title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
-            await interaction.response.send_message(embed=embed)
-
-    @nextcord.slash_command(
-        name='addprofile',
-        description='Adds an AniList, MyAnimeList or Kitsu profile'
-    )
-    async def addprofile_slash_command(
-            self,
-            interaction: nextcord.Interaction,
-            site: str = SlashOption(
-                description='The site',
-                required=True,
-                choices=['AniList', 'MyAnimeList', 'Kitsu']
-            ),
-            username: str = SlashOption(
-                description='The username',
-                required=True
-            )
-    ):
-        if site.lower() == 'anilist':
-            embed = await self.set_profile(interaction, 'anilist', username)
-        elif site.lower() == 'myanimelist':
-            embed = await self.set_profile(interaction, 'myanimelist', username)
-        else:
-            embed = await self.set_profile(interaction, 'kitsu', username)
         await interaction.response.send_message(embed=embed)
 
-    @nextcord.slash_command(
-        name='removeprofile',
-        description='Removes the added AniList, MyAnimeList or Kitsu profile'
-    )
-    async def removeprofile_slash_command(
-            self,
-            interaction: nextcord.Interaction,
-            site: str = SlashOption(
-                description='The site',
-                required=True,
-                choices=['AniList', 'MyAnimeList', 'Kitsu', 'All']
-            )
+    @profile_group.command(name='info', description='Displays the added profiles of you or a server member')
+    async def profile_info_slash_command(
+        self, interaction: discord.Interaction, member: Optional[discord.Member] = None
     ):
-        if site.lower() == 'anilist':
-            anilist = self.bot.db.select_profile('anilist', interaction.user.id)
-            if anilist is None:
-                embed = nextcord.Embed(title='No AniList profile added.', color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-            else:
-                self.bot.db.insert_profile('anilist', None, interaction.user.id)
-                embed = nextcord.Embed(title='Removed the added AniList profile.', color=DEFAULT_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-        elif site.lower() == 'myanimelist':
-            myanimelist = self.bot.db.select_profile('myanimelist', interaction.user.id)
-            if myanimelist is None:
-                embed = nextcord.Embed(title='No MyAnimeList profile added.', color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-            else:
-                self.bot.db.insert_profile('myanimelist', None, interaction.user.id)
-                embed = nextcord.Embed(title='Removed the added MyAnimeList profile.', color=DEFAULT_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-        elif site.lower() == 'kitsu':
-            kitsu = self.bot.db.select_profile('kitsu', interaction.user.id)
-            if kitsu is None:
-                embed = nextcord.Embed(title='No Kitsu profile added.', color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-            else:
-                self.bot.db.insert_profile('kitsu', None, interaction.user.id)
-                embed = nextcord.Embed(title='Removed the added Kitsu profile.', color=DEFAULT_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-        elif site.lower() == 'all':
-            if not self.bot.db.check_user(interaction.user.id):
-                embed = nextcord.Embed(title=f'The user {interaction.user.name} does not exist in the database.',
-                                       color=ERROR_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
-            else:
-                self.bot.db.delete_user(interaction.user.id)
-                embed = nextcord.Embed(title=f'Removed the user {interaction.user.name} from the database.',
-                                       color=DEFAULT_EMBED_COLOR)
-                await interaction.response.send_message(embed=embed)
+        user = member or interaction.user
 
-    @nextcord.slash_command(
-        name='profiles',
-        description='Displays the added profiles of you, or the specified user'
-    )
-    async def profiles_slash_command(
-            self,
-            interaction: nextcord.Interaction,
-            member: nextcord.User = SlashOption(
-                description='The guild member',
-                required=False
-            )
-    ):
-        if member:
-            id_ = member.id
-        else:
-            id_ = interaction.user.id
-        anilist = self.bot.db.select_profile('anilist', id_)
-        myanimelist = self.bot.db.select_profile('myanimelist', id_)
-        kitsu = self.bot.db.select_profile('kitsu', id_)
-        user = await self.bot.fetch_user(id_)
-        embed = nextcord.Embed(title=user, color=DEFAULT_EMBED_COLOR)
-        embed.set_thumbnail(url=user.display_avatar.url)
-        embed.add_field(
-            name='AniList', value=anilist if anilist else '*Not added*', inline=False)
-        embed.add_field(
-            name='MyAnimeList', value=myanimelist if myanimelist else '*Not added*', inline=False)
-        embed.add_field(
-            name='Kitsu', value=kitsu if kitsu else '*Not added*', inline=False)
+        embed = discord.Embed(title=user.name, color=0x4169E1)
+        embed.set_author(name='Profiles')
+        embed.set_thumbnail(url=user.display_avatar)
+
+        for i in AnimePlatform:
+            if data := await self.bot.db.get_user_profile(user.id, str(i).lower()):
+                embed.add_field(
+                    name=str(i),
+                    value=f'ID: {data.get("profile_id")}\nAdded: {discord.utils.format_dt(data.get("added_at"), "R")}',
+                    inline=False,
+                )
+            else:
+                embed.add_field(name=str(i), value='*Not added*', inline=False)
+
         await interaction.response.send_message(embed=embed)
 
 
-def setup(bot: AniSearchBot):
-    bot.add_cog(Profile(bot))
-    log.info('Profile cog loaded')
-
-
-def teardown(bot: AniSearchBot):
-    log.info('Profile cog unloaded')
+async def setup(bot: AniSearchBot) -> None:
+    await bot.add_cog(Profile(bot))

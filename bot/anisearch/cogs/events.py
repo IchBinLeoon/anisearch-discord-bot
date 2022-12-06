@@ -1,80 +1,89 @@
 import logging
-from datetime import datetime
+import os
+from asyncio import sleep
+from typing import Any
 
-import nextcord
-from nextcord import utils
-from nextcord.ext import commands, application_checks, menus
+import discord
+from discord import app_commands
+from discord.ext import tasks
+from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
-from anisearch.cogs.help import HelpView
+from anisearch.utils.http import post
 
 log = logging.getLogger(__name__)
 
+TOPGG_TOKEN = os.getenv('BOT_TOPGG_TOKEN')
 
-class Events(commands.Cog, name='Events'):
-    def __init__(self, bot: AniSearchBot):
+
+def _get_full_class_name(obj: Any) -> str:
+    module = obj.__class__.__module__
+    if module is None or module == str.__class__.__module__:
+        return obj.__class__.__name__
+    return module + '.' + obj.__class__.__name__
+
+
+class Events(Cog):
+    def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
+        self.bot.tree.on_error = self.on_app_command_error
 
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild: nextcord.Guild):
+        self.change_presence.start()
+
+        if TOPGG_TOKEN:
+            self.post_topgg_stats.start()
+
+    @Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
         log.info(f'Bot joined guild {guild.id}')
-        self.bot.db.insert_guild(guild)
+        await self.bot.db.add_guild(guild.id)
 
-        embed = nextcord.Embed(
-            title='Hey there!',
-            description=f'**Thanks for using <@!{737236600878137363}>!**\n\n'
-                        f'A few things to get started with the bot:\n\n'
-                        f'• To display all commands use:\n'
-                        f'`as!{utils.get(self.bot.commands, name="commands").usage}`\n\n'
-                        f'• To display information about a command use:\n'
-                        f'`as!{utils.get(self.bot.commands, name="help").usage}`\n\n'
-                        f'• To change the server prefix use:\n'
-                        f'`as!{utils.get(self.bot.commands, name="setprefix").usage}`\n\n'
-                        f'• Do **not** include `<>`, `[]` or `|` when executing a command.\n\n'
-                        f'In case of any problems, bugs, suggestions or if you just '
-                        f'want to chat, feel free to join the support server!\n\n'
-                        f'**Have fun with the bot!**',
-            color=0x4169E1
-        )
-        embed.set_thumbnail(url=self.bot.user.display_avatar.url)
-        embed.set_author(name='AniSearch Bot', icon_url=self.bot.user.display_avatar.url)
-
-        try:
-            await (await self.bot.fetch_user(guild.owner_id)).send(embed=embed, view=HelpView())
-        except nextcord.errors.Forbidden:
-            pass
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild: nextcord.Guild):
+    @Cog.listener()
+    async def on_guild_remove(self, guild: discord.Guild):
         log.info(f'Bot left guild {guild.id}')
-        self.bot.db.delete_guild(guild)
+        await self.bot.db.remove_guild(guild.id)
 
-    @commands.Cog.listener()
-    async def on_application_command_error(self, interaction: nextcord.Interaction, exception: Exception):
-        error = getattr(exception, 'original', exception)
+    @Cog.listener()
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.type == discord.InteractionType.application_command:
+            log.info(f'User {interaction.user.id} executed command {interaction.command.qualified_name}')
+            await self.bot.db.add_user(interaction.user.id)
 
-        if isinstance(error, nextcord.Forbidden):
+            if interaction.guild_id is None:
+                await self.bot.db.add_private_command_usage(
+                    interaction.user.id,
+                    interaction.command.qualified_name,
+                    discord.AppCommandType(interaction.data.get('type')).name,
+                )
+            else:
+                await self.bot.db.add_guild_command_usage(
+                    interaction.guild.shard_id,
+                    interaction.guild_id,
+                    interaction.channel_id,
+                    interaction.user.id,
+                    interaction.command.qualified_name,
+                    discord.AppCommandType(interaction.data.get('type')).name,
+                )
+                await self.bot.db.add_guild(interaction.guild_id)
+
+    async def on_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError) -> None:
+        exception = getattr(error, 'original', error)
+
+        if isinstance(exception, discord.Forbidden):
             title = 'Bot is missing access or permissions.'
 
-        elif isinstance(error, application_checks.errors.ApplicationNoPrivateMessage):
-            title = 'This command cannot be used in private messages.'
-        elif isinstance(error, application_checks.errors.ApplicationMissingPermissions):
-            title = 'You are missing permissions to execute this command.'
-
-        elif isinstance(error, menus.CannotSendMessages):
-            title = 'Bot cannot send messages in this channel.'
+        elif isinstance(exception, app_commands.MissingPermissions):
+            title = error
 
         else:
             title = 'An unknown error occurred.'
-            log.exception(exception)
+            log.error(error)
 
-            embed = nextcord.Embed(
-                title=f':x: {error.__class__.__name__}',
-                description=f'```{str(exception)}```',
-                color=0xff0000
+            embed = discord.Embed(
+                title=f':x: {_get_full_class_name(exception)}', description=f'```{error}```', color=0xFF0000
             )
-            embed.set_author(name='AniSearch Command Error', icon_url=self.bot.user.display_avatar.url)
-            embed.add_field(name='Command', value=f'`{interaction.application_command.qualified_name}`', inline=False)
+            embed.set_author(name='AniSearch Command Error', icon_url=self.bot.user.display_avatar)
+            embed.add_field(name='Command', value=f'`{interaction.command.qualified_name}`', inline=False)
 
             if interaction.data.get('options'):
                 options = ', '.join([f'`{i.get("name")}: {i.get("value")}`' for i in interaction.data.get('options')])
@@ -82,18 +91,62 @@ class Events(commands.Cog, name='Events'):
 
             await (await self.bot.application_info()).owner.send(embed=embed)
 
-        embed = nextcord.Embed(title=f':x: {title}', color=0xff0000, timestamp=datetime.now())
-
-        embed.set_author(name='AniSearch Error', icon_url=self.bot.user.display_avatar.url)
+        embed = discord.Embed(title=f':x: {title}', color=0xFF0000, timestamp=discord.utils.utcnow())
+        embed.set_author(name='AniSearch Error', icon_url=self.bot.user.display_avatar)
         embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        if interaction.response.is_done():
+            await interaction.followup.send(embed=embed)
+        else:
+            await interaction.response.send_message(embed=embed)
+
+    @tasks.loop(seconds=80)
+    async def change_presence(self) -> None:
+        await self.bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.listening, name='/help'), status=discord.Status.online
+        )
+        await sleep(20)
+        await self.bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.playing, name=f'on {len(self.bot.guilds)} servers'),
+            status=discord.Status.online,
+        )
+        await sleep(20)
+        await self.bot.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.playing, name=f'with {sum([i.member_count for i in self.bot.guilds])} users'
+            ),
+            status=discord.Status.online,
+        )
+        await sleep(20)
+        await self.bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.watching, name='Anime'), status=discord.Status.online
+        )
+
+    @change_presence.before_loop
+    async def change_presence_before(self) -> None:
+        await self.bot.wait_until_ready()
+
+    @tasks.loop(minutes=30)
+    async def post_topgg_stats(self) -> None:
+        log.info(f'Posting TopGG statistics')
+
+        guilds = len(self.bot.guilds)
+        shards = self.bot.shard_count
+
+        await post(
+            url=f'https://top.gg/api/bots/{self.bot.user.id}/stats',
+            session=self.bot.session,
+            res_method='json',
+            json={'server_count': guilds, 'shard_count': shards},
+            headers={'Authorization': TOPGG_TOKEN},
+        )
+
+        log.info(f'TopGG statistics posted (Guilds: {guilds}, Shards: {shards})')
+
+    @post_topgg_stats.before_loop
+    async def post_topgg_stats_before(self) -> None:
+        await self.bot.wait_until_ready()
 
 
-def setup(bot: AniSearchBot):
-    bot.add_cog(Events(bot))
-    log.info('Events cog loaded')
-
-
-def teardown(bot: AniSearchBot):
-    log.info('Events cog unloaded')
+async def setup(bot: AniSearchBot) -> None:
+    await bot.add_cog(Events(bot))

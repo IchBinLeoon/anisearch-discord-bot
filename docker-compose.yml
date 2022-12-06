@@ -6,40 +6,14 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - db
+      - postgres
     networks:
       - anisearch
     restart: unless-stopped
     container_name: anisearch-bot
 
-  web:
-    build: ./web
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-      - bot
-    networks:
-      - anisearch
-    ports:
-      - '8080:8080'
-    restart: unless-stopped
-    container_name: anisearch-web
-
-  notifier:
-    build: ./notifier
-    env_file:
-      - ./.env
-    depends_on:
-      - db
-      - bot
-    networks:
-      - anisearch
-    restart: unless-stopped
-    container_name: anisearch-notifier
-
-  db:
-    image: postgres:14-alpine
+  postgres:
+    image: postgres:15-alpine
     env_file:
       - ./.env
     networks:
@@ -48,7 +22,7 @@ services:
       - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
-    container_name: anisearch-db
+    container_name: anisearch-postgres
 
 networks:
   anisearch:
