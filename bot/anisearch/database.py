@@ -47,7 +47,7 @@ class Database:
 
     async def get_notification_channels(self, anilist_id: int) -> List[asyncpg.Record]:
         return await self.pool.fetch(
-            'SELECT guild_channels.channel_id FROM guild_channels LEFT JOIN guild_episode_notifications ON guild_channels.guild_id = guild_episode_notifications.guild_id WHERE guild_episode_notifications.guild_id IS NULL OR guild_episode_notifications.anilist_id = $1',
+            'SELECT guild_channels.guild_id, guild_channels.channel_id, guild_roles.role_id FROM guild_channels LEFT JOIN guild_roles ON guild_channels.guild_id = guild_roles.guild_id LEFT JOIN guild_episode_notifications ON guild_channels.guild_id = guild_episode_notifications.guild_id WHERE guild_episode_notifications.guild_id IS NULL OR guild_episode_notifications.anilist_id = $1',
             anilist_id,
         )
 

@@ -93,6 +93,8 @@ class Notification(Cog):
         for i in await self.bot.db.get_notification_channels(data.get('media').get('id')):
             channel = self.bot.get_channel(i.get('channel_id'))
 
+            role = self.bot.get_guild(i.get('guild_id')).get_role(i.get('role_id'))
+
             if channel:
                 embed = discord.Embed(
                     title=format_media_title(
@@ -115,13 +117,16 @@ class Notification(Cog):
                 view = NotificationView(urls=urls)
 
                 try:
-                    await channel.send(embed=embed, view=view)
+                    if role:
+                        await channel.send(content=role.mention, embed=embed, view=view)
+                    else:
+                        await channel.send(embed=embed, view=view)
 
                     counter += 1
                 except Exception as e:
                     log.warning(e)
 
-        log.info(f'Sent episode notifications (Channels: {counter})')
+        log.info(f'Sent episode notification (Channels: {counter})')
 
     notification_group = app_commands.Group(
         name='notification', description='Episode notification management commands', guild_only=True
