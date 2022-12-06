@@ -139,6 +139,13 @@ class Notification(Cog):
     async def notification_add_slash_command(self, interaction: discord.Interaction, anilist_id: int):
         await interaction.response.defer()
 
+        if not await self.bot.db.get_guild_channel(interaction.guild_id):
+            embed = discord.Embed(
+                title=f':warning: It is recommended to set a channel before adding anime to the server notification list.',
+                color=0x4169E1,
+            )
+            await interaction.followup.send(embed=embed)
+
         if await self.bot.db.get_guild_episode_notification(interaction.guild_id, anilist_id):
             embed = discord.Embed(
                 title=f':no_entry: The ID `{anilist_id}` is already on the server notification list.',
@@ -146,7 +153,9 @@ class Notification(Cog):
             )
             return await interaction.followup.send(embed=embed)
 
-        if data := await self.bot.anilist.media(page=1, perPage=1, id=anilist_id, type='ANIME', isAdult=False):
+        if data := await self.bot.anilist.media(
+            page=1, perPage=1, id=anilist_id, type='ANIME', isAdult=False, countryOfOrigin='JP'
+        ):
             await self.bot.db.add_guild_episode_notification(
                 interaction.guild_id, data[0].get('id'), data[0].get('title').get('romaji')
             )
