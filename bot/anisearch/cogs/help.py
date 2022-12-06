@@ -149,8 +149,19 @@ class Help(Cog):
 
             if command.parameters:
                 embed.add_field(
-                    name='Options', value=', '.join([f'`{i.name}`' for i in command.parameters]), inline=False
+                    name='Options', value=', '.join([f'`{i.display_name}`' for i in command.parameters]), inline=False
                 )
+
+            if parent := command.parent:
+                guild_only = parent.guild_only
+            else:
+                guild_only = command.guild_only
+
+            embed.add_field(name='Guild Only', value=guild_only, inline=False)
+
+            if extras := command.extras:
+                for k, v in extras.items():
+                    embed.add_field(name=k, value=f'`{v}`', inline=False)
 
             usages = await self.bot.db.get_global_command_usages_count(command.qualified_name)
             embed.add_field(name='Global Usages', value=usages, inline=False)
