@@ -135,11 +135,11 @@ class Notification(Cog):
     @notification_group.command(
         name='add',
         description='Adds an anime to your server notification list',
-        extras={'Required Permissions': 'Administrator'},
+        extras={'Required Permissions': 'Manage Server'},
     )
     @app_commands.describe(anilist_id='The AniList ID of the anime')
     @app_commands.rename(anilist_id='id')
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_add_slash_command(self, interaction: discord.Interaction, anilist_id: int):
         await interaction.response.defer()
 
@@ -178,11 +178,11 @@ class Notification(Cog):
     @notification_group.command(
         name='remove',
         description='Removes an anime from your server notification list',
-        extras={'Required Permissions': 'Administrator'},
+        extras={'Required Permissions': 'Manage Server'},
     )
     @app_commands.describe(anilist_id='The AniList ID of the anime')
     @app_commands.rename(anilist_id='id')
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_remove_slash_command(self, interaction: discord.Interaction, anilist_id: int):
         if await self.bot.db.get_guild_episode_notification(interaction.guild_id, anilist_id):
             await self.bot.db.remove_guild_episode_notification(interaction.guild_id, anilist_id)
@@ -201,9 +201,9 @@ class Notification(Cog):
     @notification_group.command(
         name='list',
         description='Displays your server notification list',
-        extras={'Required Permissions': 'Administrator'},
+        extras={'Required Permissions': 'Manage Server'},
     )
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_list_slash_command(self, interaction: discord.Interaction):
         if anime := await self.bot.db.get_guild_episode_notifications(interaction.guild_id):
             entries, embeds = [anime[i : i + 5] for i in range(0, len(anime), 5)], []
@@ -231,9 +231,9 @@ class Notification(Cog):
     @notification_group.command(
         name='clear',
         description='Removes all anime from your server notification list',
-        extras={'Required Permissions': 'Administrator'},
+        extras={'Required Permissions': 'Manage Server'},
     )
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_clear_slash_command(self, interaction: discord.Interaction):
         if await self.bot.db.get_guild_episode_notifications(interaction.guild_id):
             await self.bot.db.remove_guild_episode_notifications(interaction.guild_id)
@@ -249,10 +249,10 @@ class Notification(Cog):
     @notification_group.command(
         name='setchannel',
         description='Sets the channel for episode notifications',
-        extras={'Required Permissions': 'Administrator'},
+        extras={'Required Permissions': 'Manage Server'},
     )
     @app_commands.describe(channel='The text channel')
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_setchannel_slash_command(
         self, interaction: discord.Interaction, channel: discord.TextChannel
     ):
@@ -266,9 +266,9 @@ class Notification(Cog):
         await interaction.response.send_message(embed=embed)
 
     @notification_group.command(
-        name='removechannel', description='Removes the set channel', extras={'Required Permissions': 'Administrator'}
+        name='removechannel', description='Removes the set channel', extras={'Required Permissions': 'Manage Server'}
     )
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_removechannel_slash_command(self, interaction: discord.Interaction):
         if await self.bot.db.get_guild_channel(interaction.guild_id):
             await self.bot.db.remove_guild_channel(interaction.guild_id)
@@ -282,10 +282,10 @@ class Notification(Cog):
     @notification_group.command(
         name='setrole',
         description='Sets the role for episode notification pings',
-        extras={'Required Permissions': 'Administrator'},
+        extras={'Required Permissions': 'Manage Server'},
     )
     @app_commands.describe(role='The role')
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_setrole_slash_command(self, interaction: discord.Interaction, role: discord.Role):
         await self.bot.db.add_guild_role(interaction.guild_id, role.id)
 
@@ -297,9 +297,9 @@ class Notification(Cog):
         await interaction.response.send_message(embed=embed)
 
     @notification_group.command(
-        name='removerole', description='Removes the set role', extras={'Required Permissions': 'Administrator'}
+        name='removerole', description='Removes the set role', extras={'Required Permissions': 'Manage Server'}
     )
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def notification_removerole_slash_command(self, interaction: discord.Interaction):
         if await self.bot.db.get_guild_role(interaction.guild_id):
             await self.bot.db.remove_guild_role(interaction.guild_id)
