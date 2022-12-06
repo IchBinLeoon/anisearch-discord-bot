@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import time
 from typing import List, Dict, Any, Callable
 
 import discord
@@ -9,6 +8,8 @@ from discord.ext import tasks
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
+from anisearch.cogs.profile import ANILIST_LOGO
+from anisearch.utils.formatters import format_media_title
 from anisearch.utils.menus import SimplePaginationView
 
 log = logging.getLogger(__name__)
@@ -43,6 +44,14 @@ class NotificationListView(SimplePaginationView):
         super().__init__(interaction, embeds, timeout=180)
 
 
+class NotificationView(discord.ui.View):
+    def __init__(self, urls: Dict[str, str]) -> None:
+        super().__init__()
+
+        for k, v in urls.items():
+            self.add_item(discord.ui.Button(label=k, url=v))
+
+
 class Notification(Cog):
     def __init__(self, bot: AniSearchBot) -> None:
         self.bot = bot
@@ -50,20 +59,20 @@ class Notification(Cog):
 
         self.fetch_episode_schedule.start()
 
-    @tasks.loop(hours=1)
+    @tasks.loop(minutes=30)
     async def fetch_episode_schedule(self) -> None:
         log.info('Fetching episode schedule')
 
         data = await self.bot.anilist.schedule(page=1, perPage=50, notYetAired=True, sort='TIME')
 
         for i in data:
-            if i.get('media').get('isAdult'):
+            if i.get('media').get('isAdult') or i.get('media').get('countryOfOrigin') != 'JP':
                 continue
 
-            timer_id = int(str(i.get('media').get('id')) + str(i.get('airingAt')) + str(i.get('episode')))
+            timer_id = i.get('id')
 
             if not any(t.id == timer_id for t in self._timers):
-                timeout = int(i.get('airingAt') - time.time()) + 15
+                timeout = i.get('timeUntilAiring') + 15
 
                 timer = NotificationTimer(timer_id, timeout, self.send_episode_notification, i)
 
@@ -76,10 +85,43 @@ class Notification(Cog):
         await self.bot.wait_until_ready()
 
     async def send_episode_notification(self, timer: NotificationTimer, data: Dict[str, Any]) -> None:
-        log.info(
-            f'New episode notification: {data.get("media").get("title").get("romaji")} ({data.get("media").get("id")})'
-        )
+        log.info(f'New episode notification (ID: {data.get("media").get("id")})')
         self._timers.remove(timer)
+
+        counter = 0
+
+        for i in await self.bot.db.get_notification_channels(data.get('media').get('id')):
+            channel = self.bot.get_channel(i.get('channel_id'))
+
+            if channel:
+                embed = discord.Embed(
+                    title=format_media_title(
+                        data.get('media').get('title').get('romaji'), data.get('media').get('title').get('english')
+                    ),
+                    description=f'Episode **{data.get("episode")}** is out!',
+                    color=0x4169E1,
+                )
+                embed.set_author(name='Episode Notification', icon_url=ANILIST_LOGO)
+                embed.set_footer(text='Provided by https://anilist.co/')
+
+                if data.get('media').get('coverImage').get('large'):
+                    embed.set_image(url=data.get('media').get('coverImage').get('large'))
+
+                urls = {'AniList': data.get('media').get('siteUrl')}
+
+                if mal := data.get('media').get('idMal'):
+                    urls['MyAnimeList'] = f'https://myanimelist.net/anime/{mal}'
+
+                view = NotificationView(urls=urls)
+
+                try:
+                    await channel.send(embed=embed, view=view)
+
+                    counter += 1
+                except Exception as e:
+                    log.warning(e)
+
+        log.info(f'Sent episode notifications (Channels: {counter})')
 
     notification_group = app_commands.Group(
         name='notification', description='Episode notification management commands', guild_only=True

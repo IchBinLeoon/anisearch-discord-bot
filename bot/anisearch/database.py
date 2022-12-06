@@ -45,6 +45,12 @@ class Database:
             "SELECT * FROM user_profiles WHERE user_id = $1 AND platform = $2", user_id, platform
         )
 
+    async def get_notification_channels(self, anilist_id: int) -> List[asyncpg.Record]:
+        return await self.pool.fetch(
+            'SELECT guild_channels.channel_id FROM guild_channels LEFT JOIN guild_episode_notifications ON guild_channels.guild_id = guild_episode_notifications.guild_id WHERE guild_episode_notifications.guild_id IS NULL OR guild_episode_notifications.anilist_id = $1',
+            anilist_id,
+        )
+
     async def add_guild_episode_notification(self, guild_id: int, anilist_id: int, title: str) -> None:
         await self.pool.execute(
             'INSERT INTO guild_episode_notifications (guild_id, anilist_id, title) VALUES ($1, $2, $3) ON CONFLICT (guild_id, anilist_id) DO NOTHING',

@@ -324,7 +324,8 @@ class AniListClient:
         query ($page: Int, $perPage: Int, $notYetAired: Boolean, $sort: [AiringSort]) {
           Page(page: $page, perPage: $perPage) {
             airingSchedules(notYetAired: $notYetAired, sort: $sort) {
-              airingAt
+              id
+              timeUntilAiring
               episode
               media {
                 id
