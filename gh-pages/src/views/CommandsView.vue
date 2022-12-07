@@ -294,7 +294,7 @@ export default defineComponent({
           items.push(command.name)
         }
       }
-      return items
+      return items.sort()
     },
   },
 })
