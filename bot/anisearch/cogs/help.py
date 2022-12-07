@@ -99,7 +99,9 @@ class Help(Cog):
     async def command_autocomplete(
         self, interaction: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
-        commands = [i.qualified_name for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)]
+        commands = sorted(
+            [i.qualified_name for i in self.bot.tree.walk_commands() if not isinstance(i, app_commands.Group)]
+        )
 
         return [app_commands.Choice(name=i, value=i) for i in commands if current.lower() in i.lower()][:25]
 
