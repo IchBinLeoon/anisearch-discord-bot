@@ -67,8 +67,17 @@ export default defineComponent({
             {
               name: 'random',
               usage: '/random',
-              description:
-                'Displays a random anime or manga of the specified genre',
+              description: 'Displays a random anime or manga',
+            },
+            {
+              name: 'trending',
+              usage: '/trending',
+              description: 'Displays the current trending anime or manga',
+            },
+            {
+              name: 'seasonal',
+              usage: '/seasonal',
+              description: 'Displays the currently airing anime',
             },
           ],
         },
@@ -94,21 +103,22 @@ export default defineComponent({
                 'Displays information about the given Kitsu profile such as stats and favorites',
             },
             {
-              name: 'addprofile',
-              usage: '/addprofile',
-              description: 'Adds an AniList, MyAnimeList or Kitsu profile',
+              name: 'profile add',
+              usage: '/profile add',
+              description:
+                'Adds an AniList, MyAnimeList or Kitsu profile to your account',
             },
             {
-              name: 'removeprofile',
-              usage: '/removeprofile',
+              name: 'profile remove',
+              usage: '/profile remove',
               description:
-                'Removes the added AniList, MyAnimeList or Kitsu profile',
+                'Removes an added AniList, MyAnimeList or Kitsu profile from your account',
             },
             {
-              name: 'profiles',
-              usage: '/profiles',
+              name: '/profile info',
+              usage: '/profile info',
               description:
-                'Displays the added profiles of you, or the specified user',
+                'Displays the added profiles of you or a server member',
             },
           ],
         },
@@ -116,45 +126,45 @@ export default defineComponent({
           name: 'Notification',
           commands: [
             {
-              name: 'watchlist',
-              usage: '/watchlist',
-              description: 'Displays the anime watchlist of the server',
+              name: 'notification add',
+              usage: '/notification add',
+              description: 'Adds an anime to your server notification list',
             },
             {
-              name: 'watch',
-              usage: '/watch ',
+              name: 'notification remove',
+              usage: '/notification remove ',
               description:
-                'Adds an anime you want to receive episode notifications from to the server watchlist by AniList ID',
+                'Removes an anime from your server notification list',
             },
             {
-              name: 'unwatch',
-              usage: '/unwatch',
+              name: 'notification list',
+              usage: '/notification list',
+              description: 'Displays your server notification list',
+            },
+            {
+              name: 'notification clear',
+              usage: '/notification clear',
               description:
-                'Removes an anime from the server watchlist by AniList ID',
+                'Removes all anime from your server notification list',
             },
             {
-              name: 'clearlist',
-              usage: '/clearlist',
-              description: 'Removes all anime from the server watchlist',
+              name: 'notification setchannel',
+              usage: '/notification setchannel',
+              description: 'Sets the channel for episode notifications',
             },
             {
-              name: 'set channel',
-              usage: '/set channel',
-              description: 'Sets the channel for anime episode notifications',
-            },
-            {
-              name: 'set role',
-              usage: '/set role',
-              description: 'Sets the role for notification mentions',
-            },
-            {
-              name: 'remove channel',
-              usage: '/remove channel',
+              name: 'notification removechannel',
+              usage: '/notification removechannel',
               description: 'Removes the set channel',
             },
             {
-              name: 'remove role',
-              usage: '/remove role',
+              name: 'notification setrole',
+              usage: '/notification setrole',
+              description: 'Sets the role for episode notification pings',
+            },
+            {
+              name: 'notification removerole',
+              usage: '/notification removerole',
               description: 'Removes the set role',
             },
           ],
@@ -163,28 +173,16 @@ export default defineComponent({
           name: 'Image',
           commands: [
             {
-              name: 'trace url',
-              usage: '/trace url',
+              name: 'trace',
+              usage: '/trace',
               description:
-                'Tries to find the anime the image is from through the image url',
+                'Tries to find the anime the image is from through the image url or the image as attachment',
             },
             {
-              name: 'trace attachment',
-              usage: '/trace attachment',
+              name: 'source',
+              usage: '/source',
               description:
-                'Tries to find the anime the image is from through the image as attachment',
-            },
-            {
-              name: 'source url',
-              usage: '/source url',
-              description:
-                'Tries to find the source of an image through the image url',
-            },
-            {
-              name: 'source attachment',
-              usage: '/source attachment',
-              description:
-                'Tries to find the source of an image through the image as attachment',
+                'Tries to find the source of an image through the image url or the image as attachment',
             },
             {
               name: 'waifu',
@@ -205,29 +203,18 @@ export default defineComponent({
               name: 'themes',
               usage: '/themes',
               description:
-                'Searches for the openings and endings of the given anime and displays them',
+                'Searches for the opening and ending themes of an anime',
             },
             {
               name: 'theme',
               usage: '/theme',
-              description:
-                'Displays a specific opening or ending of the given anime',
+              description: 'Displays a specific anime opening or ending theme',
             },
           ],
         },
         {
           name: 'News',
           commands: [
-            {
-              name: 'next',
-              usage: '/next',
-              description: 'Displays the next airing anime episodes',
-            },
-            {
-              name: 'last',
-              usage: '/last',
-              description: 'Displays the most recently aired anime episodes',
-            },
             {
               name: 'aninews',
               usage: '/aninews',
@@ -239,11 +226,25 @@ export default defineComponent({
               usage: '/crunchynews',
               description: 'Displays the latest anime news from Crunchyroll',
             },
+          ],
+        },
+        {
+          name: 'Utility',
+          commands: [
             {
-              name: 'trending',
-              usage: '/trending',
-              description:
-                'Displays the current trending anime or manga on AniList',
+              name: 'avatar',
+              usage: '/avatar',
+              description: 'Displays the avatar of a server member',
+            },
+            {
+              name: 'userinfo',
+              usage: '/userinfo',
+              description: 'Displays information about a server member',
+            },
+            {
+              name: 'serverinfo',
+              usage: '/serverinfo',
+              description: 'Displays information about the current server',
             },
           ],
         },
@@ -253,11 +254,6 @@ export default defineComponent({
             {
               name: 'help',
               usage: '/help',
-              description: 'Shows help or displays information about a command',
-            },
-            {
-              name: 'commands',
-              usage: '/commands',
               description: 'Browse all commands of the bot',
             },
             {
