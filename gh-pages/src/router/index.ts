@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Invite',
     component: () =>
       (window.location.href =
-        'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=92224&scope=bot%20applications.commands'),
+        'https://discord.com/api/oauth2/authorize?client_id=737236600878137363&permissions=18432&scope=bot%20applications.commands'),
   },
   {
     path: '/support',

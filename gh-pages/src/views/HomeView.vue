@@ -93,16 +93,16 @@ export default defineComponent({
     return {
       stats: [
         {
-          name: 'Guilds',
-          value: '1.5K+',
+          name: 'Servers',
+          value: '2.5K+',
         },
         {
           name: 'Users',
           value: '500K+',
         },
         {
-          name: 'Shards',
-          value: '2',
+          name: 'Commands',
+          value: '35+',
         },
       ],
       features: [
