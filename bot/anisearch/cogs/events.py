@@ -4,6 +4,8 @@ from asyncio import sleep
 from typing import Any
 
 import discord
+import pysaucenao
+import tracemoe
 from discord import app_commands
 from discord.ext import tasks
 from discord.ext.commands import Cog
@@ -74,6 +76,9 @@ class Events(Cog):
 
         elif isinstance(exception, app_commands.MissingPermissions):
             title = error
+
+        elif isinstance(exception, tracemoe.BadRequest) or isinstance(exception, pysaucenao.InvalidImageException):
+            title = 'Image is malformed or invalid.'
 
         else:
             title = 'An unknown error occurred.'
