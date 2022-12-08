@@ -59,7 +59,7 @@ class CategorySelect(discord.ui.Select):
 
 def _label_to_emoji(label: str) -> str:
     emojis = {
-        'Search': '\N{RIGHT-POINTING MAGNIFYING GLASS}',
+        'Search': '\N{LEFT-POINTING MAGNIFYING GLASS}',
         'Profile': '\N{BUST IN SILHOUETTE}',
         'Notification': '\N{BELL}',
         'Image': '\N{FRAME WITH PICTURE}',
