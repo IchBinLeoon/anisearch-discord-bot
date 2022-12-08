@@ -10,7 +10,7 @@
         </div>
       </div>
       <div v-for="category in categories" :key="category" class="table-wrapper">
-        <h1>{{ category.name }}</h1>
+        <h1>{{ category.icon }} {{ category.name }}</h1>
         <CommandsTable :commands="category.commands" />
       </div>
     </div>
@@ -33,6 +33,7 @@ export default defineComponent({
       categories: [
         {
           name: 'Search',
+          icon: '🔍',
           commands: [
             {
               name: 'anime',
@@ -83,6 +84,7 @@ export default defineComponent({
         },
         {
           name: 'Profile',
+          icon: '👤',
           commands: [
             {
               name: 'anilist',
@@ -115,7 +117,7 @@ export default defineComponent({
                 'Removes an added AniList, MyAnimeList or Kitsu profile from your account',
             },
             {
-              name: '/profile info',
+              name: 'profile info',
               usage: '/profile info',
               description:
                 'Displays the added profiles of you or a server member',
@@ -124,6 +126,7 @@ export default defineComponent({
         },
         {
           name: 'Notification',
+          icon: '🔔',
           commands: [
             {
               name: 'notification add',
@@ -171,6 +174,7 @@ export default defineComponent({
         },
         {
           name: 'Image',
+          icon: '🖼️',
           commands: [
             {
               name: 'trace',
@@ -198,6 +202,7 @@ export default defineComponent({
         },
         {
           name: 'Themes',
+          icon: '🎬',
           commands: [
             {
               name: 'themes',
@@ -214,6 +219,7 @@ export default defineComponent({
         },
         {
           name: 'News',
+          icon: '📰',
           commands: [
             {
               name: 'aninews',
@@ -230,6 +236,7 @@ export default defineComponent({
         },
         {
           name: 'Utility',
+          icon: '🛠️',
           commands: [
             {
               name: 'avatar',
@@ -250,6 +257,7 @@ export default defineComponent({
         },
         {
           name: 'Help',
+          icon: '❓',
           commands: [
             {
               name: 'help',
