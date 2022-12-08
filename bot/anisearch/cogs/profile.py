@@ -598,14 +598,14 @@ class Profile(Cog):
                 return await interaction.followup.send(embed=embed)
 
         if platform == AnimePlatform.Kitsu:
-            if data := (
-                await get(
-                    url='https://kitsu.io/api/edge/users',
-                    session=self.bot.session,
-                    res_method='json',
-                    params={'filter[name]': username, 'include': 'stats'},
-                )
-            ):
+            data = await get(
+                url='https://kitsu.io/api/edge/users',
+                session=self.bot.session,
+                res_method='json',
+                params={'filter[name]': username, 'include': 'stats'},
+            )
+
+            if data.get('data'):
                 await self.bot.db.add_user_profile(
                     interaction.user.id, str(platform).lower(), int(data.get('data')[0].get('id'))
                 )
