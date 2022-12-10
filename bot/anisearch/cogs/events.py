@@ -91,8 +91,16 @@ class Events(Cog):
             embed.add_field(name='Command', value=f'`{interaction.command.qualified_name}`', inline=False)
 
             if interaction.data.get('options'):
-                options = ', '.join([f'`{i.get("name")}: {i.get("value")}`' for i in interaction.data.get('options')])
-                embed.add_field(name='Options', value=options, inline=False)
+                if interaction.command.parent:
+                    if values := interaction.data.get('options')[0].get('options'):
+                        options = [f'`{i.get("name")}: {i.get("value")}`' for i in values]
+                    else:
+                        options = None
+                else:
+                    options = [f'`{i.get("name")}: {i.get("value")}`' for i in interaction.data.get('options')]
+
+                if options:
+                    embed.add_field(name='Options', value=', '.join(options), inline=False)
 
             await (await self.bot.application_info()).owner.send(embed=embed)
 
