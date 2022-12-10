@@ -81,19 +81,21 @@ class Search(Cog):
         if data.get('type') == 'ANIME':
             if data.get('status') == 'RELEASING':
 
-                if data.get('episodes'):
-                    aired_episodes = f'{data.get("nextAiringEpisode").get("episode") - 1}/{data.get("episodes")}'
-                else:
-                    aired_episodes = data.get('nextAiringEpisode').get('episode') - 1
+                if data.get('nextAiringEpisode'):
+                    if data.get('episodes'):
+                        aired_episodes = f'{data.get("nextAiringEpisode").get("episode") - 1}/{data.get("episodes")}'
+                    else:
+                        aired_episodes = data.get('nextAiringEpisode').get('episode') - 1
 
-                if data.get('nextAiringEpisode').get('airingAt'):
-                    airing_at = discord.utils.format_dt(
-                        datetime.datetime.fromtimestamp(data.get('nextAiringEpisode').get('airingAt')), 'R'
-                    )
-                else:
-                    airing_at = 'N/A'
+                    if data.get('nextAiringEpisode').get('airingAt'):
+                        airing_at = discord.utils.format_dt(
+                            datetime.datetime.fromtimestamp(data.get('nextAiringEpisode').get('airingAt')), 'R'
+                        )
+                    else:
+                        airing_at = 'N/A'
 
-                embed.add_field(name='Aired Episodes', value=f'{aired_episodes} (Next {airing_at})', inline=False)
+                    embed.add_field(name='Aired Episodes', value=f'{aired_episodes} (Next {airing_at})', inline=False)
+
             else:
                 embed.add_field(name='Episodes', value=data.get('episodes') or 'N/A', inline=False)
         else:
