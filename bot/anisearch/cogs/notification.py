@@ -123,6 +123,8 @@ class Notification(Cog):
                         await channel.send(embed=embed, view=view)
 
                     counter += 1
+                except discord.Forbidden:
+                    pass
                 except Exception as e:
                     log.warning(e)
 
