@@ -101,6 +101,7 @@ class Notification(Cog):
                         data.get('media').get('title').get('romaji'), data.get('media').get('title').get('english')
                     ),
                     description=f'Episode **{data.get("episode")}** is out!',
+                    url=data.get('media').get('siteUrl'),
                     color=0x4169E1,
                 )
                 embed.set_author(name='Episode Notification', icon_url=ANILIST_LOGO)
