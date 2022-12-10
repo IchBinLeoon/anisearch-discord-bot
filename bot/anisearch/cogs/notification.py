@@ -126,7 +126,7 @@ class Notification(Cog):
                 except discord.Forbidden:
                     pass
                 except Exception as e:
-                    log.warning(e)
+                    log.error(e)
 
         log.info(f'Sent episode notification (Channels: {counter})')
 

@@ -71,18 +71,15 @@ class Events(Cog):
     async def on_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError) -> None:
         exception = getattr(error, 'original', error)
 
-        if isinstance(exception, discord.Forbidden):
-            title = 'Bot is missing access or permissions.'
-
-        elif isinstance(exception, app_commands.MissingPermissions):
+        if isinstance(exception, app_commands.MissingPermissions):
             title = error
 
         elif isinstance(exception, tracemoe.BadRequest) or isinstance(exception, pysaucenao.InvalidImageException):
             title = 'Image is malformed or invalid.'
 
         else:
-            title = 'An unknown error occurred.'
-            log.error(error)
+            title = 'An unknown error occurred. Please try again in a moment.'
+            log.exception(error)
 
             embed = discord.Embed(
                 title=f':x: {_get_full_class_name(exception)}', description=f'```{error}```', color=0xFF0000
