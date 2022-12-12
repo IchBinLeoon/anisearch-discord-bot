@@ -17,7 +17,10 @@ class BaseView(discord.ui.View):
     async def close(self) -> None:
         if not self.is_finished():
             self.stop()
-        await self._interaction.edit_original_response(view=None)
+        try:
+            await self._interaction.edit_original_response(view=None)
+        except discord.NotFound:
+            pass
 
 
 class BasePaginationView(BaseView):
