@@ -140,18 +140,22 @@ class Events(Cog):
     async def post_topgg_stats(self) -> None:
         log.info(f'Posting TopGG statistics')
 
-        guilds = len(self.bot.guilds)
-        shards = self.bot.shard_count
+        try:
+            guilds = len(self.bot.guilds)
+            shards = self.bot.shard_count
 
-        await post(
-            url=f'https://top.gg/api/bots/{self.bot.user.id}/stats',
-            session=self.bot.session,
-            res_method='json',
-            json={'server_count': guilds, 'shard_count': shards},
-            headers={'Authorization': TOPGG_TOKEN},
-        )
+            await post(
+                url=f'https://top.gg/api/bots/{self.bot.user.id}/stats',
+                session=self.bot.session,
+                res_method='json',
+                json={'server_count': guilds, 'shard_count': shards},
+                headers={'Authorization': TOPGG_TOKEN},
+            )
 
-        log.info(f'TopGG statistics posted (Guilds: {guilds}, Shards: {shards})')
+            log.info(f'TopGG statistics posted (Guilds: {guilds}, Shards: {shards})')
+
+        except Exception as e:
+            log.error(f'Error while posting TopGG statistics: {e}')
 
     @post_topgg_stats.before_loop
     async def post_topgg_stats_before(self) -> None:

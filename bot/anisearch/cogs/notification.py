@@ -63,29 +63,33 @@ class Notification(Cog):
     async def fetch_episode_schedule(self) -> None:
         log.info('Fetching episode schedule')
 
-        data = await self.bot.anilist.schedule(page=1, perPage=50, notYetAired=True, sort='TIME')
+        try:
+            data = await self.bot.anilist.schedule(page=1, perPage=50, notYetAired=True, sort='TIME')
 
-        for i in data:
-            if i.get('media').get('isAdult') or i.get('media').get('countryOfOrigin') != 'JP':
-                continue
+            for i in data:
+                if i.get('media').get('isAdult') or i.get('media').get('countryOfOrigin') != 'JP':
+                    continue
 
-            timer_id = i.get('id')
+                timer_id = i.get('id')
 
-            if not any(t.id == timer_id for t in self._timers):
-                timeout = i.get('timeUntilAiring') + 15
+                if not any(t.id == timer_id for t in self._timers):
+                    timeout = i.get('timeUntilAiring') + 15
 
-                timer = NotificationTimer(timer_id, timeout, self.send_episode_notification, i)
+                    timer = NotificationTimer(timer_id, timeout, self.send_episode_notification, i)
 
-                self._timers.append(timer)
+                    self._timers.append(timer)
 
-        log.info(f'Episode schedule fetched (Timers: {len(self._timers)})')
+            log.info(f'Episode schedule fetched (Timers: {len(self._timers)})')
+
+        except Exception as e:
+            log.error(f'Error while fetching episode schedule: {e}')
 
     @fetch_episode_schedule.before_loop
     async def fetch_episode_schedule_before(self) -> None:
         await self.bot.wait_until_ready()
 
     async def send_episode_notification(self, timer: NotificationTimer, data: Dict[str, Any]) -> None:
-        log.info(f'New episode notification (ID: {data.get("media").get("id")})')
+        log.info(f'Sending episode notification (ID: {data.get("media").get("id")})')
         self._timers.remove(timer)
 
         counter = 0
@@ -127,7 +131,7 @@ class Notification(Cog):
                 except discord.Forbidden:
                     pass
                 except Exception as e:
-                    log.error(e)
+                    log.error(f'Error while sending episode notification (Channel: {channel.id}): {e}')
 
         log.info(f'Sent episode notification (Channels: {counter})')
 
