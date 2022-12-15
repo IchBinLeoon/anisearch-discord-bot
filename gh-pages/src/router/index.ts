@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CommandsView from '../views/CommandsView.vue'
-import TeamView from '../views/TeamView.vue'
 import LostView from '../views/LostView.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -14,11 +13,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/commands',
     name: 'Commands',
     component: CommandsView,
-  },
-  {
-    path: '/team',
-    name: 'Team',
-    component: TeamView,
   },
   {
     path: '/invite',

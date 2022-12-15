@@ -39,11 +39,6 @@ export default defineComponent({
           icon: null,
         },
         {
-          name: 'Team',
-          path: '/team',
-          icon: null,
-        },
-        {
           name: 'Invite',
           path: '/invite',
           icon: ['fas', 'up-right-from-square'],
