@@ -168,7 +168,7 @@ class Notification(Cog):
             page=1, perPage=1, id=anilist_id, type='ANIME', isAdult=False, countryOfOrigin='JP'
         ):
             await self.bot.db.add_guild_episode_notification(
-                interaction.guild_id, data[0].get('id'), data[0].get('title').get('romaji')
+                interaction.guild_id, data[0].get('id'), data[0].get('title').get('romaji'), interaction.user.id
             )
 
             embed = discord.Embed(
@@ -221,9 +221,13 @@ class Notification(Cog):
                 embed.set_footer(text=f'Page {page}/{len(entries)}')
 
                 for i in values:
+                    anilist_id = f'**{i.get("anilist_id")}**'
+                    added_by = f'<@{i.get("added_by")}>'
+                    added_at = discord.utils.format_dt(i.get('added_at'), 'R')
+
                     embed.add_field(
                         name=i.get('title'),
-                        value=f'ID: {i.get("anilist_id")}\nAdded: {discord.utils.format_dt(i.get("added_at"), "R")}',
+                        value=f'AniList ID: {anilist_id}\nAdded By: {added_by}\nAdded At: {added_at}',
                         inline=False,
                     )
 
