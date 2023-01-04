@@ -133,6 +133,12 @@ class Notification(Cog):
                 except Exception as e:
                     log.error(f'Error while sending episode notification (Channel: {channel.id}): {e}')
 
+        try:
+            if data.get('episode') == data.get('media').get('episodes'):
+                await self.bot.db.remove_episode_notifications(data.get('media').get('id'))
+        except Exception as e:
+            log.warning(e)
+
         log.info(f'Sent episode notification (Channels: {counter})')
 
     notification_group = app_commands.Group(

@@ -73,6 +73,9 @@ class Database:
     async def get_guild_episode_notifications(self, guild_id: int) -> List[asyncpg.Record]:
         return await self.pool.fetch('SELECT * FROM guild_episode_notifications WHERE guild_id = $1', guild_id)
 
+    async def remove_episode_notifications(self, anilist_id: int) -> None:
+        await self.pool.execute('DELETE FROM guild_episode_notifications WHERE anilist_id = $1', anilist_id)
+
     async def add_guild_channel(self, guild_id: int, channel_id: int) -> None:
         await self.pool.execute(
             'INSERT INTO guild_channels (guild_id, channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET channel_id = $2, added_at = current_timestamp',

@@ -334,6 +334,7 @@ class AniListClient:
                   romaji
                   english
                 }
+                episodes
                 coverImage {
                   large
                 }
