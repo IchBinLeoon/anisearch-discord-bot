@@ -18,6 +18,10 @@ MYANIMELIST_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/97
 KITSU_LOGO = 'https://cdn.discordapp.com/attachments/978016869342658630/978033462776840232/kitsu.png'
 
 
+class MyAnimeListTimeout(Exception):
+    pass
+
+
 class AnimePlatform(enum.Enum):
     AniList = 0
     MyAnimeList = 1
@@ -412,6 +416,8 @@ class Profile(Cog):
                 ).get('data')
             except HttpException as e:
                 if not e.status == 404:
+                    if e.status == 408:
+                        raise MyAnimeListTimeout
                     raise e
                 data = None
 
@@ -441,6 +447,8 @@ class Profile(Cog):
                     ).get('data')
                 except HttpException as e:
                     if not e.status == 404:
+                        if e.status == 408:
+                            raise MyAnimeListTimeout
                         raise e
                     data = None
             else:
@@ -562,6 +570,8 @@ class Profile(Cog):
                 ).get('data')
             except HttpException as e:
                 if not e.status == 404:
+                    if e.status == 408:
+                        raise MyAnimeListTimeout
                     raise e
                 data = None
 

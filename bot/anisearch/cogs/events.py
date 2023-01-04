@@ -11,6 +11,7 @@ from discord.ext import tasks
 from discord.ext.commands import Cog
 
 from anisearch.bot import AniSearchBot
+from anisearch.cogs.profile import MyAnimeListTimeout
 from anisearch.utils.http import post
 
 log = logging.getLogger(__name__)
@@ -73,6 +74,9 @@ class Events(Cog):
 
         if isinstance(exception, app_commands.MissingPermissions):
             title = error
+
+        elif isinstance(exception, MyAnimeListTimeout):
+            title = 'Request to MyAnimeList timed out. Please try again in a moment.'
 
         elif isinstance(exception, tracemoe.BadRequest) or isinstance(exception, pysaucenao.InvalidImageException):
             title = 'Image is malformed or invalid.'
