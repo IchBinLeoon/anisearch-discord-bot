@@ -26,6 +26,10 @@ create table guild_episode_notifications
             on delete cascade,
     anilist_id integer                             not null,
     title      text                                not null,
+    added_by   bigint                              not null
+        constraint guild_episode_notifications_users_id_fk
+            references users
+            on delete cascade,
     added_at   timestamp default CURRENT_TIMESTAMP not null
 );
 
