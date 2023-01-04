@@ -61,7 +61,7 @@ class Themes(Cog):
                 embed.set_footer(text=f'Provided by https://animethemes.moe/ • Page {page}/{len(data)}')
 
                 for i in anime.get('animethemes'):
-                    if not i.get('nsfw'):
+                    if not i.get('nsfw') and i.get('animethemeentries'):
                         link = f'https://v.animethemes.moe/{i.get("animethemeentries")[0].get("videos")[0].get("basename")}'
 
                         embed.add_field(
