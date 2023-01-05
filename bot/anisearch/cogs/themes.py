@@ -66,7 +66,7 @@ class Themes(Cog):
 
                         embed.add_field(
                             name=f'{i.get("slug")} • {i.get("id")}',
-                            value=f'[{i.get("song").get("title")}]({link})',
+                            value=f'[{i.get("song").get("title")}]({link})' if i.get('song') else link,
                             inline=False,
                         )
 
