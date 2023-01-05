@@ -89,7 +89,7 @@ class Notification(Cog):
         await self.bot.wait_until_ready()
 
     async def send_episode_notification(self, timer: NotificationTimer, data: Dict[str, Any]) -> None:
-        log.info(f'Sending episode notification (ID: {data.get("media").get("id")})')
+        log.info(f'Sending episode notification (Timer: {timer.id}, Anime: {data.get("media").get("id")})')
         self._timers.remove(timer)
 
         counter = 0
@@ -137,7 +137,7 @@ class Notification(Cog):
             if data.get('episode') == data.get('media').get('episodes'):
                 await self.bot.db.remove_episode_notifications(data.get('media').get('id'))
         except Exception as e:
-            log.warning(e)
+            log.warning(f'Error while removing episode notifications: {e}')
 
         log.info(f'Sent episode notification (Channels: {counter})')
 
