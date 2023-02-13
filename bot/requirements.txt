@@ -1,6 +1,6 @@
 aiohttp==3.8.3
 asyncpg==0.27.0
-beautifulsoup4==4.11.1
+beautifulsoup4==4.11.2
 discord.py==2.1.0
 lxml==4.9.2
 pysaucenao==1.6.1
