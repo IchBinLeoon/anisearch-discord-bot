@@ -80,7 +80,6 @@ class Search(Cog):
 
         if data.get('type') == 'ANIME':
             if data.get('status') == 'RELEASING':
-
                 if data.get('nextAiringEpisode'):
                     if data.get('episodes'):
                         aired_episodes = f'{data.get("nextAiringEpisode").get("episode") - 1}/{data.get("episodes")}'
@@ -145,7 +144,7 @@ class Search(Cog):
         sites = [f'[AniList]({data.get("siteUrl")})']
 
         if data.get('idMal'):
-            sites.append(f'[MyAnimeList](https://myanimelist.net/anime/{data.get("idMal")})')
+            sites.append(f'[MyAnimeList](https://myanimelist.net/{data.get("type").lower()}/{data.get("idMal")})')
 
         embed.add_field(name='Find Out More', value=' • '.join(sites), inline=False)
 
