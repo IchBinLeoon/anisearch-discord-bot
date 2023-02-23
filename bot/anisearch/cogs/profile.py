@@ -22,6 +22,10 @@ class MyAnimeListTimeout(Exception):
     pass
 
 
+class MyAnimeListUnavailable(Exception):
+    pass
+
+
 class AnimePlatform(enum.Enum):
     AniList = 0
     MyAnimeList = 1
@@ -418,6 +422,8 @@ class Profile(Cog):
                 if not e.status == 404:
                     if e.status == 408:
                         raise MyAnimeListTimeout
+                    if e.status == 503:
+                        raise MyAnimeListUnavailable
                     raise e
                 data = None
 
@@ -449,6 +455,8 @@ class Profile(Cog):
                     if not e.status == 404:
                         if e.status == 408:
                             raise MyAnimeListTimeout
+                        if e.status == 503:
+                            raise MyAnimeListUnavailable
                         raise e
                     data = None
             else:
@@ -572,6 +580,8 @@ class Profile(Cog):
                 if not e.status == 404:
                     if e.status == 408:
                         raise MyAnimeListTimeout
+                    if e.status == 503:
+                        raise MyAnimeListUnavailable
                     raise e
                 data = None
 
