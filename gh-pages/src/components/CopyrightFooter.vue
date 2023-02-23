@@ -2,7 +2,7 @@
   <footer>
     <div class="footer">
       <p>
-        <b>© 2022 AniSearch Bot.</b> Made with
+        <b>© 2023 AniSearch Bot.</b> Made with
         <font-awesome-icon :icon="['fas', 'heart']" /> by
         <a href="https://github.com/IchBinLeoon" target="_blank">IchBinLeoon</a>
       </p>

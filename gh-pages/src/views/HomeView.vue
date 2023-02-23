@@ -94,7 +94,7 @@ export default defineComponent({
       stats: [
         {
           name: 'Servers',
-          value: '2.5K+',
+          value: '3K+',
         },
         {
           name: 'Users',
