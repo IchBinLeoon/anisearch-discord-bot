@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CommandsView from '../views/CommandsView.vue'
+import TermsView from '@/views/TermsView.vue'
 import LostView from '../views/LostView.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -32,6 +33,16 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       (window.location.href =
         'https://github.com/IchBinLeoon/anisearch-discord-bot'),
+  },
+  {
+    path: '/terms-of-service',
+    name: 'Terms of Service',
+    component: TermsView,
+  },
+  {
+    path: '/privacy-policy',
+    name: 'Privacy Policy',
+    component: TermsView,
   },
   {
     path: '/:pathName(.*)*',
