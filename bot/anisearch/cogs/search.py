@@ -257,7 +257,9 @@ class Search(Cog):
                     media.append(anime)
 
             if media:
-                embed.add_field(name='Most Popular Productions', value='\n'.join(media), inline=False)
+                productions = '\n'.join(media[:-1] if len('\n'.join(media)) >= 1024 else media)
+
+                embed.add_field(name='Most Popular Productions', value=productions, inline=False)
 
         return embed
 
