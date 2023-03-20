@@ -101,22 +101,25 @@ def sanitize_description(description: str, length: int) -> str:
 
 
 def format_date(day: int, month: int, year: int) -> str:
-    if day is None and month is None and year is None:
+    try:
+        if day is None and month is None and year is None:
+            return 'N/A'
+
+        if day is None and month is None:
+            return str(year)
+
+        if day is None:
+            return datetime.date(year, month, 1).strftime('%b, %Y')
+
+        if month is None:
+            return str(year)
+
+        if year is None:
+            return datetime.date(2000, month, day).strftime('%b %d')
+
+        return datetime.date(year, month, day).strftime('%b %d, %Y')
+    except TypeError:
         return 'N/A'
-
-    if day is None and month is None:
-        return str(year)
-
-    if day is None:
-        return datetime.date(year, month, 1).strftime('%b, %Y')
-
-    if month is None:
-        return str(year)
-
-    if year is None:
-        return datetime.date(2000, month, day).strftime('%b %d')
-
-    return datetime.date(year, month, day).strftime('%b %d, %Y')
 
 
 def format_name(full: str, native: str) -> str:
