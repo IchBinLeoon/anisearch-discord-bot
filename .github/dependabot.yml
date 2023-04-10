@@ -6,13 +6,13 @@ updates:
     schedule:
       interval: "daily"
 
-  - package-ecosystem: "npm"
-    directory: "/gh-pages"
-    schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch", "version-update:semver-minor"]
+  # - package-ecosystem: "npm"
+    # directory: "/gh-pages"
+    # schedule:
+      # interval: "daily"
+    # ignore:
+      # - dependency-name: "*"
+        # update-types: ["version-update:semver-patch", "version-update:semver-minor"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
