@@ -49,13 +49,13 @@ class Utility(Cog):
         embed.set_footer(text=interaction.user.display_name, icon_url=interaction.user.display_avatar)
 
         embed.add_field(name='❯ Name', value=user.name, inline=True)
-        embed.add_field(name='❯ Nickname', value=user.nick or '-', inline=True)
-        embed.add_field(name='❯ Discriminator', value=user.discriminator, inline=True)
+        embed.add_field(name='❯ Display Name', value=user.display_name, inline=True)
+        embed.add_field(name='❯ Bot', value=user.bot, inline=True)
         embed.add_field(name='❯ Created', value=discord.utils.format_dt(user.created_at, 'R'), inline=True)
         embed.add_field(name='❯ Joined', value=discord.utils.format_dt(user.joined_at, 'R'), inline=True)
-        embed.add_field(name='❯ Bot', value=user.bot, inline=True)
-        embed.add_field(name='❯ Avatar', value=f'[Click Here]({user.display_avatar.url})', inline=True)
         embed.add_field(name='❯ Top Role', value=user.top_role.mention, inline=True)
+        embed.add_field(name='❯ Avatar', value=f'[Click Here]({user.display_avatar.url})', inline=True)
+        embed.add_field(name='❯ Banner', value=f'[Click Here]({user.banner.url})' if user.banner else "-", inline=True)
 
         commands_used = await self.bot.db.get_user_command_usages_count(user.id)
         embed.add_field(name='❯ Commands Used', value=commands_used, inline=True)
