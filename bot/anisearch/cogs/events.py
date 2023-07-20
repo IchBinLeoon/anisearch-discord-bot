@@ -72,6 +72,9 @@ class Events(Cog):
     async def on_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError) -> None:
         exception = getattr(error, 'original', error)
 
+        if isinstance(exception, discord.NotFound):
+            return
+
         if isinstance(exception, app_commands.MissingPermissions):
             title = error
 
