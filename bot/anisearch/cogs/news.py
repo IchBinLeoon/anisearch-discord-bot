@@ -81,14 +81,14 @@ class News(Cog):
     @app_commands.describe(language='The language of the news', limit='The number of results to return')
     @app_commands.choices(
         language=[
-            Choice(name='Arabic', value='arAR'),
-            Choice(name='English', value='enEN'),
-            Choice(name='French', value='frFR'),
-            Choice(name='German', value='deDE'),
-            Choice(name='Italian', value='itIT'),
-            Choice(name='Portuguese', value='ptPT'),
-            Choice(name='Russian', value='ruRU'),
-            Choice(name='Spanish', value='esES'),
+            Choice(name='Arabic', value='ar-SA'),
+            Choice(name='English', value='en-US'),
+            Choice(name='French', value='fr-FR'),
+            Choice(name='German', value='de-DE'),
+            Choice(name='Italian', value='it-IT'),
+            Choice(name='Portuguese', value='pt-PT'),
+            Choice(name='Russian', value='ru-RU'),
+            Choice(name='Spanish', value='es-ES'),
         ]
     )
     async def crunchynews_slash_command(
@@ -101,7 +101,8 @@ class News(Cog):
 
         data, embeds = (
             await self.parse_news_feed(
-                f'https://www.crunchyroll.com/newsrss?lang={getattr(language, "value", "enEN")}', limit
+                f'https://cr-news-api-service.prd.crunchyrollsvc.com/v1/{getattr(language, "value", "en-US")}/rss',
+                limit,
             ),
             [],
         )
