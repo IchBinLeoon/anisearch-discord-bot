@@ -1,4 +1,4 @@
-aiohttp==3.8.4
+aiohttp==3.8.5
 asyncpg==0.27.0
 beautifulsoup4==4.12.2
 discord.py==2.2.2
