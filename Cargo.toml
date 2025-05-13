@@ -1,0 +1,12 @@
+[package]
+name = "anisearch"
+version = "3.0.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0"#
+chrono = "0.4"
+poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
+tokio = { version = "1.45", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
