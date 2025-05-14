@@ -3,10 +3,16 @@ name = "anisearch"
 version = "3.0.0"
 edition = "2024"
 
+[workspace]
+members = [".", "entity", "migration"]
+
 [dependencies]
-anyhow = "1.0"#
+anyhow = "1.0"
 chrono = "0.4"
+entity = { path = "entity" }
+migration = { path = "migration" }
 poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
+sea-orm = { version = "1.1", features = ["macros", "runtime-tokio-rustls", "sqlx-postgres"] }
 tokio = { version = "1.45", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"

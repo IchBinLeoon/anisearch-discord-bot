@@ -2,23 +2,29 @@ use std::process::exit;
 use std::sync::Arc;
 
 use anyhow::Result;
+use migration::Migrator;
 use poise::builtins::create_application_commands;
 use poise::serenity_prelude::{ClientBuilder, GatewayIntents};
 use poise::{Framework, FrameworkOptions};
+use sea_orm::DatabaseConnection;
 use tracing::{error, info};
 
 use crate::config::Config;
+use crate::database::create_database_connection;
 use crate::events::Handler;
 
 mod commands;
 mod config;
+mod database;
 mod events;
 mod utils;
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-pub struct Data {}
+pub struct Data {
+    pub database: Arc<DatabaseConnection>,
+}
 
 #[tokio::main]
 async fn main() {
@@ -49,7 +55,9 @@ async fn init() -> Result<()> {
 
     let framework = Framework::new(options);
 
-    let data = Arc::new(Data {});
+    let database = Arc::new(create_database_connection::<Migrator>(&config.database_uri).await?);
+
+    let data = Arc::new(Data { database });
 
     let mut client = ClientBuilder::new(config.token, intents)
         .data(data)

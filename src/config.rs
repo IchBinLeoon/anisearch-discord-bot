@@ -7,6 +7,7 @@ use poise::serenity_prelude::{GuildId, Token};
 
 pub struct Config {
     pub token: Token,
+    pub database_uri: String,
     pub testing_guild: Option<GuildId>,
     pub total_shards: Option<u16>,
 }
@@ -15,6 +16,7 @@ impl Config {
     pub fn init() -> Result<Self> {
         Ok(Self {
             token: parse_env_var("TOKEN")?,
+            database_uri: parse_env_var("DATABASE_URI")?,
             testing_guild: parse_env_var_opt("TESTING_GUILD")?,
             total_shards: parse_env_var_opt("TOTAL_SHARDS")?,
         })
