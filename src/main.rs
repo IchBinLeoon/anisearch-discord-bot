@@ -12,6 +12,7 @@ use tracing::{error, info};
 use crate::config::Config;
 use crate::database::create_database_connection;
 use crate::events::Handler;
+use crate::utils::version;
 
 mod commands;
 mod config;
@@ -37,7 +38,7 @@ async fn main() {
 }
 
 async fn init() -> Result<()> {
-    info!("Starting AniSearch Bot");
+    info!("Starting AniSearch Bot {}", version());
 
     let config = Config::init()?;
 

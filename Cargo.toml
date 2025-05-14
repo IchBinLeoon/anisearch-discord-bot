@@ -16,3 +16,6 @@ sea-orm = { version = "1.1", features = ["macros", "runtime-tokio-rustls", "sqlx
 tokio = { version = "1.45", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
+
+[build-dependencies]
+chrono = "0.4"
