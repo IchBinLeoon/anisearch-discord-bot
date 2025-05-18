@@ -36,6 +36,14 @@ impl EventHandler for Handler {
                     info!("{} is connected", data_about_bot.user.name);
                 }
             }
+            FullEvent::GuildCreate { guild, is_new, .. } => {
+                if matches!(is_new, Some(true)) {
+                    info!("Joined guild: {}", guild.id);
+                }
+            }
+            FullEvent::GuildDelete { incomplete, .. } => {
+                info!("Left guild: {}", incomplete.id);
+            }
             _ => {}
         }
     }

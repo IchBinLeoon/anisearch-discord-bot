@@ -1,7 +1,8 @@
 use poise::CreateReply;
 
+use crate::Context;
+use crate::error::Result;
 use crate::utils::embeds::create_default_embed;
-use crate::{Context, Error};
 
 /// 🏓 Check the latency of the bot.
 #[poise::command(
@@ -9,7 +10,7 @@ use crate::{Context, Error};
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn ping(ctx: Context<'_>) -> Result<()> {
     ctx.defer().await?;
 
     let embed = create_default_embed(ctx).await.title("🏓 Pong!");

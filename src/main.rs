@@ -8,20 +8,22 @@ use poise::serenity_prelude::{ClientBuilder, GatewayIntents};
 use poise::{Framework, FrameworkOptions};
 use sea_orm::DatabaseConnection;
 use tracing::{error, info};
+use tracing_subscriber::fmt;
 
 use crate::config::Config;
 use crate::database::create_database_connection;
+use crate::error::{Error, on_error};
 use crate::events::Handler;
 use crate::utils::version;
 
 mod commands;
 mod config;
 mod database;
+mod error;
 mod events;
 mod utils;
 
-type Error = Box<dyn std::error::Error + Send + Sync>;
-type Context<'a> = poise::Context<'a, Data, Error>;
+pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub struct Data {
     pub database: Arc<DatabaseConnection>,
@@ -29,7 +31,7 @@ pub struct Data {
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
+    fmt().init();
 
     if let Err(e) = init().await {
         error!("{}", e);
@@ -38,7 +40,7 @@ async fn main() {
 }
 
 async fn init() -> Result<()> {
-    info!("Starting AniSearch Bot {}", version());
+    info!("Starting AniSearch Bot v{}", version());
 
     let config = Config::init()?;
 
@@ -46,6 +48,13 @@ async fn init() -> Result<()> {
 
     let options = FrameworkOptions {
         commands: vec![commands::help::ping::ping()],
+        on_error: |error| {
+            Box::pin(async move {
+                if let Err(e) = on_error(error).await {
+                    error!("An error occurred while handling an error: {e}");
+                }
+            })
+        },
         ..Default::default()
     };
 

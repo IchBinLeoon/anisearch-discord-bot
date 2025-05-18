@@ -1,9 +1,11 @@
 use migration::MigratorTrait;
-use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
+use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use tracing::Level;
 use tracing::log::LevelFilter;
 
-pub async fn create_database_connection<M>(database_uri: &str) -> Result<DatabaseConnection, DbErr>
+use crate::error::Result;
+
+pub async fn create_database_connection<M>(database_uri: &str) -> Result<DatabaseConnection>
 where
     M: MigratorTrait,
 {
@@ -22,7 +24,7 @@ where
     Ok(db)
 }
 
-async fn run_migrations<M>(db: &DatabaseConnection) -> Result<(), DbErr>
+async fn run_migrations<M>(db: &DatabaseConnection) -> Result<()>
 where
     M: MigratorTrait,
 {
