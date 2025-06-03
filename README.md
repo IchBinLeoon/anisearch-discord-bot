@@ -2,6 +2,8 @@
 
 [![Discord](https://img.shields.io/discord/835960108466176041?logo=discord&logoColor=ffffff)](https://discord.gg/Bv94yQYZM8)
 [![Version](https://img.shields.io/github/v/tag/IchBinLeoon/anisearch-discord-bot?label=version)](https://github.com/IchBinLeoon/anisearch-discord-bot/tags)
+[![Lint](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/lint.yml/badge.svg)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/lint.yml)
+[![Test](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/test.yml/badge.svg)](https://github.com/IchBinLeoon/anisearch-discord-bot/actions/workflows/test.yml)
 [![Issues](https://img.shields.io/github/issues/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/issues)
 [![Pulls](https://img.shields.io/github/issues-pr/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/pulls)
 [![License](https://img.shields.io/github/license/IchBinLeoon/anisearch-discord-bot)](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE)
