@@ -1,4 +1,4 @@
-use migration::MigratorTrait;
+use anisearch_migration::MigratorTrait;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use tracing::Level;
 use tracing::log::LevelFilter;

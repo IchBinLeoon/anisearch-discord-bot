@@ -1,8 +1,8 @@
 use std::process::exit;
 use std::sync::Arc;
 
+use anisearch_migration::Migrator;
 use anyhow::Result;
-use migration::Migrator;
 use poise::builtins::create_application_commands;
 use poise::serenity_prelude::{ClientBuilder, GatewayIntents};
 use poise::{Framework, FrameworkOptions};
