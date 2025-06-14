@@ -1,6 +1,9 @@
 use std::process::exit;
 use std::sync::Arc;
 
+use anisearch_lib::config::ConfigTrait;
+use anisearch_lib::database::create_database_connection;
+use anisearch_lib::version;
 use anisearch_migration::Migrator;
 use anyhow::Result;
 use poise::builtins::create_application_commands;
@@ -11,14 +14,11 @@ use tracing::{error, info};
 use tracing_subscriber::fmt;
 
 use crate::config::Config;
-use crate::database::create_database_connection;
 use crate::error::{Error, on_error};
 use crate::events::Handler;
-use crate::utils::version;
 
 mod commands;
 mod config;
-mod database;
 mod error;
 mod events;
 mod utils;

@@ -1,11 +1,9 @@
-use anisearch_migration::MigratorTrait;
-use sea_orm::{ConnectOptions, Database, DatabaseConnection};
+use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
+use sea_orm_migration::MigratorTrait;
 use tracing::Level;
 use tracing::log::LevelFilter;
 
-use crate::error::Result;
-
-pub async fn create_database_connection<M>(database_uri: &str) -> Result<DatabaseConnection>
+pub async fn create_database_connection<M>(database_uri: &str) -> Result<DatabaseConnection, DbErr>
 where
     M: MigratorTrait,
 {
@@ -24,7 +22,7 @@ where
     Ok(db)
 }
 
-async fn run_migrations<M>(db: &DatabaseConnection) -> Result<()>
+async fn run_migrations<M>(db: &DatabaseConnection) -> Result<(), DbErr>
 where
     M: MigratorTrait,
 {

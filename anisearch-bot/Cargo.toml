@@ -5,17 +5,16 @@ edition.workspace = true
 
 [dependencies]
 anisearch-entity = { path = "../anisearch-entity" }
+anisearch-lib = { path = "../anisearch-lib" }
 anisearch-migration = { path = "../anisearch-migration" }
 
+anyhow.workspace = true
+chrono.workspace = true
 sea-orm.workspace = true
+serde.workspace = true
+tracing-subscriber.workspace = true
+tracing.workspace = true
 
-anyhow = "1.0"
-chrono = "0.4"
 poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
 thiserror = "2.0"
 tokio = { version = "1.45", features = ["full"] }
-tracing = "0.1"
-tracing-subscriber = "0.3"
-
-[build-dependencies]
-chrono = "0.4"
