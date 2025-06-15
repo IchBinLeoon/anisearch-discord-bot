@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["anisearch-bot", "anisearch-entity", "anisearch-lib", "anisearch-migration"]
+members = ["anisearch-bot", "anisearch-entity", "anisearch-lib", "anisearch-migration", "anisearch-web"]
 
 [workspace.package]
 version = "3.0.0"
@@ -12,5 +12,7 @@ chrono = "0.4"
 sea-orm = { version = "1.1", features = ["macros", "runtime-tokio-rustls", "sqlx-postgres"] }
 sea-orm-migration = { version = "1.1", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
 serde = "1.0"
+thiserror = "2.0"
+tokio = { version = "1.45", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"

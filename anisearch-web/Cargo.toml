@@ -1,20 +1,16 @@
 [package]
-name = "anisearch-bot"
+name = "anisearch-web"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-anisearch-entity = { path = "../anisearch-entity" }
 anisearch-lib = { path = "../anisearch-lib" }
-anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
-chrono.workspace = true
-sea-orm.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
 
-poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
+axum = "0.8"
