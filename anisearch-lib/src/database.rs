@@ -1,4 +1,4 @@
-use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
+use sea_orm::{ConnectOptions, ConnectionTrait, Database, DatabaseConnection, DbErr, Statement};
 use sea_orm_migration::MigratorTrait;
 use tracing::Level;
 use tracing::log::LevelFilter;
@@ -31,4 +31,16 @@ where
     M::up(db, None).await?;
 
     Ok(())
+}
+
+pub async fn get_database_version(db: &DatabaseConnection) -> Result<String, DbErr> {
+    let stmt = Statement::from_string(db.get_database_backend(), "SELECT version();");
+
+    let version = db
+        .query_one(stmt)
+        .await?
+        .and_then(|r| r.try_get("", "version").ok())
+        .unwrap_or("unknown version".to_string());
+
+    Ok(version)
 }

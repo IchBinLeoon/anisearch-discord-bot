@@ -2,7 +2,7 @@ use std::process::exit;
 use std::sync::Arc;
 
 use anisearch_lib::config::ConfigTrait;
-use anisearch_lib::database::create_database_connection;
+use anisearch_lib::database::{create_database_connection, get_database_version};
 use anisearch_lib::grpc::bot_server::BotServer;
 use anisearch_lib::version;
 use anisearch_migration::Migrator;
@@ -71,6 +71,11 @@ async fn init() -> Result<()> {
     let framework = Framework::new(options);
 
     let database = Arc::new(create_database_connection::<Migrator>(&config.database_uri).await?);
+
+    info!(
+        "Connected to database ({})",
+        get_database_version(&database).await?
+    );
 
     let data = Arc::new(Data { database });
 

@@ -1,9 +1,13 @@
 use std::process::exit;
+use std::sync::Arc;
 
 use anisearch_lib::config::ConfigTrait;
+use anisearch_lib::database::{create_database_connection, get_database_version};
 use anisearch_lib::version;
+use anisearch_migration::Migrator;
 use anyhow::Result;
 use axum::{Router, serve};
+use sea_orm::DatabaseConnection;
 use tokio::net::TcpListener;
 use tonic::transport::Channel;
 use tracing::{error, info};
@@ -18,6 +22,7 @@ mod error;
 
 #[derive(Clone)]
 pub struct AppState {
+    pub database: Arc<DatabaseConnection>,
     pub grpc_channel: Channel,
 }
 
@@ -36,11 +41,21 @@ async fn init() -> Result<()> {
 
     let config = Config::init()?;
 
+    let database = Arc::new(create_database_connection::<Migrator>(&config.database_uri).await?);
+
+    info!(
+        "Connected to database ({})",
+        get_database_version(&database).await?
+    );
+
     info!("Connecting to gRPC server on {}", config.grpc_uri);
 
     let grpc_channel = Channel::from_shared(config.grpc_uri)?.connect().await?;
 
-    let state = AppState { grpc_channel };
+    let state = AppState {
+        grpc_channel,
+        database,
+    };
 
     let app = Router::new().nest("/api", api(state));
 

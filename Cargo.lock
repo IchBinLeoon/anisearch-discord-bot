@@ -149,6 +149,7 @@ dependencies = [
  "anisearch-migration",
  "anyhow",
  "axum",
+ "sea-orm",
  "serde",
  "serde_json",
  "thiserror",
