@@ -7,17 +7,23 @@ use futures::channel::mpsc::UnboundedSender;
 use poise::serenity_prelude::{Http, ShardId, ShardRunnerInfo, ShardRunnerMessage};
 use std::sync::Arc;
 use tonic::{Request, Response, Status, async_trait};
+use tonic_health::server::HealthReporter;
 
 type RunnersMap = Arc<DashMap<ShardId, (ShardRunnerInfo, UnboundedSender<ShardRunnerMessage>)>>;
 
 pub struct BotService {
+    _health_reporter: HealthReporter,
     http: Arc<Http>,
     runners: RunnersMap,
 }
 
 impl BotService {
-    pub fn new(http: Arc<Http>, runners: RunnersMap) -> Self {
-        Self { http, runners }
+    pub fn new(health_reporter: HealthReporter, http: Arc<Http>, runners: RunnersMap) -> Self {
+        Self {
+            _health_reporter: health_reporter,
+            http,
+            runners,
+        }
     }
 }
 

@@ -13,6 +13,7 @@ use poise::{Framework, FrameworkOptions};
 use sea_orm::DatabaseConnection;
 use tokio::spawn;
 use tonic::transport::Server;
+use tonic_health::server::health_reporter;
 use tracing::{error, info};
 use tracing_subscriber::fmt;
 
@@ -85,8 +86,14 @@ async fn init() -> Result<()> {
         .event_handler(handler)
         .await?;
 
+    let (health_reporter, health_service) = health_reporter();
+
+    health_reporter.set_serving::<BotServer<BotService>>().await;
+
     let server = Server::builder()
+        .add_service(health_service)
         .add_service(BotServer::new(BotService::new(
+            health_reporter,
             client.http.clone(),
             client.shard_manager.runners.clone(),
         )))
