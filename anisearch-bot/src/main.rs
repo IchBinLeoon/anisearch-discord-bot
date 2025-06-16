@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use anisearch_lib::config::ConfigTrait;
 use anisearch_lib::database::create_database_connection;
+use anisearch_lib::grpc::bot_server::BotServer;
 use anisearch_lib::version;
 use anisearch_migration::Migrator;
 use anyhow::Result;
@@ -10,13 +11,17 @@ use poise::builtins::create_application_commands;
 use poise::serenity_prelude::{ClientBuilder, GatewayIntents};
 use poise::{Framework, FrameworkOptions};
 use sea_orm::DatabaseConnection;
+use tokio::spawn;
+use tonic::transport::Server;
 use tracing::{error, info};
 use tracing_subscriber::fmt;
 
+use crate::api::BotService;
 use crate::config::Config;
 use crate::error::{Error, on_error};
 use crate::events::Handler;
 
+mod api;
 mod commands;
 mod config;
 mod error;
@@ -74,6 +79,21 @@ async fn init() -> Result<()> {
         .framework(framework)
         .event_handler(handler)
         .await?;
+
+    let server = Server::builder()
+        .add_service(BotServer::new(BotService::new(
+            client.http.clone(),
+            client.shard_manager.runners.clone(),
+        )))
+        .serve(config.grpc_address.parse()?);
+
+    spawn(async move {
+        info!("Running gRPC server on {}", config.grpc_address);
+
+        if let Err(e) = server.await {
+            error!("Failed to run gRPC server: {e}");
+        }
+    });
 
     if let Some(total_shards) = config.total_shards {
         Ok(client.start_shards(total_shards).await?)

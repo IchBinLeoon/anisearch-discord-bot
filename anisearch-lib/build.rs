@@ -1,14 +1,22 @@
+use std::error::Error;
 use std::process::Command;
 
 use chrono::Utc;
+use tonic_build::configure;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
+    configure()
+        .type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
+        .compile_protos(&["proto/bot.proto"], &["proto"])?;
+
     println!(
         "cargo:rustc-env=GIT_COMMIT_HASH={}",
         get_git_commit_hash().unwrap_or_default()
     );
 
     println!("cargo:rustc-env=BUILD_DATE={}", Utc::now().format("%F"));
+
+    Ok(())
 }
 
 fn get_git_commit_hash() -> Option<String> {

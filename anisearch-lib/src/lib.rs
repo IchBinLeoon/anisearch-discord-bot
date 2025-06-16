@@ -1,5 +1,6 @@
 pub mod config;
 pub mod database;
+pub mod grpc;
 
 pub fn version() -> String {
     let cargo_pkg_version = env!("CARGO_PKG_VERSION");

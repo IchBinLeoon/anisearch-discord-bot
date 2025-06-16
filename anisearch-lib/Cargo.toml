@@ -5,13 +5,15 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+envy.workspace = true
+prost.workspace = true
 sea-orm-migration.workspace = true
 sea-orm.workspace = true
+serde-inline-default.workspace = true
 serde.workspace = true
+tonic.workspace = true
 tracing.workspace = true
-
-envy = { git = "https://github.com/softprops/envy" }
-serde-inline-default = "0.2"
 
 [build-dependencies]
 chrono.workspace = true
+tonic-build.workspace = true

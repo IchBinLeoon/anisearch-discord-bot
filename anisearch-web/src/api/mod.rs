@@ -1,8 +1,15 @@
 use axum::Router;
 use axum::routing::get;
 
-pub fn routes() -> Router {
-    Router::new().route("/health", get(health))
+use crate::AppState;
+
+mod bot;
+
+pub fn api(state: AppState) -> Router {
+    Router::new()
+        .route("/health", get(health))
+        .nest("/bot", bot::routes())
+        .with_state(state)
 }
 
 async fn health() -> &'static str {

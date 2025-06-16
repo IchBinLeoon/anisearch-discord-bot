@@ -12,4 +12,6 @@ FROM alpine:3.22
 
 COPY --from=builder /app/target/release/anisearch-bot /usr/local/bin/anisearch-bot
 
+EXPOSE 50051
+
 ENTRYPOINT ["anisearch-bot"]

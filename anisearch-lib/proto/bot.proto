@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package bot;
+
+service Bot {
+  rpc Commands (CommandsRequest) returns (CommandsResponse);
+  rpc Shards (ShardsRequest) returns (ShardsResponse);
+}
+
+message CommandsRequest {}
+
+message CommandsResponse {
+  repeated Command commands = 1;
+}
+
+message Command {
+  string name = 1;
+  string description = 2;
+  repeated CommandOption options = 3;
+}
+
+message CommandOption {
+  string name = 1;
+  string description = 2;
+}
+
+message ShardsRequest {}
+
+message ShardsResponse {
+  repeated Shard shards = 1;
+}
+
+message Shard {
+  uint32 id = 1;
+  ShardStage stage = 2;
+  optional uint64 latency = 3;
+}
+
+enum ShardStage {
+  CONNECTED = 0;
+  CONNECTING = 1;
+  DISCONNECTED = 2;
+  HANDSHAKE = 3;
+  IDENTIFYING = 4;
+  RESUMING = 5;
+}

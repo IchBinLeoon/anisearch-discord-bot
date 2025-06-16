@@ -10,11 +10,13 @@ anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
 chrono.workspace = true
+dashmap.workspace = true
+futures.workspace = true
+poise.workspace = true
 sea-orm.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
+tonic.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
-
-poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }

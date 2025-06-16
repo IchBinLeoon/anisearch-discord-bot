@@ -4,13 +4,16 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+anisearch-entity = { path = "../anisearch-entity" }
 anisearch-lib = { path = "../anisearch-lib" }
+anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
+axum.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
+tonic.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
-
-axum = "0.8"

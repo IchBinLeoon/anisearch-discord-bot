@@ -2,4 +2,5 @@ use anisearch_lib::config;
 
 config!(
     address("ADDRESS"): String = "0.0.0.0:8080".to_string(),
+    grpc_uri("GRPC_URI"): String = "http://0.0.0.0:50051".to_string(),
 );
