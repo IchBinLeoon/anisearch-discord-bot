@@ -30,9 +30,6 @@ jobs:
         with:
           toolchain: stable
 
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
-
       - name: Check fmt
         run: cargo fmt --check
 
