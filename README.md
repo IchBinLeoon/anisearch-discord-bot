@@ -1,4 +1,4 @@
-# AniSearch
+# AniSearch Bot
 
 [![Discord](https://img.shields.io/discord/835960108466176041?logo=discord&logoColor=ffffff)](https://discord.gg/Bv94yQYZM8)
 [![Version](https://img.shields.io/github/v/tag/IchBinLeoon/anisearch-discord-bot?label=version)](https://github.com/IchBinLeoon/anisearch-discord-bot/tags)
