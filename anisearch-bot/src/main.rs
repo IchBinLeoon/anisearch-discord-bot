@@ -17,7 +17,7 @@ use tonic_health::server::health_reporter;
 use tracing::{error, info};
 use tracing_subscriber::fmt;
 
-use crate::api::BotService;
+use crate::api::{BotService, start_health_check};
 use crate::config::Config;
 use crate::error::{Error, on_error};
 use crate::events::Handler;
@@ -40,7 +40,7 @@ async fn main() {
     fmt().init();
 
     if let Err(e) = init().await {
-        error!("{}", e);
+        error!("Failed to start: {e}");
         exit(1);
     }
 }
@@ -78,7 +78,9 @@ async fn init() -> Result<()> {
         get_database_version(&database).await?
     );
 
-    let data = Arc::new(Data { database });
+    let data = Arc::new(Data {
+        database: database.clone(),
+    });
 
     let mut client = ClientBuilder::new(config.token, intents)
         .data(data)
@@ -88,15 +90,20 @@ async fn init() -> Result<()> {
 
     let (health_reporter, health_service) = health_reporter();
 
-    health_reporter.set_serving::<BotServer<BotService>>().await;
+    start_health_check(
+        health_reporter,
+        client.shard_manager.runners.clone(),
+        database,
+    );
+
+    let bot_service = BotServer::new(BotService::new(
+        client.http.clone(),
+        client.shard_manager.runners.clone(),
+    ));
 
     let server = Server::builder()
         .add_service(health_service)
-        .add_service(BotServer::new(BotService::new(
-            health_reporter,
-            client.http.clone(),
-            client.shard_manager.runners.clone(),
-        )))
+        .add_service(bot_service)
         .serve(config.grpc_address.parse()?);
 
     spawn(async move {

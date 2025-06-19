@@ -23,7 +23,7 @@ RUN curl -fsSL -o /usr/local/bin/grpc_health_probe \
 COPY --from=builder /app/target/release/anisearch-bot /usr/local/bin/anisearch-bot
 
 HEALTHCHECK --interval=1m --timeout=3s --start-period=10s --retries=1 \
-    CMD grpc_health_probe -addr=localhost:50051 || exit 1
+    CMD grpc_health_probe -addr=localhost:50051 -service=bot.Bot || exit 1
 
 EXPOSE 50051
 

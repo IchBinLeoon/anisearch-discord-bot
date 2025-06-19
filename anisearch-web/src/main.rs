@@ -31,7 +31,7 @@ async fn main() {
     fmt().init();
 
     if let Err(e) = init().await {
-        error!("{}", e);
+        error!("Failed to start: {e}");
         exit(1);
     }
 }

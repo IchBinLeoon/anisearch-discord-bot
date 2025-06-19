@@ -1,29 +1,31 @@
-use anisearch_lib::grpc::bot_server::Bot;
+use std::sync::Arc;
+use std::time::Duration;
+
+use anisearch_lib::grpc::bot_server::{Bot, BotServer};
 use anisearch_lib::grpc::{
     Command, CommandOption, CommandsRequest, CommandsResponse, Shard, ShardsRequest, ShardsResponse,
 };
 use dashmap::DashMap;
 use futures::channel::mpsc::UnboundedSender;
-use poise::serenity_prelude::{Http, ShardId, ShardRunnerInfo, ShardRunnerMessage};
-use std::sync::Arc;
+use poise::serenity_prelude::{
+    ConnectionStage, Http, ShardId, ShardRunnerInfo, ShardRunnerMessage,
+};
+use sea_orm::DatabaseConnection;
+use tokio::spawn;
+use tokio::time::sleep;
 use tonic::{Request, Response, Status, async_trait};
 use tonic_health::server::HealthReporter;
 
 type RunnersMap = Arc<DashMap<ShardId, (ShardRunnerInfo, UnboundedSender<ShardRunnerMessage>)>>;
 
 pub struct BotService {
-    _health_reporter: HealthReporter,
     http: Arc<Http>,
     runners: RunnersMap,
 }
 
 impl BotService {
-    pub fn new(health_reporter: HealthReporter, http: Arc<Http>, runners: RunnersMap) -> Self {
-        Self {
-            _health_reporter: health_reporter,
-            http,
-            runners,
-        }
+    pub fn new(http: Arc<Http>, runners: RunnersMap) -> Self {
+        Self { http, runners }
     }
 }
 
@@ -69,8 +71,7 @@ impl Bot for BotService {
                 .runners
                 .iter()
                 .map(|s| {
-                    let id = s.key();
-                    let (info, _) = s.value();
+                    let (id, (info, _)) = s.pair();
 
                     Shard {
                         id: id.get() as u32,
@@ -83,4 +84,30 @@ impl Bot for BotService {
 
         Ok(Response::new(reply))
     }
+}
+
+pub fn start_health_check(
+    health_reporter: HealthReporter,
+    runners: RunnersMap,
+    database: Arc<DatabaseConnection>,
+) {
+    spawn(async move {
+        loop {
+            let shards_healthy = runners
+                .iter()
+                .all(|s| s.value().0.stage != ConnectionStage::Disconnected);
+
+            let db_healthy = database.ping().await.is_ok();
+
+            if shards_healthy && db_healthy {
+                health_reporter.set_serving::<BotServer<BotService>>().await;
+            } else {
+                health_reporter
+                    .set_not_serving::<BotServer<BotService>>()
+                    .await;
+            }
+
+            sleep(Duration::from_secs(60)).await;
+        }
+    });
 }
