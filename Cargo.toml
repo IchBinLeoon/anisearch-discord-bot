@@ -10,6 +10,7 @@ edition = "2024"
 anyhow = "1.0"
 axum = "0.8"
 chrono = "0.4"
+cruet = "0.15"
 dashmap = "6.1"
 envy = { git = "https://github.com/softprops/envy" }
 futures = "0.3"

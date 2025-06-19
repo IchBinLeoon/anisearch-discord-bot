@@ -18,6 +18,7 @@ use tracing::{error, info};
 use tracing_subscriber::fmt;
 
 use crate::api::{BotService, start_health_check};
+use crate::commands::commands;
 use crate::config::Config;
 use crate::error::{Error, on_error};
 use crate::events::Handler;
@@ -53,7 +54,7 @@ async fn init() -> Result<()> {
     let intents = GatewayIntents::default();
 
     let options = FrameworkOptions {
-        commands: vec![commands::help::ping::ping()],
+        commands: commands(),
         on_error: |error| {
             Box::pin(async move {
                 if let Err(e) = on_error(error).await {

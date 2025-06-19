@@ -10,6 +10,7 @@ anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
 chrono.workspace = true
+cruet.workspace = true
 dashmap.workspace = true
 futures.workspace = true
 poise.workspace = true
