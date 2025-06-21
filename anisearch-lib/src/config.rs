@@ -37,3 +37,60 @@ macro_rules! config {
         impl $crate::config::ConfigTrait for Config {}
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_value() {
+        config! {
+            test("TEST"): u32,
+        }
+
+        unsafe {
+            std::env::set_var("TEST", "42");
+        }
+
+        assert_eq!(Config::init().unwrap().test, 42);
+    }
+
+    #[test]
+    fn test_value_default() {
+        config! {
+            test("TEST_DEFAULT"): u32 = 42,
+        }
+
+        assert_eq!(Config::init().unwrap().test, 42);
+
+        unsafe {
+            std::env::set_var("TEST_DEFAULT", "69");
+        }
+
+        assert_eq!(Config::init().unwrap().test, 69);
+    }
+
+    #[test]
+    fn test_value_optional() {
+        config! {
+            test("TEST_OPTIONAL"): Option<u32>,
+        }
+
+        assert_eq!(Config::init().unwrap().test, None);
+
+        unsafe {
+            std::env::set_var("TEST_OPTIONAL", "42");
+        }
+
+        assert_eq!(Config::init().unwrap().test, Some(42));
+    }
+
+    #[test]
+    fn test_value_missing() {
+        config! {
+            test("TEST_MISSING"): u32,
+        }
+
+        assert!(Config::init().is_err());
+    }
+}
