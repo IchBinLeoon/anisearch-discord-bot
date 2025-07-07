@@ -14,8 +14,10 @@ cruet = "0.15"
 dashmap = "6.1"
 envy = { git = "https://github.com/softprops/envy" }
 futures = "0.3"
+graphql_client = "0.14"
 poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
 prost = "0.13"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 sea-orm = { version = "1.1", features = ["macros", "runtime-tokio-rustls", "sqlx-postgres"] }
 sea-orm-migration = { version = "1.1", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
 serde = "1.0"

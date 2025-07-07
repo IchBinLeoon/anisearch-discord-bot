@@ -5,29 +5,21 @@ use thiserror::Error;
 use tracing::error;
 
 use crate::Data;
+use crate::clients::anilist::error::AniListError;
 use crate::utils::embeds::create_error_embed;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("Serenity error: {0}")]
-    Serenity(#[source] SerenityError),
+    #[error("Serenity: {0}")]
+    Serenity(#[from] SerenityError),
 
-    #[error("Database error: {0}")]
-    Database(#[source] DbErr),
-}
+    #[error("Database: {0}")]
+    Database(#[from] DbErr),
 
-impl From<SerenityError> for Error {
-    fn from(e: SerenityError) -> Self {
-        Self::Serenity(e)
-    }
-}
-
-impl From<DbErr> for Error {
-    fn from(e: DbErr) -> Self {
-        Self::Database(e)
-    }
+    #[error("AniList: {0}")]
+    AniList(#[from] AniListError),
 }
 
 pub async fn on_error(error: FrameworkError<'_, Data, Error>) -> Result<()> {

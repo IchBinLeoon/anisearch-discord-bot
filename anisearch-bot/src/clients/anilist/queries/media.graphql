@@ -1,0 +1,46 @@
+query MediaQuery($page: Int, $perPage: Int, $type: MediaType, $search: String) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: $type, isAdult: false, search: $search) {
+            bannerImage
+            chapters
+            coverImage {
+                color
+                large
+            }
+            description(asHtml: false)
+            duration
+            endDate {
+                day
+                month
+                year
+            }
+            episodes
+            format
+            genres
+            id
+            idMal
+            nextAiringEpisode {
+                airingAt
+                episode
+            }
+            source(version: 3)
+            startDate {
+                day
+                month
+                year
+            }
+            status(version: 2)
+            studios(isMain: true) {
+                nodes {
+                    name
+                }
+            }
+            title {
+                english
+                romaji
+            }
+            type
+            volumes
+        }
+    }
+}

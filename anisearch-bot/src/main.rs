@@ -24,6 +24,7 @@ use crate::error::{Error, on_error};
 use crate::events::Handler;
 
 mod api;
+mod clients;
 mod commands;
 mod config;
 mod error;

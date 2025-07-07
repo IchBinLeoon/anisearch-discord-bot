@@ -1,0 +1,32 @@
+query CharacterQuery($page: Int, $perPage: Int, $search: String) {
+    Page(page: $page, perPage: $perPage) {
+        characters(search: $search) {
+            age
+            dateOfBirth {
+                day
+                month
+                year
+            }
+            description(asHtml: false)
+            gender
+            id
+            image {
+                large
+            }
+            media(sort: [POPULARITY_DESC], page: 1, perPage: 5) {
+                nodes {
+                    isAdult
+                    title {
+                        romaji
+                    }
+                }
+            }
+            name {
+                alternative
+                alternativeSpoiler
+                full
+                native
+            }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+query StudioQuery($page: Int, $perPage: Int, $search: String) {
+    Page(page: $page, perPage: $perPage) {
+        studios(search: $search) {
+            id
+            isAnimationStudio
+            media(sort: [POPULARITY_DESC], isMain: true, page: 1, perPage: 10) {
+                nodes {
+                    coverImage {
+                        large
+                    }
+                    episodes
+                    format
+                    isAdult
+                    title {
+                        romaji
+                    }
+                }
+            }
+            name
+        }
+    }
+}
