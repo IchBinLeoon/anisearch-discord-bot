@@ -22,6 +22,7 @@ use crate::commands::commands;
 use crate::config::Config;
 use crate::error::{Error, on_error};
 use crate::events::Handler;
+use crate::services::anilist::AniListService;
 
 mod api;
 mod clients;
@@ -29,12 +30,14 @@ mod commands;
 mod config;
 mod error;
 mod events;
+mod services;
 mod utils;
 
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub struct Data {
     pub database: Arc<DatabaseConnection>,
+    pub anilist_service: Arc<AniListService>,
 }
 
 #[tokio::main]
@@ -80,8 +83,11 @@ async fn init() -> Result<()> {
         get_database_version(&database).await?
     );
 
+    let anilist_service = Arc::new(AniListService::init());
+
     let data = Arc::new(Data {
         database: database.clone(),
+        anilist_service,
     });
 
     let mut client = ClientBuilder::new(config.token, intents)

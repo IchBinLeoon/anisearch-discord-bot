@@ -17,7 +17,7 @@ pub async fn anime(
     #[description = "Maximum number of results to display."]
     #[min = 1]
     #[max = 15]
-    limit: Option<u8>,
+    limit: Option<usize>,
 ) -> Result<()> {
     ctx.defer().await?;
 
@@ -30,11 +30,16 @@ async fn autocomplete_title<'a>(
     ctx: Context<'a>,
     partial: &'a str,
 ) -> CreateAutocompleteResponse<'a> {
-    let choices: Vec<_> = ["Choice One", "Choice Two", "Choice Three"]
-        .into_iter()
-        .filter(move |title| title.to_lowercase().starts_with(&partial.to_lowercase()))
-        .map(AutocompleteChoice::from)
-        .collect();
+    let data = ctx.data();
+
+    let titles = data
+        .anilist_service
+        .anime_autocomplete(partial.trim().to_string())
+        .await
+        .unwrap_or_default();
+
+    let choices: Vec<AutocompleteChoice> =
+        titles.into_iter().map(AutocompleteChoice::from).collect();
 
     CreateAutocompleteResponse::new().set_choices(choices)
 }
