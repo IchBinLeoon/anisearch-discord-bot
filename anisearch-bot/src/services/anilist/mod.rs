@@ -13,6 +13,7 @@ mod trie;
 
 const DEFAULT_SEARCH_LIMIT: usize = 10;
 const AUTOCOMPLETE_LIMIT: usize = 25;
+const MAX_AUTOCOMPLETE_LEN: usize = 100;
 
 pub struct AniListService {
     client: AniListClient,
@@ -131,7 +132,7 @@ impl AniListService {
         let mut titles = self.autocomplete_cache.search_anime_titles(&title).await;
 
         if !titles.is_empty() {
-            return Ok(titles);
+            return Ok(Self::truncate_autocomplete_results(titles));
         }
 
         let anime = self.search_anime(title, Some(AUTOCOMPLETE_LIMIT)).await?;
@@ -147,7 +148,7 @@ impl AniListService {
                     .insert_anime_titles(titles.clone())
                     .await;
 
-                Ok(titles)
+                Ok(Self::truncate_autocomplete_results(titles))
             }
             None => Ok(vec![]),
         }
@@ -157,7 +158,7 @@ impl AniListService {
         let mut titles = self.autocomplete_cache.search_manga_titles(&title).await;
 
         if !titles.is_empty() {
-            return Ok(titles);
+            return Ok(Self::truncate_autocomplete_results(titles));
         }
 
         let manga = self.search_manga(title, Some(AUTOCOMPLETE_LIMIT)).await?;
@@ -173,7 +174,7 @@ impl AniListService {
                     .insert_manga_titles(titles.clone())
                     .await;
 
-                Ok(titles)
+                Ok(Self::truncate_autocomplete_results(titles))
             }
             None => Ok(vec![]),
         }
@@ -183,7 +184,7 @@ impl AniListService {
         let mut names = self.autocomplete_cache.search_character_names(&name).await;
 
         if !names.is_empty() {
-            return Ok(names);
+            return Ok(Self::truncate_autocomplete_results(names));
         }
 
         let characters = self
@@ -201,7 +202,7 @@ impl AniListService {
                     .insert_character_names(names.clone())
                     .await;
 
-                Ok(names)
+                Ok(Self::truncate_autocomplete_results(names))
             }
             None => Ok(vec![]),
         }
@@ -211,7 +212,7 @@ impl AniListService {
         let mut names = self.autocomplete_cache.search_staff_names(&name).await;
 
         if !names.is_empty() {
-            return Ok(names);
+            return Ok(Self::truncate_autocomplete_results(names));
         }
 
         let staff = self.search_staff(name, Some(AUTOCOMPLETE_LIMIT)).await?;
@@ -227,7 +228,7 @@ impl AniListService {
                     .insert_staff_names(names.clone())
                     .await;
 
-                Ok(names)
+                Ok(Self::truncate_autocomplete_results(names))
             }
             None => Ok(vec![]),
         }
@@ -237,7 +238,7 @@ impl AniListService {
         let mut names = self.autocomplete_cache.search_studio_names(&name).await;
 
         if !names.is_empty() {
-            return Ok(names);
+            return Ok(Self::truncate_autocomplete_results(names));
         }
 
         let studios = self.search_sudios(name, Some(AUTOCOMPLETE_LIMIT)).await?;
@@ -250,9 +251,16 @@ impl AniListService {
                     .insert_studio_names(names.clone())
                     .await;
 
-                Ok(names)
+                Ok(Self::truncate_autocomplete_results(names))
             }
             None => Ok(vec![]),
         }
+    }
+
+    fn truncate_autocomplete_results(results: Vec<String>) -> Vec<String> {
+        results
+            .into_iter()
+            .map(|s| s.chars().take(MAX_AUTOCOMPLETE_LEN).collect())
+            .collect()
     }
 }
