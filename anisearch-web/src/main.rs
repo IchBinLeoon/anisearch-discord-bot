@@ -11,7 +11,7 @@ use sea_orm::DatabaseConnection;
 use tokio::net::TcpListener;
 use tonic::transport::Channel;
 use tracing::{error, info};
-use tracing_subscriber::fmt;
+use tracing_subscriber::{EnvFilter, fmt};
 
 use crate::api::api;
 use crate::config::Config;
@@ -28,7 +28,8 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    fmt().init();
+    let filter = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("info"));
+    fmt().with_env_filter(filter).init();
 
     if let Err(e) = init().await {
         error!("Failed to start: {e}");

@@ -15,7 +15,7 @@ use tokio::spawn;
 use tonic::transport::Server;
 use tonic_health::server::health_reporter;
 use tracing::{error, info};
-use tracing_subscriber::fmt;
+use tracing_subscriber::{EnvFilter, fmt};
 
 use crate::api::{BotService, start_health_check};
 use crate::commands::commands;
@@ -42,7 +42,8 @@ pub struct Data {
 
 #[tokio::main]
 async fn main() {
-    fmt().init();
+    let filter = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("info"));
+    fmt().with_env_filter(filter).init();
 
     if let Err(e) = init().await {
         error!("Failed to start: {e}");
