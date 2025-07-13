@@ -27,6 +27,7 @@ use crate::services::anilist::AniListService;
 mod api;
 mod clients;
 mod commands;
+mod components;
 mod config;
 mod error;
 mod events;

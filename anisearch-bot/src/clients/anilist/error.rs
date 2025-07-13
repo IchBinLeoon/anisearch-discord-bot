@@ -4,7 +4,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AniListError {
-    #[error("{0}")]
+    #[error(transparent)]
     Request(#[from] ReqwestError),
 
     #[error("{0}")]

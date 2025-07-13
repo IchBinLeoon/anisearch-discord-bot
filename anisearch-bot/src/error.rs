@@ -6,6 +6,7 @@ use tracing::error;
 
 use crate::Data;
 use crate::clients::anilist::error::AniListError;
+use crate::components::ComponentError;
 use crate::utils::embeds::create_error_embed;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -14,6 +15,9 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub enum Error {
     #[error("Serenity: {0}")]
     Serenity(#[from] SerenityError),
+
+    #[error("Component: {0}")]
+    Component(#[from] ComponentError),
 
     #[error("Database: {0}")]
     Database(#[from] DbErr),
