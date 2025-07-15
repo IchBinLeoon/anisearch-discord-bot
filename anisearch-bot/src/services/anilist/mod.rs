@@ -139,10 +139,7 @@ impl AniListService {
 
         match anime {
             Some(anime) => {
-                titles = anime
-                    .iter()
-                    .filter_map(|data| data.title.as_ref()?.romaji.to_owned())
-                    .collect();
+                titles = Self::extract_media_titles(anime);
 
                 self.autocomplete_cache
                     .insert_anime_titles(titles.clone())
@@ -165,10 +162,7 @@ impl AniListService {
 
         match manga {
             Some(manga) => {
-                titles = manga
-                    .iter()
-                    .filter_map(|data| data.title.as_ref()?.romaji.to_owned())
-                    .collect();
+                titles = Self::extract_media_titles(manga);
 
                 self.autocomplete_cache
                     .insert_manga_titles(titles.clone())
@@ -178,6 +172,28 @@ impl AniListService {
             }
             None => Ok(vec![]),
         }
+    }
+
+    fn extract_media_titles(media: Vec<MediaQueryPageMedia>) -> Vec<String> {
+        media
+            .iter()
+            .filter_map(|data| data.title.as_ref())
+            .flat_map(|title| {
+                let mut titles = vec![];
+
+                if let Some(romaji) = &title.romaji {
+                    titles.push(romaji.clone());
+
+                    if let Some(english) = &title.english {
+                        if english != romaji {
+                            titles.push(english.clone());
+                        }
+                    }
+                }
+
+                titles
+            })
+            .collect()
     }
 
     pub async fn character_autocomplete(&self, name: String) -> Result<Vec<String>, AniListError> {
@@ -195,7 +211,7 @@ impl AniListService {
             Some(characters) => {
                 names = characters
                     .iter()
-                    .filter_map(|data| data.name.as_ref()?.full.to_owned())
+                    .filter_map(|data| data.name.as_ref()?.full.clone())
                     .collect();
 
                 self.autocomplete_cache
@@ -221,7 +237,7 @@ impl AniListService {
             Some(staff) => {
                 names = staff
                     .iter()
-                    .filter_map(|data| data.name.as_ref()?.full.to_owned())
+                    .filter_map(|data| data.name.as_ref()?.full.clone())
                     .collect();
 
                 self.autocomplete_cache
@@ -245,7 +261,7 @@ impl AniListService {
 
         match studios {
             Some(studios) => {
-                names = studios.iter().map(|data| data.name.to_owned()).collect();
+                names = studios.iter().map(|data| data.name.clone()).collect();
 
                 self.autocomplete_cache
                     .insert_studio_names(names.clone())
@@ -260,6 +276,7 @@ impl AniListService {
     fn truncate_autocomplete_results(results: Vec<String>) -> Vec<String> {
         results
             .into_iter()
+            .take(AUTOCOMPLETE_LIMIT)
             .map(|s| s.chars().take(MAX_AUTOCOMPLETE_LEN).collect())
             .collect()
     }
