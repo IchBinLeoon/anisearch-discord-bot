@@ -1,3 +1,5 @@
+use std::ops::Not;
+
 use crate::clients::anilist::character_query::CharacterQueryPageCharacters;
 use crate::clients::anilist::error::AniListError;
 use crate::clients::anilist::media_query::{MediaQueryPageMedia, MediaType};
@@ -38,7 +40,7 @@ impl AniListService {
             page: Some(1),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
             type_: Some(type_),
-            search: Some(title),
+            search: title.is_empty().not().then_some(title),
         };
 
         let data = self.client.media(variables).await?;
@@ -72,7 +74,7 @@ impl AniListService {
         let variables = character_query::Variables {
             page: Some(1),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
-            search: Some(name),
+            search: name.is_empty().not().then_some(name),
         };
 
         let data = self.client.character(variables).await?;
@@ -90,7 +92,7 @@ impl AniListService {
         let variables = staff_query::Variables {
             page: Some(1),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
-            search: Some(name),
+            search: name.is_empty().not().then_some(name),
         };
 
         let data = self.client.staff(variables).await?;
@@ -108,7 +110,7 @@ impl AniListService {
         let variables = studio_query::Variables {
             page: Some(1),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
-            search: Some(name),
+            search: name.is_empty().not().then_some(name),
         };
 
         let data = self.client.studio(variables).await?;
