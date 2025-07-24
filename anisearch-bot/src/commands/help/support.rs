@@ -1,6 +1,6 @@
 use anisearch_lib::SERVER_INVITE;
 use poise::CreateReply;
-use poise::serenity_prelude::{CreateActionRow, CreateButton};
+use poise::serenity_prelude::{CreateActionRow, CreateButton, CreateComponent};
 
 use crate::Context;
 use crate::error::Result;
@@ -22,7 +22,9 @@ pub async fn support(ctx: Context<'_>) -> Result<()> {
         .label("Join the Support Server")
         .emoji('🤝')];
 
-    let components = [CreateActionRow::buttons(&buttons)];
+    let components = [CreateComponent::ActionRow(CreateActionRow::buttons(
+        &buttons,
+    ))];
 
     let reply = CreateReply::new().embed(embed).components(&components);
 

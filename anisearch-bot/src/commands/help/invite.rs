@@ -1,6 +1,6 @@
 use anisearch_lib::BOT_INVITE;
 use poise::CreateReply;
-use poise::serenity_prelude::{CreateActionRow, CreateButton};
+use poise::serenity_prelude::{CreateActionRow, CreateButton, CreateComponent};
 
 use crate::Context;
 use crate::error::Result;
@@ -22,7 +22,9 @@ pub async fn invite(ctx: Context<'_>) -> Result<()> {
         .label("Invite AniSearch to Your Server")
         .emoji('🔗')];
 
-    let components = [CreateActionRow::buttons(&buttons)];
+    let components = [CreateComponent::ActionRow(CreateActionRow::buttons(
+        &buttons,
+    ))];
 
     let reply = CreateReply::new().embed(embed).components(&components);
 

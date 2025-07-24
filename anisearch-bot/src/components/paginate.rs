@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use poise::serenity_prelude::{
     ButtonStyle, CacheHttp, ComponentInteraction, ComponentInteractionCollector,
-    Context as SerenityContext, CreateActionRow, CreateButton, CreateEmbed,
+    Context as SerenityContext, CreateActionRow, CreateButton, CreateComponent, CreateEmbed,
     CreateInteractionResponse, CreateInteractionResponseMessage, EmojiId, ModalInteraction,
     ModalInteractionCollector, UserId,
 };
@@ -114,7 +114,7 @@ impl<'a> Paginator<'a> {
         ];
     }
 
-    fn render_components(&self) -> Vec<CreateActionRow> {
+    fn render_components(&self) -> Vec<CreateComponent> {
         let mut components = vec![];
 
         if !self.is_cancelled {
@@ -143,11 +143,15 @@ impl<'a> Paginator<'a> {
                     .disabled(right_disabled),
             ];
 
-            components.push(CreateActionRow::buttons(buttons));
+            components.push(CreateComponent::ActionRow(CreateActionRow::buttons(
+                buttons,
+            )));
         }
 
         if let Some(buttons) = self.get_current_page().buttons {
-            components.push(CreateActionRow::buttons(buttons));
+            components.push(CreateComponent::ActionRow(CreateActionRow::buttons(
+                buttons,
+            )));
         }
 
         components
