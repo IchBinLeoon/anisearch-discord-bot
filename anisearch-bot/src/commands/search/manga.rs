@@ -1,7 +1,11 @@
+use poise::CreateReply;
 use poise::serenity_prelude::{AutocompleteChoice, CreateAutocompleteResponse};
 
 use crate::Context;
+use crate::commands::search::anime::{create_media_buttons, create_media_embed};
+use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
+use crate::utils::embeds::create_anilist_embed;
 
 /// 📚 Search for a manga and display detailed information.
 #[poise::command(
@@ -21,7 +25,35 @@ pub async fn manga(
 ) -> Result<()> {
     ctx.defer().await?;
 
-    ctx.say(ctx.invocation_string()).await?;
+    let data = ctx.data();
+
+    match data
+        .anilist_service
+        .search_manga(title.clone(), limit)
+        .await?
+    {
+        Some(manga) => {
+            let pages = manga
+                .iter()
+                .map(|data| {
+                    Page::new(create_media_embed(data)).add_link_buttons(create_media_buttons(data))
+                })
+                .collect();
+
+            let mut paginator = Paginator::builder().pages(pages).build();
+
+            paginator.paginate(ctx).await?;
+        }
+        None => {
+            let embed = create_anilist_embed("🚫 Not Found".to_string(), None).description(
+                format!("A manga with the title `{title}` could not be found."),
+            );
+
+            let reply = CreateReply::new().embed(embed);
+
+            ctx.send(reply).await?;
+        }
+    }
 
     Ok(())
 }

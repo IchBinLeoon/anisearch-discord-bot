@@ -15,14 +15,17 @@ query MediaQuery($page: Int, $perPage: Int, $type: MediaType, $search: String) {
                 year
             }
             episodes
+            favourites
             format
             genres
             id
             idMal
+            meanScore
             nextAiringEpisode {
                 airingAt
                 episode
             }
+            popularity
             source(version: 3)
             startDate {
                 day
