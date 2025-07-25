@@ -14,6 +14,7 @@ use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_opt};
 
 /// 🏢 Search for a studio and display detailed information.
 #[poise::command(
+    category = "Search",
     slash_command,
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"

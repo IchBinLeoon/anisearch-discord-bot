@@ -18,6 +18,7 @@ use crate::utils::{ANILIST_EMOJI, MYANIMELIST_EMOJI};
 
 /// 📺 Search for an anime and display detailed information.
 #[poise::command(
+    category = "Search",
     slash_command,
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"

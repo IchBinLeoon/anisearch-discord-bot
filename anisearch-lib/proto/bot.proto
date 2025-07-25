@@ -14,14 +14,21 @@ message CommandsResponse {
 }
 
 message Command {
-  string name = 1;
-  string description = 2;
-  repeated CommandOption options = 3;
+  string category = 1;
+  string name = 2;
+  string description = 3;
+  repeated CommandOption options = 4;
 }
 
 message CommandOption {
   string name = 1;
   string description = 2;
+  bool required = 3;
+  repeated CommandOptionChoice choices = 4;
+}
+
+message CommandOptionChoice {
+  string name = 1;
 }
 
 message ShardsRequest {}

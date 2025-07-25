@@ -88,7 +88,7 @@ mod tests {
     #[test]
     fn test_value_missing() {
         config! {
-            test("TEST_MISSING"): u32,
+            _test("TEST_MISSING"): u32,
         }
 
         assert!(Config::init().is_err());

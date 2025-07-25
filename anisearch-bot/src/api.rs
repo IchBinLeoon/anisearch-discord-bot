@@ -3,29 +3,32 @@ use std::time::Duration;
 
 use anisearch_lib::grpc::bot_server::{Bot, BotServer};
 use anisearch_lib::grpc::{
-    Command, CommandOption, CommandsRequest, CommandsResponse, Shard, ShardsRequest, ShardsResponse,
+    Command, CommandOption, CommandOptionChoice, CommandsRequest, CommandsResponse, Shard,
+    ShardsRequest, ShardsResponse,
 };
 use dashmap::DashMap;
 use futures::channel::mpsc::UnboundedSender;
-use poise::serenity_prelude::{
-    ConnectionStage, Http, ShardId, ShardRunnerInfo, ShardRunnerMessage,
-};
+use poise::Command as PoiseCommand;
+use poise::serenity_prelude::{ConnectionStage, ShardId, ShardRunnerInfo, ShardRunnerMessage};
 use sea_orm::DatabaseConnection;
 use tokio::spawn;
 use tokio::time::sleep;
 use tonic::{Request, Response, Status, async_trait};
 use tonic_health::server::HealthReporter;
 
+use crate::Data;
+use crate::error::Error;
+
 type RunnersMap = Arc<DashMap<ShardId, (ShardRunnerInfo, UnboundedSender<ShardRunnerMessage>)>>;
 
 pub struct BotService {
-    http: Arc<Http>,
     runners: RunnersMap,
+    commands: Vec<PoiseCommand<Data, Error>>,
 }
 
 impl BotService {
-    pub fn new(http: Arc<Http>, runners: RunnersMap) -> Self {
-        Self { http, runners }
+    pub fn new(runners: RunnersMap, commands: Vec<PoiseCommand<Data, Error>>) -> Self {
+        Self { runners, commands }
     }
 }
 
@@ -35,29 +38,35 @@ impl Bot for BotService {
         &self,
         _request: Request<CommandsRequest>,
     ) -> Result<Response<CommandsResponse>, Status> {
-        let commands = self
-            .http
-            .get_global_commands()
-            .await
-            .map_err(|e| Status::internal(e.to_string()))?;
+        let mut commands: Vec<Command> = self
+            .commands
+            .iter()
+            .map(|c| Command {
+                category: c.category.as_ref().unwrap().to_string(),
+                name: c.name.to_string(),
+                description: c.description.as_ref().unwrap().to_string(),
+                options: c
+                    .parameters
+                    .iter()
+                    .map(|o| CommandOption {
+                        name: o.name.to_string(),
+                        description: o.description.as_ref().unwrap().to_string(),
+                        required: o.required,
+                        choices: o
+                            .choices
+                            .iter()
+                            .map(|c| CommandOptionChoice {
+                                name: c.name.to_string(),
+                            })
+                            .collect(),
+                    })
+                    .collect(),
+            })
+            .collect();
 
-        let reply = CommandsResponse {
-            commands: commands
-                .iter()
-                .map(|c| Command {
-                    name: c.name.to_string(),
-                    description: c.description.to_string(),
-                    options: c
-                        .options
-                        .iter()
-                        .map(|o| CommandOption {
-                            name: o.name.to_string(),
-                            description: o.description.to_string(),
-                        })
-                        .collect(),
-                })
-                .collect(),
-        };
+        commands.sort_by(|a, b| a.category.cmp(&b.category).then(a.name.cmp(&b.name)));
+
+        let reply = CommandsResponse { commands };
 
         Ok(Response::new(reply))
     }
@@ -66,21 +75,21 @@ impl Bot for BotService {
         &self,
         _request: Request<ShardsRequest>,
     ) -> Result<Response<ShardsResponse>, Status> {
-        let reply = ShardsResponse {
-            shards: self
-                .runners
-                .iter()
-                .map(|s| {
-                    let (id, (info, _)) = s.pair();
+        let shards = self
+            .runners
+            .iter()
+            .map(|s| {
+                let (id, (info, _)) = s.pair();
 
-                    Shard {
-                        id: id.get() as u32,
-                        stage: info.stage as i32,
-                        latency: info.latency.map(|d| d.as_millis() as u64),
-                    }
-                })
-                .collect(),
-        };
+                Shard {
+                    id: id.get() as u32,
+                    stage: info.stage as i32,
+                    latency: info.latency.map(|d| d.as_millis() as u64),
+                }
+            })
+            .collect();
+
+        let reply = ShardsResponse { shards };
 
         Ok(Response::new(reply))
     }

@@ -8,6 +8,7 @@ use crate::utils::embeds::create_default_embed;
 
 /// 🔗 Invite the bot to your server.
 #[poise::command(
+    category = "Help",
     slash_command,
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"

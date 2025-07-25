@@ -9,6 +9,7 @@ use crate::utils::embeds::create_anilist_embed;
 
 /// 📚 Search for a manga and display detailed information.
 #[poise::command(
+    category = "Search",
     slash_command,
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"

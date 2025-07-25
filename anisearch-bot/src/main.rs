@@ -107,8 +107,8 @@ async fn init() -> Result<()> {
     );
 
     let bot_service = BotServer::new(BotService::new(
-        client.http.clone(),
         client.shard_manager.runners.clone(),
+        commands(),
     ));
 
     let server = Server::builder()
