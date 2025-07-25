@@ -14,6 +14,6 @@ pub fn version() -> String {
     if git_commit_hash.is_empty() {
         cargo_pkg_version.to_string()
     } else {
-        format!("{} ({} {})", cargo_pkg_version, git_commit_hash, build_date)
+        format!("{cargo_pkg_version} ({git_commit_hash} {build_date})")
     }
 }

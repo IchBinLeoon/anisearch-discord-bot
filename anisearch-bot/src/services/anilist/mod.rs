@@ -102,7 +102,7 @@ impl AniListService {
         Ok(staff)
     }
 
-    pub async fn search_sudios(
+    pub async fn search_studio(
         &self,
         name: String,
         limit: Option<usize>,
@@ -259,7 +259,7 @@ impl AniListService {
             return Ok(Self::truncate_autocomplete_results(names));
         }
 
-        let studios = self.search_sudios(name, Some(AUTOCOMPLETE_LIMIT)).await?;
+        let studios = self.search_studio(name, Some(AUTOCOMPLETE_LIMIT)).await?;
 
         match studios {
             Some(studios) => {

@@ -334,6 +334,7 @@ pub struct PaginatorBuilder<'a> {
     ephemeral: bool,
 }
 
+#[allow(dead_code)]
 impl<'a> PaginatorBuilder<'a> {
     pub fn pages(mut self, pages: Vec<Page<'a>>) -> Self {
         self.pages = pages;
