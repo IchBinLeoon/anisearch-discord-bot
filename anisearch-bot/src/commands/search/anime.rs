@@ -31,8 +31,15 @@ pub async fn anime(
     #[min = 1]
     #[max = 15]
     limit: Option<usize>,
+    #[description = "Show results only to you."] ephemeral: Option<bool>,
 ) -> Result<()> {
-    ctx.defer().await?;
+    let ephemeral = ephemeral.unwrap_or_default();
+
+    if ephemeral {
+        ctx.defer_ephemeral().await?;
+    } else {
+        ctx.defer().await?;
+    }
 
     let data = ctx.data();
 
@@ -49,7 +56,10 @@ pub async fn anime(
                 })
                 .collect();
 
-            let mut paginator = Paginator::builder().pages(pages).build();
+            let mut paginator = Paginator::builder()
+                .pages(pages)
+                .ephemeral(ephemeral)
+                .build();
 
             paginator.paginate(ctx).await?;
         }
@@ -58,7 +68,7 @@ pub async fn anime(
                 format!("An anime with the title `{title}` could not be found."),
             );
 
-            let reply = CreateReply::new().embed(embed);
+            let reply = CreateReply::new().embed(embed).ephemeral(ephemeral);
 
             ctx.send(reply).await?;
         }
