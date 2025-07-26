@@ -1,5 +1,6 @@
 use poise::serenity_prelude::EmojiId;
 
+pub mod commands;
 pub mod embeds;
 pub mod format;
 

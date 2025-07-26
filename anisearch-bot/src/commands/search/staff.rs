@@ -9,6 +9,7 @@ use crate::commands::search::character::format_name;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::ANILIST_EMOJI;
+use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 use crate::utils::format::{format_date, format_opt, sanitize_description};
 
@@ -30,13 +31,7 @@ pub async fn staff(
     limit: Option<usize>,
     #[description = "Show results only to you."] ephemeral: Option<bool>,
 ) -> Result<()> {
-    let ephemeral = ephemeral.unwrap_or_default();
-
-    if ephemeral {
-        ctx.defer_ephemeral().await?;
-    } else {
-        ctx.defer().await?;
-    }
+    let ephemeral = defer_with_ephemeral(ctx, ephemeral).await?;
 
     let data = ctx.data();
 

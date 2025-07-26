@@ -5,6 +5,7 @@ use crate::Context;
 use crate::commands::search::anime::{create_media_buttons, create_media_embed};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
+use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 
 /// 📚 Search for a manga and display detailed information.
@@ -25,13 +26,7 @@ pub async fn manga(
     limit: Option<usize>,
     #[description = "Show results only to you."] ephemeral: Option<bool>,
 ) -> Result<()> {
-    let ephemeral = ephemeral.unwrap_or_default();
-
-    if ephemeral {
-        ctx.defer_ephemeral().await?;
-    } else {
-        ctx.defer().await?;
-    }
+    let ephemeral = defer_with_ephemeral(ctx, ephemeral).await?;
 
     let data = ctx.data();
 

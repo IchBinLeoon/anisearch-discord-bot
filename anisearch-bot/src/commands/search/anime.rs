@@ -10,6 +10,7 @@ use crate::clients::anilist::media_query::{
 };
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
+use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 use crate::utils::format::{
     UNKNOWN_EMBED_FIELD, convert_to_color, format_date, format_opt, sanitize_description,
@@ -34,13 +35,7 @@ pub async fn anime(
     limit: Option<usize>,
     #[description = "Show results only to you."] ephemeral: Option<bool>,
 ) -> Result<()> {
-    let ephemeral = ephemeral.unwrap_or_default();
-
-    if ephemeral {
-        ctx.defer_ephemeral().await?;
-    } else {
-        ctx.defer().await?;
-    }
+    let ephemeral = defer_with_ephemeral(ctx, ephemeral).await?;
 
     let data = ctx.data();
 
