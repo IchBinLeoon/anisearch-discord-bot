@@ -9,7 +9,7 @@ use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::ANILIST_EMOJI;
 use crate::utils::embeds::create_anilist_embed;
-use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_date, format_opt, sanitize_description};
+use crate::utils::format::{format_date, format_opt, sanitize_description};
 
 /// 🎭 Search for a character and display detailed information.
 #[poise::command(
@@ -96,21 +96,9 @@ fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {
     let title = data
         .name
         .as_ref()
-        .and_then(|n| match (&n.full, &n.native) {
-            (Some(full), Some(native)) => {
-                if full == native {
-                    Some(full.to_string())
-                } else {
-                    Some(format!("{full} ({native})"))
-                }
-            }
-            (Some(full), None) => Some(full.to_string()),
-            (None, Some(native)) => Some(native.to_string()),
-            _ => None,
-        })
-        .unwrap_or(UNKNOWN_EMBED_FIELD.to_string());
+        .and_then(|n| format_name(n.full.as_ref(), n.native.as_ref()));
 
-    let mut embed = create_anilist_embed(title, Some("Character".to_string()));
+    let mut embed = create_anilist_embed(format_opt(title), Some("Character".to_string()));
 
     if let Some(desc) = &data.description {
         embed = embed.description(sanitize_description(desc, 1000));
@@ -120,54 +108,9 @@ fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {
         embed = embed.thumbnail(img);
     }
 
-    let birthday = data.date_of_birth.as_ref();
-
-    embed = embed
-        .field(
-            "Birthday",
-            format_date(
-                birthday.and_then(|d| d.year),
-                birthday.and_then(|d| d.month),
-                birthday.and_then(|d| d.day),
-            ),
-            true,
-        )
-        .field("Age", format_opt(data.age.as_ref()), true)
-        .field("Gender", format_opt(data.gender.as_ref()), true);
-
-    if let Some(name) = &data.name {
-        let mut synonyms: Vec<String> = name
-            .alternative
-            .as_ref()
-            .map(|alt| alt.iter().flatten().map(|n| format!("`{n}`")).collect())
-            .unwrap_or_default();
-
-        if let Some(spoiler) = &name.alternative_spoiler {
-            synonyms.extend(spoiler.iter().flatten().map(|n| format!("||`{n}`||")));
-        }
-
-        if !synonyms.is_empty() {
-            embed = embed.field("Synonyms", synonyms.join(", "), false);
-        }
-    }
-
-    if let Some(media) = &data.media {
-        let appearances: Vec<String> = media
-            .nodes
-            .as_ref()
-            .map(|n| {
-                n.iter()
-                    .flatten()
-                    .filter(|m| !m.is_adult.unwrap_or(false))
-                    .filter_map(|m| m.title.as_ref()?.romaji.as_ref().map(|t| t.to_string()))
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        if !appearances.is_empty() {
-            embed = embed.field("Popular Appearances", appearances.join(" • "), false);
-        }
-    }
+    embed = add_basic_fields(embed, data);
+    embed = add_synonyms(embed, data);
+    embed = add_appearances(embed, data);
 
     embed
 }
@@ -178,4 +121,99 @@ fn create_character_buttons(data: &CharacterQueryPageCharacters) -> Vec<CreateBu
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ]
+}
+
+fn format_name(full: Option<&String>, native: Option<&String>) -> Option<String> {
+    match (full, native) {
+        (Some(full), Some(native)) => {
+            if full == native {
+                Some(full.to_string())
+            } else {
+                Some(format!("{full} ({native})"))
+            }
+        }
+        (Some(full), None) => Some(full.to_string()),
+        (None, Some(native)) => Some(native.to_string()),
+        _ => None,
+    }
+}
+
+fn add_basic_fields<'a>(
+    embed: CreateEmbed<'a>,
+    data: &CharacterQueryPageCharacters,
+) -> CreateEmbed<'a> {
+    let birthday = data.date_of_birth.as_ref();
+
+    embed
+        .field(
+            "Birthday",
+            format_date(
+                birthday.and_then(|d| d.year),
+                birthday.and_then(|d| d.month),
+                birthday.and_then(|d| d.day),
+            ),
+            true,
+        )
+        .field("Age", format_opt(data.age.as_ref()), true)
+        .field("Gender", format_opt(data.gender.as_ref()), true)
+}
+
+fn add_synonyms<'a>(
+    mut embed: CreateEmbed<'a>,
+    data: &CharacterQueryPageCharacters,
+) -> CreateEmbed<'a> {
+    if let Some(synonyms) = extract_synonyms(data) {
+        embed = embed.field("Synonyms", synonyms.join(", "), false);
+    }
+
+    embed
+}
+
+fn extract_synonyms(data: &CharacterQueryPageCharacters) -> Option<Vec<String>> {
+    let name = data.name.as_ref()?;
+
+    let mut synonyms = vec![];
+
+    if let Some(alt) = &name.alternative {
+        synonyms.extend(alt.iter().flatten().map(|n| format!("`{n}`")));
+    }
+
+    if let Some(alt_spoiler) = &name.alternative_spoiler {
+        synonyms.extend(alt_spoiler.iter().flatten().map(|n| format!("||`{n}`||")));
+    }
+
+    if synonyms.is_empty() {
+        None
+    } else {
+        Some(synonyms)
+    }
+}
+
+fn add_appearances<'a>(
+    mut embed: CreateEmbed<'a>,
+    data: &CharacterQueryPageCharacters,
+) -> CreateEmbed<'a> {
+    if let Some(appearances) = extract_appearances(data) {
+        embed = embed.field("Popular Appearances", appearances.join(" • "), false);
+    }
+
+    embed
+}
+
+fn extract_appearances(data: &CharacterQueryPageCharacters) -> Option<Vec<String>> {
+    let media = data.media.as_ref()?;
+    let nodes = media.nodes.as_ref()?;
+
+    let appearances: Vec<String> = nodes
+        .iter()
+        .flatten()
+        .filter(|m| !m.is_adult.unwrap_or_default())
+        .filter_map(|m| m.title.as_ref()?.romaji.as_ref().map(|t| t.to_string()))
+        .collect();
+
+    if appearances.is_empty() {
+        None
+    } else {
+        Some(appearances)
+    }
 }

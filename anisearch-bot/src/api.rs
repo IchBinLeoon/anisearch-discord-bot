@@ -11,8 +11,7 @@ use futures::channel::mpsc::UnboundedSender;
 use poise::Command as PoiseCommand;
 use poise::serenity_prelude::{ConnectionStage, ShardId, ShardRunnerInfo, ShardRunnerMessage};
 use sea_orm::DatabaseConnection;
-use tokio::spawn;
-use tokio::time::sleep;
+use tokio::{spawn, time};
 use tonic::{Request, Response, Status, async_trait};
 use tonic_health::server::HealthReporter;
 
@@ -75,7 +74,7 @@ impl Bot for BotService {
         &self,
         _request: Request<ShardsRequest>,
     ) -> Result<Response<ShardsResponse>, Status> {
-        let shards = self
+        let mut shards: Vec<Shard> = self
             .runners
             .iter()
             .map(|s| {
@@ -89,6 +88,8 @@ impl Bot for BotService {
             })
             .collect();
 
+        shards.sort_by_key(|a| a.id);
+
         let reply = ShardsResponse { shards };
 
         Ok(Response::new(reply))
@@ -101,7 +102,11 @@ pub fn start_health_check(
     database: Arc<DatabaseConnection>,
 ) {
     spawn(async move {
+        let mut interval = time::interval(Duration::from_secs(60));
+
         loop {
+            interval.tick().await;
+
             let shards_healthy = runners
                 .iter()
                 .all(|s| s.value().0.stage != ConnectionStage::Disconnected);
@@ -115,8 +120,6 @@ pub fn start_health_check(
                     .set_not_serving::<BotServer<BotService>>()
                     .await;
             }
-
-            sleep(Duration::from_secs(60)).await;
         }
     });
 }

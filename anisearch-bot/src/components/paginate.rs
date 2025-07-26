@@ -20,14 +20,6 @@ const PAGE_NEXT_EMOJI: EmojiId = EmojiId::new(1393372843039002656);
 const PAGE_FIRST_EMOJI: EmojiId = EmojiId::new(1393372856200597584);
 const PAGE_LAST_EMOJI: EmojiId = EmojiId::new(1393372866120122398);
 
-#[derive(Debug, Modal)]
-#[name = "Skip to Page"]
-struct PageModal {
-    #[name = "Page Number"]
-    #[placeholder = "Enter a page number..."]
-    page: String,
-}
-
 pub struct Paginator<'a> {
     pages: Vec<Page<'a>>,
     current_page: usize,
@@ -371,6 +363,14 @@ impl<'a> Default for PaginatorBuilder<'a> {
             ephemeral: false,
         }
     }
+}
+
+#[derive(Debug, Modal)]
+#[name = "Skip to Page"]
+struct PageModal {
+    #[name = "Page Number"]
+    #[placeholder = "Enter a page number..."]
+    page: String,
 }
 
 #[derive(Clone)]

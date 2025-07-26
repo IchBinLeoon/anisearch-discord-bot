@@ -54,6 +54,7 @@ pub fn format_date(year: Option<i64>, month: Option<i64>, day: Option<i64>) -> S
         (Some(y), Some(m), Some(d)) => date_with_fallback(y, m, d, "%b %d, %Y"),
         (Some(y), Some(m), None) => date_with_fallback(y, m, 1, "%b, %Y"),
         (Some(y), None, None) => y.to_string(),
+        (None, Some(m), Some(d)) => date_with_fallback(0, m, d, "%b %d"),
         _ => UNKNOWN_EMBED_FIELD.to_string(),
     }
 }
