@@ -4,8 +4,10 @@ use poise::serenity_prelude::{
 };
 
 use crate::Context;
-use crate::clients::anilist::studio_query::MediaFormat;
-use crate::clients::anilist::studio_query::StudioQueryPageStudios;
+use crate::clients::anilist::studio_query::{MediaFormat, StudioQueryPageStudiosMedia};
+use crate::clients::anilist::studio_query::{
+    StudioQueryPageStudios, StudioQueryPageStudiosMediaNodes,
+};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::ANILIST_EMOJI;
@@ -100,40 +102,7 @@ fn create_studio_embed(data: &StudioQueryPageStudios) -> CreateEmbed {
         embed = embed.description("**Animation Studio**".to_string())
     }
 
-    if let Some(media) = &data.media {
-        if let Some(img) = media.nodes.as_ref().and_then(|n| {
-            n.iter()
-                .flatten()
-                .find(|m| !m.is_adult.unwrap_or(false))
-                .and_then(|m| m.cover_image.as_ref()?.large.as_ref())
-        }) {
-            embed = embed.thumbnail(img);
-        }
-
-        let productions: Vec<String> = media
-            .nodes
-            .as_ref()
-            .map(|n| {
-                n.iter()
-                    .flatten()
-                    .filter(|m| !m.is_adult.unwrap_or(false))
-                    .filter_map(|m| {
-                        let title = m.title.as_ref()?.romaji.as_ref()?;
-
-                        Some(format!(
-                            "{title} » **{}** • Episodes: **{}**",
-                            format_media_format(m.format.as_ref()),
-                            format_opt(m.episodes)
-                        ))
-                    })
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        if !productions.is_empty() {
-            embed = embed.field("Most Popular Productions", productions.join("\n"), false);
-        }
-    }
+    embed = add_productions(embed, data);
 
     embed
 }
@@ -144,6 +113,58 @@ fn create_studio_buttons(data: &StudioQueryPageStudios) -> Vec<CreateButton> {
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ]
+}
+
+fn add_productions<'a>(
+    mut embed: CreateEmbed<'a>,
+    data: &'a StudioQueryPageStudios,
+) -> CreateEmbed<'a> {
+    if let Some(media) = &data.media {
+        if let Some(img) = extract_image(media) {
+            embed = embed.thumbnail(img);
+        }
+
+        if let Some(productions) = extract_productions(media) {
+            embed = embed.field("Most Popular Productions", productions.join("\n"), false);
+        }
+    }
+
+    embed
+}
+
+fn extract_image(media: &StudioQueryPageStudiosMedia) -> Option<&String> {
+    media
+        .nodes
+        .as_ref()?
+        .iter()
+        .flatten()
+        .find(|m| !m.is_adult.unwrap_or_default())
+        .and_then(|m| m.cover_image.as_ref()?.large.as_ref())
+}
+
+fn extract_productions(media: &StudioQueryPageStudiosMedia) -> Option<Vec<String>> {
+    let nodes = media.nodes.as_ref()?;
+
+    let productions: Vec<String> = nodes
+        .iter()
+        .flatten()
+        .filter(|m| !m.is_adult.unwrap_or_default())
+        .filter_map(format_production)
+        .collect();
+
+    if productions.is_empty() {
+        None
+    } else {
+        Some(productions)
+    }
+}
+
+fn format_production(media: &StudioQueryPageStudiosMediaNodes) -> Option<String> {
+    let title = media.title.as_ref()?.romaji.as_ref()?;
+    let format = format_media_format(media.format.as_ref());
+    let episodes = format_opt(media.episodes);
+
+    Some(format!("{title} » **{format}** • Episodes: **{episodes}**"))
 }
 
 fn format_media_format(format: Option<&MediaFormat>) -> &'static str {
