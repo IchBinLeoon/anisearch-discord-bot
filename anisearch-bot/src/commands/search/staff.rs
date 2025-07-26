@@ -5,11 +5,12 @@ use poise::serenity_prelude::{
 
 use crate::Context;
 use crate::clients::anilist::staff_query::StaffQueryPageStaff;
+use crate::commands::search::character::format_name;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::ANILIST_EMOJI;
 use crate::utils::embeds::create_anilist_embed;
-use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_date, format_opt, sanitize_description};
+use crate::utils::format::{format_date, format_opt, sanitize_description};
 
 /// 🎬 Search for a staff and display detailed information.
 #[poise::command(
@@ -95,21 +96,9 @@ fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {
     let title = data
         .name
         .as_ref()
-        .and_then(|n| match (&n.full, &n.native) {
-            (Some(full), Some(native)) => {
-                if full == native {
-                    Some(full.to_string())
-                } else {
-                    Some(format!("{full} ({native})"))
-                }
-            }
-            (Some(full), None) => Some(full.to_string()),
-            (None, Some(native)) => Some(native.to_string()),
-            _ => None,
-        })
-        .unwrap_or(UNKNOWN_EMBED_FIELD.to_string());
+        .and_then(|n| format_name(n.full.as_ref(), n.native.as_ref()));
 
-    let mut embed = create_anilist_embed(title, Some("Staff".to_string()));
+    let mut embed = create_anilist_embed(format_opt(title), Some("Staff".to_string()));
 
     if let Some(desc) = &data.description {
         embed = embed.description(sanitize_description(desc, 1000));
@@ -119,77 +108,10 @@ fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {
         embed = embed.thumbnail(img);
     }
 
-    let birthday = data.date_of_birth.as_ref();
-    let occupations: Option<String> = data.primary_occupations.as_ref().map(|o| {
-        o.iter()
-            .flatten()
-            .cloned()
-            .collect::<Vec<String>>()
-            .join(", ")
-    });
-
-    embed = embed
-        .field(
-            "Birthday",
-            format_date(
-                birthday.and_then(|d| d.year),
-                birthday.and_then(|d| d.month),
-                birthday.and_then(|d| d.day),
-            ),
-            true,
-        )
-        .field("Age", format_opt(data.age), true)
-        .field("Gender", format_opt(data.gender.as_ref()), true)
-        .field("Hometown", format_opt(data.home_town.as_ref()), true)
-        .field("Language", format_opt(data.language_v2.as_ref()), true)
-        .field("Primary Occupations", format_opt(occupations), true);
-
-    if let Some(alt) = data.name.as_ref().and_then(|n| n.alternative.as_ref()) {
-        let synonyms: Vec<String> = alt.iter().flatten().map(|n| format!("`{n}`")).collect();
-
-        if !synonyms.is_empty() {
-            embed = embed.field("Synonyms", synonyms.join(", "), false);
-        }
-    }
-
-    if let Some(media) = &data.staff_media {
-        let staff_roles: Vec<String> = media
-            .nodes
-            .as_ref()
-            .map(|n| {
-                n.iter()
-                    .flatten()
-                    .filter(|m| !m.is_adult.unwrap_or(false))
-                    .filter_map(|m| m.title.as_ref()?.romaji.as_ref().map(|t| t.to_string()))
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        if !staff_roles.is_empty() {
-            embed = embed.field("Popular Staff Roles", staff_roles.join(" • "), false);
-        }
-    }
-
-    if let Some(characters) = &data.characters {
-        let character_roles: Vec<String> = characters
-            .nodes
-            .as_ref()
-            .map(|n| {
-                n.iter()
-                    .flatten()
-                    .filter_map(|m| m.name.as_ref()?.full.as_ref().map(|t| t.to_string()))
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        if !character_roles.is_empty() {
-            embed = embed.field(
-                "Popular Character Roles",
-                character_roles.join(" • "),
-                false,
-            );
-        }
-    }
+    embed = add_basic_fields(embed, data);
+    embed = add_synonyms(embed, data);
+    embed = add_staff_roles(embed, data);
+    embed = add_character_roles(embed, data);
 
     embed
 }
@@ -200,4 +122,111 @@ fn create_staff_buttons(data: &StaffQueryPageStaff) -> Vec<CreateButton> {
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ]
+}
+
+fn add_basic_fields<'a>(embed: CreateEmbed<'a>, data: &StaffQueryPageStaff) -> CreateEmbed<'a> {
+    let birthday = data.date_of_birth.as_ref();
+
+    let occupations: Option<String> = data.primary_occupations.as_ref().map(|o| {
+        o.iter()
+            .flatten()
+            .cloned()
+            .collect::<Vec<String>>()
+            .join(", ")
+    });
+
+    embed
+        .field(
+            "Birthday",
+            format_date(
+                birthday.and_then(|d| d.year),
+                birthday.and_then(|d| d.month),
+                birthday.and_then(|d| d.day),
+            ),
+            true,
+        )
+        .field("Age", format_opt(data.age.as_ref()), true)
+        .field("Gender", format_opt(data.gender.as_ref()), true)
+        .field("Hometown", format_opt(data.home_town.as_ref()), true)
+        .field("Language", format_opt(data.language_v2.as_ref()), true)
+        .field("Primary Occupations", format_opt(occupations), true)
+}
+
+fn add_synonyms<'a>(mut embed: CreateEmbed<'a>, data: &StaffQueryPageStaff) -> CreateEmbed<'a> {
+    if let Some(synonyms) = extract_synonyms(data) {
+        embed = embed.field("Synonyms", synonyms.join(", "), false);
+    }
+
+    embed
+}
+
+fn extract_synonyms(data: &StaffQueryPageStaff) -> Option<Vec<String>> {
+    let name = data.name.as_ref()?;
+    let alt = name.alternative.as_ref()?;
+
+    let synonyms: Vec<String> = alt.iter().flatten().map(|n| format!("`{n}`")).collect();
+
+    if synonyms.is_empty() {
+        None
+    } else {
+        Some(synonyms)
+    }
+}
+
+fn add_staff_roles<'a>(mut embed: CreateEmbed<'a>, data: &StaffQueryPageStaff) -> CreateEmbed<'a> {
+    if let Some(staff_roles) = extract_staff_roles(data) {
+        embed = embed.field("Popular Staff Roles", staff_roles.join(" • "), false);
+    }
+
+    embed
+}
+
+fn extract_staff_roles(data: &StaffQueryPageStaff) -> Option<Vec<String>> {
+    let media = data.staff_media.as_ref()?;
+    let nodes = media.nodes.as_ref()?;
+
+    let staff_roles: Vec<String> = nodes
+        .iter()
+        .flatten()
+        .filter(|m| !m.is_adult.unwrap_or_default())
+        .filter_map(|m| m.title.as_ref()?.romaji.as_ref().map(|t| t.to_string()))
+        .collect();
+
+    if staff_roles.is_empty() {
+        None
+    } else {
+        Some(staff_roles)
+    }
+}
+
+fn add_character_roles<'a>(
+    mut embed: CreateEmbed<'a>,
+    data: &StaffQueryPageStaff,
+) -> CreateEmbed<'a> {
+    if let Some(character_roles) = extract_character_roles(data) {
+        embed = embed.field(
+            "Popular Character Roles",
+            character_roles.join(" • "),
+            false,
+        );
+    }
+
+    embed
+}
+
+fn extract_character_roles(data: &StaffQueryPageStaff) -> Option<Vec<String>> {
+    let characters = data.characters.as_ref()?;
+    let nodes = characters.nodes.as_ref()?;
+
+    let character_roles: Vec<String> = nodes
+        .iter()
+        .flatten()
+        .filter_map(|m| m.name.as_ref()?.full.as_ref().map(|t| t.to_string()))
+        .collect();
+
+    if character_roles.is_empty() {
+        None
+    } else {
+        Some(character_roles)
+    }
 }

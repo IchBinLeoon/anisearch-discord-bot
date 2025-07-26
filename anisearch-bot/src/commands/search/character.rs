@@ -123,7 +123,7 @@ fn create_character_buttons(data: &CharacterQueryPageCharacters) -> Vec<CreateBu
     ]
 }
 
-fn format_name(full: Option<&String>, native: Option<&String>) -> Option<String> {
+pub fn format_name(full: Option<&String>, native: Option<&String>) -> Option<String> {
     match (full, native) {
         (Some(full), Some(native)) => {
             if full == native {
