@@ -95,18 +95,10 @@ pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
     let title = data
         .title
         .as_ref()
-        .and_then(|t| {
-            let romaji = t.romaji.as_ref()?;
-
-            match &t.english {
-                Some(english) if english != romaji => Some(format!("{romaji} ({english})")),
-                _ => Some(romaji.to_string()),
-            }
-        })
-        .unwrap_or(UNKNOWN_EMBED_FIELD.to_string());
+        .and_then(|t| format_title(t.romaji.as_ref(), t.english.as_ref()));
 
     let mut embed = create_anilist_embed(
-        title,
+        format_opt(title),
         Some(format_media_format(data.format.as_ref()).to_string()),
         Some(anilist_media_url!(MediaType, data.type_, data.id)),
     );
@@ -130,86 +122,21 @@ pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
     }
 
     if let Some(MediaType::ANIME) = data.type_ {
-        let episodes: Option<String> = match (&data.status, &data.next_airing_episode) {
-            (Some(MediaStatus::RELEASING), Some(next)) => {
-                let count = match data.episodes {
-                    Some(total) => format!("{}/{}", next.episode - 1, total),
-                    None => (next.episode - 1).to_string(),
-                };
-
-                let timestamp = Timestamp::from_unix_timestamp(next.airing_at)
-                    .map(|t| {
-                        FormattedTimestamp::new(t, Some(FormattedTimestampStyle::RelativeTime))
-                            .to_string()
-                    })
-                    .unwrap_or(UNKNOWN_EMBED_FIELD.to_string());
-
-                Some(format!("{count} (Next {timestamp})"))
-            }
-            _ => data.episodes.map(|e| e.to_string()),
-        };
-
-        embed = embed.field("Episodes", format_opt(episodes), false);
+        embed = add_episodes(embed, data);
     }
 
     if let Some(MediaType::MANGA) = data.type_ {
-        embed = embed
-            .field("Chapters", format_opt(data.chapters), true)
-            .field("Volumes", format_opt(data.volumes), true)
-            .field("Source", format_media_source(data.source.as_ref()), true);
+        embed = add_manga_fields(embed, data);
     }
 
-    let start_date = data.start_date.as_ref();
-    let end_date = data.end_date.as_ref();
-
-    embed = embed
-        .field("Status", format_media_status(data.status.as_ref()), true)
-        .field(
-            "Start Date",
-            format_date(
-                start_date.and_then(|d| d.year),
-                start_date.and_then(|d| d.month),
-                start_date.and_then(|d| d.day),
-            ),
-            true,
-        )
-        .field(
-            "End Date",
-            format_date(
-                end_date.and_then(|d| d.year),
-                end_date.and_then(|d| d.month),
-                end_date.and_then(|d| d.day),
-            ),
-            true,
-        );
+    embed = add_common_fields(embed, data);
 
     if let Some(MediaType::ANIME) = data.type_ {
-        let duration = data.duration.map(|d| format!("{d} mins"));
-
-        let studio = data
-            .studios
-            .as_ref()
-            .and_then(|s| s.nodes.as_ref()?.iter().flatten().next())
-            .map(|s| s.name.as_str());
-
-        embed = embed
-            .field("Duration", format_opt(duration), true)
-            .field("Studio", format_opt(studio), true)
-            .field("Source", format_media_source(data.source.as_ref()), true);
+        embed = add_anime_fields(embed, data);
     }
 
-    embed = embed
-        .field("Score", format_opt(data.mean_score), true)
-        .field("Popularity", format_opt(data.popularity), true)
-        .field("Favourites", format_opt(data.favourites), true);
-
-    if let Some(genres) = &data.genres {
-        let genres: Vec<String> = genres.iter().flatten().map(|g| format!("`{g}`")).collect();
-
-        if !genres.is_empty() {
-            embed = embed.field("Genres", genres.join(", "), false);
-        }
-    }
+    embed = add_stats_fields(embed, data);
+    embed = add_genres(embed, data);
 
     embed
 }
@@ -230,6 +157,126 @@ pub fn create_media_buttons(data: &MediaQueryPageMedia) -> Vec<CreateButton> {
     }
 
     buttons
+}
+
+fn format_title(romaji: Option<&String>, english: Option<&String>) -> Option<String> {
+    let romaji = romaji?;
+
+    match english {
+        Some(english) if english != romaji => Some(format!("{romaji} ({english})")),
+        _ => Some(romaji.to_string()),
+    }
+}
+
+fn add_episodes<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
+    let episodes = format_episodes(data);
+
+    embed.field("Episodes", format_opt(episodes), false)
+}
+
+fn format_episodes(data: &MediaQueryPageMedia) -> Option<String> {
+    match (&data.status, &data.next_airing_episode) {
+        (Some(MediaStatus::RELEASING), Some(next)) => {
+            let current = next.episode - 1;
+
+            let count = match data.episodes {
+                Some(total) => format!("{current}/{total}"),
+                None => current.to_string(),
+            };
+
+            let next_airing = format_opt(format_next_airing_time(next.airing_at));
+
+            Some(format!("{count} (Next {next_airing})"))
+        }
+        _ => data.episodes.map(|e| e.to_string()),
+    }
+}
+
+fn format_next_airing_time(airing_at: i64) -> Option<String> {
+    Timestamp::from_unix_timestamp(airing_at)
+        .map(|t| {
+            FormattedTimestamp::new(t, Some(FormattedTimestampStyle::RelativeTime)).to_string()
+        })
+        .ok()
+}
+
+fn add_manga_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
+    embed
+        .field("Chapters", format_opt(data.chapters), true)
+        .field("Volumes", format_opt(data.volumes), true)
+        .field("Source", format_media_source(data.source.as_ref()), true)
+}
+
+fn add_common_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
+    let start_date = data.start_date.as_ref();
+    let end_date = data.end_date.as_ref();
+
+    embed
+        .field("Status", format_media_status(data.status.as_ref()), true)
+        .field(
+            "Start Date",
+            format_date(
+                start_date.and_then(|d| d.year),
+                start_date.and_then(|d| d.month),
+                start_date.and_then(|d| d.day),
+            ),
+            true,
+        )
+        .field(
+            "End Date",
+            format_date(
+                end_date.and_then(|d| d.year),
+                end_date.and_then(|d| d.month),
+                end_date.and_then(|d| d.day),
+            ),
+            true,
+        )
+}
+
+fn add_anime_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
+    let duration = data.duration.map(|d| format!("{d} mins"));
+
+    let studio = data
+        .studios
+        .as_ref()
+        .and_then(|s| s.nodes.as_ref()?.iter().flatten().next())
+        .map(|s| s.name.clone());
+
+    embed
+        .field("Duration", format_opt(duration), true)
+        .field("Studio", format_opt(studio), true)
+        .field("Source", format_media_source(data.source.as_ref()), true)
+}
+
+fn add_stats_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
+    embed
+        .field("Score", format_opt(data.mean_score), true)
+        .field("Popularity", format_opt(data.popularity), true)
+        .field("Favourites", format_opt(data.favourites), true)
+}
+
+fn add_genres<'a>(mut embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
+    if let Some(genres) = extract_genres(data) {
+        embed = embed.field("Genres", genres.join(", "), false);
+    }
+
+    embed
+}
+
+fn extract_genres(data: &MediaQueryPageMedia) -> Option<Vec<String>> {
+    let genres: Vec<String> = data
+        .genres
+        .as_ref()?
+        .iter()
+        .flatten()
+        .map(|g| format!("`{g}`"))
+        .collect();
+
+    if genres.is_empty() {
+        None
+    } else {
+        Some(genres)
+    }
 }
 
 fn format_media_format(format: Option<&MediaFormat>) -> &'static str {
