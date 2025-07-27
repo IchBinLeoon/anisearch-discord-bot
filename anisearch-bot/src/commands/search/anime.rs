@@ -4,7 +4,6 @@ use poise::serenity_prelude::{
     FormattedTimestampStyle, Timestamp,
 };
 
-use crate::Context;
 use crate::clients::anilist::media_query::{
     MediaFormat, MediaQueryPageMedia, MediaSource, MediaStatus, MediaType,
 };
@@ -15,7 +14,8 @@ use crate::utils::embeds::create_anilist_embed;
 use crate::utils::format::{
     UNKNOWN_EMBED_FIELD, convert_to_color, format_date, format_opt, sanitize_description,
 };
-use crate::utils::{ANILIST_EMOJI, MYANIMELIST_EMOJI};
+use crate::utils::{ANILIST_BASE_URL, ANILIST_EMOJI, MYANIMELIST_BASE_URL, MYANIMELIST_EMOJI};
+use crate::{Context, anilist_media_url, myanimelist_media_url};
 
 /// 📺 Search for an anime and display detailed information.
 #[poise::command(
@@ -60,7 +60,7 @@ pub async fn anime(
             paginator.paginate(ctx).await?;
         }
         None => {
-            let embed = create_anilist_embed("🚫 Not Found".to_string(), None).description(
+            let embed = create_anilist_embed("🚫 Not Found".to_string(), None, None).description(
                 format!("An anime with the title `{title}` could not be found."),
             );
 
@@ -108,6 +108,7 @@ pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
     let mut embed = create_anilist_embed(
         title,
         Some(format_media_format(data.format.as_ref()).to_string()),
+        Some(anilist_media_url!(MediaType, data.type_, data.id)),
     );
 
     if let Some(desc) = &data.description {
@@ -214,21 +215,15 @@ pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
 }
 
 pub fn create_media_buttons(data: &MediaQueryPageMedia) -> Vec<CreateButton> {
-    let media = match data.type_ {
-        Some(MediaType::ANIME) => "anime",
-        Some(MediaType::MANGA) => "manga",
-        _ => unreachable!(),
-    };
-
     let mut buttons = vec![
-        CreateButton::new_link(format!("https://anilist.co/{media}/{}/", data.id))
+        CreateButton::new_link(anilist_media_url!(MediaType, data.type_, data.id))
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ];
 
     if let Some(id) = data.id_mal {
         buttons.push(
-            CreateButton::new_link(format!("https://myanimelist.net/{media}/{id}/"))
+            CreateButton::new_link(myanimelist_media_url!(MediaType, data.type_, id))
                 .label("MyAnimeList")
                 .emoji(MYANIMELIST_EMOJI),
         )

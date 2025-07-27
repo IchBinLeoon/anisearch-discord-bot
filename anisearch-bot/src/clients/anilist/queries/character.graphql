@@ -15,10 +15,12 @@ query CharacterQuery($page: Int, $perPage: Int, $search: String) {
             }
             media(sort: [POPULARITY_DESC], page: 1, perPage: 5) {
                 nodes {
+                    id
                     isAdult
                     title {
                         romaji
                     }
+                    type
                 }
             }
             name {

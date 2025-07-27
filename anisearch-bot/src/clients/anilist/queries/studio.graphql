@@ -10,10 +10,12 @@ query StudioQuery($page: Int, $perPage: Int, $search: String) {
                     }
                     episodes
                     format
+                    id
                     isAdult
                     title {
                         romaji
                     }
+                    type
                 }
             }
             name

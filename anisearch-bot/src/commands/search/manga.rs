@@ -51,7 +51,7 @@ pub async fn manga(
             paginator.paginate(ctx).await?;
         }
         None => {
-            let embed = create_anilist_embed("🚫 Not Found".to_string(), None).description(
+            let embed = create_anilist_embed("🚫 Not Found".to_string(), None, None).description(
                 format!("A manga with the title `{title}` could not be found."),
             );
 

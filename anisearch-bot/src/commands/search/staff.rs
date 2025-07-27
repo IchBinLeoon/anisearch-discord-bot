@@ -3,15 +3,15 @@ use poise::serenity_prelude::{
     AutocompleteChoice, CreateAutocompleteResponse, CreateButton, CreateEmbed,
 };
 
-use crate::Context;
-use crate::clients::anilist::staff_query::StaffQueryPageStaff;
+use crate::clients::anilist::staff_query::{MediaType, StaffQueryPageStaff};
 use crate::commands::search::character::format_name;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
-use crate::utils::ANILIST_EMOJI;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 use crate::utils::format::{format_date, format_opt, sanitize_description};
+use crate::utils::{ANILIST_BASE_URL, ANILIST_EMOJI};
+use crate::{Context, anilist_character_url, anilist_media_url, anilist_staff_url};
 
 /// 🎬 Search for a staff and display detailed information.
 #[poise::command(
@@ -56,7 +56,7 @@ pub async fn staff(
             paginator.paginate(ctx).await?;
         }
         None => {
-            let embed = create_anilist_embed("🚫 Not Found".to_string(), None).description(
+            let embed = create_anilist_embed("🚫 Not Found".to_string(), None, None).description(
                 format!("A staff with the name `{name}` could not be found."),
             );
 
@@ -93,7 +93,11 @@ fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {
         .as_ref()
         .and_then(|n| format_name(n.full.as_ref(), n.native.as_ref()));
 
-    let mut embed = create_anilist_embed(format_opt(title), Some("Staff".to_string()));
+    let mut embed = create_anilist_embed(
+        format_opt(title),
+        Some("Staff".to_string()),
+        Some(anilist_staff_url!(data.id)),
+    );
 
     if let Some(desc) = &data.description {
         embed = embed.description(sanitize_description(desc, 1000));
@@ -113,7 +117,7 @@ fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {
 
 fn create_staff_buttons(data: &StaffQueryPageStaff) -> Vec<CreateButton> {
     vec![
-        CreateButton::new_link(format!("https://anilist.co/staff/{}/", data.id))
+        CreateButton::new_link(anilist_staff_url!(data.id))
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ]
@@ -184,7 +188,13 @@ fn extract_staff_roles(data: &StaffQueryPageStaff) -> Option<Vec<String>> {
         .iter()
         .flatten()
         .filter(|m| !m.is_adult.unwrap_or_default())
-        .filter_map(|m| m.title.as_ref()?.romaji.as_ref().map(|t| t.to_string()))
+        .filter_map(|m| {
+            m.title
+                .as_ref()?
+                .romaji
+                .as_ref()
+                .map(|t| format!("[{t}]({})", anilist_media_url!(MediaType, m.type_, m.id)))
+        })
         .collect();
 
     if staff_roles.is_empty() {
@@ -216,7 +226,13 @@ fn extract_character_roles(data: &StaffQueryPageStaff) -> Option<Vec<String>> {
     let character_roles: Vec<String> = nodes
         .iter()
         .flatten()
-        .filter_map(|m| m.name.as_ref()?.full.as_ref().map(|t| t.to_string()))
+        .filter_map(|c| {
+            c.name
+                .as_ref()?
+                .full
+                .as_ref()
+                .map(|t| format!("[{t}]({})", anilist_character_url!(c.id)))
+        })
         .collect();
 
     if character_roles.is_empty() {

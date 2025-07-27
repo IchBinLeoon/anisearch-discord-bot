@@ -3,17 +3,17 @@ use poise::serenity_prelude::{
     AutocompleteChoice, CreateAutocompleteResponse, CreateButton, CreateEmbed,
 };
 
-use crate::Context;
-use crate::clients::anilist::studio_query::{MediaFormat, StudioQueryPageStudiosMedia};
 use crate::clients::anilist::studio_query::{
-    StudioQueryPageStudios, StudioQueryPageStudiosMediaNodes,
+    MediaFormat, MediaType, StudioQueryPageStudios, StudioQueryPageStudiosMedia,
+    StudioQueryPageStudiosMediaNodes,
 };
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
-use crate::utils::ANILIST_EMOJI;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_opt};
+use crate::utils::{ANILIST_BASE_URL, ANILIST_EMOJI};
+use crate::{Context, anilist_media_url, anilist_studio_url};
 
 /// 🏢 Search for a studio and display detailed information.
 #[poise::command(
@@ -59,7 +59,7 @@ pub async fn studio(
             paginator.paginate(ctx).await?;
         }
         None => {
-            let embed = create_anilist_embed("🚫 Not Found".to_string(), None).description(
+            let embed = create_anilist_embed("🚫 Not Found".to_string(), None, None).description(
                 format!("A studio with the name `{name}` could not be found."),
             );
 
@@ -91,7 +91,11 @@ async fn autocomplete_name<'a>(
 }
 
 fn create_studio_embed(data: &StudioQueryPageStudios) -> CreateEmbed {
-    let mut embed = create_anilist_embed(data.name.to_string(), Some("Studio".to_string()));
+    let mut embed = create_anilist_embed(
+        data.name.to_string(),
+        Some("Studio".to_string()),
+        Some(anilist_studio_url!(data.id)),
+    );
 
     if data.is_animation_studio {
         embed = embed.description("**Animation Studio**".to_string())
@@ -104,7 +108,7 @@ fn create_studio_embed(data: &StudioQueryPageStudios) -> CreateEmbed {
 
 fn create_studio_buttons(data: &StudioQueryPageStudios) -> Vec<CreateButton> {
     vec![
-        CreateButton::new_link(format!("https://anilist.co/studio/{}/", data.id))
+        CreateButton::new_link(anilist_studio_url!(data.id))
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ]
@@ -156,10 +160,13 @@ fn extract_productions(media: &StudioQueryPageStudiosMedia) -> Option<Vec<String
 
 fn format_production(media: &StudioQueryPageStudiosMediaNodes) -> Option<String> {
     let title = media.title.as_ref()?.romaji.as_ref()?;
+    let url = anilist_media_url!(MediaType, media.type_, media.id);
     let format = format_media_format(media.format.as_ref());
     let episodes = format_opt(media.episodes);
 
-    Some(format!("{title} » **{format}** • Episodes: **{episodes}**"))
+    Some(format!(
+        "[{title}]({url}) » **{format}** • Episodes: **{episodes}**"
+    ))
 }
 
 fn format_media_format(format: Option<&MediaFormat>) -> &'static str {

@@ -3,14 +3,14 @@ use poise::serenity_prelude::{
     AutocompleteChoice, CreateAutocompleteResponse, CreateButton, CreateEmbed,
 };
 
-use crate::Context;
-use crate::clients::anilist::character_query::CharacterQueryPageCharacters;
+use crate::clients::anilist::character_query::{CharacterQueryPageCharacters, MediaType};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
-use crate::utils::ANILIST_EMOJI;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 use crate::utils::format::{format_date, format_opt, sanitize_description};
+use crate::utils::{ANILIST_BASE_URL, ANILIST_EMOJI};
+use crate::{Context, anilist_character_url, anilist_media_url};
 
 /// 🎭 Search for a character and display detailed information.
 #[poise::command(
@@ -56,7 +56,7 @@ pub async fn character(
             paginator.paginate(ctx).await?;
         }
         None => {
-            let embed = create_anilist_embed("🚫 Not Found".to_string(), None).description(
+            let embed = create_anilist_embed("🚫 Not Found".to_string(), None, None).description(
                 format!("A character with the name `{name}` could not be found."),
             );
 
@@ -93,7 +93,11 @@ fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {
         .as_ref()
         .and_then(|n| format_name(n.full.as_ref(), n.native.as_ref()));
 
-    let mut embed = create_anilist_embed(format_opt(title), Some("Character".to_string()));
+    let mut embed = create_anilist_embed(
+        format_opt(title),
+        Some("Character".to_string()),
+        Some(anilist_character_url!(data.id)),
+    );
 
     if let Some(desc) = &data.description {
         embed = embed.description(sanitize_description(desc, 1000));
@@ -112,7 +116,7 @@ fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {
 
 fn create_character_buttons(data: &CharacterQueryPageCharacters) -> Vec<CreateButton> {
     vec![
-        CreateButton::new_link(format!("https://anilist.co/character/{}/", data.id))
+        CreateButton::new_link(anilist_character_url!(data.id))
             .label("AniList")
             .emoji(ANILIST_EMOJI),
     ]
@@ -203,7 +207,13 @@ fn extract_appearances(data: &CharacterQueryPageCharacters) -> Option<Vec<String
         .iter()
         .flatten()
         .filter(|m| !m.is_adult.unwrap_or_default())
-        .filter_map(|m| m.title.as_ref()?.romaji.as_ref().map(|t| t.to_string()))
+        .filter_map(|m| {
+            m.title
+                .as_ref()?
+                .romaji
+                .as_ref()
+                .map(|t| format!("[{t}]({})", anilist_media_url!(MediaType, m.type_, m.id)))
+        })
         .collect();
 
     if appearances.is_empty() {

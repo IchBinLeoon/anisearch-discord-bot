@@ -4,6 +4,7 @@ query StaffQuery($page: Int, $perPage: Int, $search: String) {
             age
             characters(sort: [FAVOURITES_DESC], page: 1, perPage: 5) {
                 nodes {
+                    id
                     name {
                         full
                     }
@@ -30,10 +31,12 @@ query StaffQuery($page: Int, $perPage: Int, $search: String) {
             primaryOccupations
             staffMedia(sort: [POPULARITY_DESC], page: 1, perPage: 5) {
                 nodes {
+                    id
                     isAdult
                     title {
                         romaji
                     }
+                    type
                 }
             }
         }
