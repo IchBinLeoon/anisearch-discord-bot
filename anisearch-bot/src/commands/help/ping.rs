@@ -13,7 +13,7 @@ use crate::utils::embeds::create_default_embed;
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
 pub async fn ping(ctx: Context<'_>) -> Result<()> {
-    let shards = ctx
+    let mut shards: Vec<String> = ctx
         .serenity_context()
         .runners
         .iter()
@@ -28,7 +28,9 @@ pub async fn ping(ctx: Context<'_>) -> Result<()> {
 
             format!("[SHARD #{id}] {latency:>5} {stage}")
         })
-        .collect::<Vec<String>>();
+        .collect();
+
+    shards.sort();
 
     let embed = create_default_embed(ctx)
         .await
