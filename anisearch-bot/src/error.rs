@@ -7,6 +7,7 @@ use tracing::error;
 use crate::Data;
 use crate::clients::anilist::error::AniListError;
 use crate::components::ComponentError;
+use crate::events::{CommandExecutionStatus, get_execution_time, log_command_completion};
 use crate::utils::embeds::create_error_embed;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -42,6 +43,12 @@ pub async fn on_error(error: FrameworkError<'_, Data, Error>) -> Result<()> {
         let reply = CreateReply::new().embed(embed);
 
         ctx.send(reply).await?;
+
+        log_command_completion(
+            ctx.id(),
+            CommandExecutionStatus::Error,
+            get_execution_time(ctx).await,
+        );
     }
 
     Ok(())

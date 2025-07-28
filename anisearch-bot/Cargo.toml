@@ -20,6 +20,7 @@ regex.workspace = true
 reqwest.workspace = true
 sea-orm.workspace = true
 serde.workspace = true
+strum.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tonic-health.workspace = true

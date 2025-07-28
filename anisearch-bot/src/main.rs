@@ -21,7 +21,7 @@ use crate::api::{BotService, start_health_check};
 use crate::commands::commands;
 use crate::config::Config;
 use crate::error::{Error, on_error};
-use crate::events::Handler;
+use crate::events::{Handler, post_command, pre_command};
 use crate::services::anilist::AniListService;
 
 mod api;
@@ -68,6 +68,8 @@ async fn init() -> Result<()> {
                 }
             })
         },
+        pre_command: |ctx| Box::pin(pre_command(ctx)),
+        post_command: |ctx| Box::pin(post_command(ctx)),
         ..Default::default()
     };
 
