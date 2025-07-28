@@ -1,6 +1,7 @@
 use poise::async_trait;
 use poise::serenity_prelude::{
-    CacheHttp, Command, Context as SerenityContext, CreateCommand, EventHandler, FullEvent, GuildId,
+    CacheHttp, Command, Context as SerenityContext, CreateCommand, EventHandler, FullEvent,
+    GuildId, Ready,
 };
 use std::sync::Arc;
 use strum::Display;
@@ -21,45 +22,56 @@ impl EventHandler for Handler {
     async fn dispatch(&self, ctx: &SerenityContext, event: &FullEvent) {
         match event {
             FullEvent::Ready { data_about_bot, .. } => {
-                if let Some(testing_guild) = self.testing_guild {
-                    if let Err(e) = testing_guild
-                        .set_commands(ctx.http(), &self.create_commands)
-                        .await
-                    {
-                        error!("Failed to set testing guild commands: {e}");
-                    }
-                } else if let Err(e) =
-                    Command::set_global_commands(ctx.http(), &self.create_commands).await
-                {
-                    error!("Failed to set global commands: {e}");
-                }
-
-                if let Some(shard) = data_about_bot.shard {
-                    info!(
-                        "{} is connected on shard {}",
-                        data_about_bot.user.name, shard.id
-                    );
-                } else {
-                    info!("{} is connected", data_about_bot.user.name);
-                }
+                self.handle_ready(ctx, data_about_bot).await;
             }
             FullEvent::GuildCreate { guild, is_new, .. } => {
                 if matches!(is_new, Some(true)) {
-                    info!("Joined guild: {}", guild.id);
-
-                    if let Err(e) = self.guild_service.add_guild(guild.id.get()).await {
-                        error!("Failed to add guild: {e}");
-                    }
+                    self.handle_guild_join(guild.id).await
                 }
             }
             FullEvent::GuildDelete { incomplete, .. } => {
-                info!("Left guild: {}", incomplete.id);
-
-                if let Err(e) = self.guild_service.remove_guild(incomplete.id.get()).await {
-                    error!("Failed to remove guild: {e}");
-                }
+                self.handle_guild_leave(incomplete.id).await
             }
             _ => {}
+        }
+    }
+}
+
+impl Handler {
+    async fn handle_ready(&self, ctx: &SerenityContext, data_about_bot: &Ready) {
+        let res = match self.testing_guild {
+            Some(testing_guild) => {
+                testing_guild
+                    .set_commands(ctx.http(), &self.create_commands)
+                    .await
+            }
+            None => Command::set_global_commands(ctx.http(), &self.create_commands).await,
+        };
+
+        if let Err(e) = res {
+            error!("Failed to set commands: {e}");
+        }
+
+        info!(
+            "{} is connected on shard {}",
+            data_about_bot.user.name,
+            data_about_bot.shard.unwrap().id
+        );
+    }
+
+    async fn handle_guild_join(&self, guild_id: GuildId) {
+        info!("Joined guild: {}", guild_id);
+
+        if let Err(e) = self.guild_service.add_guild(guild_id).await {
+            error!("Failed to add guild: {e}");
+        }
+    }
+
+    async fn handle_guild_leave(&self, guild_id: GuildId) {
+        info!("Left guild: {}", guild_id);
+
+        if let Err(e) = self.guild_service.remove_guild(guild_id).await {
+            error!("Failed to remove guild: {e}");
         }
     }
 }
@@ -72,9 +84,9 @@ pub async fn pre_command(ctx: Context<'_>) {
     let ctx_id = ctx.id();
 
     let shard_id = ctx.serenity_context().shard_id;
-    let guild_id = ctx.guild_id().map(|id| id.get());
+    let guild_id = ctx.guild_id();
     let channel_id = ctx.channel_id();
-    let user_id = ctx.author().id.get();
+    let user_id = ctx.author().id;
 
     let command_name = ctx.invoked_command_name().to_string();
     let command_type = app_ctx.interaction.data.kind.0;
@@ -123,7 +135,10 @@ pub async fn post_command(ctx: Context<'_>) {
 }
 
 pub fn log_command_completion(ctx_id: u64, status: ExecutionStatus, execution_time: u128) {
-    info!("[COMMAND] [{ctx_id:<18}] STATUS={status} | TIME={execution_time}ms");
+    info!(
+        "[COMMAND] [{:<18}] STATUS={} | TIME={}ms",
+        ctx_id, status, execution_time
+    );
 }
 
 #[derive(Display)]
