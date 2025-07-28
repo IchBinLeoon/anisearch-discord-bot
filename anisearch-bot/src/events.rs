@@ -6,7 +6,7 @@ use poise::serenity_prelude::{
 use std::sync::Arc;
 use strum::Display;
 use tokio::time::Instant;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 use crate::Context;
 use crate::services::guild::GuildService;
@@ -77,67 +77,77 @@ impl Handler {
 }
 
 pub async fn pre_command(ctx: Context<'_>) {
+    let data = ctx.data();
+
+    if let Err(e) = data.user_service.add_user(ctx.author().id).await {
+        error!("Failed to add user: {e}");
+    }
+
+    if let Some(guild_id) = ctx.guild_id() {
+        if let Err(e) = data.guild_service.add_guild(guild_id).await {
+            error!("Failed to add guild: {e}");
+        }
+    }
+
+    log_command_invocation(ctx).await;
+}
+
+pub async fn post_command(ctx: Context<'_>) {
+    log_command_completion(ctx, ExecutionStatus::Success).await;
+}
+
+async fn log_command_invocation(ctx: Context<'_>) {
     let Context::Application(app_ctx) = ctx else {
         unreachable!()
     };
 
     let ctx_id = ctx.id();
-
-    let shard_id = ctx.serenity_context().shard_id;
     let guild_id = ctx.guild_id();
-    let channel_id = ctx.channel_id();
     let user_id = ctx.author().id;
-
     let command_name = ctx.invoked_command_name().to_string();
-    let command_type = app_ctx.interaction.data.kind.0;
-    let invocation_string = ctx.invocation_string();
 
     info!(
         "[COMMAND] [{:<18}] SHARD={} | GUILD={:<18} | CHANNEL={:<18} | USER={:<18} | TYPE={} | CMD={}",
         ctx_id,
-        shard_id,
+        ctx.serenity_context().shard_id,
         guild_id.unwrap_or_default(),
-        channel_id,
+        ctx.channel_id(),
         user_id,
-        command_type,
-        invocation_string,
+        app_ctx.interaction.data.kind.0,
+        ctx.invocation_string(),
     );
 
     let data = ctx.data();
 
     let res = match guild_id {
         Some(guild_id) => {
-            data.user_service
+            data.metrics_service
                 .add_guild_command_usage(ctx_id, user_id, guild_id, command_name)
                 .await
         }
         None => {
-            data.user_service
+            data.metrics_service
                 .add_private_command_usage(ctx_id, user_id, command_name)
                 .await
         }
     };
 
     if let Err(e) = res {
-        error!("Failed to log command usage: {e}");
+        warn!("Failed to add command usage: {e}");
     }
 
     let start_time = Instant::now();
     ctx.set_invocation_data(start_time).await;
 }
 
-pub async fn post_command(ctx: Context<'_>) {
-    log_command_completion(
-        ctx.id(),
-        ExecutionStatus::Success,
-        get_execution_time(ctx).await,
-    );
-}
+pub async fn log_command_completion(ctx: Context<'_>, status: ExecutionStatus) {
+    let execution_time = get_execution_time(ctx).await;
 
-pub fn log_command_completion(ctx_id: u64, status: ExecutionStatus, execution_time: u128) {
     info!(
         "[COMMAND] [{:<18}] STATUS={} | TIME={}ms",
-        ctx_id, status, execution_time
+        ctx.id(),
+        status,
+        execution_time
     );
 }
 
@@ -148,7 +158,7 @@ pub enum ExecutionStatus {
     Error,
 }
 
-pub async fn get_execution_time(ctx: Context<'_>) -> u128 {
+async fn get_execution_time(ctx: Context<'_>) -> u128 {
     ctx.invocation_data::<Instant>()
         .await
         .as_deref()

@@ -7,7 +7,7 @@ use tracing::error;
 use crate::Data;
 use crate::clients::anilist::error::AniListError;
 use crate::components::ComponentError;
-use crate::events::{ExecutionStatus, get_execution_time, log_command_completion};
+use crate::events::{ExecutionStatus, log_command_completion};
 use crate::utils::embeds::create_error_embed;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -27,7 +27,7 @@ pub enum Error {
     AniList(#[from] AniListError),
 }
 
-pub async fn on_error(error: FrameworkError<'_, Data, Error>) -> Result<()> {
+pub async fn on_error(error: FrameworkError<'_, Data, Error>) {
     if let FrameworkError::Command { error, .. } = &error {
         error!("An error occurred while executing a command: {error}");
     } else {
@@ -42,14 +42,10 @@ pub async fn on_error(error: FrameworkError<'_, Data, Error>) -> Result<()> {
 
         let reply = CreateReply::new().embed(embed);
 
-        ctx.send(reply).await?;
+        if let Err(e) = ctx.send(reply).await {
+            error!("Failed to send error message: {e}");
+        }
 
-        log_command_completion(
-            ctx.id(),
-            ExecutionStatus::Error,
-            get_execution_time(ctx).await,
-        );
+        log_command_completion(ctx, ExecutionStatus::Error).await;
     }
-
-    Ok(())
 }

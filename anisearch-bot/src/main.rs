@@ -24,6 +24,7 @@ use crate::error::{Error, on_error};
 use crate::events::{Handler, post_command, pre_command};
 use crate::services::anilist::AniListService;
 use crate::services::guild::GuildService;
+use crate::services::metrics::MetricsService;
 use crate::services::user::UserService;
 
 mod api;
@@ -42,6 +43,7 @@ pub struct Data {
     pub database: Arc<DatabaseConnection>,
     pub guild_service: Arc<GuildService>,
     pub user_service: Arc<UserService>,
+    pub metrics_service: Arc<MetricsService>,
     pub anilist_service: Arc<AniListService>,
 }
 
@@ -69,25 +71,21 @@ async fn init() -> Result<()> {
     );
 
     let guild_service = Arc::new(GuildService::init(database.clone()));
-    let user_service = Arc::new(UserService::init(database.clone(), guild_service.clone()));
+    let user_service = Arc::new(UserService::init(database.clone()));
+    let metrics_service = Arc::new(MetricsService::init(database.clone()));
     let anilist_service = Arc::new(AniListService::init());
 
     let data = Arc::new(Data {
         database: database.clone(),
         guild_service: guild_service.clone(),
         user_service,
+        metrics_service,
         anilist_service,
     });
 
     let options = FrameworkOptions {
         commands: commands(),
-        on_error: |error| {
-            Box::pin(async move {
-                if let Err(e) = on_error(error).await {
-                    error!("An error occurred while handling an error: {e}");
-                }
-            })
-        },
+        on_error: |error| Box::pin(on_error(error)),
         pre_command: |ctx| Box::pin(pre_command(ctx)),
         post_command: |ctx| Box::pin(post_command(ctx)),
         ..Default::default()
