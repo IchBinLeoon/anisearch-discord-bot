@@ -23,6 +23,8 @@ use crate::config::Config;
 use crate::error::{Error, on_error};
 use crate::events::{Handler, post_command, pre_command};
 use crate::services::anilist::AniListService;
+use crate::services::guild::GuildService;
+use crate::services::user::UserService;
 
 mod api;
 mod clients;
@@ -38,6 +40,8 @@ pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub struct Data {
     pub database: Arc<DatabaseConnection>,
+    pub guild_service: Arc<GuildService>,
+    pub user_service: Arc<UserService>,
     pub anilist_service: Arc<AniListService>,
 }
 
@@ -57,7 +61,23 @@ async fn init() -> Result<()> {
 
     let config = Config::init()?;
 
-    let intents = GatewayIntents::default();
+    let database = Arc::new(create_database_connection::<Migrator>(&config.database_uri).await?);
+
+    info!(
+        "Connected to database ({})",
+        get_database_version(&database).await?
+    );
+
+    let guild_service = Arc::new(GuildService::init(database.clone()));
+    let user_service = Arc::new(UserService::init(database.clone(), guild_service.clone()));
+    let anilist_service = Arc::new(AniListService::init());
+
+    let data = Arc::new(Data {
+        database: database.clone(),
+        guild_service: guild_service.clone(),
+        user_service,
+        anilist_service,
+    });
 
     let options = FrameworkOptions {
         commands: commands(),
@@ -76,23 +96,11 @@ async fn init() -> Result<()> {
     let handler = Handler {
         create_commands: create_application_commands(&options.commands),
         testing_guild: config.testing_guild,
+        guild_service,
     };
 
     let framework = Framework::new(options);
-
-    let database = Arc::new(create_database_connection::<Migrator>(&config.database_uri).await?);
-
-    info!(
-        "Connected to database ({})",
-        get_database_version(&database).await?
-    );
-
-    let anilist_service = Arc::new(AniListService::init());
-
-    let data = Arc::new(Data {
-        database: database.clone(),
-        anilist_service,
-    });
+    let intents = GatewayIntents::default();
 
     let mut client = ClientBuilder::new(config.token, intents)
         .data(data)

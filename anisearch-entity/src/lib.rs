@@ -2,5 +2,7 @@
 
 pub mod prelude;
 
+pub mod guild_command_usages;
 pub mod guilds;
+pub mod private_command_usages;
 pub mod users;

@@ -2,15 +2,18 @@ use poise::async_trait;
 use poise::serenity_prelude::{
     CacheHttp, Command, Context as SerenityContext, CreateCommand, EventHandler, FullEvent, GuildId,
 };
+use std::sync::Arc;
 use strum::Display;
 use tokio::time::Instant;
 use tracing::{error, info};
 
 use crate::Context;
+use crate::services::guild::GuildService;
 
 pub struct Handler {
     pub create_commands: Vec<CreateCommand<'static>>,
     pub testing_guild: Option<GuildId>,
+    pub guild_service: Arc<GuildService>,
 }
 
 #[async_trait]
@@ -43,10 +46,18 @@ impl EventHandler for Handler {
             FullEvent::GuildCreate { guild, is_new, .. } => {
                 if matches!(is_new, Some(true)) {
                     info!("Joined guild: {}", guild.id);
+
+                    if let Err(e) = self.guild_service.add_guild(guild.id.get()).await {
+                        error!("Failed to add guild: {e}");
+                    }
                 }
             }
             FullEvent::GuildDelete { incomplete, .. } => {
                 info!("Left guild: {}", incomplete.id);
+
+                if let Err(e) = self.guild_service.remove_guild(incomplete.id.get()).await {
+                    error!("Failed to remove guild: {e}");
+                }
             }
             _ => {}
         }
@@ -58,17 +69,46 @@ pub async fn pre_command(ctx: Context<'_>) {
         unreachable!()
     };
 
+    let ctx_id = ctx.id();
+
+    let shard_id = ctx.serenity_context().shard_id;
+    let guild_id = ctx.guild_id().map(|id| id.get());
+    let channel_id = ctx.channel_id();
+    let user_id = ctx.author().id.get();
+
+    let command_name = ctx.invoked_command_name().to_string();
+    let command_type = app_ctx.interaction.data.kind.0;
+    let invocation_string = ctx.invocation_string();
+
     info!(
-        "[COMMAND] [{:<18}] CONTEXT={} | SHARD={} | GUILD={:<18} | CHANNEL={:<18} | USER={:<18} | TYPE={} | CMD={}",
-        ctx.id(),
-        app_ctx.interaction.context.map(|c| c.0).unwrap_or_default(),
-        ctx.serenity_context().shard_id,
-        ctx.guild_id().unwrap_or_default(),
-        ctx.channel_id(),
-        ctx.author().id,
-        app_ctx.interaction.data.kind.0,
-        ctx.invocation_string(),
+        "[COMMAND] [{:<18}] SHARD={} | GUILD={:<18} | CHANNEL={:<18} | USER={:<18} | TYPE={} | CMD={}",
+        ctx_id,
+        shard_id,
+        guild_id.unwrap_or_default(),
+        channel_id,
+        user_id,
+        command_type,
+        invocation_string,
     );
+
+    let data = ctx.data();
+
+    let res = match guild_id {
+        Some(guild_id) => {
+            data.user_service
+                .add_guild_command_usage(ctx_id, user_id, guild_id, command_name)
+                .await
+        }
+        None => {
+            data.user_service
+                .add_private_command_usage(ctx_id, user_id, command_name)
+                .await
+        }
+    };
+
+    if let Err(e) = res {
+        error!("Failed to log command usage: {e}");
+    }
 
     let start_time = Instant::now();
     ctx.set_invocation_data(start_time).await;
@@ -77,21 +117,18 @@ pub async fn pre_command(ctx: Context<'_>) {
 pub async fn post_command(ctx: Context<'_>) {
     log_command_completion(
         ctx.id(),
-        CommandExecutionStatus::Success,
+        ExecutionStatus::Success,
         get_execution_time(ctx).await,
     );
 }
 
-pub fn log_command_completion(ctx_id: u64, status: CommandExecutionStatus, execution_time: u128) {
-    info!(
-        "[COMMAND] [{:<18}] STATUS={} | TIME={}ms",
-        ctx_id, status, execution_time
-    );
+pub fn log_command_completion(ctx_id: u64, status: ExecutionStatus, execution_time: u128) {
+    info!("[COMMAND] [{ctx_id:<18}] STATUS={status} | TIME={execution_time}ms");
 }
 
 #[derive(Display)]
 #[strum(serialize_all = "UPPERCASE")]
-pub enum CommandExecutionStatus {
+pub enum ExecutionStatus {
     Success,
     Error,
 }
