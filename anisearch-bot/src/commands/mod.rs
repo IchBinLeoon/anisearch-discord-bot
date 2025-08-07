@@ -13,6 +13,7 @@ pub fn commands() -> Vec<Command<Data, Error>> {
         search::character::character(),
         search::staff::staff(),
         search::studio::studio(),
+        search::trending::trending(),
         help::ping::ping(),
         help::invite::invite(),
         help::support::support(),

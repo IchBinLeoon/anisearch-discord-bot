@@ -2,7 +2,7 @@ use std::ops::Not;
 
 use crate::clients::anilist::character_query::CharacterQueryPageCharacters;
 use crate::clients::anilist::error::AniListError;
-use crate::clients::anilist::media_query::{MediaQueryPageMedia, MediaType};
+use crate::clients::anilist::media_query::{MediaQueryPageMedia, MediaSort, MediaType};
 use crate::clients::anilist::staff_query::StaffQueryPageStaff;
 use crate::clients::anilist::studio_query::StudioQueryPageStudios;
 use crate::clients::anilist::{
@@ -16,6 +16,7 @@ mod trie;
 const DEFAULT_SEARCH_LIMIT: usize = 10;
 const AUTOCOMPLETE_LIMIT: usize = 25;
 const MAX_AUTOCOMPLETE_LEN: usize = 100;
+const TRENDING_LIMIT: usize = 15;
 
 pub struct AniListService {
     client: AniListClient,
@@ -32,15 +33,17 @@ impl AniListService {
 
     async fn search_media(
         &self,
-        title: String,
-        type_: MediaType,
+        media: MediaType,
+        title: Option<String>,
         limit: Option<usize>,
+        sort: Option<Vec<MediaSort>>,
     ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
         let variables = media_query::Variables {
             page: Some(1),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
-            type_: Some(type_),
-            search: title.is_empty().not().then_some(title),
+            type_: Some(media),
+            search: title,
+            sort: sort.map(|v| v.into_iter().map(Some).collect()),
         };
 
         let data = self.client.media(variables).await?;
@@ -55,7 +58,13 @@ impl AniListService {
         title: String,
         limit: Option<usize>,
     ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
-        self.search_media(title, MediaType::ANIME, limit).await
+        self.search_media(
+            MediaType::ANIME,
+            title.is_empty().not().then_some(title),
+            limit,
+            None,
+        )
+        .await
     }
 
     pub async fn search_manga(
@@ -63,7 +72,13 @@ impl AniListService {
         title: String,
         limit: Option<usize>,
     ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
-        self.search_media(title, MediaType::MANGA, limit).await
+        self.search_media(
+            MediaType::MANGA,
+            title.is_empty().not().then_some(title),
+            limit,
+            None,
+        )
+        .await
     }
 
     pub async fn search_character(
@@ -118,6 +133,26 @@ impl AniListService {
         let studios = Self::flatten_response_data(data, |d| d.page?.studios);
 
         Ok(studios)
+    }
+
+    pub async fn trending_anime(&self) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
+        self.search_media(
+            MediaType::ANIME,
+            None,
+            Some(TRENDING_LIMIT),
+            Some(vec![MediaSort::TRENDING_DESC]),
+        )
+        .await
+    }
+
+    pub async fn trending_manga(&self) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
+        self.search_media(
+            MediaType::MANGA,
+            None,
+            Some(TRENDING_LIMIT),
+            Some(vec![MediaSort::TRENDING_DESC]),
+        )
+        .await
     }
 
     fn flatten_response_data<T, U, F>(data: Option<T>, extract: F) -> Option<Vec<U>>

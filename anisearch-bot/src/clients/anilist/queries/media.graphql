@@ -1,6 +1,6 @@
-query MediaQuery($page: Int, $perPage: Int, $type: MediaType, $search: String) {
+query MediaQuery($page: Int, $perPage: Int, $type: MediaType, $search: String, $sort: [MediaSort]) {
     Page(page: $page, perPage: $perPage) {
-        media(type: $type, isAdult: false, search: $search) {
+        media(type: $type, isAdult: false, search: $search, sort: $sort) {
             bannerImage
             chapters
             coverImage {
