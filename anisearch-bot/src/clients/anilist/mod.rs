@@ -72,27 +72,31 @@ impl AniListClient {
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
-    query_path = "src/clients/anilist/queries/media.graphql"
+    query_path = "src/clients/anilist/queries/media.graphql",
+    skip_serializing_none
 )]
 pub struct MediaQuery;
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
-    query_path = "src/clients/anilist/queries/character.graphql"
+    query_path = "src/clients/anilist/queries/character.graphql",
+    skip_serializing_none
 )]
 pub struct CharacterQuery;
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
-    query_path = "src/clients/anilist/queries/staff.graphql"
+    query_path = "src/clients/anilist/queries/staff.graphql",
+    skip_serializing_none
 )]
 pub struct StaffQuery;
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
-    query_path = "src/clients/anilist/queries/studio.graphql"
+    query_path = "src/clients/anilist/queries/studio.graphql",
+    skip_serializing_none
 )]
 pub struct StudioQuery;

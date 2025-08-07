@@ -36,4 +36,5 @@ tracing-subscriber = "0.3"
 
 [patch.crates-io]
 envy = { git = "https://github.com/softprops/envy" }
+graphql_client = { git = "https://github.com/graphql-rust/graphql-client", package = "graphql_client" }
 poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
