@@ -15,9 +15,12 @@ use crate::services::anilist::cache::AniListAutocompleteCache;
 mod cache;
 mod trie;
 
+const DEFAULT_PAGE: i64 = 1;
 const DEFAULT_SEARCH_LIMIT: usize = 10;
+
 const AUTOCOMPLETE_LIMIT: usize = 25;
 const MAX_AUTOCOMPLETE_LEN: usize = 100;
+
 const TRENDING_LIMIT: usize = 15;
 const SEASONAL_LIMIT: usize = 50;
 
@@ -40,14 +43,12 @@ impl AniListService {
         title: Option<String>,
         limit: Option<usize>,
         sort: Option<Vec<MediaSort>>,
-        season: Option<MediaSeason>,
-        year: Option<i32>,
     ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
         let variables = media_query::Variables {
-            page: Some(1),
+            page: Some(DEFAULT_PAGE),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
-            season,
-            season_year: year.map(|y| y as i64),
+            season: None,
+            season_year: None,
             type_: Some(media),
             search: title,
             sort: sort.map(|v| v.into_iter().map(Some).collect()),
@@ -70,8 +71,6 @@ impl AniListService {
             title.is_empty().not().then_some(title),
             limit,
             None,
-            None,
-            None,
         )
         .await
     }
@@ -86,8 +85,6 @@ impl AniListService {
             title.is_empty().not().then_some(title),
             limit,
             None,
-            None,
-            None,
         )
         .await
     }
@@ -98,7 +95,7 @@ impl AniListService {
         limit: Option<usize>,
     ) -> Result<Option<Vec<CharacterQueryPageCharacters>>, AniListError> {
         let variables = character_query::Variables {
-            page: Some(1),
+            page: Some(DEFAULT_PAGE),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
             search: name.is_empty().not().then_some(name),
         };
@@ -116,7 +113,7 @@ impl AniListService {
         limit: Option<usize>,
     ) -> Result<Option<Vec<StaffQueryPageStaff>>, AniListError> {
         let variables = staff_query::Variables {
-            page: Some(1),
+            page: Some(DEFAULT_PAGE),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
             search: name.is_empty().not().then_some(name),
         };
@@ -134,7 +131,7 @@ impl AniListService {
         limit: Option<usize>,
     ) -> Result<Option<Vec<StudioQueryPageStudios>>, AniListError> {
         let variables = studio_query::Variables {
-            page: Some(1),
+            page: Some(DEFAULT_PAGE),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
             search: name.is_empty().not().then_some(name),
         };
@@ -152,8 +149,6 @@ impl AniListService {
             None,
             Some(TRENDING_LIMIT),
             Some(vec![MediaSort::TRENDING_DESC]),
-            None,
-            None,
         )
         .await
     }
@@ -164,26 +159,31 @@ impl AniListService {
             None,
             Some(TRENDING_LIMIT),
             Some(vec![MediaSort::TRENDING_DESC]),
-            None,
-            None,
         )
         .await
     }
 
-    pub async fn seasonal_anime(
+    pub async fn seasonal(
         &self,
         season: MediaSeason,
         year: i32,
+        sort: MediaSort,
     ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
-        self.search_media(
-            MediaType::ANIME,
-            None,
-            Some(SEASONAL_LIMIT),
-            Some(vec![MediaSort::POPULARITY_DESC]),
-            Some(season),
-            Some(year),
-        )
-        .await
+        let variables = media_query::Variables {
+            page: Some(DEFAULT_PAGE),
+            per_page: Some(SEASONAL_LIMIT as i64),
+            season: Some(season),
+            season_year: Some(year as i64),
+            type_: Some(MediaType::ANIME),
+            search: None,
+            sort: Some(vec![Some(sort)]),
+        };
+
+        let data = self.client.media(variables).await?;
+
+        let media = Self::flatten_response_data(data, |d| d.page?.media);
+
+        Ok(media)
     }
 
     fn flatten_response_data<T, U, F>(data: Option<T>, extract: F) -> Option<Vec<U>>

@@ -281,7 +281,7 @@ fn extract_genres(data: &MediaQueryPageMedia) -> Option<Vec<String>> {
     }
 }
 
-pub fn format_media_format(format: Option<&MediaFormat>) -> &'static str {
+fn format_media_format(format: Option<&MediaFormat>) -> &'static str {
     match format {
         Some(MediaFormat::TV) => "TV",
         Some(MediaFormat::TV_SHORT) => "TV Short",

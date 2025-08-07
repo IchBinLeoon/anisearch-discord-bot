@@ -1,20 +1,32 @@
 use chrono::{Datelike, Utc};
-use poise::CreateReply;
-use poise::serenity_prelude::{CreateEmbed, CreateEmbedAuthor};
+use poise::{ChoiceParameter, CreateReply};
 
 use crate::Context;
-use crate::clients::anilist::media_query::{MediaQueryPageMedia, MediaSeason};
-use crate::commands::search::anime::{
-    create_media_buttons, create_media_embed, format_media_format,
-};
+use crate::clients::anilist::media_query::{MediaSeason, MediaSort};
+use crate::commands::search::anime::{create_media_buttons, create_media_embed};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
-use crate::utils::ANILIST_LOGO;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
-use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_opt};
 
-/// 📅 Display the currently airing seasonal anime.
+#[derive(ChoiceParameter)]
+enum SeasonChoice {
+    Winter,
+    Spring,
+    Summer,
+    Fall,
+}
+
+#[derive(ChoiceParameter)]
+enum SortChoice {
+    Popularity,
+    Score,
+    #[name = "Start Date"]
+    StartDate,
+    Title,
+}
+
+/// 📅 Display currently airing anime or browse a selected season and year.
 #[poise::command(
     category = "Search",
     slash_command,
@@ -23,25 +35,30 @@ use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_opt};
 )]
 pub async fn seasonal(
     ctx: Context<'_>,
+    #[description = "Season to display anime from."] season: Option<SeasonChoice>,
+    #[description = "Year to display anime from."]
+    #[min = 1900]
+    #[max = 2100]
+    year: Option<i32>,
+    #[description = "Sort order of the results."] sort: Option<SortChoice>,
     #[description = "Show results only to you."] ephemeral: Option<bool>,
 ) -> Result<()> {
     let ephemeral = defer_with_ephemeral(ctx, ephemeral).await?;
 
     let now = Utc::now();
 
+    let season = season.map(|s| s.into()).unwrap_or(now.month().into());
+    let year = year.unwrap_or(now.year());
+    let sort = sort.unwrap_or(SortChoice::Popularity).into();
+
     let data = ctx.data();
 
-    match data
-        .anilist_service
-        .seasonal_anime(now.month().into(), now.year())
-        .await?
-    {
+    match data.anilist_service.seasonal(season, year, sort).await? {
         Some(anime) => {
             let pages = anime
                 .iter()
                 .map(|data| {
-                    Page::new(create_seasonal_embed(data))
-                        .add_link_buttons(create_media_buttons(data))
+                    Page::new(create_media_embed(data)).add_link_buttons(create_media_buttons(data))
                 })
                 .collect();
 
@@ -65,18 +82,15 @@ pub async fn seasonal(
     Ok(())
 }
 
-fn create_seasonal_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
-    let embed = create_media_embed(data);
-
-    let author = CreateEmbedAuthor::new(format!(
-        "{} • {} {}",
-        format_media_format(data.format.as_ref()),
-        format_media_season(data.season.as_ref()),
-        format_opt(data.season_year),
-    ))
-    .icon_url(ANILIST_LOGO);
-
-    embed.author(author)
+impl From<SeasonChoice> for MediaSeason {
+    fn from(value: SeasonChoice) -> Self {
+        match value {
+            SeasonChoice::Winter => MediaSeason::WINTER,
+            SeasonChoice::Spring => MediaSeason::SPRING,
+            SeasonChoice::Summer => MediaSeason::SUMMER,
+            SeasonChoice::Fall => MediaSeason::FALL,
+        }
+    }
 }
 
 impl From<u32> for MediaSeason {
@@ -91,12 +105,13 @@ impl From<u32> for MediaSeason {
     }
 }
 
-fn format_media_season(format: Option<&MediaSeason>) -> &'static str {
-    match format {
-        Some(MediaSeason::WINTER) => "Winter",
-        Some(MediaSeason::SPRING) => "Spring",
-        Some(MediaSeason::SUMMER) => "Summer",
-        Some(MediaSeason::FALL) => "Fall",
-        _ => UNKNOWN_EMBED_FIELD,
+impl From<SortChoice> for MediaSort {
+    fn from(value: SortChoice) -> Self {
+        match value {
+            SortChoice::Popularity => MediaSort::POPULARITY_DESC,
+            SortChoice::Score => MediaSort::SCORE_DESC,
+            SortChoice::StartDate => MediaSort::START_DATE,
+            SortChoice::Title => MediaSort::TITLE_ROMAJI,
+        }
     }
 }
