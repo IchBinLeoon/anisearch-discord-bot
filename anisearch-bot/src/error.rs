@@ -40,7 +40,7 @@ pub async fn on_error(error: FrameworkError<'_, Data, Error>) {
             .title("💢 Command Error")
             .description("An unknown error occurred. Please try again in a moment.");
 
-        let reply = CreateReply::new().embed(embed);
+        let reply = CreateReply::new().embed(embed).ephemeral(true);
 
         if let Err(e) = ctx.send(reply).await {
             error!("Failed to send error message: {e}");

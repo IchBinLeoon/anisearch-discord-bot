@@ -1,7 +1,7 @@
 use poise::async_trait;
 use poise::serenity_prelude::{
-    CacheHttp, Command, Context as SerenityContext, CreateCommand, EventHandler, FullEvent,
-    GuildId, Ready,
+    CacheHttp, Command, Context as SerenityContext, CreateCommand, Error as SerenityError,
+    EventHandler, FullEvent, GuildId, Http, Ready,
 };
 use std::sync::Arc;
 use strum::Display;
@@ -39,24 +39,16 @@ impl EventHandler for Handler {
 
 impl Handler {
     async fn handle_ready(&self, ctx: &SerenityContext, data_about_bot: &Ready) {
-        let res = match self.testing_guild {
-            Some(testing_guild) => {
-                testing_guild
-                    .set_commands(ctx.http(), &self.create_commands)
-                    .await
-            }
-            None => Command::set_global_commands(ctx.http(), &self.create_commands).await,
-        };
-
-        if let Err(e) = res {
-            error!("Failed to set commands: {e}");
+        if let Err(e) = self.register_commands(ctx.http()).await {
+            error!("Failed to register commands: {e}");
         }
 
-        info!(
-            "{} is connected on shard {}",
-            data_about_bot.user.name,
-            data_about_bot.shard.unwrap().id
-        );
+        if let Some(shard) = data_about_bot.shard {
+            info!(
+                "{} is connected on shard {}",
+                data_about_bot.user.name, shard.id
+            );
+        }
     }
 
     async fn handle_guild_join(&self, guild_id: GuildId) {
@@ -72,6 +64,17 @@ impl Handler {
 
         if let Err(e) = self.guild_service.remove_guild(guild_id).await {
             error!("Failed to remove guild: {e}");
+        }
+    }
+
+    async fn register_commands(&self, http: &Http) -> Result<Vec<Command>, SerenityError> {
+        match self.testing_guild {
+            Some(testing_guild) => {
+                testing_guild
+                    .set_commands(http, &self.create_commands)
+                    .await
+            }
+            None => Command::set_global_commands(http, &self.create_commands).await,
         }
     }
 }
