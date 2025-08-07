@@ -19,6 +19,8 @@ pub async fn manga(
     ctx: Context<'_>,
     #[description = "Title of the manga to search for."]
     #[autocomplete = "autocomplete_title"]
+    #[min_length = 1]
+    #[max_length = 100]
     title: String,
     #[description = "Maximum number of results to display."]
     #[min = 1]

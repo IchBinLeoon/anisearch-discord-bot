@@ -28,6 +28,8 @@ pub async fn anime(
     ctx: Context<'_>,
     #[description = "Title of the anime to search for."]
     #[autocomplete = "autocomplete_title"]
+    #[min_length = 1]
+    #[max_length = 100]
     title: String,
     #[description = "Maximum number of results to display."]
     #[min = 1]

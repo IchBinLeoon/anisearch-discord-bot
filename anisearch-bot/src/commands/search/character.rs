@@ -23,6 +23,8 @@ pub async fn character(
     ctx: Context<'_>,
     #[description = "Name of the character to search for."]
     #[autocomplete = "autocomplete_name"]
+    #[min_length = 1]
+    #[max_length = 100]
     name: String,
     #[description = "Maximum number of results to display."]
     #[min = 1]
