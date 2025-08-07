@@ -2,7 +2,9 @@ use std::ops::Not;
 
 use crate::clients::anilist::character_query::CharacterQueryPageCharacters;
 use crate::clients::anilist::error::AniListError;
-use crate::clients::anilist::media_query::{MediaQueryPageMedia, MediaSort, MediaType};
+use crate::clients::anilist::media_query::{
+    MediaQueryPageMedia, MediaSeason, MediaSort, MediaType,
+};
 use crate::clients::anilist::staff_query::StaffQueryPageStaff;
 use crate::clients::anilist::studio_query::StudioQueryPageStudios;
 use crate::clients::anilist::{
@@ -17,6 +19,7 @@ const DEFAULT_SEARCH_LIMIT: usize = 10;
 const AUTOCOMPLETE_LIMIT: usize = 25;
 const MAX_AUTOCOMPLETE_LEN: usize = 100;
 const TRENDING_LIMIT: usize = 15;
+const SEASONAL_LIMIT: usize = 50;
 
 pub struct AniListService {
     client: AniListClient,
@@ -37,10 +40,14 @@ impl AniListService {
         title: Option<String>,
         limit: Option<usize>,
         sort: Option<Vec<MediaSort>>,
+        season: Option<MediaSeason>,
+        year: Option<i32>,
     ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
         let variables = media_query::Variables {
             page: Some(1),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
+            season,
+            season_year: year.map(|y| y as i64),
             type_: Some(media),
             search: title,
             sort: sort.map(|v| v.into_iter().map(Some).collect()),
@@ -63,6 +70,8 @@ impl AniListService {
             title.is_empty().not().then_some(title),
             limit,
             None,
+            None,
+            None,
         )
         .await
     }
@@ -76,6 +85,8 @@ impl AniListService {
             MediaType::MANGA,
             title.is_empty().not().then_some(title),
             limit,
+            None,
+            None,
             None,
         )
         .await
@@ -141,6 +152,8 @@ impl AniListService {
             None,
             Some(TRENDING_LIMIT),
             Some(vec![MediaSort::TRENDING_DESC]),
+            None,
+            None,
         )
         .await
     }
@@ -151,6 +164,24 @@ impl AniListService {
             None,
             Some(TRENDING_LIMIT),
             Some(vec![MediaSort::TRENDING_DESC]),
+            None,
+            None,
+        )
+        .await
+    }
+
+    pub async fn seasonal_anime(
+        &self,
+        season: MediaSeason,
+        year: i32,
+    ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
+        self.search_media(
+            MediaType::ANIME,
+            None,
+            Some(SEASONAL_LIMIT),
+            Some(vec![MediaSort::POPULARITY_DESC]),
+            Some(season),
+            Some(year),
         )
         .await
     }
