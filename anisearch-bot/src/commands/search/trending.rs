@@ -9,7 +9,7 @@ use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
 
 #[derive(Display, ChoiceParameter)]
-enum MediaChoice {
+pub enum MediaChoice {
     Anime,
     Manga,
 }

@@ -1,3 +1,4 @@
+use rand::{Rng, rng};
 use std::ops::Not;
 
 use crate::clients::anilist::character_query::CharacterQueryPageCharacters;
@@ -23,6 +24,8 @@ const MAX_AUTOCOMPLETE_LEN: usize = 100;
 
 const TRENDING_LIMIT: usize = 15;
 const SEASONAL_LIMIT: usize = 50;
+
+const FILTERED_GENRES: [&str; 1] = ["Hentai"];
 
 pub struct AniListService {
     client: AniListClient,
@@ -51,6 +54,8 @@ impl AniListService {
             season_year: None,
             type_: Some(media),
             search: title,
+            genres: None,
+            tags: None,
             sort: sort.map(|v| v.into_iter().map(Some).collect()),
         };
 
@@ -176,6 +181,8 @@ impl AniListService {
             season_year: Some(year as i64),
             type_: Some(MediaType::ANIME),
             search: None,
+            genres: None,
+            tags: None,
             sort: Some(vec![Some(sort)]),
         };
 
@@ -184,6 +191,55 @@ impl AniListService {
         let media = Self::flatten_response_data(data, |d| d.page?.media);
 
         Ok(media)
+    }
+
+    pub async fn random(
+        &self,
+        media: Option<MediaType>,
+        genres: Option<Vec<String>>,
+        tags: Option<Vec<String>>,
+    ) -> Result<Option<MediaQueryPageMedia>, AniListError> {
+        let mut page = rng().random_range(1..=1000);
+        let mut limit = 1;
+
+        for i in 0..3 {
+            let variables = media_query::Variables {
+                page: Some(page),
+                per_page: Some(limit),
+                season: None,
+                season_year: None,
+                type_: media.clone(),
+                search: None,
+                genres: genres.clone().map(|v| v.into_iter().map(Some).collect()),
+                tags: tags.clone().map(|v| v.into_iter().map(Some).collect()),
+                sort: Some(vec![Some(MediaSort::POPULARITY_DESC)]),
+            };
+
+            let data = self.client.media(variables).await?;
+
+            let media = Self::flatten_response_data(data, |d| d.page?.media);
+
+            if let Some(media) = media
+                && !media.is_empty()
+            {
+                let result = if i < 2 {
+                    media.first().cloned()
+                } else {
+                    let index = rng().random_range(0..media.len());
+
+                    media.get(index).cloned()
+                };
+
+                return Ok(result);
+            } else if i < 1 {
+                page = (page as f64 / 3.0).round() as i64;
+            } else {
+                page = 1;
+                limit = 50;
+            }
+        }
+
+        Ok(None)
     }
 
     fn flatten_response_data<T, U, F>(data: Option<T>, extract: F) -> Option<Vec<U>>
@@ -318,7 +374,7 @@ impl AniListService {
         }
     }
 
-    pub async fn studios_autocomplete(&self, name: String) -> Result<Vec<String>, AniListError> {
+    pub async fn studio_autocomplete(&self, name: String) -> Result<Vec<String>, AniListError> {
         let mut names = self.autocomplete_cache.search_studio_names(&name).await;
 
         if !names.is_empty() {
@@ -341,11 +397,80 @@ impl AniListService {
         }
     }
 
+    pub async fn genres_autocomplete(&self, genre: String) -> Result<Vec<String>, AniListError> {
+        let mut genres = match self.autocomplete_cache.search_genres(&genre).await {
+            Some(genres) => genres,
+            None => {
+                let (genres, _) = self.fetch_genre_and_tag_collections().await?;
+                genres
+            }
+        };
+
+        genres.sort();
+
+        Ok(Self::truncate_autocomplete_results(genres))
+    }
+
+    pub async fn tags_autocomplete(&self, tag: String) -> Result<Vec<String>, AniListError> {
+        let mut tags = match self.autocomplete_cache.search_tags(&tag).await {
+            Some(tags) => tags,
+            None => {
+                let (_, tags) = self.fetch_genre_and_tag_collections().await?;
+                tags
+            }
+        };
+
+        tags.sort();
+
+        Ok(Self::truncate_autocomplete_results(tags))
+    }
+
     fn truncate_autocomplete_results(results: Vec<String>) -> Vec<String> {
         results
             .into_iter()
             .take(AUTOCOMPLETE_LIMIT)
             .map(|s| s.chars().take(MAX_AUTOCOMPLETE_LEN).collect())
             .collect()
+    }
+
+    async fn fetch_genre_and_tag_collections(
+        &self,
+    ) -> Result<(Vec<String>, Vec<String>), AniListError> {
+        let data = self.client.collection().await?;
+
+        match data {
+            Some(data) => {
+                let genres: Option<Vec<String>> = data.genre_collection.map(|g| {
+                    g.iter()
+                        .flatten()
+                        .filter(|g| !FILTERED_GENRES.contains(&g.as_str()))
+                        .cloned()
+                        .collect()
+                });
+
+                let tags: Option<Vec<String>> = data.media_tag_collection.map(|t| {
+                    t.iter()
+                        .flatten()
+                        .filter(|t| !t.is_adult.unwrap_or_default())
+                        .map(|t| t.name.clone())
+                        .collect()
+                });
+
+                if let Some(genres) = genres.clone()
+                    && !genres.is_empty()
+                {
+                    self.autocomplete_cache.insert_genres(genres).await;
+                }
+
+                if let Some(tags) = tags.clone()
+                    && !tags.is_empty()
+                {
+                    self.autocomplete_cache.insert_tags(tags).await;
+                }
+
+                Ok((genres.unwrap_or_default(), tags.unwrap_or_default()))
+            }
+            None => Ok((vec![], vec![])),
+        }
     }
 }

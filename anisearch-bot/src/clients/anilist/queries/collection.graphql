@@ -1,0 +1,7 @@
+query CollectionQuery {
+    GenreCollection
+    MediaTagCollection {
+        isAdult
+        name
+    }
+}

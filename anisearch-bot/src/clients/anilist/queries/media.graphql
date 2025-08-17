@@ -1,6 +1,6 @@
-query MediaQuery($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int, $type: MediaType, $search: String, $sort: [MediaSort]) {
+query MediaQuery($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int, $type: MediaType, $search: String, $genres: [String], $tags: [String], $sort: [MediaSort]) {
     Page(page: $page, perPage: $perPage) {
-        media(season: $season, seasonYear: $seasonYear, type: $type, isAdult: false, search: $search, sort: $sort) {
+        media(season: $season, seasonYear: $seasonYear, type: $type, isAdult: false, search: $search, genre_in: $genres, tag_in: $tags, sort: $sort) {
             bannerImage
             chapters
             coverImage {

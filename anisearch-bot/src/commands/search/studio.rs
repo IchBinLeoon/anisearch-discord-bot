@@ -82,7 +82,7 @@ async fn autocomplete_name<'a>(
 
     let names = data
         .anilist_service
-        .studios_autocomplete(partial.trim().to_string())
+        .studio_autocomplete(partial.trim().to_string())
         .await
         .unwrap_or_default();
 

@@ -26,7 +26,7 @@ enum SortChoice {
     Title,
 }
 
-/// 📅 Display currently airing anime or browse a selected season and year.
+/// 📅 Display the currently airing anime or browse a selected season and year.
 #[poise::command(
     category = "Search",
     slash_command,

@@ -67,12 +67,18 @@ impl AniListClient {
     ) -> Result<Option<studio_query::ResponseData>, AniListError> {
         self.request::<StudioQuery>(variables).await
     }
+
+    pub async fn collection(&self) -> Result<Option<collection_query::ResponseData>, AniListError> {
+        self.request::<CollectionQuery>(collection_query::Variables)
+            .await
+    }
 }
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
     query_path = "src/clients/anilist/queries/media.graphql",
+    response_derives = "Clone, Debug",
     skip_serializing_none
 )]
 pub struct MediaQuery;
@@ -81,6 +87,7 @@ pub struct MediaQuery;
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
     query_path = "src/clients/anilist/queries/character.graphql",
+    response_derives = "Clone, Debug",
     skip_serializing_none
 )]
 pub struct CharacterQuery;
@@ -89,6 +96,7 @@ pub struct CharacterQuery;
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
     query_path = "src/clients/anilist/queries/staff.graphql",
+    response_derives = "Clone, Debug",
     skip_serializing_none
 )]
 pub struct StaffQuery;
@@ -97,6 +105,15 @@ pub struct StaffQuery;
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
     query_path = "src/clients/anilist/queries/studio.graphql",
+    response_derives = "Clone, Debug",
     skip_serializing_none
 )]
 pub struct StudioQuery;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/clients/anilist/queries/schema.graphql",
+    query_path = "src/clients/anilist/queries/collection.graphql",
+    response_derives = "Clone, Debug"
+)]
+pub struct CollectionQuery;

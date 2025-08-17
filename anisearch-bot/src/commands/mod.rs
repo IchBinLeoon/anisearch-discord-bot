@@ -15,6 +15,7 @@ pub fn commands() -> Vec<Command<Data, Error>> {
         search::studio::studio(),
         search::trending::trending(),
         search::seasonal::seasonal(),
+        search::random::random(),
         help::ping::ping(),
         help::invite::invite(),
         help::support::support(),
