@@ -11,9 +11,10 @@ sea-orm-migration.workspace = true
 sea-orm.workspace = true
 serde-inline-default.workspace = true
 serde.workspace = true
+tonic-prost.workspace = true
 tonic.workspace = true
 tracing.workspace = true
 
 [build-dependencies]
 chrono.workspace = true
-tonic-build.workspace = true
+tonic-prost-build.workspace = true

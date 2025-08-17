@@ -2,7 +2,7 @@ use std::error::Error;
 use std::process::Command;
 
 use chrono::Utc;
-use tonic_build::configure;
+use tonic_prost_build::configure;
 
 fn main() -> Result<(), Box<dyn Error>> {
     configure()
