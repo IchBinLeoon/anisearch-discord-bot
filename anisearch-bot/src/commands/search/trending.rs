@@ -30,12 +30,7 @@ pub async fn trending(
 
     let data = ctx.data();
 
-    let trending = match media {
-        MediaChoice::Anime => data.anilist_service.trending_anime().await?,
-        MediaChoice::Manga => data.anilist_service.trending_manga().await?,
-    };
-
-    match trending {
+    match data.anilist_service.trending(media.into()).await? {
         Some(trending) => {
             let pages = trending
                 .iter()
@@ -53,7 +48,7 @@ pub async fn trending(
         }
         None => {
             let embed = create_anilist_embed("🚫 Not Found".to_string(), None, None)
-                .description(format!("Trending `{media}` could not be found."));
+                .description("Trending media could not be found.");
 
             let reply = CreateReply::new().embed(embed).ephemeral(ephemeral);
 

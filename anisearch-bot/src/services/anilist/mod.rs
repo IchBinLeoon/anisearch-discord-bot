@@ -50,13 +50,10 @@ impl AniListService {
         let variables = media_query::Variables {
             page: Some(DEFAULT_PAGE),
             per_page: Some(limit.unwrap_or(DEFAULT_SEARCH_LIMIT) as i64),
-            season: None,
-            season_year: None,
             type_: Some(media),
             search: title,
-            genres: None,
-            tags: None,
             sort: sort.map(|v| v.into_iter().map(Some).collect()),
+            ..Default::default()
         };
 
         let data = self.client.media(variables).await?;
@@ -148,19 +145,12 @@ impl AniListService {
         Ok(studios)
     }
 
-    pub async fn trending_anime(&self) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
+    pub async fn trending(
+        &self,
+        media: MediaType,
+    ) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
         self.search_media(
-            MediaType::ANIME,
-            None,
-            Some(TRENDING_LIMIT),
-            Some(vec![MediaSort::TRENDING_DESC]),
-        )
-        .await
-    }
-
-    pub async fn trending_manga(&self) -> Result<Option<Vec<MediaQueryPageMedia>>, AniListError> {
-        self.search_media(
-            MediaType::MANGA,
+            media,
             None,
             Some(TRENDING_LIMIT),
             Some(vec![MediaSort::TRENDING_DESC]),
@@ -180,10 +170,8 @@ impl AniListService {
             season: Some(season),
             season_year: Some(year as i64),
             type_: Some(MediaType::ANIME),
-            search: None,
-            genres: None,
-            tags: None,
             sort: Some(vec![Some(sort)]),
+            ..Default::default()
         };
 
         let data = self.client.media(variables).await?;
@@ -202,17 +190,18 @@ impl AniListService {
         let mut page = rng().random_range(1..=1000);
         let mut limit = 1;
 
+        let genres = genres.map(|v| v.into_iter().map(Some).collect());
+        let tags = tags.map(|v| v.into_iter().map(Some).collect());
+
         for i in 0..3 {
             let variables = media_query::Variables {
                 page: Some(page),
                 per_page: Some(limit),
-                season: None,
-                season_year: None,
                 type_: media.clone(),
-                search: None,
-                genres: genres.clone().map(|v| v.into_iter().map(Some).collect()),
-                tags: tags.clone().map(|v| v.into_iter().map(Some).collect()),
+                genres: genres.clone(),
+                tags: tags.clone(),
                 sort: Some(vec![Some(MediaSort::POPULARITY_DESC)]),
+                ..Default::default()
             };
 
             let data = self.client.media(variables).await?;
@@ -223,16 +212,16 @@ impl AniListService {
                 && !media.is_empty()
             {
                 let result = if i < 2 {
-                    media.first().cloned()
+                    media.first()
                 } else {
-                    let index = rng().random_range(0..media.len());
-
-                    media.get(index).cloned()
+                    media.get(rng().random_range(0..media.len()))
                 };
 
-                return Ok(result);
-            } else if i < 1 {
-                page = (page as f64 / 3.0).round() as i64;
+                return Ok(result.cloned());
+            }
+
+            if i < 1 {
+                page /= 3;
             } else {
                 page = 1;
                 limit = 50;
@@ -308,10 +297,10 @@ impl AniListService {
                 if let Some(romaji) = &title.romaji {
                     titles.push(romaji.clone());
 
-                    if let Some(english) = &title.english {
-                        if english != romaji {
-                            titles.push(english.clone());
-                        }
+                    if let Some(english) = &title.english
+                        && english != romaji
+                    {
+                        titles.push(english.clone());
                     }
                 }
 
@@ -440,19 +429,19 @@ impl AniListService {
 
         match data {
             Some(data) => {
-                let genres: Option<Vec<String>> = data.genre_collection.map(|g| {
-                    g.iter()
+                let genres: Option<Vec<String>> = data.genre_collection.map(|v| {
+                    v.iter()
                         .flatten()
-                        .filter(|g| !FILTERED_GENRES.contains(&g.as_str()))
+                        .filter(|genre| !FILTERED_GENRES.contains(&genre.as_str()))
                         .cloned()
                         .collect()
                 });
 
-                let tags: Option<Vec<String>> = data.media_tag_collection.map(|t| {
-                    t.iter()
+                let tags: Option<Vec<String>> = data.media_tag_collection.map(|v| {
+                    v.iter()
                         .flatten()
-                        .filter(|t| !t.is_adult.unwrap_or_default())
-                        .map(|t| t.name.clone())
+                        .filter(|tag| !tag.is_adult.unwrap_or_default())
+                        .map(|tag| tag.name.clone())
                         .collect()
                 });
 

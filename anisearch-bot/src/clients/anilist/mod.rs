@@ -78,6 +78,7 @@ impl AniListClient {
 #[graphql(
     schema_path = "src/clients/anilist/queries/schema.graphql",
     query_path = "src/clients/anilist/queries/media.graphql",
+    variables_derives = "Default",
     response_derives = "Clone, Debug",
     skip_serializing_none
 )]
