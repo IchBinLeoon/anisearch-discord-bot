@@ -37,8 +37,9 @@ impl From<SeasonChoice> for MediaSeason {
     }
 }
 
-#[derive(ChoiceParameter)]
+#[derive(Default, ChoiceParameter)]
 pub enum SortChoice {
+    #[default]
     Popularity,
     Score,
     #[name = "Start Date"]

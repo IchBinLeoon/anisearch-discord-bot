@@ -59,3 +59,7 @@ pub fn format_date(year: Option<i64>, month: Option<i64>, day: Option<i64>) -> S
         _ => UNKNOWN_EMBED_FIELD.to_string(),
     }
 }
+
+pub fn split_and_trim(value: String) -> Vec<String> {
+    value.split(',').map(|s| s.trim().to_string()).collect()
+}

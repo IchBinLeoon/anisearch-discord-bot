@@ -8,6 +8,7 @@ use crate::commands::search::anime::{create_media_buttons, create_media_embed};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
+use crate::utils::format::split_and_trim;
 
 /// 🎲 Display a random anime or manga.
 #[poise::command(
@@ -34,19 +35,14 @@ pub async fn random(
     let media = data
         .anilist_service
         .random(
-            media.map(|m| m.into()),
-            genres.map(|g| g.split(',').map(|s| s.trim().to_string()).collect()),
-            tags.map(|t| t.split(',').map(|s| s.trim().to_string()).collect()),
+            media.map(Into::into),
+            genres.map(split_and_trim),
+            tags.map(split_and_trim),
         )
         .await?;
 
     let (embed, buttons) = match media {
-        Some(ref media) => {
-            let embed = create_media_embed(media);
-            let buttons = Some(create_media_buttons(media));
-
-            (embed, buttons)
-        }
+        Some(ref media) => (create_media_embed(media), Some(create_media_buttons(media))),
         None => (
             create_anilist_embed("🚫 Not Found".to_string(), None, None)
                 .description("Random media could not be found."),
@@ -54,18 +50,13 @@ pub async fn random(
         ),
     };
 
-    let components = if let Some(ref buttons) = buttons {
-        vec![CreateComponent::ActionRow(CreateActionRow::buttons(
-            buttons,
-        ))]
-    } else {
-        vec![]
-    };
+    let mut reply = CreateReply::new().embed(embed).ephemeral(ephemeral);
 
-    let reply = CreateReply::new()
-        .embed(embed)
-        .components(components)
-        .ephemeral(ephemeral);
+    if let Some(ref buttons) = buttons {
+        reply = reply.components(vec![CreateComponent::ActionRow(CreateActionRow::buttons(
+            buttons,
+        ))]);
+    }
 
     ctx.send(reply).await?;
 

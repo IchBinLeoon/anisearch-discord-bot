@@ -30,15 +30,15 @@ pub async fn seasonal(
 
     let now = Utc::now();
 
-    let season = season.map(|s| s.into()).unwrap_or(now.month().into());
+    let season = season.map_or(now.month().into(), Into::into);
     let year = year.unwrap_or(now.year());
-    let sort = sort.unwrap_or(SortChoice::Popularity).into();
+    let sort = sort.unwrap_or_default().into();
 
     let data = ctx.data();
 
     match data.anilist_service.seasonal(season, year, sort).await? {
-        Some(anime) => {
-            let pages = anime
+        Some(seasonal) => {
+            let pages = seasonal
                 .iter()
                 .map(|data| {
                     Page::new(create_media_embed(data)).add_link_buttons(create_media_buttons(data))
