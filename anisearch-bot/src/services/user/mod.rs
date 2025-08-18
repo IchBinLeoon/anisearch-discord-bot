@@ -1,7 +1,8 @@
+use std::sync::Arc;
+
 use anisearch_entity::users;
 use poise::serenity_prelude::UserId;
 use sea_orm::{DatabaseConnection, DbErr, EntityTrait, Set};
-use std::sync::Arc;
 
 pub struct UserService {
     database: Arc<DatabaseConnection>,

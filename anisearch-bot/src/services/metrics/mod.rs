@@ -1,7 +1,8 @@
+use std::sync::Arc;
+
 use anisearch_entity::{guild_command_usages, private_command_usages};
 use poise::serenity_prelude::{GuildId, UserId};
 use sea_orm::{DatabaseConnection, DbErr, EntityTrait, Set};
-use std::sync::Arc;
 
 pub struct MetricsService {
     database: Arc<DatabaseConnection>,

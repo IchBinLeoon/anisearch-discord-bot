@@ -1,7 +1,8 @@
+use std::sync::Arc;
+
 use anisearch_entity::guilds;
 use poise::serenity_prelude::GuildId;
 use sea_orm::{DatabaseConnection, DbErr, EntityTrait, Set};
-use std::sync::Arc;
 
 pub struct GuildService {
     database: Arc<DatabaseConnection>,

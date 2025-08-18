@@ -1,11 +1,12 @@
+use std::sync::LazyLock;
+
 use chrono::NaiveDate;
-use once_cell::sync::Lazy;
 use poise::serenity_prelude::Color;
 use regex::Regex;
 
 pub static UNKNOWN_EMBED_FIELD: &str = "Unknown";
 
-static CLEAN_HTML_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"<.*?>").unwrap());
+static CLEAN_HTML_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<.*?>").unwrap());
 
 fn clean_html(text: &str) -> String {
     CLEAN_HTML_RE.replace_all(text, "").to_string()

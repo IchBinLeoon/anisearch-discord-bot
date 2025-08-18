@@ -1,9 +1,10 @@
+use std::sync::Arc;
+
 use poise::async_trait;
 use poise::serenity_prelude::{
     CacheHttp, Command, Context as SerenityContext, CreateCommand, Error as SerenityError,
     EventHandler, FullEvent, GuildId, Http, Ready,
 };
-use std::sync::Arc;
 use strum::Display;
 use tokio::time::Instant;
 use tracing::{error, info, warn};

@@ -1,5 +1,6 @@
-use rand::{Rng, rng};
 use std::ops::Not;
+
+use rand::{Rng, rng};
 
 use crate::clients::anilist::character_query::CharacterQueryPageCharacters;
 use crate::clients::anilist::error::AniListError;
