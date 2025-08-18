@@ -231,11 +231,11 @@ impl AniListService {
         Ok(None)
     }
 
-    fn flatten_response_data<T, U, F>(data: Option<T>, extract: F) -> Option<Vec<U>>
+    fn flatten_response_data<T, U, F>(data: Option<T>, extract_fn: F) -> Option<Vec<U>>
     where
         F: FnOnce(T) -> Option<Vec<Option<U>>>,
     {
-        let inner = extract(data?)?;
+        let inner = extract_fn(data?)?;
         let vec: Vec<U> = inner.into_iter().flatten().collect();
 
         if vec.is_empty() { None } else { Some(vec) }

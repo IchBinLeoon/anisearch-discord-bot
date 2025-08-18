@@ -1,18 +1,12 @@
-use poise::{ChoiceParameter, CreateReply};
-use strum::Display;
+use poise::CreateReply;
 
 use crate::Context;
+use crate::commands::choices::MediaChoice;
 use crate::commands::search::anime::{create_media_buttons, create_media_embed};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
-
-#[derive(Display, ChoiceParameter)]
-pub enum MediaChoice {
-    Anime,
-    Manga,
-}
 
 /// 🔥 Display the currently trending anime or manga.
 #[poise::command(

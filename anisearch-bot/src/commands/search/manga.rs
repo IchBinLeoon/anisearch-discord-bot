@@ -1,7 +1,7 @@
 use poise::CreateReply;
-use poise::serenity_prelude::{AutocompleteChoice, CreateAutocompleteResponse};
 
 use crate::Context;
+use crate::commands::autocomplete::autocomplete_manga_title;
 use crate::commands::search::anime::{create_media_buttons, create_media_embed};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
@@ -18,7 +18,7 @@ use crate::utils::embeds::create_anilist_embed;
 pub async fn manga(
     ctx: Context<'_>,
     #[description = "Title of the manga to search for."]
-    #[autocomplete = "autocomplete_title"]
+    #[autocomplete = autocomplete_manga_title]
     #[min_length = 1]
     #[max_length = 100]
     title: String,
@@ -64,22 +64,4 @@ pub async fn manga(
     }
 
     Ok(())
-}
-
-async fn autocomplete_title<'a>(
-    ctx: Context<'a>,
-    partial: &'a str,
-) -> CreateAutocompleteResponse<'a> {
-    let data = ctx.data();
-
-    let titles = data
-        .anilist_service
-        .manga_autocomplete(partial.trim().to_string())
-        .await
-        .unwrap_or_default();
-
-    let choices: Vec<AutocompleteChoice> =
-        titles.into_iter().map(AutocompleteChoice::from).collect();
-
-    CreateAutocompleteResponse::new().set_choices(choices)
 }

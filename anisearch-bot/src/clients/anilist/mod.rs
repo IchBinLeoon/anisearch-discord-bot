@@ -118,3 +118,15 @@ pub struct StudioQuery;
     response_derives = "Clone, Debug"
 )]
 pub struct CollectionQuery;
+
+impl From<u32> for media_query::MediaSeason {
+    fn from(value: u32) -> Self {
+        match value {
+            1..=3 => media_query::MediaSeason::WINTER,
+            4..=6 => media_query::MediaSeason::SPRING,
+            7..=9 => media_query::MediaSeason::SUMMER,
+            10..=12 => media_query::MediaSeason::FALL,
+            _ => unreachable!(),
+        }
+    }
+}

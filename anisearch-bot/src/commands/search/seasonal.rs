@@ -1,30 +1,13 @@
 use chrono::{Datelike, Utc};
-use poise::{ChoiceParameter, CreateReply};
+use poise::CreateReply;
 
 use crate::Context;
-use crate::clients::anilist::media_query::{MediaSeason, MediaSort};
+use crate::commands::choices::{SeasonChoice, SortChoice};
 use crate::commands::search::anime::{create_media_buttons, create_media_embed};
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
-
-#[derive(ChoiceParameter)]
-enum SeasonChoice {
-    Winter,
-    Spring,
-    Summer,
-    Fall,
-}
-
-#[derive(ChoiceParameter)]
-enum SortChoice {
-    Popularity,
-    Score,
-    #[name = "Start Date"]
-    StartDate,
-    Title,
-}
 
 /// 📅 Display the currently airing anime or browse a selected season and year.
 #[poise::command(
@@ -80,38 +63,4 @@ pub async fn seasonal(
     }
 
     Ok(())
-}
-
-impl From<SeasonChoice> for MediaSeason {
-    fn from(value: SeasonChoice) -> Self {
-        match value {
-            SeasonChoice::Winter => MediaSeason::WINTER,
-            SeasonChoice::Spring => MediaSeason::SPRING,
-            SeasonChoice::Summer => MediaSeason::SUMMER,
-            SeasonChoice::Fall => MediaSeason::FALL,
-        }
-    }
-}
-
-impl From<u32> for MediaSeason {
-    fn from(value: u32) -> Self {
-        match value {
-            1..=3 => MediaSeason::WINTER,
-            4..=6 => MediaSeason::SPRING,
-            7..=9 => MediaSeason::SUMMER,
-            10..=12 => MediaSeason::FALL,
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl From<SortChoice> for MediaSort {
-    fn from(value: SortChoice) -> Self {
-        match value {
-            SortChoice::Popularity => MediaSort::POPULARITY_DESC,
-            SortChoice::Score => MediaSort::SCORE_DESC,
-            SortChoice::StartDate => MediaSort::START_DATE,
-            SortChoice::Title => MediaSort::TITLE_ROMAJI,
-        }
-    }
 }

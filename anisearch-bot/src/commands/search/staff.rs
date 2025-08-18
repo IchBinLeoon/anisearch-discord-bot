@@ -1,9 +1,8 @@
 use poise::CreateReply;
-use poise::serenity_prelude::{
-    AutocompleteChoice, CreateAutocompleteResponse, CreateButton, CreateEmbed,
-};
+use poise::serenity_prelude::{CreateButton, CreateEmbed};
 
 use crate::clients::anilist::staff_query::{MediaType, StaffQueryPageStaff};
+use crate::commands::autocomplete::autocomplete_staff_name;
 use crate::commands::search::character::format_name;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
@@ -23,7 +22,7 @@ use crate::{Context, anilist_character_url, anilist_media_url, anilist_staff_url
 pub async fn staff(
     ctx: Context<'_>,
     #[description = "Name of the staff to search for."]
-    #[autocomplete = "autocomplete_name"]
+    #[autocomplete = autocomplete_staff_name]
     #[min_length = 1]
     #[max_length = 100]
     name: String,
@@ -69,24 +68,6 @@ pub async fn staff(
     }
 
     Ok(())
-}
-
-async fn autocomplete_name<'a>(
-    ctx: Context<'a>,
-    partial: &'a str,
-) -> CreateAutocompleteResponse<'a> {
-    let data = ctx.data();
-
-    let names = data
-        .anilist_service
-        .staff_autocomplete(partial.trim().to_string())
-        .await
-        .unwrap_or_default();
-
-    let choices: Vec<AutocompleteChoice> =
-        names.into_iter().map(AutocompleteChoice::from).collect();
-
-    CreateAutocompleteResponse::new().set_choices(choices)
 }
 
 fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {

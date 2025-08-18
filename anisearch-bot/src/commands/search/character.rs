@@ -1,9 +1,8 @@
 use poise::CreateReply;
-use poise::serenity_prelude::{
-    AutocompleteChoice, CreateAutocompleteResponse, CreateButton, CreateEmbed,
-};
+use poise::serenity_prelude::{CreateButton, CreateEmbed};
 
 use crate::clients::anilist::character_query::{CharacterQueryPageCharacters, MediaType};
+use crate::commands::autocomplete::autocomplete_character_name;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
@@ -22,7 +21,7 @@ use crate::{Context, anilist_character_url, anilist_media_url};
 pub async fn character(
     ctx: Context<'_>,
     #[description = "Name of the character to search for."]
-    #[autocomplete = "autocomplete_name"]
+    #[autocomplete = autocomplete_character_name]
     #[min_length = 1]
     #[max_length = 100]
     name: String,
@@ -69,24 +68,6 @@ pub async fn character(
     }
 
     Ok(())
-}
-
-async fn autocomplete_name<'a>(
-    ctx: Context<'a>,
-    partial: &'a str,
-) -> CreateAutocompleteResponse<'a> {
-    let data = ctx.data();
-
-    let names = data
-        .anilist_service
-        .character_autocomplete(partial.trim().to_string())
-        .await
-        .unwrap_or_default();
-
-    let choices: Vec<AutocompleteChoice> =
-        names.into_iter().map(AutocompleteChoice::from).collect();
-
-    CreateAutocompleteResponse::new().set_choices(choices)
 }
 
 fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {

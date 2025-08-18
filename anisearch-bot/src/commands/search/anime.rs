@@ -1,12 +1,12 @@
 use poise::CreateReply;
 use poise::serenity_prelude::{
-    AutocompleteChoice, CreateAutocompleteResponse, CreateButton, CreateEmbed, FormattedTimestamp,
-    FormattedTimestampStyle, Timestamp,
+    CreateButton, CreateEmbed, FormattedTimestamp, FormattedTimestampStyle, Timestamp,
 };
 
 use crate::clients::anilist::media_query::{
     MediaFormat, MediaQueryPageMedia, MediaSource, MediaStatus, MediaType,
 };
+use crate::commands::autocomplete::autocomplete_anime_title;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
@@ -27,7 +27,7 @@ use crate::{Context, anilist_media_url, myanimelist_media_url};
 pub async fn anime(
     ctx: Context<'_>,
     #[description = "Title of the anime to search for."]
-    #[autocomplete = "autocomplete_title"]
+    #[autocomplete = autocomplete_anime_title]
     #[min_length = 1]
     #[max_length = 100]
     title: String,
@@ -73,24 +73,6 @@ pub async fn anime(
     }
 
     Ok(())
-}
-
-async fn autocomplete_title<'a>(
-    ctx: Context<'a>,
-    partial: &'a str,
-) -> CreateAutocompleteResponse<'a> {
-    let data = ctx.data();
-
-    let titles = data
-        .anilist_service
-        .anime_autocomplete(partial.trim().to_string())
-        .await
-        .unwrap_or_default();
-
-    let choices: Vec<AutocompleteChoice> =
-        titles.into_iter().map(AutocompleteChoice::from).collect();
-
-    CreateAutocompleteResponse::new().set_choices(choices)
 }
 
 pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {

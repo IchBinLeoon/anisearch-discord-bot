@@ -3,6 +3,8 @@ use poise::Command;
 use crate::Data;
 use crate::error::Error;
 
+mod autocomplete;
+mod choices;
 mod help;
 mod search;
 
