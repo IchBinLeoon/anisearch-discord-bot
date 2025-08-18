@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use anisearch_lib::config::ConfigTrait;
 use anisearch_lib::database::{create_database_connection, get_database_version};
-use anisearch_lib::version;
+use anisearch_lib::{DEFAULT_LOG_LEVEL, version};
 use anisearch_migration::Migrator;
 use anyhow::Result;
 use axum::{Router, serve};
@@ -28,7 +28,7 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    let filter = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("info"));
+    let filter = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new(DEFAULT_LOG_LEVEL));
     fmt().with_env_filter(filter).init();
 
     if let Err(e) = init().await {
