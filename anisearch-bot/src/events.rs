@@ -86,10 +86,10 @@ pub async fn pre_command(ctx: Context<'_>) {
         error!("Failed to add user: {e}");
     }
 
-    if let Some(guild_id) = ctx.guild_id() {
-        if let Err(e) = data.guild_service.add_guild(guild_id).await {
-            error!("Failed to add guild: {e}");
-        }
+    if let Some(guild_id) = ctx.guild_id()
+        && let Err(e) = data.guild_service.add_guild(guild_id).await
+    {
+        error!("Failed to add guild: {e}");
     }
 
     log_command_invocation(ctx).await;

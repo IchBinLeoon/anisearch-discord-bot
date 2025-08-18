@@ -106,7 +106,7 @@ impl<'a> Paginator<'a> {
         ];
     }
 
-    fn render_components(&self) -> Vec<CreateComponent> {
+    fn render_components(&self) -> Vec<CreateComponent<'_>> {
         let mut components = vec![];
 
         if !self.is_cancelled {
@@ -149,14 +149,14 @@ impl<'a> Paginator<'a> {
         components
     }
 
-    fn create_reply(&self) -> CreateReply {
+    fn create_reply(&self) -> CreateReply<'_> {
         CreateReply::new()
             .embed(self.get_current_page().embed)
             .components(self.render_components())
             .ephemeral(self.ephemeral)
     }
 
-    fn create_interaction_response(&self) -> CreateInteractionResponse {
+    fn create_interaction_response(&self) -> CreateInteractionResponse<'_> {
         CreateInteractionResponse::UpdateMessage(
             CreateInteractionResponseMessage::new()
                 .embed(self.get_current_page().embed)

@@ -70,7 +70,7 @@ pub async fn staff(
     Ok(())
 }
 
-fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {
+fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed<'_> {
     let title = data
         .name
         .as_ref()
@@ -98,7 +98,7 @@ fn create_staff_embed(data: &StaffQueryPageStaff) -> CreateEmbed {
     embed
 }
 
-fn create_staff_buttons(data: &StaffQueryPageStaff) -> Vec<CreateButton> {
+fn create_staff_buttons(data: &StaffQueryPageStaff) -> Vec<CreateButton<'_>> {
     vec![
         CreateButton::new_link(anilist_staff_url!(data.id))
             .label("AniList")

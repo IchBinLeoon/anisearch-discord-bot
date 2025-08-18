@@ -70,7 +70,7 @@ pub async fn character(
     Ok(())
 }
 
-fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {
+fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed<'_> {
     let title = data
         .name
         .as_ref()
@@ -97,7 +97,7 @@ fn create_character_embed(data: &CharacterQueryPageCharacters) -> CreateEmbed {
     embed
 }
 
-fn create_character_buttons(data: &CharacterQueryPageCharacters) -> Vec<CreateButton> {
+fn create_character_buttons(data: &CharacterQueryPageCharacters) -> Vec<CreateButton<'_>> {
     vec![
         CreateButton::new_link(anilist_character_url!(data.id))
             .label("AniList")

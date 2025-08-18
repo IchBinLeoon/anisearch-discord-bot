@@ -75,7 +75,7 @@ pub async fn anime(
     Ok(())
 }
 
-pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
+pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed<'_> {
     let title = data
         .title
         .as_ref()
@@ -125,7 +125,7 @@ pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed {
     embed
 }
 
-pub fn create_media_buttons(data: &MediaQueryPageMedia) -> Vec<CreateButton> {
+pub fn create_media_buttons(data: &MediaQueryPageMedia) -> Vec<CreateButton<'_>> {
     let mut buttons = vec![
         CreateButton::new_link(anilist_media_url!(MediaType, data.type_, data.id))
             .label("AniList")

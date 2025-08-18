@@ -7,7 +7,7 @@ use crate::utils::ANILIST_LOGO;
 pub const EMBED_DEFAULT_COLOUR: Color = Color::from_rgb(65, 105, 225);
 pub const EMBED_ERROR_COLOUR: Color = Color::from_rgb(255, 0, 0);
 
-pub async fn create_default_embed(ctx: Context<'_>) -> CreateEmbed {
+pub async fn create_default_embed<'a>(ctx: Context<'a>) -> CreateEmbed<'a> {
     let (display_name, icon_url) = match ctx.author_member().await {
         Some(author) => (author.display_name().to_string(), author.face()),
         None => (ctx.author().display_name().to_string(), ctx.author().face()),
@@ -21,7 +21,7 @@ pub async fn create_default_embed(ctx: Context<'_>) -> CreateEmbed {
         .footer(footer)
 }
 
-pub async fn create_error_embed(ctx: Context<'_>) -> CreateEmbed {
+pub async fn create_error_embed<'a>(ctx: Context<'a>) -> CreateEmbed<'a> {
     create_default_embed(ctx).await.color(EMBED_ERROR_COLOUR)
 }
 

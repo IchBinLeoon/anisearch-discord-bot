@@ -73,7 +73,7 @@ pub async fn studio(
     Ok(())
 }
 
-fn create_studio_embed(data: &StudioQueryPageStudios) -> CreateEmbed {
+fn create_studio_embed(data: &StudioQueryPageStudios) -> CreateEmbed<'_> {
     let mut embed = create_anilist_embed(
         data.name.to_string(),
         Some("Studio".to_string()),
@@ -89,7 +89,7 @@ fn create_studio_embed(data: &StudioQueryPageStudios) -> CreateEmbed {
     embed
 }
 
-fn create_studio_buttons(data: &StudioQueryPageStudios) -> Vec<CreateButton> {
+fn create_studio_buttons(data: &StudioQueryPageStudios) -> Vec<CreateButton<'_>> {
     vec![
         CreateButton::new_link(anilist_studio_url!(data.id))
             .label("AniList")
