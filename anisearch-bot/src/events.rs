@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
+use anisearch_lib::version;
 use poise::async_trait;
 use poise::serenity_prelude::{
-    CacheHttp, Command, Context as SerenityContext, CreateCommand, Error as SerenityError,
-    EventHandler, FullEvent, GuildId, Http, Ready,
+    ActivityData, CacheHttp, Command, Context as SerenityContext, CreateCommand,
+    Error as SerenityError, EventHandler, FullEvent, GuildId, Http, Ready,
 };
 use strum::Display;
 use tokio::time::Instant;
@@ -50,6 +51,11 @@ impl Handler {
                 data_about_bot.user.name, shard.id
             );
         }
+
+        ctx.set_activity(Some(ActivityData::watching(format!(
+            "Anime | v{}",
+            version()
+        ))));
     }
 
     async fn handle_guild_join(&self, guild_id: GuildId) {
