@@ -4,12 +4,14 @@ use std::time::Duration;
 use anisearch_lib::grpc::bot_server::{Bot, BotServer};
 use anisearch_lib::grpc::{
     Command, CommandOption, CommandOptionChoice, CommandsRequest, CommandsResponse, Shard,
-    ShardsRequest, ShardsResponse,
+    ShardsRequest, ShardsResponse, StatsRequest, StatsResponse,
 };
 use dashmap::DashMap;
 use futures::channel::mpsc::UnboundedSender;
 use poise::Command as PoiseCommand;
-use poise::serenity_prelude::{ConnectionStage, ShardId, ShardRunnerInfo, ShardRunnerMessage};
+use poise::serenity_prelude::{
+    Cache, ConnectionStage, ShardId, ShardRunnerInfo, ShardRunnerMessage,
+};
 use sea_orm::DatabaseConnection;
 use tokio::{spawn, time};
 use tonic::{Request, Response, Status, async_trait};
@@ -17,22 +19,61 @@ use tonic_health::server::HealthReporter;
 
 use crate::Data;
 use crate::error::Error;
+use crate::services::metrics::MetricsService;
 
 type RunnersMap = Arc<DashMap<ShardId, (ShardRunnerInfo, UnboundedSender<ShardRunnerMessage>)>>;
 
 pub struct BotService {
     runners: RunnersMap,
     commands: Vec<PoiseCommand<Data, Error>>,
+    cache: Arc<Cache>,
+    metrics_service: Arc<MetricsService>,
 }
 
 impl BotService {
-    pub fn new(runners: RunnersMap, commands: Vec<PoiseCommand<Data, Error>>) -> Self {
-        Self { runners, commands }
+    pub fn new(
+        runners: RunnersMap,
+        commands: Vec<PoiseCommand<Data, Error>>,
+        cache: Arc<Cache>,
+        metrics_service: Arc<MetricsService>,
+    ) -> Self {
+        Self {
+            runners,
+            commands,
+            cache,
+            metrics_service,
+        }
     }
 }
 
 #[async_trait]
 impl Bot for BotService {
+    async fn stats(
+        &self,
+        _request: Request<StatsRequest>,
+    ) -> Result<Response<StatsResponse>, Status> {
+        let user_count = self
+            .metrics_service
+            .get_user_count()
+            .await
+            .map_err(|e| Status::internal(e.to_string()))?;
+
+        let commands_used_count = self
+            .metrics_service
+            .get_commands_used_count()
+            .await
+            .map_err(|e| Status::internal(e.to_string()))?;
+
+        let reply = StatsResponse {
+            guild_count: self.cache.guild_count() as u32,
+            user_count,
+            commands_used_count,
+            shard_count: self.cache.shard_count().get() as u32,
+        };
+
+        Ok(Response::new(reply))
+    }
+
     async fn commands(
         &self,
         _request: Request<CommandsRequest>,

@@ -79,7 +79,7 @@ async fn init() -> Result<()> {
         database: database.clone(),
         guild_service: guild_service.clone(),
         user_service,
-        metrics_service,
+        metrics_service: metrics_service.clone(),
         anilist_service,
     });
 
@@ -117,6 +117,8 @@ async fn init() -> Result<()> {
     let bot_service = BotServer::new(BotService::new(
         client.shard_manager.runners.clone(),
         commands(),
+        client.cache.clone(),
+        metrics_service,
     ));
 
     let server = Server::builder()

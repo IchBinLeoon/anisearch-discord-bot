@@ -3,8 +3,18 @@ syntax = "proto3";
 package bot;
 
 service Bot {
+  rpc Stats (StatsRequest) returns (StatsResponse);
   rpc Commands (CommandsRequest) returns (CommandsResponse);
   rpc Shards (ShardsRequest) returns (ShardsResponse);
+}
+
+message StatsRequest {}
+
+message StatsResponse {
+  uint32 guild_count = 1;
+  uint64 user_count = 2;
+  uint64 commands_used_count = 3;
+  uint32 shard_count = 4;
 }
 
 message CommandsRequest {}

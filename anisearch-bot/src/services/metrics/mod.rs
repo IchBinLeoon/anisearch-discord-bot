@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use anisearch_entity::{guild_command_usages, private_command_usages};
+use anisearch_entity::{guild_command_usages, private_command_usages, users};
 use poise::serenity_prelude::{GuildId, UserId};
-use sea_orm::{DatabaseConnection, DbErr, EntityTrait, Set};
+use sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, Set};
 
 pub struct MetricsService {
     database: Arc<DatabaseConnection>,
@@ -53,5 +53,21 @@ impl MetricsService {
             .await?;
 
         Ok(())
+    }
+
+    pub async fn get_user_count(&self) -> Result<u64, DbErr> {
+        users::Entity::find().count(self.database.as_ref()).await
+    }
+
+    pub async fn get_commands_used_count(&self) -> Result<u64, DbErr> {
+        let guild_count = guild_command_usages::Entity::find()
+            .count(self.database.as_ref())
+            .await?;
+
+        let private_count = private_command_usages::Entity::find()
+            .count(self.database.as_ref())
+            .await?;
+
+        Ok(guild_count + private_count)
     }
 }
