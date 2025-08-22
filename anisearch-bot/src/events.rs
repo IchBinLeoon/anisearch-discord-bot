@@ -1,6 +1,10 @@
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Duration;
 
 use anisearch_lib::version;
+use chrono::Utc;
+use humantime::format_duration;
 use poise::async_trait;
 use poise::serenity_prelude::{
     ActivityData, CacheHttp, Command, Context as SerenityContext, CreateCommand,
@@ -12,6 +16,8 @@ use tracing::{error, info, warn};
 
 use crate::Context;
 use crate::services::guild::GuildService;
+
+pub static START_TIME: AtomicU64 = AtomicU64::new(0);
 
 pub struct Handler {
     pub create_commands: Vec<CreateCommand<'static>>,
@@ -56,6 +62,8 @@ impl Handler {
             "Anime | v{}",
             version()
         ))));
+
+        START_TIME.store(Utc::now().timestamp() as u64, Ordering::Relaxed);
     }
 
     async fn handle_guild_join(&self, guild_id: GuildId) {
@@ -154,10 +162,10 @@ pub async fn log_command_completion(ctx: Context<'_>, status: ExecutionStatus) {
     let execution_time = get_execution_time(ctx).await;
 
     info!(
-        "[COMMAND] [{:<18}] STATUS={} | TIME={}ms",
+        "[COMMAND] [{:<18}] STATUS={} | TIME={}",
         ctx.id(),
         status,
-        execution_time
+        format_duration(execution_time)
     );
 }
 
@@ -168,10 +176,10 @@ pub enum ExecutionStatus {
     Error,
 }
 
-async fn get_execution_time(ctx: Context<'_>) -> u128 {
+async fn get_execution_time(ctx: Context<'_>) -> Duration {
     ctx.invocation_data::<Instant>()
         .await
         .as_deref()
-        .map(|t| t.elapsed().as_millis())
+        .map(|t| t.elapsed())
         .unwrap_or_default()
 }

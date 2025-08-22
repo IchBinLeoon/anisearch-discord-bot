@@ -14,6 +14,7 @@ cruet.workspace = true
 dashmap.workspace = true
 futures.workspace = true
 graphql_client.workspace = true
+humantime.workspace = true
 poise.workspace = true
 rand.workspace = true
 regex.workspace = true

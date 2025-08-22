@@ -13,8 +13,8 @@ message StatsRequest {}
 message StatsResponse {
   uint32 guild_count = 1;
   uint64 user_count = 2;
-  uint64 commands_used_count = 3;
-  uint32 shard_count = 4;
+  uint32 shard_count = 3;
+  uint64 commands_used_count = 4;
 }
 
 message CommandsRequest {}

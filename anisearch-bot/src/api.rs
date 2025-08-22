@@ -67,8 +67,8 @@ impl Bot for BotService {
         let reply = StatsResponse {
             guild_count: self.cache.guild_count() as u32,
             user_count,
-            commands_used_count,
             shard_count: self.cache.shard_count().get() as u32,
+            commands_used_count,
         };
 
         Ok(Response::new(reply))
