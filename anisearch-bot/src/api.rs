@@ -8,10 +8,10 @@ use anisearch_lib::grpc::{
 };
 use dashmap::DashMap;
 use futures::channel::mpsc::UnboundedSender;
-use poise::Command as PoiseCommand;
 use poise::serenity_prelude::{
     Cache, ConnectionStage, ShardId, ShardRunnerInfo, ShardRunnerMessage,
 };
+use poise::{Command as PoiseCommand, ContextMenuCommandAction, set_qualified_names};
 use sea_orm::DatabaseConnection;
 use tokio::{spawn, time};
 use tonic::{Request, Response, Status, async_trait};
@@ -24,22 +24,24 @@ use crate::services::metrics::MetricsService;
 type RunnersMap = Arc<DashMap<ShardId, (ShardRunnerInfo, UnboundedSender<ShardRunnerMessage>)>>;
 
 pub struct BotService {
-    runners: RunnersMap,
     commands: Vec<PoiseCommand<Data, Error>>,
+    runners: RunnersMap,
     cache: Arc<Cache>,
     metrics_service: Arc<MetricsService>,
 }
 
 impl BotService {
     pub fn new(
+        mut commands: Vec<PoiseCommand<Data, Error>>,
         runners: RunnersMap,
-        commands: Vec<PoiseCommand<Data, Error>>,
         cache: Arc<Cache>,
         metrics_service: Arc<MetricsService>,
     ) -> Self {
+        set_qualified_names(&mut commands);
+
         Self {
-            runners,
             commands,
+            runners,
             cache,
             metrics_service,
         }
@@ -81,10 +83,22 @@ impl Bot for BotService {
         let mut commands: Vec<Command> = self
             .commands
             .iter()
+            .flat_map(|c| {
+                if c.subcommands.is_empty() {
+                    vec![c]
+                } else {
+                    c.subcommands.iter().collect()
+                }
+            })
             .map(|c| Command {
                 category: c.category.as_ref().unwrap().to_string(),
-                name: c.name.to_string(),
+                name: c.qualified_name.to_string(),
                 description: c.description.as_ref().unwrap().to_string(),
+                r#type: match c.context_menu_action {
+                    Some(ContextMenuCommandAction::User(_)) => 1,
+                    Some(ContextMenuCommandAction::Message(_)) => 2,
+                    _ => 0,
+                },
                 options: c
                     .parameters
                     .iter()

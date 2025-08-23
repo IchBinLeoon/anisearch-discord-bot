@@ -27,7 +27,14 @@ message Command {
   string category = 1;
   string name = 2;
   string description = 3;
-  repeated CommandOption options = 4;
+  CommandType type = 4;
+  repeated CommandOption options = 5;
+}
+
+enum CommandType {
+  CHAT_INPUT = 0;
+  USER = 1;
+  MESSAGE = 2;
 }
 
 message CommandOption {
