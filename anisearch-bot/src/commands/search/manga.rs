@@ -10,12 +10,13 @@ use crate::utils::embeds::create_anilist_embed;
 
 /// 📚 Search for a manga and display detailed information.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "manga",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn manga(
+pub async fn manga_slash_command(
     ctx: Context<'_>,
     #[description = "Title of the manga to search for."]
     #[autocomplete = autocomplete_manga_title]

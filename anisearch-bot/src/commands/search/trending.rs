@@ -10,12 +10,13 @@ use crate::utils::embeds::create_anilist_embed;
 
 /// 🔥 Display the currently trending anime or manga.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "trending",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn trending(
+pub async fn trending_slash_command(
     ctx: Context<'_>,
     #[description = "Type of media."] media: MediaChoice,
     #[description = "Show results only to you."] ephemeral: Option<bool>,

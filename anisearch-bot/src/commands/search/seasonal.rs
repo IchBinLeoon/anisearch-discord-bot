@@ -11,12 +11,13 @@ use crate::utils::embeds::create_anilist_embed;
 
 /// 📅 Display the currently airing anime or browse a selected season and year.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "seasonal",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn seasonal(
+pub async fn seasonal_slash_command(
     ctx: Context<'_>,
     #[description = "Season to display anime from."] season: Option<SeasonChoice>,
     #[description = "Year to display anime from."]

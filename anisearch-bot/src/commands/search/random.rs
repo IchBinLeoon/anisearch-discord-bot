@@ -12,12 +12,13 @@ use crate::utils::format::split_and_trim;
 
 /// 🎲 Display a random anime or manga.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "random",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn random(
+pub async fn random_slash_command(
     ctx: Context<'_>,
     #[description = "Type of media."] media: Option<MediaChoice>,
     #[description = "Comma-separated list of genres."]

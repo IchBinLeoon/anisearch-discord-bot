@@ -8,12 +8,13 @@ use crate::utils::embeds::create_default_embed;
 
 /// 🤝 Join the bot support server.
 #[poise::command(
-    category = "Help",
     slash_command,
+    rename = "support",
+    category = "Help",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn support(ctx: Context<'_>) -> Result<()> {
+pub async fn support_slash_command(ctx: Context<'_>) -> Result<()> {
     let embed = create_default_embed(ctx)
         .await
         .title("🤝 Support Server")

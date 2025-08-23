@@ -13,12 +13,13 @@ use crate::utils::embeds::create_default_embed;
 
 /// 📊 Display information and statistics about the bot.
 #[poise::command(
-    category = "stats",
     slash_command,
+    rename = "stats",
+    category = "Help",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn stats(ctx: Context<'_>) -> Result<()> {
+pub async fn stats_slash_command(ctx: Context<'_>) -> Result<()> {
     let data = ctx.data();
     let cache = ctx.cache();
 

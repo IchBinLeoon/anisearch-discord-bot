@@ -19,12 +19,13 @@ use crate::{Context, anilist_media_url, myanimelist_media_url};
 
 /// 📺 Search for an anime and display detailed information.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "anime",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn anime(
+pub async fn anime_slash_command(
     ctx: Context<'_>,
     #[description = "Title of the anime to search for."]
     #[autocomplete = autocomplete_anime_title]

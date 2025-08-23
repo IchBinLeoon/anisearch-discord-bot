@@ -7,12 +7,13 @@ use crate::utils::embeds::create_default_embed;
 
 /// 🏓 Check the latency of the bot.
 #[poise::command(
-    category = "Help",
     slash_command,
+    rename = "ping",
+    category = "Help",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn ping(ctx: Context<'_>) -> Result<()> {
+pub async fn ping_slash_command(ctx: Context<'_>) -> Result<()> {
     let mut shards: Vec<String> = ctx
         .serenity_context()
         .runners

@@ -13,12 +13,13 @@ use crate::{Context, anilist_character_url, anilist_media_url};
 
 /// 🎭 Search for a character and display detailed information.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "character",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn character(
+pub async fn character_slash_command(
     ctx: Context<'_>,
     #[description = "Name of the character to search for."]
     #[autocomplete = autocomplete_character_name]

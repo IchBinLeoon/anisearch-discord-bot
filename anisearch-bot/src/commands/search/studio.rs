@@ -16,12 +16,13 @@ use crate::{Context, anilist_media_url, anilist_studio_url};
 
 /// 🏢 Search for a studio and display detailed information.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "studio",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn studio(
+pub async fn studio_slash_command(
     ctx: Context<'_>,
     #[description = "Name of the studio to search for."]
     #[autocomplete = autocomplete_studio_name]

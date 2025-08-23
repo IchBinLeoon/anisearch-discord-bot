@@ -14,12 +14,13 @@ use crate::{Context, anilist_character_url, anilist_media_url, anilist_staff_url
 
 /// 🎬 Search for a staff and display detailed information.
 #[poise::command(
-    category = "Search",
     slash_command,
+    rename = "staff",
+    category = "Search",
     install_context = "Guild|User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
-pub async fn staff(
+pub async fn staff_slash_command(
     ctx: Context<'_>,
     #[description = "Name of the staff to search for."]
     #[autocomplete = autocomplete_staff_name]
