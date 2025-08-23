@@ -1,23 +1,24 @@
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::collections::HashMap;
+use std::sync::{Arc, LazyLock};
 use std::time::Duration;
 
 use anisearch_lib::version;
-use chrono::Utc;
 use humantime::format_duration;
 use poise::async_trait;
 use poise::serenity_prelude::{
     ActivityData, CacheHttp, Command, Context as SerenityContext, CreateCommand,
-    Error as SerenityError, EventHandler, FullEvent, GuildId, Http, Ready,
+    Error as SerenityError, EventHandler, FullEvent, GuildId, Http, Ready, ShardId,
 };
 use strum::Display;
+use tokio::sync::RwLock;
 use tokio::time::Instant;
 use tracing::{error, info, warn};
 
 use crate::Context;
 use crate::services::guild::GuildService;
 
-pub static START_TIME: AtomicU64 = AtomicU64::new(0);
+pub static SHARD_START_TIMES: LazyLock<RwLock<HashMap<ShardId, Instant>>> =
+    LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub struct Handler {
     pub create_commands: Vec<CreateCommand<'static>>,
@@ -56,14 +57,17 @@ impl Handler {
                 "{} is connected on shard {}",
                 data_about_bot.user.name, shard.id
             );
+
+            SHARD_START_TIMES
+                .write()
+                .await
+                .insert(shard.id, Instant::now());
         }
 
         ctx.set_activity(Some(ActivityData::watching(format!(
             "Anime | v{}",
             version()
         ))));
-
-        START_TIME.store(Utc::now().timestamp() as u64, Ordering::Relaxed);
     }
 
     async fn handle_guild_join(&self, guild_id: GuildId) {

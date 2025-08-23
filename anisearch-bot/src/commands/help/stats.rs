@@ -1,15 +1,13 @@
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use anisearch_lib::{BOT_INVITE, GITHUB_URL, SERVER_INVITE, WEBSITE_URL, version};
-use chrono::Utc;
 use humantime::format_duration;
 use poise::CreateReply;
 use poise::serenity_prelude::{CreateActionRow, CreateButton, CreateComponent, Mentionable};
 
 use crate::Context;
 use crate::error::Result;
-use crate::events::START_TIME;
+use crate::events::SHARD_START_TIMES;
 use crate::utils::CREATOR;
 use crate::utils::embeds::create_default_embed;
 
@@ -27,17 +25,23 @@ pub async fn stats(ctx: Context<'_>) -> Result<()> {
     let user_count = data.metrics_service.get_user_count().await?;
     let commands_used_count = data.metrics_service.get_commands_used_count().await?;
 
-    let uptime = Duration::from_secs(
-        Utc::now().timestamp() as u64 - AtomicU64::load(&START_TIME, Ordering::Relaxed),
-    );
+    let shard_id = ctx.serenity_context().shard_id;
+    let uptime = SHARD_START_TIMES
+        .read()
+        .await
+        .get(&shard_id)
+        .map_or("N/A".to_string(), |i| {
+            format_duration(Duration::from_secs(i.elapsed().as_secs())).to_string()
+        });
 
     let embed = create_default_embed(ctx)
         .await
         .title("📊 Information & Statistics")
         .description(format!(
-            "**Version:** v{}\n**Uptime:** {}\n**Creator:** {}",
+            "**Shard:** {}\n**Uptime:** {}\n**Version:** v{}\n**Creator:** {}",
+            shard_id,
+            uptime,
             version(),
-            format_duration(uptime),
             CREATOR.mention()
         ))
         .thumbnail(ctx.cache().current_user().face())
