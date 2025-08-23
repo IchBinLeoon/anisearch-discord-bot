@@ -57,3 +57,10 @@ impl From<SortChoice> for MediaSort {
         }
     }
 }
+
+#[derive(ChoiceParameter)]
+pub enum TrackingSiteChoice {
+    AniList,
+    MyAnimeList,
+    Kitsu,
+}
