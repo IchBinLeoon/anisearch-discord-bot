@@ -1,4 +1,5 @@
 use poise::serenity_prelude::{AutocompleteChoice, CreateAutocompleteResponse};
+use tracing::warn;
 
 use crate::Context;
 use crate::clients::anilist::error::AniListError;
@@ -13,7 +14,10 @@ where
 {
     let values = autocomplete_fn(partial.trim().to_string())
         .await
-        .unwrap_or_default();
+        .unwrap_or_else(|e| {
+            warn!("Autocomplete failed for input `{}`: {e}", partial.trim());
+            Vec::new()
+        });
 
     let choices: Vec<AutocompleteChoice> =
         values.into_iter().map(AutocompleteChoice::from).collect();
@@ -89,7 +93,12 @@ where
         None => (String::new(), String::new()),
     };
 
-    let values = autocomplete_fn(incomplete).await.unwrap_or_default();
+    let values = autocomplete_fn(incomplete.clone())
+        .await
+        .unwrap_or_else(|e| {
+            warn!("Autocomplete failed for input `{}`: {e}", incomplete);
+            Vec::new()
+        });
 
     let choices: Vec<AutocompleteChoice> = values
         .into_iter()
