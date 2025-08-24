@@ -2,7 +2,7 @@ use poise::CreateReply;
 use poise::serenity_prelude::{CreateButton, CreateEmbed};
 
 use crate::clients::anilist::studio_query::{
-    MediaFormat, MediaType, StudioQueryPageStudios, StudioQueryPageStudiosMedia,
+    MediaType, StudioQueryPageStudios, StudioQueryPageStudiosMedia,
     StudioQueryPageStudiosMediaNodes,
 };
 use crate::commands::autocomplete::autocomplete_studio_name;
@@ -10,7 +10,7 @@ use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
-use crate::utils::format::{UNKNOWN_EMBED_FIELD, format_opt};
+use crate::utils::format::format_opt;
 use crate::utils::{ANILIST_BASE_URL, ANILIST_EMOJI};
 use crate::{Context, anilist_media_url, anilist_studio_url};
 
@@ -145,26 +145,10 @@ fn extract_productions(media: &StudioQueryPageStudiosMedia) -> Option<Vec<String
 fn format_production(media: &StudioQueryPageStudiosMediaNodes) -> Option<String> {
     let title = media.title.as_ref()?.romaji.as_ref()?;
     let url = anilist_media_url!(MediaType, media.type_, media.id);
-    let format = format_media_format(media.format.as_ref());
+    let format = format_opt(media.format.as_ref());
     let episodes = format_opt(media.episodes);
 
     Some(format!(
         "[{title}]({url}) » **{format}** • Episodes: **{episodes}**"
     ))
-}
-
-fn format_media_format(format: Option<&MediaFormat>) -> &'static str {
-    match format {
-        Some(MediaFormat::TV) => "TV",
-        Some(MediaFormat::TV_SHORT) => "TV Short",
-        Some(MediaFormat::MOVIE) => "Movie",
-        Some(MediaFormat::SPECIAL) => "Special",
-        Some(MediaFormat::OVA) => "OVA",
-        Some(MediaFormat::ONA) => "ONA",
-        Some(MediaFormat::MUSIC) => "Music",
-        Some(MediaFormat::MANGA) => "Manga",
-        Some(MediaFormat::NOVEL) => "Novel",
-        Some(MediaFormat::ONE_SHOT) => "One Shot",
-        _ => UNKNOWN_EMBED_FIELD,
-    }
 }

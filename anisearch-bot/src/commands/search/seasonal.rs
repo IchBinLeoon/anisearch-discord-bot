@@ -31,7 +31,7 @@ pub async fn seasonal_slash_command(
 
     let now = Utc::now();
 
-    let season = season.map_or(now.month().into(), Into::into);
+    let season = season.map_or(now.into(), Into::into);
     let year = year.unwrap_or(now.year());
     let sort = sort.unwrap_or_default().into();
 

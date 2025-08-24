@@ -3,17 +3,13 @@ use poise::serenity_prelude::{
     CreateButton, CreateEmbed, FormattedTimestamp, FormattedTimestampStyle, Timestamp,
 };
 
-use crate::clients::anilist::media_query::{
-    MediaFormat, MediaQueryPageMedia, MediaSource, MediaStatus, MediaType,
-};
+use crate::clients::anilist::media_query::{MediaQueryPageMedia, MediaStatus, MediaType};
 use crate::commands::autocomplete::autocomplete_anime_title;
 use crate::components::paginate::{Page, Paginator};
 use crate::error::Result;
 use crate::utils::commands::defer_with_ephemeral;
 use crate::utils::embeds::create_anilist_embed;
-use crate::utils::format::{
-    UNKNOWN_EMBED_FIELD, convert_to_color, format_date, format_opt, sanitize_description,
-};
+use crate::utils::format::{convert_to_color, format_date, format_opt, sanitize_description};
 use crate::utils::{ANILIST_BASE_URL, ANILIST_EMOJI, MYANIMELIST_BASE_URL, MYANIMELIST_EMOJI};
 use crate::{Context, anilist_media_url, myanimelist_media_url};
 
@@ -84,7 +80,7 @@ pub fn create_media_embed(data: &MediaQueryPageMedia) -> CreateEmbed<'_> {
 
     let mut embed = create_anilist_embed(
         format_opt(title),
-        Some(format_media_format(data.format.as_ref()).to_string()),
+        Some(format_opt(data.format.as_ref())),
         Some(anilist_media_url!(MediaType, data.type_, data.id)),
     );
 
@@ -189,7 +185,7 @@ fn add_manga_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> C
     embed
         .field("Chapters", format_opt(data.chapters), true)
         .field("Volumes", format_opt(data.volumes), true)
-        .field("Source", format_media_source(data.source.as_ref()), true)
+        .field("Source", format_opt(data.source.as_ref()), true)
 }
 
 fn add_common_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
@@ -197,7 +193,7 @@ fn add_common_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> 
     let end_date = data.end_date.as_ref();
 
     embed
-        .field("Status", format_media_status(data.status.as_ref()), true)
+        .field("Status", format_opt(data.status.as_ref()), true)
         .field(
             "Start Date",
             format_date(
@@ -230,7 +226,7 @@ fn add_anime_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> C
     embed
         .field("Duration", format_opt(duration), true)
         .field("Studio", format_opt(studio), true)
-        .field("Source", format_media_source(data.source.as_ref()), true)
+        .field("Source", format_opt(data.source.as_ref()), true)
 }
 
 fn add_stats_fields<'a>(embed: CreateEmbed<'a>, data: &MediaQueryPageMedia) -> CreateEmbed<'a> {
@@ -261,53 +257,5 @@ fn extract_genres(data: &MediaQueryPageMedia) -> Option<Vec<String>> {
         None
     } else {
         Some(genres)
-    }
-}
-
-fn format_media_format(format: Option<&MediaFormat>) -> &'static str {
-    match format {
-        Some(MediaFormat::TV) => "TV",
-        Some(MediaFormat::TV_SHORT) => "TV Short",
-        Some(MediaFormat::MOVIE) => "Movie",
-        Some(MediaFormat::SPECIAL) => "Special",
-        Some(MediaFormat::OVA) => "OVA",
-        Some(MediaFormat::ONA) => "ONA",
-        Some(MediaFormat::MUSIC) => "Music",
-        Some(MediaFormat::MANGA) => "Manga",
-        Some(MediaFormat::NOVEL) => "Novel",
-        Some(MediaFormat::ONE_SHOT) => "One Shot",
-        _ => UNKNOWN_EMBED_FIELD,
-    }
-}
-
-fn format_media_status(status: Option<&MediaStatus>) -> &'static str {
-    match status {
-        Some(MediaStatus::FINISHED) => "Finished",
-        Some(MediaStatus::RELEASING) => "Releasing",
-        Some(MediaStatus::NOT_YET_RELEASED) => "Not Yet Released",
-        Some(MediaStatus::CANCELLED) => "Cancelled",
-        Some(MediaStatus::HIATUS) => "Hiatus",
-        _ => UNKNOWN_EMBED_FIELD,
-    }
-}
-
-fn format_media_source(source: Option<&MediaSource>) -> &'static str {
-    match source {
-        Some(MediaSource::ORIGINAL) => "Original",
-        Some(MediaSource::MANGA) => "Manga",
-        Some(MediaSource::LIGHT_NOVEL) => "Light Novel",
-        Some(MediaSource::VISUAL_NOVEL) => "Visual Novel",
-        Some(MediaSource::VIDEO_GAME) => "Video Game",
-        Some(MediaSource::OTHER) => "Other",
-        Some(MediaSource::NOVEL) => "Novel",
-        Some(MediaSource::DOUJINSHI) => "Doujinshi",
-        Some(MediaSource::ANIME) => "Anime",
-        Some(MediaSource::WEB_NOVEL) => "Web Novel",
-        Some(MediaSource::LIVE_ACTION) => "Live Action",
-        Some(MediaSource::GAME) => "Game",
-        Some(MediaSource::COMIC) => "Comic",
-        Some(MediaSource::MULTIMEDIA_PROJECT) => "Multimedia Project",
-        Some(MediaSource::PICTURE_BOOK) => "Picture Book",
-        _ => UNKNOWN_EMBED_FIELD,
     }
 }

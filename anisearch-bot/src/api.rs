@@ -18,6 +18,7 @@ use tonic::{Request, Response, Status, async_trait};
 use tonic_health::server::HealthReporter;
 
 use crate::Data;
+use crate::commands::commands;
 use crate::error::Error;
 use crate::services::metrics::MetricsService;
 
@@ -32,11 +33,11 @@ pub struct BotService {
 
 impl BotService {
     pub fn new(
-        mut commands: Vec<PoiseCommand<Data, Error>>,
         runners: RunnersMap,
         cache: Arc<Cache>,
         metrics_service: Arc<MetricsService>,
     ) -> Self {
+        let mut commands = commands();
         set_qualified_names(&mut commands);
 
         Self {

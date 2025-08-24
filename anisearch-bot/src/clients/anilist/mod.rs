@@ -1,3 +1,6 @@
+use std::fmt;
+
+use chrono::{DateTime, Datelike, Utc};
 use graphql_client::{GraphQLQuery, Response};
 use reqwest::Client;
 
@@ -119,14 +122,110 @@ pub struct StudioQuery;
 )]
 pub struct CollectionQuery;
 
-impl From<u32> for media_query::MediaSeason {
-    fn from(value: u32) -> Self {
-        match value {
+impl media_query::MediaFormat {
+    pub fn as_str(&self) -> &str {
+        match self {
+            media_query::MediaFormat::TV => "TV",
+            media_query::MediaFormat::TV_SHORT => "TV Short",
+            media_query::MediaFormat::MOVIE => "Movie",
+            media_query::MediaFormat::SPECIAL => "Special",
+            media_query::MediaFormat::OVA => "OVA",
+            media_query::MediaFormat::ONA => "ONA",
+            media_query::MediaFormat::MUSIC => "Music",
+            media_query::MediaFormat::MANGA => "Manga",
+            media_query::MediaFormat::NOVEL => "Novel",
+            media_query::MediaFormat::ONE_SHOT => "One Shot",
+            media_query::MediaFormat::Other(v) => v,
+        }
+    }
+}
+
+impl fmt::Display for media_query::MediaFormat {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl media_query::MediaStatus {
+    pub fn as_str(&self) -> &str {
+        match self {
+            media_query::MediaStatus::FINISHED => "Finished",
+            media_query::MediaStatus::RELEASING => "Releasing",
+            media_query::MediaStatus::NOT_YET_RELEASED => "Not Yet Released",
+            media_query::MediaStatus::CANCELLED => "Cancelled",
+            media_query::MediaStatus::HIATUS => "Hiatus",
+            media_query::MediaStatus::Other(v) => v,
+        }
+    }
+}
+
+impl fmt::Display for media_query::MediaStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl media_query::MediaSource {
+    pub fn as_str(&self) -> &str {
+        match self {
+            media_query::MediaSource::ORIGINAL => "Original",
+            media_query::MediaSource::MANGA => "Manga",
+            media_query::MediaSource::LIGHT_NOVEL => "Light Novel",
+            media_query::MediaSource::VISUAL_NOVEL => "Visual Novel",
+            media_query::MediaSource::VIDEO_GAME => "Video Game",
+            media_query::MediaSource::OTHER => "Other",
+            media_query::MediaSource::NOVEL => "Novel",
+            media_query::MediaSource::DOUJINSHI => "Doujinshi",
+            media_query::MediaSource::ANIME => "Anime",
+            media_query::MediaSource::WEB_NOVEL => "Web Novel",
+            media_query::MediaSource::LIVE_ACTION => "Live Action",
+            media_query::MediaSource::GAME => "Game",
+            media_query::MediaSource::COMIC => "Comic",
+            media_query::MediaSource::MULTIMEDIA_PROJECT => "Multimedia Project",
+            media_query::MediaSource::PICTURE_BOOK => "Picture Book",
+            media_query::MediaSource::Other(v) => v,
+        }
+    }
+}
+
+impl fmt::Display for media_query::MediaSource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl From<DateTime<Utc>> for media_query::MediaSeason {
+    fn from(value: DateTime<Utc>) -> Self {
+        match value.month() {
             1..=3 => media_query::MediaSeason::WINTER,
             4..=6 => media_query::MediaSeason::SPRING,
             7..=9 => media_query::MediaSeason::SUMMER,
             10..=12 => media_query::MediaSeason::FALL,
             _ => unreachable!(),
         }
+    }
+}
+
+impl studio_query::MediaFormat {
+    pub fn as_str(&self) -> &str {
+        match self {
+            studio_query::MediaFormat::TV => "TV",
+            studio_query::MediaFormat::TV_SHORT => "TV Short",
+            studio_query::MediaFormat::MOVIE => "Movie",
+            studio_query::MediaFormat::SPECIAL => "Special",
+            studio_query::MediaFormat::OVA => "OVA",
+            studio_query::MediaFormat::ONA => "ONA",
+            studio_query::MediaFormat::MUSIC => "Music",
+            studio_query::MediaFormat::MANGA => "Manga",
+            studio_query::MediaFormat::NOVEL => "Novel",
+            studio_query::MediaFormat::ONE_SHOT => "One Shot",
+            studio_query::MediaFormat::Other(v) => v,
+        }
+    }
+}
+
+impl fmt::Display for studio_query::MediaFormat {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
