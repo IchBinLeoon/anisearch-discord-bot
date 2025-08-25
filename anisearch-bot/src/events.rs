@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::sync::{Arc, LazyLock};
 use std::time::Duration;
 
-use anisearch_lib::version;
 use humantime::format_duration;
 use poise::async_trait;
 use poise::serenity_prelude::{
@@ -11,6 +10,7 @@ use poise::serenity_prelude::{
 };
 use tokio::sync::RwLock;
 use tokio::time::Instant;
+use tokio::{spawn, time};
 use tracing::{error, info, warn};
 
 use crate::Context;
@@ -64,10 +64,7 @@ impl Handler {
                 .insert(shard.id, Instant::now());
         }
 
-        ctx.set_activity(Some(ActivityData::watching(format!(
-            "Anime | v{}",
-            version()
-        ))));
+        spawn_activity_cycle(ctx.clone());
     }
 
     async fn handle_guild_join(&self, guild_id: GuildId) {
@@ -96,6 +93,28 @@ impl Handler {
             None => Command::set_global_commands(http, &self.create_commands).await,
         }
     }
+}
+
+fn spawn_activity_cycle(ctx: SerenityContext) {
+    spawn(async move {
+        let activities = vec![
+            ActivityData::listening("/help ❓"),
+            ActivityData::playing(format!("on {} servers 👥", ctx.cache.guild_count())),
+            ActivityData::watching("Anime ⛩️"),
+        ];
+
+        let mut idx = 0;
+        let mut interval = time::interval(Duration::from_secs(30));
+
+        loop {
+            interval.tick().await;
+
+            let activity = &activities[idx];
+            ctx.set_activity(Some(activity.clone()));
+
+            idx = (idx + 1) % activities.len();
+        }
+    });
 }
 
 pub async fn pre_command(ctx: Context<'_>) {
