@@ -4,6 +4,7 @@ use poise::CreateReply;
 use crate::Context;
 use crate::error::Result;
 use crate::utils::embeds::create_default_embed;
+use crate::utils::format::NO_ANSWER_EMBED_FIELD;
 
 /// 🏓 Check the latency of the bot.
 #[poise::command(
@@ -21,9 +22,9 @@ pub async fn ping_slash_command(ctx: Context<'_>) -> Result<()> {
         .map(|s| {
             let (id, (info, _)) = s.pair();
 
-            let latency = info
-                .latency
-                .map_or("N/A".to_string(), |d| format!("{}ms", d.as_millis()));
+            let latency = info.latency.map_or(NO_ANSWER_EMBED_FIELD.to_string(), |d| {
+                format!("{}ms", d.as_millis())
+            });
 
             let stage = info.stage.to_string().to_title_case();
 

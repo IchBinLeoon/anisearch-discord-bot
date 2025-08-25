@@ -1,10 +1,13 @@
 use std::sync::LazyLock;
+use std::time::Duration;
 
 use chrono::NaiveDate;
+use humantime::format_duration;
 use poise::serenity_prelude::Color;
 use regex::Regex;
 
 pub static UNKNOWN_EMBED_FIELD: &str = "Unknown";
+pub static NO_ANSWER_EMBED_FIELD: &str = "N/A";
 
 static CLEAN_HTML_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"<.*?>").unwrap());
 
@@ -62,4 +65,12 @@ pub fn format_date(year: Option<i64>, month: Option<i64>, day: Option<i64>) -> S
 
 pub fn split_and_trim(value: String) -> Vec<String> {
     value.split(',').map(|s| s.trim().to_string()).collect()
+}
+
+pub fn format_duration_millis(duration: Duration) -> String {
+    format_duration(Duration::from_millis(duration.as_millis() as u64)).to_string()
+}
+
+pub fn format_duration_secs(duration: Duration) -> String {
+    format_duration(Duration::from_secs(duration.as_secs())).to_string()
 }

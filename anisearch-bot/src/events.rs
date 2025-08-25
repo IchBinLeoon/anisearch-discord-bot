@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::sync::{Arc, LazyLock};
 use std::time::Duration;
 
-use humantime::format_duration;
 use poise::async_trait;
 use poise::serenity_prelude::{
     ActivityData, CacheHttp, Command, Context as SerenityContext, CreateCommand,
@@ -16,6 +15,7 @@ use tracing::{error, info, warn};
 use crate::Context;
 use crate::services::guild::GuildService;
 use crate::utils::commands::{CommandType, ExecutionStatus};
+use crate::utils::format::format_duration_millis;
 
 pub static SHARD_START_TIMES: LazyLock<RwLock<HashMap<ShardId, Instant>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
@@ -196,7 +196,7 @@ pub async fn log_command_completion(ctx: Context<'_>, status: ExecutionStatus) {
         "[COMMAND] [{:<18}] STATUS={:<7} | TIME={}",
         ctx_id,
         status,
-        format_duration(execution_time)
+        format_duration_millis(execution_time)
     );
 
     let data = ctx.data();

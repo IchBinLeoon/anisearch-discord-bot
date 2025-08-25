@@ -1,7 +1,4 @@
-use std::time::Duration;
-
 use anisearch_lib::{BOT_INVITE, GITHUB_URL, SERVER_INVITE, WEBSITE_URL, version};
-use humantime::format_duration;
 use poise::CreateReply;
 use poise::serenity_prelude::{CreateActionRow, CreateButton, CreateComponent, Mentionable};
 
@@ -10,6 +7,7 @@ use crate::error::Result;
 use crate::events::SHARD_START_TIMES;
 use crate::utils::CREATOR;
 use crate::utils::embeds::create_default_embed;
+use crate::utils::format::{NO_ANSWER_EMBED_FIELD, format_duration_secs};
 
 /// 📊 Display information and statistics about the bot.
 #[poise::command(
@@ -31,8 +29,8 @@ pub async fn stats_slash_command(ctx: Context<'_>) -> Result<()> {
         .read()
         .await
         .get(&shard_id)
-        .map_or("N/A".to_string(), |i| {
-            format_duration(Duration::from_secs(i.elapsed().as_secs())).to_string()
+        .map_or(NO_ANSWER_EMBED_FIELD.to_string(), |i| {
+            format_duration_secs(i.elapsed())
         });
 
     let embed = create_default_embed(ctx)
