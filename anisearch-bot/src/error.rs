@@ -7,7 +7,8 @@ use tracing::error;
 use crate::Data;
 use crate::clients::anilist::error::AniListError;
 use crate::components::ComponentError;
-use crate::events::{ExecutionStatus, log_command_completion};
+use crate::events::log_command_completion;
+use crate::utils::commands::ExecutionStatus;
 use crate::utils::embeds::create_error_embed;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

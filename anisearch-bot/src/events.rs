@@ -9,13 +9,13 @@ use poise::serenity_prelude::{
     ActivityData, CacheHttp, Command, Context as SerenityContext, CreateCommand,
     Error as SerenityError, EventHandler, FullEvent, GuildId, Http, Ready, ShardId,
 };
-use strum::Display;
 use tokio::sync::RwLock;
 use tokio::time::Instant;
 use tracing::{error, info, warn};
 
 use crate::Context;
 use crate::services::guild::GuildService;
+use crate::utils::commands::{CommandType, ExecutionStatus};
 
 pub static SHARD_START_TIMES: LazyLock<RwLock<HashMap<ShardId, Instant>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
@@ -111,14 +111,14 @@ pub async fn pre_command(ctx: Context<'_>) {
         error!("Failed to add guild: {e}");
     }
 
-    log_command_invocation(ctx).await;
+    log_command_invocation(ctx, ExecutionStatus::Running).await;
 }
 
 pub async fn post_command(ctx: Context<'_>) {
     log_command_completion(ctx, ExecutionStatus::Success).await;
 }
 
-async fn log_command_invocation(ctx: Context<'_>) {
+async fn log_command_invocation(ctx: Context<'_>, status: ExecutionStatus) {
     let Context::Application(app_ctx) = ctx else {
         unreachable!()
     };
@@ -127,15 +127,15 @@ async fn log_command_invocation(ctx: Context<'_>) {
     let guild_id = ctx.guild_id();
     let user_id = ctx.author().id;
     let command_name = ctx.invoked_command_name().to_string();
+    let command_type = CommandType(app_ctx.interaction.data.kind);
 
     info!(
-        "[COMMAND] [{:<18}] SHARD={} | GUILD={:<18} | CHANNEL={:<18} | USER={:<18} | TYPE={} | CMD={}",
+        "[COMMAND] [{:<18}] SHARD={} | GUILD={:<18} | USER={:<18} | TYPE={:<10} | CMD={}",
         ctx_id,
         ctx.serenity_context().shard_id,
         guild_id.unwrap_or_default(),
-        ctx.channel_id(),
         user_id,
-        app_ctx.interaction.data.kind.0,
+        command_type,
         ctx.invocation_string(),
     );
 
@@ -144,12 +144,19 @@ async fn log_command_invocation(ctx: Context<'_>) {
     let res = match guild_id {
         Some(guild_id) => {
             data.metrics_service
-                .add_guild_command_usage(ctx_id, user_id, guild_id, command_name)
+                .add_guild_command_usage(
+                    ctx_id,
+                    user_id,
+                    guild_id,
+                    command_name,
+                    command_type,
+                    status,
+                )
                 .await
         }
         None => {
             data.metrics_service
-                .add_private_command_usage(ctx_id, user_id, command_name)
+                .add_private_command_usage(ctx_id, user_id, command_name, command_type, status)
                 .await
         }
     };
@@ -164,20 +171,30 @@ async fn log_command_invocation(ctx: Context<'_>) {
 
 pub async fn log_command_completion(ctx: Context<'_>, status: ExecutionStatus) {
     let execution_time = get_execution_time(ctx).await;
+    let ctx_id = ctx.id();
 
     info!(
-        "[COMMAND] [{:<18}] STATUS={} | TIME={}",
-        ctx.id(),
+        "[COMMAND] [{:<18}] STATUS={:<7} | TIME={}",
+        ctx_id,
         status,
         format_duration(execution_time)
     );
-}
 
-#[derive(Display)]
-#[strum(serialize_all = "UPPERCASE")]
-pub enum ExecutionStatus {
-    Success,
-    Error,
+    let data = ctx.data();
+
+    let res = if ctx.guild_id().is_some() {
+        data.metrics_service
+            .update_guild_command_usage(ctx_id, status, execution_time.as_millis())
+            .await
+    } else {
+        data.metrics_service
+            .update_private_command_usage(ctx_id, status, execution_time.as_millis())
+            .await
+    };
+
+    if let Err(e) = res {
+        warn!("Failed to update command usage: {e}");
+    }
 }
 
 async fn get_execution_time(ctx: Context<'_>) -> Duration {

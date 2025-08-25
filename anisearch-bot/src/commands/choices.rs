@@ -1,9 +1,8 @@
 use poise::ChoiceParameter;
-use strum::Display;
 
 use crate::clients::anilist::media_query::{MediaSeason, MediaSort, MediaType};
 
-#[derive(Display, ChoiceParameter)]
+#[derive(ChoiceParameter)]
 pub enum MediaChoice {
     Anime,
     Manga,

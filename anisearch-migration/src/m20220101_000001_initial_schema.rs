@@ -1,3 +1,5 @@
+use sea_orm::{EnumIter, Iterable};
+use sea_orm_migration::prelude::extension::postgres::Type;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -47,6 +49,24 @@ impl MigrationTrait for Migration {
             .await?;
 
         manager
+            .create_type(
+                Type::create()
+                    .as_enum(CommandType)
+                    .values(CommandTypeVariants::iter())
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_type(
+                Type::create()
+                    .as_enum(ExecutionStatus)
+                    .values(ExecutionStatusVariants::iter())
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
             .create_table(
                 Table::create()
                     .table(GuildCommandUsages::Table)
@@ -63,6 +83,17 @@ impl MigrationTrait for Migration {
                             .text()
                             .not_null(),
                     )
+                    .col(
+                        ColumnDef::new(GuildCommandUsages::CommandType)
+                            .enumeration(CommandType, CommandTypeVariants::iter())
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(GuildCommandUsages::ExecutionStatus)
+                            .enumeration(ExecutionStatus, ExecutionStatusVariants::iter())
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(GuildCommandUsages::ExecutionTime).integer())
                     .col(
                         ColumnDef::new(GuildCommandUsages::UsedAt)
                             .timestamp()
@@ -106,6 +137,17 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(
+                        ColumnDef::new(PrivateCommandUsages::CommandType)
+                            .enumeration(CommandType, CommandTypeVariants::iter())
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(PrivateCommandUsages::ExecutionStatus)
+                            .enumeration(ExecutionStatus, ExecutionStatusVariants::iter())
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(PrivateCommandUsages::ExecutionTime).integer())
+                    .col(
                         ColumnDef::new(PrivateCommandUsages::UsedAt)
                             .timestamp()
                             .not_null()
@@ -136,6 +178,14 @@ impl MigrationTrait for Migration {
             .await?;
 
         manager
+            .drop_type(Type::drop().name(CommandType).to_owned())
+            .await?;
+
+        manager
+            .drop_type(Type::drop().name(ExecutionStatus).to_owned())
+            .await?;
+
+        manager
             .drop_table(Table::drop().table(GuildCommandUsages::Table).to_owned())
             .await?;
 
@@ -162,12 +212,35 @@ enum Users {
 }
 
 #[derive(DeriveIden)]
+struct CommandType;
+
+#[derive(DeriveIden, EnumIter)]
+enum CommandTypeVariants {
+    ChatInput,
+    User,
+    Message,
+}
+
+#[derive(DeriveIden)]
+struct ExecutionStatus;
+
+#[derive(DeriveIden, EnumIter)]
+enum ExecutionStatusVariants {
+    Running,
+    Success,
+    Error,
+}
+
+#[derive(DeriveIden)]
 enum GuildCommandUsages {
     Table,
     Id,
     UserId,
     GuildId,
     CommandName,
+    CommandType,
+    ExecutionStatus,
+    ExecutionTime,
     UsedAt,
 }
 
@@ -177,5 +250,8 @@ enum PrivateCommandUsages {
     Id,
     UserId,
     CommandName,
+    CommandType,
+    ExecutionStatus,
+    ExecutionTime,
     UsedAt,
 }

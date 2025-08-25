@@ -5,4 +5,5 @@ pub mod prelude;
 pub mod guild_command_usages;
 pub mod guilds;
 pub mod private_command_usages;
+pub mod sea_orm_active_enums;
 pub mod users;
