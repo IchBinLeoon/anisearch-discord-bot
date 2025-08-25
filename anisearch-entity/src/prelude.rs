@@ -3,4 +3,5 @@
 pub use super::guild_command_usages::Entity as GuildCommandUsages;
 pub use super::guilds::Entity as Guilds;
 pub use super::private_command_usages::Entity as PrivateCommandUsages;
+pub use super::user_profiles::Entity as UserProfiles;
 pub use super::users::Entity as Users;

@@ -22,3 +22,13 @@ pub enum ExecutionStatus {
     #[sea_orm(string_value = "error")]
     Error,
 }
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "tracking_site")]
+pub enum TrackingSite {
+    #[sea_orm(string_value = "anilist")]
+    Anilist,
+    #[sea_orm(string_value = "myanimelist")]
+    Myanimelist,
+    #[sea_orm(string_value = "kitsu")]
+    Kitsu,
+}

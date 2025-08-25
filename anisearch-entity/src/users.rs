@@ -16,6 +16,8 @@ pub enum Relation {
     GuildCommandUsages,
     #[sea_orm(has_many = "super::private_command_usages::Entity")]
     PrivateCommandUsages,
+    #[sea_orm(has_many = "super::user_profiles::Entity")]
+    UserProfiles,
 }
 
 impl Related<super::guild_command_usages::Entity> for Entity {
@@ -27,6 +29,12 @@ impl Related<super::guild_command_usages::Entity> for Entity {
 impl Related<super::private_command_usages::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::PrivateCommandUsages.def()
+    }
+}
+
+impl Related<super::user_profiles::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserProfiles.def()
     }
 }
 
