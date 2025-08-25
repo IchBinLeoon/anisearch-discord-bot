@@ -126,7 +126,7 @@ async fn log_command_invocation(ctx: Context<'_>, status: ExecutionStatus) {
     let ctx_id = ctx.id();
     let guild_id = ctx.guild_id();
     let user_id = ctx.author().id;
-    let command_name = ctx.invoked_command_name().to_string();
+    let command_name = ctx.command().qualified_name.to_string();
     let command_type = CommandType(app_ctx.interaction.data.kind);
 
     info!(
