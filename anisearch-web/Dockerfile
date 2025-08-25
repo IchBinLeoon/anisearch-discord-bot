@@ -2,7 +2,7 @@ FROM rust:1.88-alpine3.22 AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache musl-dev protobuf
+RUN apk add --no-cache git musl-dev protobuf
 
 COPY . .
 
