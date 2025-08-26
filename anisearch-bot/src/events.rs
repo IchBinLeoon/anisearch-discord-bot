@@ -35,7 +35,8 @@ impl EventHandler for Handler {
             }
             FullEvent::GuildCreate { guild, is_new, .. } => {
                 if matches!(is_new, Some(true)) {
-                    self.handle_guild_join(guild.id).await
+                    self.handle_guild_join(guild.id, guild.name.to_string())
+                        .await
                 }
             }
             FullEvent::GuildDelete { incomplete, .. } => {
@@ -67,18 +68,18 @@ impl Handler {
         spawn_activity_cycle(ctx.clone());
     }
 
-    async fn handle_guild_join(&self, guild_id: GuildId) {
-        info!("Joined guild: {}", guild_id);
+    async fn handle_guild_join(&self, id: GuildId, name: String) {
+        info!("Joined guild: {}", id);
 
-        if let Err(e) = self.guild_service.add_guild(guild_id).await {
+        if let Err(e) = self.guild_service.add_guild(id, name).await {
             error!("Failed to add guild: {e}");
         }
     }
 
-    async fn handle_guild_leave(&self, guild_id: GuildId) {
-        info!("Left guild: {}", guild_id);
+    async fn handle_guild_leave(&self, id: GuildId) {
+        info!("Left guild: {}", id);
 
-        if let Err(e) = self.guild_service.remove_guild(guild_id).await {
+        if let Err(e) = self.guild_service.remove_guild(id).await {
             error!("Failed to remove guild: {e}");
         }
     }
@@ -120,12 +121,21 @@ fn spawn_activity_cycle(ctx: SerenityContext) {
 pub async fn pre_command(ctx: Context<'_>) {
     let data = ctx.data();
 
-    if let Err(e) = data.user_service.add_user(ctx.author().id).await {
+    let author = ctx.author();
+
+    if let Err(e) = data
+        .user_service
+        .add_user(author.id, author.name.to_string())
+        .await
+    {
         error!("Failed to add user: {e}");
     }
 
-    if let Some(guild_id) = ctx.guild_id()
-        && let Err(e) = data.guild_service.add_guild(guild_id).await
+    if let Some(guild) = ctx.partial_guild().await
+        && let Err(e) = data
+            .guild_service
+            .add_guild(guild.id, guild.name.to_string())
+            .await
     {
         error!("Failed to add guild: {e}");
     }

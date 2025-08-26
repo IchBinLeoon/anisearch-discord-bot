@@ -33,8 +33,15 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Guilds::Name).text().not_null())
                     .col(
                         ColumnDef::new(Guilds::AddedAt)
+                            .timestamp()
+                            .not_null()
+                            .default(Keyword::CurrentTimestamp),
+                    )
+                    .col(
+                        ColumnDef::new(Guilds::ModifiedAt)
                             .timestamp()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
@@ -42,6 +49,16 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+
+        db.execute_unprepared(
+            "
+                CREATE TRIGGER guilds_update_modified_at_trigger
+                BEFORE UPDATE ON guilds
+                FOR EACH ROW
+                EXECUTE FUNCTION update_modified_at();
+            ",
+        )
+        .await?;
 
         manager
             .create_table(
@@ -53,8 +70,15 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Users::Name).text().not_null())
                     .col(
                         ColumnDef::new(Users::AddedAt)
+                            .timestamp()
+                            .not_null()
+                            .default(Keyword::CurrentTimestamp),
+                    )
+                    .col(
+                        ColumnDef::new(Users::ModifiedAt)
                             .timestamp()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
@@ -62,6 +86,16 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+
+        db.execute_unprepared(
+            "
+                CREATE TRIGGER users_update_modified_at_trigger
+                BEFORE UPDATE ON users
+                FOR EACH ROW
+                EXECUTE FUNCTION update_modified_at();
+            ",
+        )
+        .await?;
 
         manager
             .create_type(
@@ -258,9 +292,25 @@ impl MigrationTrait for Migration {
             .drop_table(Table::drop().table(Guilds::Table).to_owned())
             .await?;
 
+        db.execute_unprepared(
+            "
+                DROP TRIGGER guilds_update_modified_at_trigger
+                ON guilds;
+            ",
+        )
+        .await?;
+
         manager
             .drop_table(Table::drop().table(Users::Table).to_owned())
             .await?;
+
+        db.execute_unprepared(
+            "
+                DROP TRIGGER users_update_modified_at_trigger
+                ON users;
+            ",
+        )
+        .await?;
 
         manager
             .drop_type(Type::drop().name(TrackingSite).to_owned())
@@ -302,14 +352,18 @@ impl MigrationTrait for Migration {
 enum Guilds {
     Table,
     Id,
+    Name,
     AddedAt,
+    ModifiedAt,
 }
 
-#[derive(Iden)]
+#[derive(DeriveIden)]
 enum Users {
     Table,
     Id,
+    Name,
     AddedAt,
+    ModifiedAt,
 }
 
 #[derive(DeriveIden)]

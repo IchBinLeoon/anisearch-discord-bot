@@ -7,7 +7,10 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: i64,
+    #[sea_orm(column_type = "Text")]
+    pub name: String,
     pub added_at: DateTime,
+    pub modified_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
