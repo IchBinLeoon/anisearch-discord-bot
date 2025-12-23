@@ -1,4 +1,4 @@
-FROM rust:1.88-alpine3.22 AS builder
+FROM rust:1.92-alpine3.23 AS builder
 
 WORKDIR /app
 
@@ -8,11 +8,11 @@ COPY . .
 
 RUN cargo build --release --bin anisearch-bot
 
-FROM alpine:3.22
+FROM alpine:3.23
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG GRPC_HEALTH_PROBE_VERSION=v0.4.38
+ARG GRPC_HEALTH_PROBE_VERSION=v0.4.42
 
 RUN apk add --no-cache curl
 
