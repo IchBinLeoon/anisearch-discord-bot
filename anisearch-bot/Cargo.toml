@@ -10,15 +10,6 @@ anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
 chrono.workspace = true
-cruet.workspace = true
-dashmap.workspace = true
-futures.workspace = true
-graphql_client.workspace = true
-humantime.workspace = true
-poise.workspace = true
-rand.workspace = true
-regex.workspace = true
-reqwest.workspace = true
 sea-orm.workspace = true
 serde.workspace = true
 thiserror.workspace = true
@@ -27,3 +18,13 @@ tonic-health.workspace = true
 tonic.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
+
+cruet = "0.15"
+dashmap = "6.1"
+futures = "0.3"
+graphql_client = "0.15"
+humantime = "2.3"
+poise = "0.6"
+rand = "0.9"
+regex = "1.12"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
