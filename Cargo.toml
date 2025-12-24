@@ -22,3 +22,10 @@ tracing-subscriber = "0.3"
 [patch.crates-io]
 envy = { git = "https://github.com/softprops/envy" }
 poise = { git = "https://github.com/serenity-rs/poise", branch = "serenity-next" }
+
+[profile.release]
+opt-level = 3
+strip = true
+lto = true
+panic = "abort"
+codegen-units = 1
