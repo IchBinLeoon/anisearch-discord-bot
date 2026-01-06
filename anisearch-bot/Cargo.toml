@@ -10,6 +10,7 @@ anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
 chrono.workspace = true
+mimalloc.workspace = true
 sea-orm.workspace = true
 serde.workspace = true
 thiserror.workspace = true

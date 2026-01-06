@@ -7,6 +7,7 @@ use anisearch_lib::grpc::bot_server::BotServer;
 use anisearch_lib::{DEFAULT_LOG_LEVEL, version};
 use anisearch_migration::Migrator;
 use anyhow::Result;
+use mimalloc::MiMalloc;
 use poise::builtins::create_application_commands;
 use poise::serenity_prelude::{ClientBuilder, GatewayIntents};
 use poise::{Framework, FrameworkOptions};
@@ -36,6 +37,9 @@ mod error;
 mod events;
 mod services;
 mod utils;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 

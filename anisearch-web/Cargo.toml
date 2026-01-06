@@ -8,6 +8,7 @@ anisearch-lib = { path = "../anisearch-lib" }
 anisearch-migration = { path = "../anisearch-migration" }
 
 anyhow.workspace = true
+mimalloc.workspace = true
 sea-orm.workspace = true
 serde.workspace = true
 thiserror.workspace = true

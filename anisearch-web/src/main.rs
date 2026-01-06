@@ -7,6 +7,7 @@ use anisearch_lib::{DEFAULT_LOG_LEVEL, version};
 use anisearch_migration::Migrator;
 use anyhow::Result;
 use axum::{Router, serve};
+use mimalloc::MiMalloc;
 use sea_orm::DatabaseConnection;
 use tokio::net::TcpListener;
 use tonic::transport::Channel;
@@ -19,6 +20,9 @@ use crate::config::Config;
 mod api;
 mod config;
 mod error;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 #[derive(Clone)]
 pub struct AppState {

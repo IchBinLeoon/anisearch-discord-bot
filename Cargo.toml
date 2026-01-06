@@ -9,6 +9,7 @@ edition = "2024"
 [workspace.dependencies]
 anyhow = "1.0"
 chrono = "0.4"
+mimalloc = "0.1"
 sea-orm = { version = "1.1", features = ["macros", "runtime-tokio-rustls", "sqlx-postgres"] }
 sea-orm-migration = { version = "1.1", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
 serde = "1.0"
