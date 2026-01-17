@@ -13,8 +13,8 @@ pub struct Model {
     pub profile_id: i32,
     #[sea_orm(column_type = "Text")]
     pub profile_name: String,
-    pub added_at: DateTime,
-    pub modified_at: DateTime,
+    pub added_at: DateTimeWithTimeZone,
+    pub modified_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

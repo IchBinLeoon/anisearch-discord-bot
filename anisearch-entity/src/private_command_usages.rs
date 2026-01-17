@@ -15,7 +15,7 @@ pub struct Model {
     pub command_type: CommandType,
     pub execution_status: ExecutionStatus,
     pub execution_time: Option<i32>,
-    pub used_at: DateTime,
+    pub used_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

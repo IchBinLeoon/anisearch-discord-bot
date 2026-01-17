@@ -14,10 +14,10 @@ impl MigrationTrait for Migration {
             "
                 CREATE FUNCTION update_modified_at()
                 RETURNS TRIGGER AS $$
-                BEGIN
-                    NEW.modified_at = now();
-                    RETURN NEW;
-                END;
+                    BEGIN
+                        NEW.modified_at = now();
+                        RETURN NEW;
+                    END;
                 $$ LANGUAGE plpgsql;
             ",
         )
@@ -33,16 +33,16 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Guilds::Name).text().not_null())
+                    .col(ColumnDef::new(Guilds::Name).string_len(100).not_null())
                     .col(
                         ColumnDef::new(Guilds::AddedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
                     .col(
                         ColumnDef::new(Guilds::ModifiedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
@@ -70,16 +70,16 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Users::Name).text().not_null())
+                    .col(ColumnDef::new(Users::Name).string_len(32).not_null())
                     .col(
                         ColumnDef::new(Users::AddedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
                     .col(
                         ColumnDef::new(Users::ModifiedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
@@ -124,13 +124,13 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(UserProfiles::ProfileName).text().not_null())
                     .col(
                         ColumnDef::new(UserProfiles::AddedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
                     .col(
                         ColumnDef::new(UserProfiles::ModifiedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
@@ -210,7 +210,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(GuildCommandUsages::ExecutionTime).integer())
                     .col(
                         ColumnDef::new(GuildCommandUsages::UsedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
@@ -263,7 +263,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(PrivateCommandUsages::ExecutionTime).integer())
                     .col(
                         ColumnDef::new(PrivateCommandUsages::UsedAt)
-                            .timestamp()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Keyword::CurrentTimestamp),
                     )
