@@ -5,18 +5,16 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+envy.workspace = true
+prost.workspace = true
 sea-orm-migration.workspace = true
 sea-orm.workspace = true
+serde-inline-default.workspace = true
 serde.workspace = true
+tonic-prost.workspace = true
 tonic.workspace = true
 tracing.workspace = true
 
-envy = "0.4"
-prost = "0.14"
-serde-inline-default = "1.0"
-tonic-prost = "0.14"
-
 [build-dependencies]
 chrono.workspace = true
-
-tonic-prost-build = "0.14"
+tonic-prost-build.workspace = true

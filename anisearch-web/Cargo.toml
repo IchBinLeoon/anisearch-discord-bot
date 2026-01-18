@@ -4,19 +4,18 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-anisearch-lib = { path = "../anisearch-lib" }
-anisearch-migration = { path = "../anisearch-migration" }
+anisearch-lib.workspace = true
+anisearch-migration.workspace = true
 
 anyhow.workspace = true
+axum.workspace = true
 mimalloc.workspace = true
 sea-orm.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tonic-health.workspace = true
 tonic.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
-
-axum = "0.8"
-serde_json = "1.0"
