@@ -15,4 +15,4 @@ The source code of the AniSearch Bot.
 > For the currently stable and actively deployed version, please refer to the [`legacy`](https://github.com/IchBinLeoon/anisearch-discord-bot/tree/legacy) branch.
 
 ## License
-This project is licensed under the GNU General Public License v3.0 (GPL-v3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE) file for more details.
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-v3.0). See the [LICENSE](https://github.com/IchBinLeoon/anisearch-discord-bot/blob/main/LICENSE) file for more details.
